@@ -410,6 +410,58 @@ path** with the corresponding returned IDs and caveats; batch convenience
 does not change the receipt schema or turn per-path coverage into global
 `HIT` evidence.
 
+### Opt-in Campaign working context (PATH-1/T17)
+
+`campaign working-context` can attach one `context-for` result to an active
+Campaign's working context. Without the knowledge options the output is
+unchanged. The four knowledge identity/index options are all-or-nothing, and
+exactly one `--knowledge-path` is accepted in this release:
+
+```bash
+sensemaking-skills campaign working-context --workspace "$CAMPAIGN" --json \
+  --knowledge-db "$db" \
+  --knowledge-repository ThorStarlord/sensemaking-skills \
+  --knowledge-ref "$SHA" \
+  --knowledge-repo "$CHECKOUT" \
+  --knowledge-path src/sensemaking_skills/campaigns/execution.py
+```
+
+- `--knowledge-ref` must be the exact 40-character revision the index was built from.
+- `--knowledge-repo` is the active checkout. Its repository identity is derived the same
+  way target snapshots derive theirs and must match the bound Campaign target.
+  `--knowledge-repository` is a caller-declared label; the command does not verify it.
+- `--target-alias` selects the target when several are bound. It is valid only with the
+  knowledge options.
+
+When requested, the payload gains `reviewed_knowledge`:
+
+- `source_identity`: repository label, indexed ref, identity source, observed checkout
+  HEAD, whether that HEAD matches the indexed ref, and worktree cleanliness.
+- `target_binding`: target alias, `repository_id_match` (always `MATCH` on success; a
+  mismatch is an error), and `source_commit_match` against the target head (`MATCH`,
+  `MISMATCH` or `NOT_ASSESSED`).
+- `applicability`: `HISTORICAL` when the indexed ref differs from the target head or the
+  checkout HEAD; `ALIGNED_TO_INDEXED_REVISION` when both match; `NOT_ASSESSED` when the
+  target records no head.
+- `query`: the unmodified `context-for` envelope, with owners, rules, contracts, decisions,
+  history, verification references, gaps, omitted counts and truncation.
+- `caveats`: codes such as `HISTORICAL_TARGET_HEAD`, `HISTORICAL_CHECKOUT_HEAD`,
+  `UNINDEXED_WORKTREE_CHANGES`, `TARGET_SNAPSHOT_DIRTY`,
+  `WORKSPACE_RELEVANCE_NOT_ASSESSED`, `COVERAGE_NOT_ASSESSED`, `OWNERSHIP_AMBIGUOUS`,
+  `EPISTEMIC_CAVEAT`, `TRUNCATED` and `INSPECT_ORIGINAL_SOURCE`.
+- `semantic_truth_established` and `action_authorized`, both `false`.
+
+Failures are explicit and never fall back to the unaugmented view. Partial options,
+`--target-alias` without knowledge options, or more than one path exit 2. A Campaign with
+no bound target, an identity mismatch, an unindexed revision, an invalid path, or a
+checkout that is not a Git worktree exit 4 with `CAMPAIGN_WORKSPACE_ERROR`. A Campaign whose
+own target snapshot has drifted fails with its existing integrity error (exit 3) before any
+knowledge is attached.
+
+Retrieved records describe the indexed revision. They do not select a responsibility or the
+next action, grant merge, release or deploy authority, or establish semantic truth. Read the
+original source before relying on them.
+
 ## Skill usage
 
 1. Find a relevant claim or decision with search/why/explain.

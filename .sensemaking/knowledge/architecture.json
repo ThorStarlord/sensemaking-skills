@@ -719,6 +719,61 @@
           "scripts/validate-artifact.py"
         ]
       }
+    },
+    {
+      "id": "component:campaign-working-context",
+      "kind": "component",
+      "statement": "Campaign execution companion and working-context projection: durable handoff and result records and a compact working context that never selects a next action.",
+      "epistemic_status": "declared",
+      "authority_kind": "code",
+      "authority_ref": "src/sensemaking_skills/campaigns/execution.py",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/campaigns/execution.py",
+        "file:src/sensemaking_skills/campaign_execution_cli.py"
+      ],
+      "attributes": {
+        "owned_paths": [
+          "src/sensemaking_skills/campaigns/execution.py",
+          "src/sensemaking_skills/campaign_execution_cli.py"
+        ]
+      }
+    },
+    {
+      "id": "component:campaign-knowledge-context",
+      "kind": "component",
+      "statement": "Opt-in adapter that binds one source-pinned context-for result to a mechanically verified Campaign target, with historical, dirty and coverage caveats; read-only and grants no authority.",
+      "epistemic_status": "declared",
+      "authority_kind": "code",
+      "authority_ref": "src/sensemaking_skills/campaign_knowledge_context.py",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/campaign_knowledge_context.py",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ],
+      "attributes": {
+        "owned_paths": [
+          "src/sensemaking_skills/campaign_knowledge_context.py"
+        ]
+      }
+    },
+    {
+      "id": "rule:campaign-knowledge-grants-no-authority",
+      "kind": "architecture_rule",
+      "statement": "Reviewed knowledge attached to a Campaign context is source-linked context only: it never selects a responsibility or next action, never grants merge, release or deploy authority, and never establishes semantic truth.",
+      "epistemic_status": "declared",
+      "authority_kind": "document",
+      "authority_ref": "docs/adr/0029-current-product-boundary.md",
+      "evidence_refs": [
+        "file:docs/adr/0029-current-product-boundary.md",
+        "file:docs/superpowers/plans/2026-10-25-path1-knowledge-aware-campaign-continuation.md"
+      ],
+      "attributes": {
+        "rule_type": "convention",
+        "severity": "error",
+        "applies_to": [
+          "src/sensemaking_skills/campaign_knowledge_context.py",
+          "src/sensemaking_skills/campaign_execution_cli.py"
+        ]
+      }
     }
   ],
   "relations": [
@@ -1143,6 +1198,52 @@
         "file:scripts/validate-brief.py"
       ],
       "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:campaign-knowledge-queries-semantic-plane",
+      "subject": "component:campaign-knowledge-context",
+      "predicate": "relates_to",
+      "object": "component:semantic-knowledge-plane",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/campaign_knowledge_context.py"
+      ],
+      "attributes": {
+        "cardinality": "1:1"
+      }
+    },
+    {
+      "id": "rel:campaign-working-context-opt-in-knowledge",
+      "subject": "component:campaign-working-context",
+      "predicate": "relates_to",
+      "object": "component:campaign-knowledge-context",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/campaign_execution_cli.py"
+      ],
+      "attributes": {
+        "cardinality": "1:1"
+      }
+    },
+    {
+      "id": "rel:rule-applies-to-campaign-knowledge",
+      "subject": "rule:campaign-knowledge-grants-no-authority",
+      "predicate": "applies_to",
+      "object": "component:campaign-knowledge-context",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/campaign_knowledge_context.py"
+      ]
+    },
+    {
+      "id": "rel:rule-applies-to-campaign-working-context",
+      "subject": "rule:campaign-knowledge-grants-no-authority",
+      "predicate": "applies_to",
+      "object": "component:campaign-working-context",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/campaign_execution_cli.py"
+      ]
     }
   ]
 }
