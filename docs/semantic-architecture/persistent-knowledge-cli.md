@@ -469,6 +469,21 @@ Retrieved records describe the indexed revision. They do not select a responsibi
 next action, grant merge, release or deploy authority, or establish semantic truth. Read the
 original source before relying on them.
 
+### Agent journey with the optional Campaign view (PATH-1/T19)
+
+The intended sequence is: read the Campaign responsibility, request the context of
+the files that the responsibility will change, inspect the original authority and
+source those records cite, build ordinary code, and reconcile only consequential
+knowledge. The sequence adds no Skill, planner or mandatory onboarding step.
+
+- If no suitable index exists, read the Git-authored knowledge and the cited source
+  directly and do the engineering. Do not wait for an index bootstrap.
+- The Campaign resume profile reports durable Campaign state. It is not an answer
+  from the repository knowledge index, and the attached view does not change it.
+- For a clear bounded task with no continuation need, skip Campaign entirely.
+- Attaching the view does not establish S5 longitudinal reuse or S6 transfer; those
+  claims need separate qualification.
+
 ## Skill usage
 
 1. Find a relevant claim or decision with search/why/explain.

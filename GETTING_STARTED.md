@@ -114,6 +114,38 @@ assuming historical information is complete. See the
 This discovery guidance does not install Skills or enable other harnesses
 automatically.
 
+### Optional: attach the view to an active Campaign
+
+Use this only when a Campaign already binds the target and its responsibility is
+the change in progress. The intended sequence is: read the Campaign
+responsibility; request the context of the files that change; inspect the
+original authority and source those records cite; build ordinary code; and
+reconcile only consequential knowledge. No Skill, planner or onboarding step is
+required.
+
+```bash
+sensemaking-skills campaign working-context --workspace "$CAMPAIGN" --json \
+  --knowledge-db /outside/knowledge.sqlite \
+  --knowledge-repository owner/repository \
+  --knowledge-ref "$INDEXED_SHA" \
+  --knowledge-repo . \
+  --knowledge-path src/relevant_module.py \
+  --knowledge-path src/related_module.py
+```
+
+- The four `--knowledge-*` identity and index options are all-or-nothing. Repeat
+  `--knowledge-path` for up to eight files. Each file keeps its own coverage; the
+  files are not implied to depend on one another.
+- The knowledge checkout must be the Campaign target's repository. A mismatch, an
+  unindexed revision or a failed query is an explicit error, never a silent
+  fallback.
+- The attached view is added beside the Campaign fields and changes none of them.
+  It describes the indexed revision. Read the original source before relying on
+  it, and check `caveats` for historical, dirty or unassessed coverage.
+
+Skip Campaign entirely for a clear bounded task. Using this view does not establish
+S5 longitudinal reuse or S6 transfer; those claims need separate qualification.
+
 ### Default product-facing path
 
 You normally need only three entry surfaces:
