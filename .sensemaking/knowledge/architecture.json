@@ -660,6 +660,45 @@
         "examined_revision": "b5fc38960491655ffa5d01547c281485a4d59c00",
         "scope": "Historical at examined_revision; the legacy class emits no plan since PATH-1/T2. Retained as evidence for why the static table is not a routing source."
       }
+    },
+    {
+      "id": "component:generic-artifact-validator",
+      "kind": "component",
+      "statement": "Generic Level-2 contract validator checks declared artifact sections, main machine fields and recommendation fields; for repository_sensemaking_brief it does not interpret Section 15's optional nested extended_analysis metadata as required top-level fields.",
+      "authority_kind": "code",
+      "authority_ref": "scripts/validate-artifact.py",
+      "evidence_refs": [
+        "file:scripts/validate-artifact.py",
+        "file:skills/workflow-planner/references/artifact-contracts.yaml"
+      ],
+      "epistemic_status": "observed",
+      "attributes": {
+        "owned_paths": [
+          "scripts/validate-artifact.py"
+        ]
+      }
+    },
+    {
+      "id": "rule:brief-extended-analysis-optional",
+      "kind": "architecture_rule",
+      "statement": "ADR 0024 requires Section 15 extended_analysis to remain entirely optional and non-blocking, including under strict generic recommendation checks. Its four dotted recommended metadata fields are not main machine-block keys; malformed or invalid supplied values are warnings owned by validate-brief.py, never grounds to reject an otherwise valid repository_sensemaking_brief.",
+      "authority_kind": "document",
+      "authority_ref": "docs/adr/0024-extended-analysis-field-classification.md",
+      "evidence_refs": [
+        "file:docs/adr/0024-extended-analysis-field-classification.md",
+        "file:skills/workflow-planner/references/artifact-contracts.yaml",
+        "file:scripts/validate-artifact.py",
+        "file:scripts/validate-brief.py"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "rule_type": "convention",
+        "severity": "warning",
+        "applies_to": [
+          "scripts/validate-artifact.py",
+          "scripts/validate-brief.py"
+        ]
+      }
     }
   ],
   "relations": [
@@ -1040,6 +1079,39 @@
         "file:src/sensemaking_skills/skills/workflow_planner.py"
       ],
       "epistemic_status": "observed"
+    },
+    {
+      "id": "rel:generic-artifact-validator-layer",
+      "subject": "component:generic-artifact-validator",
+      "predicate": "belongs_to",
+      "object": "layer:validation",
+      "evidence_refs": [
+        "file:scripts/validate-artifact.py",
+        "file:CLAUDE.md"
+      ],
+      "epistemic_status": "observed"
+    },
+    {
+      "id": "rel:extended-analysis-rule-applies-generic",
+      "subject": "rule:brief-extended-analysis-optional",
+      "predicate": "applies_to",
+      "object": "component:generic-artifact-validator",
+      "evidence_refs": [
+        "file:docs/adr/0024-extended-analysis-field-classification.md",
+        "file:scripts/validate-artifact.py"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:extended-analysis-rule-applies-specialized",
+      "subject": "rule:brief-extended-analysis-optional",
+      "predicate": "applies_to",
+      "object": "component:brief-validator",
+      "evidence_refs": [
+        "file:docs/adr/0024-extended-analysis-field-classification.md",
+        "file:scripts/validate-brief.py"
+      ],
+      "epistemic_status": "declared"
     }
   ]
 }
