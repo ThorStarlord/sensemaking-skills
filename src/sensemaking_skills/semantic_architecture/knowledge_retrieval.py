@@ -112,6 +112,65 @@ def workspace_source_overlap(
     return hit_claims, hit_relations, metadata
 
 
+
+def context_workspace_overlap(
+    claims: Mapping[str, dict], relations: tuple[dict, ...], *,
+    selected_claim_ids: list[str], selected_relation_ids: list[str],
+    changed_paths: frozenset[str], target_path: str, limit: int,
+    context_truncated: bool,
+) -> dict:
+    """Read-only source-path overlap for records selected by context-for.
+
+    A changed cited file is a re-inspection candidate, never a finding that the
+    authored claim is wrong. Source fingerprints describe the indexed commit,
+    not the working-tree overlay.
+    """
+    relation_ids = set(selected_relation_ids)
+    selected = (
+        [("claim", claims[cid]) for cid in selected_claim_ids if cid in claims]
+        + [("relation", r) for r in relations if r["id"] in relation_ids]
+    )
+    affected: list[dict] = []
+    without_fingerprints = 0
+    mechanical = 0
+    for record_type, record in selected:
+        if _is_mechanical(record):
+            mechanical += 1
+            continue
+        cited = record.get("attributes", {}).get("source_sha256")
+        if not isinstance(cited, dict) or not cited:
+            without_fingerprints += 1
+            continue
+        overlap = sorted(path for path in cited if path in changed_paths)
+        if overlap:
+            origin = record.get("source_ref", "")
+            source_path = origin[5:] if origin.startswith("file:") else None
+            affected.append({
+                "record_type": record_type, "id": record["id"],
+                "record_source_changed": source_path in overlap,
+                "changed_evidence_sources": [p for p in overlap if p != source_path],
+            })
+    return {
+        "target_path_changed": target_path in changed_paths,
+        "changed_path_total": len(changed_paths),
+        "selected_record_total": len(selected),
+        "affected_record_total": len(affected),
+        "affected_records": affected[:limit],
+        "affected_records_omitted": max(0, len(affected) - limit),
+        "records_without_fingerprints": without_fingerprints,
+        "mechanical_records_not_assessed": mechanical,
+        "context_selection_truncated": context_truncated,
+        "overlay_indexed": False,
+        "semantic_staleness_established": False,
+        "note": (
+            "Changed paths since the indexed commit overlap cited sources of selected "
+            "records. Re-inspect originals; fingerprint overlap is neither a content "
+            "comparison nor proof a claim changed meaning. Uncited paths, missing "
+            "fingerprints and relationships outside this bounded context are NOT ASSESSED."
+        ),
+    }
+
+
 def bounded_kind_coverage(
     found_claims: list[dict], *, expected_kinds: tuple[str, ...], limit: int,
 ) -> dict:

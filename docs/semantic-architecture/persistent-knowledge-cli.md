@@ -315,6 +315,29 @@ its neighbours. The result states
 `--repo`, `workspace_context` reports whether the checkout matches the indexed
 revision and whether it has uncommitted changes.
 
+### Source overlap during active edits (PATH-1/T5)
+
+When `context-for` is called with `--repo` and the indexed commit is available
+in the local Git checkout, `context.workspace_relevance` compares changed
+tracked/untracked paths since that exact indexed SHA against the original
+source-fingerprint paths of the *selected* context claims and relations. It
+reports `target_path_changed`, the count of changed paths, affected record IDs,
+the cited sources that changed, omitted affected-record totals, and the number
+of records for which there was no fingerprint to assess.
+
+This is a bounded **re-inspection signal**, not an audit of changed bytes and
+not proof that any claim is stale or accurate. Authored shared-pack fingerprints
+can make multiple records appear affected by one JSON-file change; outside
+sources and uncited effects remain NOT ASSESSED. A truncated context cannot
+establish full impact coverage. The active workspace is never indexed by the
+query. If the indexed SHA cannot be inspected in the local worktree, the
+historical context is still returned with `workspace_relevance.assessment:
+NOT_ASSESSED`, not an invented clean result. Without `--repo`, no worktree
+relevance assessment is made.
+
+For complete changed-path coverage across *all* reviewed records, continue to
+use the separate `--operation workspace-impact --repo .` query.
+
 ## Skill usage
 
 1. Find a relevant claim or decision with search/why/explain.

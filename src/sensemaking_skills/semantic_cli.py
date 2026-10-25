@@ -218,10 +218,18 @@ def register_semantic_commands(root_cli: click.Group) -> None:
         """Read committed semantic records; optionally report active worktree state."""
         try:
             changed_paths = None
-            if operation == "workspace-impact":
-                if repo_root is None:
-                    raise ValueError("workspace-impact requires --repo (the active Git worktree)")
-                changed_paths = changed_paths_since_indexed_ref(repo_root, target_ref)["paths"]
+            workspace_relevance_error = None
+            if operation == "workspace-impact" and repo_root is None:
+                raise ValueError("workspace-impact requires --repo (the active Git worktree)")
+            if repo_root is not None and operation in {"workspace-impact", "context-for"}:
+                try:
+                    changed_paths = changed_paths_since_indexed_ref(repo_root, target_ref)["paths"]
+                except ValueError as exc:
+                    if operation == "workspace-impact":
+                        raise
+                    # A valid indexed context remains useful even if its historical
+                    # Git commit is unavailable in this local worktree.
+                    workspace_relevance_error = str(exc)
             payload = query_knowledge(
                 db_path, repository=repository_id, target_ref=target_ref,
                 operation=operation, subject=subject, base_ref=base_ref,
@@ -231,6 +239,13 @@ def register_semantic_commands(root_cli: click.Group) -> None:
             )
             if repo_root is not None:
                 payload["workspace_context"] = inspect_worktree_context(repo_root, target_ref)
+            if workspace_relevance_error is not None:
+                payload["context"]["workspace_relevance"] = {
+                    "assessment": "NOT_ASSESSED", "overlay_indexed": False,
+                    "semantic_staleness_established": False,
+                    "note": "Cannot compare worktree changes with the indexed revision: "
+                            + workspace_relevance_error,
+                }
         except (ValueError, OSError, UnicodeError) as exc:
             raise click.ClickException(str(exc)) from exc
         payload["code"] = "SEMANTIC_KNOWLEDGE_QUERY"

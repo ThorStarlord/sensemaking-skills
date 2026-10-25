@@ -16,8 +16,8 @@ from urllib.parse import quote
 from .knowledge import KnowledgeSnapshot, fingerprint, record_dict, validate_snapshot, SCHEMA_VERSION
 from .knowledge_architecture import context_for, is_repository_file_path, orientation_summary, rules_for, term
 from .knowledge_retrieval import (
-    bounded_kind_coverage, classify_indexed_changes, search_matches,
-    validate_retrieval_options, workspace_source_overlap,
+    bounded_kind_coverage, classify_indexed_changes, context_workspace_overlap,
+    search_matches, validate_retrieval_options, workspace_source_overlap,
 )
 
 _SCHEMA = """
@@ -171,8 +171,8 @@ def query_knowledge(
     history/changes are about *indexed* revisions, NOT automatically proven
     chronological or Git-ancestry relationships. Changes classifies existing
     indexed payload/fingerprint differences without inspecting current source.
-    workspace-impact matches caller-observed changed paths against indexed
-    source fingerprints only.
+    workspace-impact and the optional context-for worktree overlay match
+    caller-observed changed paths against indexed source fingerprints only.
     """
     if not 1 <= limit <= 250 or not 0 <= depth <= 4:
         raise ValueError("query limit must be 1..250 and depth 0..4")
@@ -196,8 +196,10 @@ def query_knowledge(
         raise ValueError("term requires --subject <term>")
     if operation == "changes" and not base_ref:
         raise ValueError("changes requires explicit base_ref")
-    if (operation == "workspace-impact") != (workspace_changed_paths is not None):
-        raise ValueError("workspace-impact requires workspace changed paths (CLI --repo), and only it accepts them")
+    if operation == "workspace-impact" and workspace_changed_paths is None:
+        raise ValueError("workspace-impact requires workspace changed paths (CLI --repo)")
+    if workspace_changed_paths is not None and operation not in {"workspace-impact", "context-for"}:
+        raise ValueError("workspace changed paths are supported only for workspace-impact or context-for")
     validate_retrieval_options(
         operation=operation, subject=subject, search_terms=search_terms,
         expected_kinds=expected_kinds,
@@ -342,6 +344,15 @@ def query_knowledge(
             found_claims = [claims[cid] for cid in selected_claims]
             found_relations = [r for r in relations if r["id"] in set(selected_relations)]
             extra_truncated = extra["context"]["truncated"]
+            if workspace_changed_paths is not None:
+                extra["context"]["workspace_relevance"] = context_workspace_overlap(
+                    claims, relations, selected_claim_ids=selected_claims,
+                    selected_relation_ids=selected_relations,
+                    changed_paths=workspace_changed_paths, target_path=subject,
+                    limit=limit, context_truncated=extra["context"]["truncated"],
+                )
+                if extra["context"]["workspace_relevance"]["affected_records_omitted"]:
+                    extra_truncated = True
         elif operation == "term":
             assert subject is not None
             extra["term"] = term(claims, relations, name=subject, limit=limit)
