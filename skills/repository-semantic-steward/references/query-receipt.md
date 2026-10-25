@@ -140,7 +140,11 @@ Field notes:
   as `subject`; batch union results do not establish cross-file authority.
   Set
   `result.claim_ids` to the IDs in the returned `claims` and `hit_count` to
-  their count, and preserve `truncated`. A path whose `ownership.coverage_status`
+  their count, and preserve `truncated`. For `context-for`, also inspect
+  `context.envelope_reference_coverage`: the global claim/relation envelope
+  may omit records referenced by individual context categories. Record a
+  decision-relevant omission as `PARTIAL` or `NOT_ASSESSED` rather than a
+  complete `HIT`; query receipts do not invent missing claim payloads. A path whose `ownership.coverage_status`
   is `NOT_ASSESSED` is never `outcome: HIT`: use `NOT_ASSESSED` or `PARTIAL`
   according to the `knowledge_gaps` that matter to the decision.
 - For `rules-for` and `term`, set `result.claim_ids` to the IDs in the query

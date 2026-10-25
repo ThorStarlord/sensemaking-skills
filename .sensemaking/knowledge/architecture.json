@@ -85,6 +85,7 @@
         "owned_paths": [
           "src/sensemaking_skills/semantic_architecture/knowledge.py",
           "src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py",
+          "src/sensemaking_skills/semantic_architecture/knowledge_store.py",
           "src/sensemaking_skills/semantic_architecture/knowledge_sources.py",
           "src/sensemaking_skills/semantic_architecture/knowledge_architecture.py"
         ]

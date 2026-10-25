@@ -453,9 +453,23 @@ assumptions, and reconcile only consequential authorized knowledge. Existing
 query contracts, authority boundaries and CI stay unchanged; no unit or
 synthetic evidence tests are executed in this construction step.
 
+**2026-10-25 construction continuation (T10, Wave 4):** Source inspection of
+the T4/T7 `context-for` implementation exposed distinct limits for per-category
+context selections versus the global top-level query envelope. Preserve the
+existing per-file bound, prioritize ownership/rules in returned claims, and
+disclose selected-but-omitted claim/relation counts and bounded IDs as a
+`TRUNCATED` knowledge gap rather than implying source completeness.
+`knowledge_store.py` is explicitly added to the existing reviewed knowledge
+plane ownership paths. No new runtime authority, routing, schema or unit/evidence
+tests are introduced in this construction phase.
+
 ## Current next step
 
 **ACTIVE CONSTRUCTION — PATH-1, ACCRETE PRODUCT KNOWLEDGE THROUGH GENUINE RESPONSIBILITIES.**
+T9 (PR #580) integrated optional architecture exploration with persistent
+knowledge. T10 clarifies the source-coverage limits of the existing context
+envelope so the agent can detect an incomplete answer before comparing options;
+this is construction and provenance integrity, not longitudinal evidence.
 PATH-1/T7 (PR #578) integrates a bounded batch presentation of existing `context-for` queries for multi-file edits; T8 adds explicit source-checked workflow runtime ownership, contract materialization and verification references. Single-file behavior and original source/selection authority remain unchanged. It does not establish cross-file impact or independent longitudinal improvement.
 PATH-1/T5 (PR #576) integrates path-specific unindexed workspace-source overlap into `context-for --repo`; T6 adds reviewed ownership and a source-linked CLI verification reference for `semantic_cli.py` without changing code or claim authority. Neither workstream claims longitudinal utility or an independently executed test result.
 PATH-1/T1 (PR #568) and PATH-1/T2 (PR #569) are integrated into `main`. The legacy `WorkflowPlannerSkill` fails closed on the same terms (`LEGACY_PLANNER_UNSUPPORTED`) and writes no plan. The legacy `RepoSensemakerSkill` now fails closed on every legacy execution path: `run()`, `run_repo_sensemaker_skill()` and `run_skill()` write no files and return `LEGACY_PRODUCER_UNSUPPORTED`, while `instantiate_skill()` returns an instance whose `run()` does the same. The reviewed knowledge for the producer and the runtime-owned artifact-path rule now carries code, test and decision links (see the [session receipt](.sensemaking/receipts/2026-10-25-legacy-brief-producer-fail-closed.session.yaml)). PATH-1/T3 (PR #573) and PATH-1/T4 (PR #574) are integrated into `main`. T4 (`knowledge-query --operation context-for`) is a read-only, source-linked context query. It returns one bounded, read-only view of the reviewed ownership, rules, contracts, decisions, history and verification linked to a repository file. Each item keeps its epistemic status and the explicit link that selected it, and NOT_ASSESSED, ownership ambiguity, hypothetical and inactive-status caveats, and truncation are disclosed. T4 integration included narrow caveat and path-documentation corrections, without waiting for additional local unit or evidence tests. Next, select the next genuine engineering responsibility from current evidence, RECALL before building and RECONCILE afterwards; work in the active development context and do not insert an independent clean-room gate. Open owner questions: ADR 0032/0033 ratification, and whether the runtime's compatibility fog-to-workflow map should be reconciled with the canonical vocabulary (recorded in the planner session receipt, not changed here). The previous query-receipt and `--expect-kind` limitations are resolved on `main` through PR #573. `context-for` returns only explicitly declared links, so an undeclared owner or contract stays NOT_ASSESSED. Independent S5/#552, RSB-6/#554 and comparative results remain unproven and reserved for later release qualification.

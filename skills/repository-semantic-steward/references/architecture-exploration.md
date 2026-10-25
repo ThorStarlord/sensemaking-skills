@@ -36,7 +36,7 @@ sensemaking-skills semantic knowledge-query --db "$db" \
   --operation why --subject decision:example --repo . --json
 ~~~
 
-Read the **original** source of decisive claims (code, contract, owner decision, historical rationale). The index may be historically correct yet incomplete for this choice. `workspace_context` and `workspace_relevance` give source reinspection candidates, not a semantic staleness verdict; uncommitted code is not indexed. Missing indexed ownership/relations mean `NOT_ASSESSED`, not safe, absent, or authorized.
+Read the **original** source of decisive claims (code, contract, owner decision, historical rationale). For `context-for`, inspect `context.envelope_reference_coverage`: an item shown in a context category may be absent from the globally limited top-level `claims`/`relations`; treat omitted source records as a `TRUNCATED` coverage gap, not corroboration. The index may be historically correct yet incomplete for this choice. `workspace_context` and `workspace_relevance` give source reinspection candidates, not a semantic staleness verdict; uncommitted code is not indexed. Missing indexed ownership/relations mean `NOT_ASSESSED`, not safe, absent, or authorized.
 
 If no suitable index exists, inspect governing and implementation sources directly. Do not require BOOTSTRAP or an artificial test/benchmark as a condition for legitimate exploration.
 

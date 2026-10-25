@@ -341,9 +341,55 @@ def query_knowledge(
             extra["context"], selected_claims, selected_relations = context_for(
                 claims, relations, path=subject, limit=limit,
             )
-            found_claims = [claims[cid] for cid in selected_claims]
-            found_relations = [r for r in relations if r["id"] in set(selected_relations)]
-            extra_truncated = extra["context"]["truncated"]
+            # context_for independently caps each category. The top-level query
+            # envelope has a separate global limit, so it may not contain every
+            # referenced claim/relation. Prioritize ownership and governing
+            # rules before optional historical or verification context.
+            ctx = extra["context"]
+            ranked = [
+                *ctx["ownership"]["components"],
+                *(rule["claim_id"] for rule in ctx["architecture_rules"]),
+                *ctx["ownership"]["layers"],
+                *ctx["ownership"]["bounded_contexts"],
+                *(item["claim_id"] for name in
+                  ("contracts", "decisions", "history", "verification_refs")
+                  for item in ctx[name]),
+            ]
+            ordered_claim_ids = list(dict.fromkeys(
+                cid for cid in [*ranked, *selected_claims] if cid in claims
+            ))
+            found_claims = [claims[cid] for cid in ordered_claim_ids]
+            relation_id_set = set(selected_relations)
+            found_relations = [r for r in relations if r["id"] in relation_id_set]
+            claim_overflow = max(0, len(found_claims) - limit)
+            relation_overflow = max(0, len(found_relations) - limit)
+            ctx["envelope_reference_coverage"] = {
+                "selected_claim_total": len(found_claims),
+                "returned_claim_total": min(len(found_claims), limit),
+                "omitted_claim_total": claim_overflow,
+                "omitted_claim_ids": [c["id"] for c in found_claims[limit:limit + min(limit, 25)]],
+                "selected_relation_total": len(found_relations),
+                "returned_relation_total": min(len(found_relations), limit),
+                "omitted_relation_total": relation_overflow,
+                "omitted_relation_ids": [r["id"] for r in found_relations[limit:limit + min(limit, 25)]],
+                "note": (
+                    "Context categories have independent limits. The top-level "
+                    "claims/relations envelope has a separate global limit; "
+                    "some category references may lack top-level records. "
+                    "Inspect original cited sources; omission is NOT clearance."
+                ),
+            }
+            if claim_overflow or relation_overflow:
+                ctx["truncated"] = True
+                ctx["knowledge_gaps"].append({
+                    "category": "envelope", "status": "TRUNCATED",
+                    "note": (
+                        f"Global envelope limit {limit} omitted {claim_overflow} "
+                        f"selected claim and {relation_overflow} relation record(s); "
+                        "category entries may reference omitted records."
+                    ),
+                })
+            extra_truncated = ctx["truncated"]
             if workspace_changed_paths is not None:
                 extra["context"]["workspace_relevance"] = context_workspace_overlap(
                     claims, relations, selected_claim_ids=selected_claims,

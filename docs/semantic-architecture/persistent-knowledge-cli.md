@@ -295,6 +295,18 @@ sensemaking-skills semantic knowledge-query --db "$db" --repository "$repository
   as not assessed, never as
   the absence of a contract, decision, lesson or test.
 - `context.omitted`: how many records each category held beyond `--limit`.
+- `context.envelope_reference_coverage`: a **separate** count of claims and
+  relations selected by the category context but not returned in the top-level
+  query envelope, which is capped globally by `--limit`. The omitted-ID samples
+  are bounded to 25 entries per type and are for targeted source inspection,
+  not a substitute for the missing full records. An `envelope / TRUNCATED` gap
+  explicitly flags that some category entries may reference omitted records.
+
+For `context-for` the top-level claim envelope prioritizes reviewed **owners
+and applicable rules** before secondary linked context; it remains globally
+limited. A `truncated: false` category does not imply the global envelope
+contained all referenced claim/relationship records. Raise the limit or inspect
+original cited sources when the omitted reference affects the decision.
 
 Each contract, decision, history, verification and rule item keeps its
 `epistemic_status`, `authority_kind`, `authority_ref`, evidence references and
