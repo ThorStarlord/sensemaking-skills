@@ -1,0 +1,78 @@
+artifact_id: semantic_query_receipt
+schema_version: 1
+session_ref: 2026-10-25-legacy-planner-fail-closed
+state: final
+created_at: "2026-10-25T05:26:00Z"
+updated_at: "2026-10-25T05:26:00Z"
+target_repository: ThorStarlord/sensemaking-skills
+modes: [RECALL, RECONCILE]
+decision: "PATH-1/T2: what reviewed knowledge governs the legacy workflow planner, its plan contract and the path rule before the repair, and whether the reconciled records are discoverable after it."
+cli_identity:
+  sensemaking_source_ref: f40c4bd822222e6314ec4931c01945d46f21d753
+  invocation_prefix: "sensemaking-skills (editable install of this checkout)"
+  version_output: "sensemaking-skills, version 1.0.0rc5.dev0"
+index:
+  indexed_ref: 002ba742b7ecbe85689f8416f68977f9f309c298
+  current_head: c9b257ab1510fe916b981828af5bcfa5371065eb
+  worktree_clean: true
+  uncommitted_changes_not_indexed: false
+queries:
+  - {id: QY-1, operation: explain, terms: [], subject: "observation:legacy-plan-producer-overwrites-tracked-plan", expect_kinds: [verification, component, decision], target_ref: f40c4bd822222e6314ec4931c01945d46f21d753, result: {hit_count: 2, claim_ids: [observation:legacy-plan-producer-overwrites-tracked-plan, rule:runtime-owns-artifact-paths], truncated: false, not_assessed_kinds: [verification, component, decision]}, outcome: PARTIAL, decision_relevant: true}
+  - {id: QY-2, operation: explain, terms: [], subject: "component:workflow-planner-skill", expect_kinds: [contract, verification], target_ref: f40c4bd822222e6314ec4931c01945d46f21d753, result: {hit_count: 3, claim_ids: [component:workflow-planner-skill, component:repo-sensemaker-skill, layer:skills], truncated: false, not_assessed_kinds: [contract, verification]}, outcome: PARTIAL, decision_relevant: true}
+  - {id: QY-3, operation: explain, terms: [], subject: "contract:workflow-orchestration-plan", expect_kinds: [component], target_ref: f40c4bd822222e6314ec4931c01945d46f21d753, result: {hit_count: 0, claim_ids: [], truncated: false, not_assessed_kinds: [component]}, outcome: NOT_ASSESSED, decision_relevant: true}
+  - {id: QY-4, operation: search, terms: [workflow_orchestration_plan, "plan_{workflow_id}"], subject: null, expect_kinds: [], target_ref: f40c4bd822222e6314ec4931c01945d46f21d753, result: {hit_count: 2, claim_ids: [adr:0025, observation:legacy-plan-producer-overwrites-tracked-plan], truncated: false, not_assessed_kinds: []}, outcome: HIT, decision_relevant: true}
+  - {id: QY-5, operation: contradictions, terms: [], subject: "rule:runtime-owns-artifact-paths", expect_kinds: [], target_ref: f40c4bd822222e6314ec4931c01945d46f21d753, result: {hit_count: 3, claim_ids: [observation:legacy-plan-producer-overwrites-tracked-plan, observation:legacy-brief-producer-bypasses-runtime-paths, rule:runtime-owns-artifact-paths], truncated: false, not_assessed_kinds: []}, outcome: HIT, decision_relevant: true}
+  - {id: QY-6, operation: workspace-impact, terms: [], subject: null, expect_kinds: [], target_ref: f40c4bd822222e6314ec4931c01945d46f21d753, result: {hit_count: 0, claim_ids: [], truncated: false, not_assessed_kinds: []}, outcome: HIT, decision_relevant: false}
+  - {id: QY-7, operation: explain, terms: [], subject: "component:legacy-workflow-planner", expect_kinds: [verification, decision, observation], target_ref: 002ba742b7ecbe85689f8416f68977f9f309c298, result: {hit_count: 5, claim_ids: [component:legacy-workflow-planner, decision:legacy-planner-fails-closed, observation:legacy-plan-producer-overwrites-tracked-plan, rule:runtime-owns-artifact-paths, verification:legacy-planner-fail-closed-tests], truncated: false, not_assessed_kinds: []}, outcome: HIT, decision_relevant: true}
+  - {id: QY-8, operation: explain, terms: [], subject: "contract:workflow-orchestration-plan", expect_kinds: [component, verification], target_ref: 002ba742b7ecbe85689f8416f68977f9f309c298, result: {hit_count: 3, claim_ids: [contract:workflow-orchestration-plan, component:workflow-planner-skill, observation:legacy-planner-static-routing-table], truncated: false, not_assessed_kinds: [verification]}, outcome: PARTIAL, decision_relevant: false}
+  - {id: QY-9, operation: explain, terms: [], subject: "component:workflow-planner-skill", expect_kinds: [contract, verification], target_ref: 002ba742b7ecbe85689f8416f68977f9f309c298, result: {hit_count: 5, claim_ids: [component:workflow-planner-skill, component:repo-sensemaker-skill, contract:workflow-orchestration-plan, layer:skills, verification:workflow-planner-skill-contract-tests], truncated: false, not_assessed_kinds: []}, outcome: HIT, decision_relevant: true}
+  - {id: QY-10, operation: explain, terms: [], subject: "decision:legacy-planner-fails-closed", expect_kinds: [observation, component, alternative], target_ref: 002ba742b7ecbe85689f8416f68977f9f309c298, result: {hit_count: 3, claim_ids: [decision:legacy-planner-fails-closed, component:legacy-workflow-planner, observation:legacy-plan-producer-overwrites-tracked-plan], truncated: false, not_assessed_kinds: [alternative]}, outcome: PARTIAL, decision_relevant: false}
+  - {id: QY-11, operation: contradictions, terms: [], subject: "rule:runtime-owns-artifact-paths", expect_kinds: [], target_ref: 002ba742b7ecbe85689f8416f68977f9f309c298, result: {hit_count: 3, claim_ids: [observation:legacy-plan-producer-overwrites-tracked-plan, observation:legacy-brief-producer-bypasses-runtime-paths, rule:runtime-owns-artifact-paths], truncated: false, not_assessed_kinds: []}, outcome: HIT, decision_relevant: true}
+  - {id: QY-12, operation: workspace-impact, terms: [], subject: null, expect_kinds: [], target_ref: 002ba742b7ecbe85689f8416f68977f9f309c298, result: {hit_count: 0, claim_ids: [], truncated: false, not_assessed_kinds: []}, outcome: HIT, decision_relevant: false}
+source_checks:
+  - claim_id: component:legacy-workflow-planner
+    sources: [src/sensemaking_skills/skills/workflow_planner.py:57-79, tests/test_legacy_workflow_planner_fail_closed.py:138-171]
+    result: SUPPORTED
+  - claim_id: observation:legacy-plan-producer-overwrites-tracked-plan
+    sources: [src/sensemaking_skills/skills/workflow_planner.py:44-89 at f40c4bd8]
+    result: SUPPORTED
+  - claim_id: contract:workflow-orchestration-plan
+    sources: [skills/workflow-planner/references/artifact-contracts.yaml:908-909]
+    result: SUPPORTED
+misses:
+  - id: M-1
+    query_ref: QY-3
+    needed_for: "Which canonical contract defines the plan artifact the legacy planner writes, and what is its canonical path."
+    kind: NOT_ASSESSED
+    resolved_by: "Source inspection: skills/workflow-planner/references/artifact-contracts.yaml:908-955 (path artifacts/plan_{workflow_id}.md; required sections and fields)."
+    follow_up: ADDED
+    proposal_ref: .sensemaking/knowledge/architecture.json
+  - id: M-2
+    query_ref: QY-2
+    needed_for: "Which test verifies the agent-native workflow-planner Skill, so the repair's blast radius is bounded."
+    kind: NOT_ASSESSED
+    resolved_by: "Source inspection: tests/test_workflow_planner_skill_fog_contract.py reads SKILL.md directly and does not exercise the legacy class."
+    follow_up: ADDED
+    proposal_ref: .sensemaking/knowledge/architecture.json
+  - id: M-3
+    query_ref: QY-1
+    needed_for: "Which component owns the legacy planner's behaviour, so path-based rules and drift detection can see it."
+    kind: NOT_ASSESSED
+    resolved_by: "Source inspection: the planner file had no owning component (rules-for reported NOT_ASSESSED; that operation is not recordable in a query receipt)."
+    follow_up: ADDED
+    proposal_ref: .sensemaking/knowledge/architecture.json
+reconcile:
+  - {claim_id: "component:legacy-workflow-planner", disposition: ADD, applied: true, proposal_ref: .sensemaking/knowledge/architecture.json, proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+  - {claim_id: "observation:legacy-plan-producer-overwrites-tracked-plan", disposition: REVISE, applied: true, proposal_ref: .sensemaking/knowledge/architecture.json, proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+  - {claim_id: "rule:runtime-owns-artifact-paths", disposition: CONFIRM, applied: false, proposal_ref: null, proposal_check: NOT_RUN}
+  - {claim_id: "component:workflow-planner-skill", disposition: REVISE, applied: true, proposal_ref: .sensemaking/knowledge/architecture.json, proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+  - {claim_id: "contract:workflow-orchestration-plan", disposition: ADD, applied: true, proposal_ref: .sensemaking/knowledge/architecture.json, proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+  - {claim_id: "decision:legacy-planner-fails-closed", disposition: ADD, applied: true, proposal_ref: .sensemaking/knowledge/architecture.json, proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+  - {claim_id: "observation:legacy-planner-static-routing-table", disposition: ADD, applied: true, proposal_ref: .sensemaking/knowledge/architecture.json, proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+  - {claim_id: "verification:legacy-planner-fail-closed-tests", disposition: ADD, applied: true, proposal_ref: .sensemaking/knowledge/architecture.json, proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+  - {claim_id: "verification:workflow-planner-skill-contract-tests", disposition: ADD, applied: true, proposal_ref: .sensemaking/knowledge/architecture.json, proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+  - {claim_id: null, disposition: NO_MODEL_CHANGE, applied: false, proposal_ref: null, proposal_check: NOT_RUN}
+persistence: committed
+action_authorized: false
+semantic_truth_established: false
+immutable: true
