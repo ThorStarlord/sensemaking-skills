@@ -46,6 +46,9 @@ from gate_a_authorization import (  # noqa: E402
 
 import gate_a_fixtures as fx  # noqa: E402
 
+sys.path.insert(0, str(REPO_ROOT / "tests" / "support"))
+from repo_tree import find_named
+
 RUN_CONTROL = (
     REPO_ROOT
     / "experiments"
@@ -99,7 +102,7 @@ def test_only_the_exact_planned_artifact_set_exists():
         "owner-approval.template.md",
         "owner-approval.SUPERSEDED-pre-artifact-root.md",
     }
-    assert not list(REPO_ROOT.rglob("owner-approval.md"))
+    assert not find_named(REPO_ROOT, "owner-approval.md")
 
 
 def test_record_bytes_are_lf_only_and_match_digest_file():

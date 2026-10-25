@@ -40,6 +40,9 @@ from gate_a_authorization import (  # noqa: E402
     parse_record_bytes,
 )
 
+sys.path.insert(0, str(REPO_ROOT / "tests" / "support"))
+from repo_tree import find_named
+
 RUN_CONTROL = (
     REPO_ROOT
     / "experiments"
@@ -63,7 +66,7 @@ def test_stopping_state_has_no_operative_owner_approval():
     assert DIGEST.is_file()
     assert TEMPLATE.is_file()
     assert not APPROVAL.exists()
-    assert list(REPO_ROOT.rglob("owner-approval.md")) == []
+    assert find_named(REPO_ROOT, "owner-approval.md") == []
     assert TEMPLATE.name != "owner-approval.md"
 
 
