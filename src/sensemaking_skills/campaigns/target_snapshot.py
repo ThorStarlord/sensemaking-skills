@@ -93,6 +93,11 @@ def _identity(root: Path) -> tuple[str, str]:
     return source, digest
 
 
+def repository_identity(root: str | Path) -> tuple[str, str]:
+    """Return ``(identity_source, repository_id)`` exactly as target snapshots derive them."""
+    return _identity(Path(root).expanduser().resolve(strict=True))
+
+
 def _feed(hasher: Any, label: bytes, data: bytes) -> None:
     hasher.update(len(label).to_bytes(4, "big"))
     hasher.update(label)
