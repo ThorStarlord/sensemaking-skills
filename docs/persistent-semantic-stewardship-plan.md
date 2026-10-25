@@ -316,7 +316,11 @@ agent-native architecture-exploration reference connects existing exact-revision
 semantic queries to divergent option generation, qualitative convergence,
 adversarial challenge and ordinary RECONCILE. It is an integration of Wave 4
 guidance, not a new runtime or proof that architectural decisions improved.
-The Wave 4 real-decision exit criterion remains unproven.
+The Wave 4 real-decision exit criterion remains unproven. PATH-1/T12
+adds explicitly linked historical alternatives to `context-for` and records
+one previously owner-documented unchosen option in reviewed knowledge. A
+source-grounded reference to an option is not itself an approval, rejection
+judgment, or superior architecture verdict.
 
 **Verification:** Inspect actual agent output against source; test false-positive
 impact links and counterevidence; ensure no automatic architectural authority,

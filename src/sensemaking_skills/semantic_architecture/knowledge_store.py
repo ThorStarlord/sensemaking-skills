@@ -353,7 +353,8 @@ def query_knowledge(
                 *ctx["ownership"]["layers"],
                 *ctx["ownership"]["bounded_contexts"],
                 *(item["claim_id"] for name in
-                  ("contracts", "decisions", "history", "verification_refs")
+                  ("contracts", "decisions", "alternatives", "history",
+                   "verification_refs")
                   for item in ctx[name]),
             ]
             ordered_claim_ids = list(dict.fromkeys(

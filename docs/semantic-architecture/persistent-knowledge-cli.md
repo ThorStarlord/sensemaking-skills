@@ -302,6 +302,11 @@ sensemaking-skills semantic knowledge-query --db "$db" --repository "$repository
 - `context.contracts`: contracts linked by `exposes`, or by `flows_to` through
   its `carries` attribute.
 - `context.decisions`: decisions linked by `decided_by`.
+- `context.alternatives`: source-linked alternatives explicitly attached to
+  those decisions by `references` or `contradicts` (either direction). The
+  second hop is clearly labelled. A linked alternative is **not** automatically
+  rejected, endorsed or made executable; inspect the decision and source text.
+  Empty results mean NOT ASSESSED, not that no competing designs existed.
 - `context.history`: incidents, lessons and observations linked by `references`,
   `contradicts` or `learned_from`. One second hop follows `derived_from` from a
   linked decision to a recorded incident, lesson or observation, and is labelled as
@@ -326,7 +331,8 @@ limited. A `truncated: false` category does not imply the global envelope
 contained all referenced claim/relationship records. Raise the limit or inspect
 original cited sources when the omitted reference affects the decision.
 
-Each contract, decision, history, verification and rule item keeps its
+Each contract, decision, linked alternative, history, verification and rule
+item keeps its
 `epistemic_status`, `authority_kind`, `authority_ref`, evidence references and
 `matched_by`, which names the relation or scope that selected it. Owners and
 layers are returned as claim IDs. Superseded, contested and invalidated records

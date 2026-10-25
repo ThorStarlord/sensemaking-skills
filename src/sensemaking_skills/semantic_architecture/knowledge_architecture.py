@@ -108,13 +108,16 @@ INACTIVE_STATUSES = frozenset({"superseded", "contested", "invalidated"})
 CONTEXT_NOTE = (
     "Explicit links only: an item appears because a reviewed relation or a declared path "
     "scope names it, never because its name or a neighbouring file looks similar. Relevance "
-    "is not semantic truth and grants no action authority."
+    "does not establish semantic truth or action authority. A linked alternative "
+    "is not automatically endorsed or rejected."
 )
 _EMPTY_CATEGORY_NOTES = {
     "contracts": "No explicitly linked contract is recorded for the owning components. "
                  "Absence here is not evidence that no contract applies.",
     "decisions": "No explicitly linked decision is recorded for the owners or rules. "
                  "Decisions may exist outside the indexed revision.",
+    "alternatives": "No alternative is explicitly linked to a decision in this "
+                    "bounded task context; other viable options may exist.",
     "history": "No explicitly linked incident, lesson or observation is recorded. "
                "Prior occurrences may exist outside the indexed revision.",
     "verification_refs": "No linked verification record is recorded. Tests may exist in the "
@@ -144,10 +147,10 @@ def context_for(
     """Task context for one repository file, each item tied to the explicit link behind it.
 
     Ownership and path-scoped rules come from rules_for. Contracts, decisions,
-    history and verification records enter only through declared relations from an
-    owning component, an applicable rule, or a decision linked to this file. The one
-    second hop is decision -> derived_from -> observation, which recovers the recorded
-    rationale of a decision already linked to this file. Returns the context and the
+    history, verification and recorded alternatives enter only through explicit
+    relations from an owning component, an applicable rule, or a linked decision.
+    Bounded second hops recover decision -> derived_from -> observation and
+    directly linked decision -> references/contradicts -> alternative records. Returns the context and the
     claim and relation IDs it relied on, both in deterministic order.
     """
     edges = list(relations)
@@ -157,7 +160,8 @@ def context_for(
     layer_ids = set(base["layers"]) | set(base["bounded_contexts"])
     anchors = owners | rule_ids
     buckets: dict[str, dict[str, set[str]]] = {
-        "contracts": {}, "decisions": {}, "history": {}, "verification_refs": {},
+        "contracts": {}, "decisions": {}, "alternatives": {}, "history": {},
+        "verification_refs": {},
     }
     relation_ids: set[str] = set()
 
@@ -191,16 +195,24 @@ def context_for(
         elif p == "applies_to" and s in rule_ids and o in owners | layer_ids:
             relation_ids.add(rel["id"])
     for rel in edges:
-        if (rel["predicate"] == "derived_from" and rel["subject"] in buckets["decisions"]
-                and claims.get(rel["object"], {}).get("kind") in HISTORY_KINDS):
-            link("history", rel["object"], rel, via="second hop through linked decision: ")
+        s, p, o = rel["subject"], rel["predicate"], rel["object"]
+        if (p == "derived_from" and s in buckets["decisions"]
+                and claims.get(o, {}).get("kind") in HISTORY_KINDS):
+            link("history", o, rel, via="second hop through linked decision: ")
+        elif p in {"references", "contradicts"}:
+            if s in buckets["decisions"] and claims.get(o, {}).get("kind") == "alternative":
+                link("alternatives", o, rel, via="second hop through linked decision: ")
+            elif o in buckets["decisions"] and claims.get(s, {}).get("kind") == "alternative":
+                link("alternatives", s, rel, via="second hop through linked decision: ")
 
     def items(bucket: str) -> list[dict]:
         return [_context_item(cid, claims[cid], buckets[bucket][cid]) for cid in sorted(buckets[bucket])]
 
     contracts, decisions = items("contracts"), items("decisions")
+    alternatives = items("alternatives")
     history, verification = items("history"), items("verification_refs")
-    lists = {"contracts": contracts, "decisions": decisions, "history": history,
+    lists = {"contracts": contracts, "decisions": decisions,
+             "alternatives": alternatives, "history": history,
              "verification_refs": verification}
     totals = {
         "owning_components": len(owners), "architecture_rules": len(rule_ids),
@@ -263,12 +275,13 @@ def context_for(
         },
         "architecture_rules": rule_list,
         "contracts": contracts[:limit], "decisions": decisions[:limit],
+        "alternatives": alternatives[:limit],
         "history": history[:limit], "verification_refs": verification[:limit],
         "knowledge_gaps": gaps, "omitted": omitted, "truncated": truncated,
         "note": CONTEXT_NOTE,
     }
     returned: set[str] = {*owner_list, *layer_list, *context_list, *(r["claim_id"] for r in rule_list)}
-    for group in (contracts, decisions, history, verification):
+    for group in (contracts, decisions, alternatives, history, verification):
         returned.update(item["claim_id"] for item in group[:limit])
     return context, sorted(returned), sorted(relation_ids)
 

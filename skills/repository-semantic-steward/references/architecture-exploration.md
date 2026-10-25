@@ -19,7 +19,7 @@ This procedure operates under the Steward's existing `RECALL` and `RECONCILE` mo
 Identify governing user/product intent, non-goals, current engineering scope and relevant authority. Pin the target repository, indexed SHA, current HEAD and dirty overlay. When a reviewed index already exists and could affect the decision, retrieve selectively:
 
 - `context-for --subject PATH --repo .` for one file, or repeated `--path PATH` for 2–8 related paths. Preserve each path's distinct owner, contract, revision, uncertainty and truncation.
-- `why --subject DECISION_ID` or `explain --subject CLAIM_ID` for known rationale.
+- `why --subject DECISION_ID` or `explain --subject CLAIM_ID` for known rationale. When `context-for` returns `context.alternatives`, inspect the cited historical options and their original decisions before inventing new variants. No linked alternative means NOT ASSESSED, **not** that the architecture has no alternatives.
 - `contradictions` for competing records, `term` for disputed vocabulary, and `impact` only for candidate declared-edge effects, not proved consequences.
 - `orientation-summary` if the system boundary itself is unclear; do not treat it as a complete architecture inventory.
 

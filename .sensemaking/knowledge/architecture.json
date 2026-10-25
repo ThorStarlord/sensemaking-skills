@@ -612,6 +612,21 @@
       "epistemic_status": "declared"
     },
     {
+      "id": "alternative:legacy-planner-removal",
+      "kind": "alternative",
+      "statement": "Removing the importable legacy Python workflow planner was considered but not chosen under the recorded 2026-10-25 Q-1 decision; keeping its API importable and failing closed was the selected compatibility response.",
+      "authority_kind": "document",
+      "authority_ref": "STATUS.md",
+      "evidence_refs": [
+        "file:STATUS.md",
+        "file:src/sensemaking_skills/skills/workflow_planner.py"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "scope": "Historical alternative for the legacy Python WorkflowPlannerSkill, not the agent-native workflow-planner Skill or the runtime."
+      }
+    },
+    {
       "id": "decision:legacy-planner-fails-closed",
       "kind": "decision",
       "statement": "Owner decision (2026-10-25, PATH-1/T2): keep the legacy workflow planner's API importable and callable, but make its invalid plan producer fail closed. Removing it and keeping it as is were not chosen; the agent-native workflow-planner Skill is unchanged.",
@@ -943,6 +958,16 @@
       "object": "decision:legacy-planner-fails-closed",
       "evidence_refs": [
         "file:src/sensemaking_skills/skills/workflow_planner.py"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:legacy-planner-decision-removal-alternative",
+      "subject": "decision:legacy-planner-fails-closed",
+      "predicate": "references",
+      "object": "alternative:legacy-planner-removal",
+      "evidence_refs": [
+        "file:STATUS.md"
       ],
       "epistemic_status": "declared"
     },
