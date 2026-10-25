@@ -20,6 +20,15 @@ semantic, setup, and Skill capabilities into applications.
 > with the agent-native `repo-sensemaker` Skill and check it with
 > `scripts/validate-brief.py`.
 
+> **Legacy workflow planner fails closed:** `WorkflowPlannerSkill` and
+> `SkillsOrchestrator.run_workflow_planner_skill()` remain importable and callable,
+> but they write no plan. Calling `run()` on a `WorkflowPlannerSkill`, or calling
+> `run_workflow_planner_skill()`, returns `success: False`, `artifact_id: None`,
+> `code: "LEGACY_PLANNER_UNSUPPORTED"` and no fog type, workflow or authority.
+> `instantiate_skill("WorkflowPlannerSkill")` returns an instance; its `run()`
+> gives that same result. Produce the plan with the agent-native `workflow-planner`
+> Skill; the canonical plan path is `artifacts/plan_{workflow_id}.md`.
+
 ---
 
 ## Installation
