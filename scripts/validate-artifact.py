@@ -262,6 +262,17 @@ def validate_artifact(artifact_id, artifact_path, repo_root=".", strict_recommen
 
     if yaml_data and recommended_fields:
         for field in recommended_fields:
+            # ADR 0024: the repository brief's Section 15 is entirely optional.
+            # These dotted contract entries describe a separate nested YAML
+            # mapping, not keys in the brief's main machine-readable block.
+            # The specialized brief validator checks provided Section 15
+            # values non-blockingly; --strict-recommended must not turn their
+            # absence into a generic validation failure.
+            if (
+                artifact_id == "repository_sensemaking_brief"
+                and field.startswith("extended_analysis.")
+            ):
+                continue
             if field not in yaml_data:
                 msg = format_error(
                     MISSING_RECOMMENDED_FIELD,
