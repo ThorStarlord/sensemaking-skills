@@ -225,8 +225,8 @@ def context_for(
             note = (_EMPTY_CATEGORY_NOTES[name] if anchors else
                     "Cannot assess: no owning component or applicable rule anchors this path.")
             gaps.append({"category": name, "status": "NOT_ASSESSED", "note": note})
-    inactive = sorted(item["claim_id"] for group in lists.values() for item in group
-                      if item["epistemic_status"] in INACTIVE_STATUSES)
+    linked = [*base["applicable_rules"], *(item for group in lists.values() for item in group)]
+    inactive = sorted(item["claim_id"] for item in linked if item["epistemic_status"] in INACTIVE_STATUSES)
     if inactive:
         gaps.append({"category": "epistemic_status", "status": "EPISTEMIC_CAVEAT",
                      "note": f"{len(inactive)} linked record(s) are superseded, contested or "
