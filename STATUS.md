@@ -495,6 +495,14 @@ knowledge reuse in external target repositories. Record the owner's
 construction-phase test instruction explicitly while preserving CI and
 release boundaries.
 
+**2026-10-25 PATH-1/T14 source-review correction:** Static reconciliation of
+the T11 authored-record comparator found a representation mismatch between
+the tuple `evidence_refs` produced by `dataclasses.asdict` and the list
+restored from the SQLite JSON payload. Normalize the parsed record's evidence
+references before comparing authored fields, preventing false changed-field
+reports solely from serialization shape. This is a bounded construction fix;
+no unit or synthetic evidence tests were run.
+
 ## Current next step
 
 **ACTIVE CONSTRUCTION — PATH-1, ACCRETE PRODUCT KNOWLEDGE THROUGH GENUINE RESPONSIBILITIES.**

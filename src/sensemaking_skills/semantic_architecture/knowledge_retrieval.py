@@ -257,6 +257,10 @@ def assess_current_authored_record(
             matches[0], source_ref=f"file:{prior_path}",
             schema_version=current_pack["schema_version"],
         ))
+        # dataclasses.asdict retains tuple evidence_refs while SQLite JSON
+        # restores the indexed records' evidence_refs as lists. Normalize the
+        # comparison to the indexed representation before assessing fields.
+        current["evidence_refs"] = list(current["evidence_refs"])
         current_fields = _authored_fields(current)
     except (ValueError, TypeError, KeyError, AttributeError):
         result["unassessed_reason"] = "current_record_invalid_or_unparseable"
