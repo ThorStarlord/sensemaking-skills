@@ -91,6 +91,10 @@ def _validate_enum_fields(yaml_data, artifact_id, vocab, errors):
 
 
 def validate_artifact(artifact_id, artifact_path, repo_root=".", strict_recommended=False):
+    global warnings
+    # Direct in-process callers must not inherit advisory diagnostics from
+    # an earlier artifact. Each invocation owns its own warning snapshot.
+    warnings = []
     errors = []
 
     if not os.path.exists(artifact_path):
@@ -373,14 +377,27 @@ def _json_error(error: str) -> dict:
     }
 
 
-def validation_result(artifact_id: str, artifact_path: str, errors: list[str]) -> dict:
-    """Return the unified top-level validator result consumed by the router."""
+def _json_warning(warning: str) -> dict:
+    """Preserve advisory diagnostics in the existing structured error envelope."""
+    return {**_json_error(warning), "severity": "warning"}
+
+
+def validation_result(
+    artifact_id: str,
+    artifact_path: str,
+    errors: list[str],
+    advisory_warnings: list[str] | None = None,
+) -> dict:
+    """Return blocking errors and non-blocking warnings using the shared schema."""
     return {
         "valid": len(errors) == 0,
         "artifact_id": artifact_id,
         "artifact_path": os.path.abspath(artifact_path),
         "validator": "validate-artifact.py",
-        "errors": [_json_error(error) for error in errors],
+        "errors": [
+            *(_json_error(error) for error in errors),
+            *(_json_warning(warning) for warning in (advisory_warnings or [])),
+        ],
         "validation_timestamp": datetime.now(timezone.utc)
         .isoformat()
         .replace("+00:00", "Z"),
@@ -447,8 +464,6 @@ def main(argv: list[str] | None = None) -> int:
         parser.print_usage()
         return 1
 
-    global warnings
-    warnings = []
     errs = validate_artifact(
         args.artifact_id,
         args.artifact_path,
@@ -459,7 +474,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.json:
         print(
             json.dumps(
-                validation_result(args.artifact_id, args.artifact_path, errs),
+                validation_result(args.artifact_id, args.artifact_path, errs, warnings),
                 indent=2,
             )
         )
