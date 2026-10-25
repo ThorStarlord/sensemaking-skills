@@ -197,7 +197,7 @@
     {
       "id": "component:legacy-brief-producer",
       "kind": "component",
-      "statement": "Legacy Python RepoSensemakerSkill, kept importable but fail-closed: run(), run_repo_sensemaker_skill(), run_skill() and instantiate_skill() write no files and return success false, artifact_id null, authority null and code LEGACY_PRODUCER_UNSUPPORTED, naming the agent-native repo-sensemaker Skill.",
+      "statement": "Legacy Python RepoSensemakerSkill, kept importable but fail-closed. Its run() writes no files and returns success false, artifact_id null, authority null and code LEGACY_PRODUCER_UNSUPPORTED, naming the agent-native repo-sensemaker Skill. run_repo_sensemaker_skill() and run_skill(RepoSensemakerSkill(...)) return that same result. instantiate_skill('RepoSensemakerSkill') returns a RepoSensemakerSkill instance; calling its run() produces the result.",
       "authority_kind": "code",
       "authority_ref": "src/sensemaking_skills/skills/repo_sensemaker.py",
       "evidence_refs": [
@@ -449,7 +449,7 @@
     {
       "id": "decision:legacy-brief-producer-fails-closed",
       "kind": "decision",
-      "statement": "Owner decision on Q-1 (2026-10-25): keep the legacy brief producer's API importable but make it fail closed. Removing it, keeping it as is, and routing its write through a runtime-supplied path were not chosen; a path fix alone would still write contract-invalid content.",
+      "statement": "Owner decision on Q-1 (2026-10-25): keep the legacy brief producer's API importable but make it fail closed. The other Q-1 options, removing it and keeping it as is, were not chosen. A path fix alone would still write contract-invalid content.",
       "authority_kind": "owner",
       "authority_ref": ".sensemaking/receipts/2026-10-25-legacy-brief-producer-fail-closed.session.yaml",
       "evidence_refs": [
@@ -466,7 +466,7 @@
     {
       "id": "verification:legacy-brief-producer-fail-closed-tests",
       "kind": "verification",
-      "statement": "Regression tests that every legacy RepoSensemakerSkill route returns the same LEGACY_PRODUCER_UNSUPPORTED failure and leaves a sentinel brief and the rest of the target tree unchanged.",
+      "statement": "Regression tests that every legacy execution route (RepoSensemakerSkill.run(), run_repo_sensemaker_skill(), run_skill(), and instantiate_skill() followed by run()) returns the same LEGACY_PRODUCER_UNSUPPORTED failure and leaves a sentinel brief and the rest of the target tree unchanged.",
       "authority_kind": "test",
       "authority_ref": "tests/test_legacy_repo_sensemaker_fail_closed.py",
       "evidence_refs": [

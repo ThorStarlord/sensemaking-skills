@@ -19,10 +19,11 @@ Owner decision (Q-1): keep the legacy API importable, but make the producer
 fail closed. These tests assert that contract on every legacy route:
   1. `SkillsOrchestrator`, `run_repo_sensemaker_skill` and `RepoSensemakerSkill`
      remain importable.
-  2. Direct `run()`, `run_repo_sensemaker_skill()`, `run_skill()` and
-     `instantiate_skill()` return the same explicit, deterministic structured
-     failure: no success, no artifact id, no authority claim, and a message
-     that names the agent-native `repo-sensemaker` Skill.
+  2. Direct `run()`, `run_repo_sensemaker_skill()` and `run_skill()` return the
+     same explicit, deterministic structured failure: no success, no artifact
+     id, no authority claim, and a message that names the agent-native
+     `repo-sensemaker` Skill. `instantiate_skill()` returns a
+     `RepoSensemakerSkill` instance, and its `run()` returns that same failure.
   3. The target repository is unchanged: an existing brief is not overwritten
      and no file or directory is created.
 """
