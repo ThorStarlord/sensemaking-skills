@@ -108,7 +108,7 @@ change could cross a layer, a bounded context or a confusable term.
   `belongs_to`, `relates_to` (with `cardinality`), `transitions_to`, `flows_to`,
   `exposes`, `applies_to`, `synonym_of`, `distinct_from`. Only a document that
   declares `schema_version: 2` may use them.
-- **Before an architecture-sensitive edit:** when the current reviewed index exists and its guidance could change the edit, use `knowledge-query --operation rules-for --subject <path>`.
+- **Before an architecture-sensitive edit:** when the current reviewed index exists and its guidance could change the edit, use `knowledge-query --operation context-for --subject <path>` for the task context (ownership, rules, linked contracts, decisions, history and tests), or `--operation rules-for` for rules alone.
   Check explicit ownership, rule epistemic status, scope-match reason and the original decisive authority. `NOT_ASSESSED` or ambiguous ownership is not clearance.
 - **Terms:** `--operation term --subject <term>` shows distinct and synonymous neighbours.
 - **Map:** `--operation orientation-summary` gives a bounded, disclosed overview.

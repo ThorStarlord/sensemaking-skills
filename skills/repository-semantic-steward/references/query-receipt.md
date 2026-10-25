@@ -87,9 +87,9 @@ index:
   uncommitted_changes_not_indexed: true | false
 queries:                                   # >=1 required in RECALL mode
   - id: QY-1
-    operation: orient | build | snapshot | search | explain | why | impact | workspace-impact | changes | contradictions | history | rules-for | term | orientation-summary | audit | proposal-check
+    operation: orient | build | snapshot | search | explain | why | impact | workspace-impact | changes | contradictions | history | rules-for | term | orientation-summary | context-for | audit | proposal-check
     terms: ["literal phrase"]              # <=8, <=80 chars each; [] when not a search
-    subject: <claim id, repository-relative path, or term> | null
+    subject: <claim id, repository-relative path (rules-for, context-for), or term> | null
     expect_kinds: [alternative, architecture_rule] # only explain/why; v1/v2 kinds
     target_ref: <40-hex> | null
     result:
@@ -134,6 +134,11 @@ Field notes:
   query operations. For `rules-for`, `subject` is one repository-relative file
   path (not a glob); for `term`, it is the literal term. `snapshot` and
   `orientation-summary` do not require a subject.
+- `context-for` takes one repository-relative file path as `subject`. Set
+  `result.claim_ids` to the IDs in the returned `claims` and `hit_count` to
+  their count, and preserve `truncated`. A path whose `ownership.coverage_status`
+  is `NOT_ASSESSED` is never `outcome: HIT`: use `NOT_ASSESSED` or `PARTIAL`
+  according to the `knowledge_gaps` that matter to the decision.
 - For `rules-for` and `term`, set `result.claim_ids` to the IDs in the query
   envelope's returned `claims`, and `hit_count` to their count. Preserve the
   `truncated` indication; do not turn `coverage_status: NOT_ASSESSED` into

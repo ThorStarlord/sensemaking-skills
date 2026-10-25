@@ -95,7 +95,7 @@ STEWARD_MODES = ("RECALL", "AUDIT", "RECONCILE", "BOOTSTRAP")
 QUERY_OPERATIONS = (
     "orient", "build", "search", "explain", "why", "impact", "workspace-impact",
     "changes", "contradictions", "history", "snapshot", "rules-for", "term",
-    "orientation-summary", "audit", "proposal-check",
+    "orientation-summary", "context-for", "audit", "proposal-check",
 )
 QUERY_OUTCOMES = ("HIT", "PARTIAL", "MISS", "NOT_ASSESSED", "NOT_APPLICABLE")
 SOURCE_CHECK_RESULTS = ("SUPPORTED", "CONTRADICTED", "STALE", "NOT_CHECKED")

@@ -10,9 +10,9 @@ from __future__ import annotations
 import re
 from typing import Any, Iterable, Mapping
 
-from .knowledge import is_path_scope
+from .knowledge import _valid_repo_path, is_path_scope
 
-OPERATIONS = frozenset({"rules-for", "term", "orientation-summary"})
+OPERATIONS = frozenset({"rules-for", "term", "orientation-summary", "context-for"})
 NOT_ASSESSED_NOTE = (
     "NOT ASSESSED: no declared component covers this path. Absence here is not evidence "
     "that no rule applies; inspect the code and governing documents before editing."
@@ -101,6 +101,176 @@ def rules_for(claims: Mapping[str, dict], relations: Iterable[dict], *, path: st
         "truncated": any(len(a) > limit for a in (owners, layers, contexts, applicable, tests)),
         "note": None if owners else NOT_ASSESSED_NOTE,
     }
+
+
+HISTORY_KINDS = frozenset({"incident", "lesson", "observation"})
+INACTIVE_STATUSES = frozenset({"superseded", "contested", "invalidated"})
+CONTEXT_NOTE = (
+    "Explicit links only: an item appears because a reviewed relation or a declared path "
+    "scope names it, never because its name or a neighbouring file looks similar. Relevance "
+    "is not semantic truth and grants no action authority."
+)
+_EMPTY_CATEGORY_NOTES = {
+    "contracts": "No explicitly linked contract is recorded for the owning components. "
+                 "Absence here is not evidence that no contract applies.",
+    "decisions": "No explicitly linked decision is recorded for the owners or rules. "
+                 "Decisions may exist outside the indexed revision.",
+    "history": "No explicitly linked incident, lesson or observation is recorded. "
+               "Prior occurrences may exist outside the indexed revision.",
+    "verification_refs": "No linked verification record is recorded. Tests may exist in the "
+                         "repository and were not assessed here.",
+}
+
+
+def is_repository_file_path(value: str) -> bool:
+    """Validate path syntax only, without checking whether a file exists."""
+    return _valid_repo_path(value, glob=False) and not value.endswith("/")
+
+
+def _context_item(cid: str, claim: Mapping[str, Any], matched_by: set[str]) -> dict:
+    return {
+        "claim_id": cid, "kind": claim["kind"], "statement": claim["statement"],
+        "epistemic_status": claim.get("epistemic_status"),
+        "authority_kind": claim.get("authority_kind"),
+        "authority_ref": claim.get("authority_ref"),
+        "evidence_refs": claim.get("evidence_refs", []),
+        "matched_by": sorted(matched_by),
+    }
+
+
+def context_for(
+    claims: Mapping[str, dict], relations: Iterable[dict], *, path: str, limit: int,
+) -> tuple[dict, list[str], list[str]]:
+    """Task context for one repository file, each item tied to the explicit link behind it.
+
+    Ownership and path-scoped rules come from rules_for. Contracts, decisions,
+    history and verification records enter only through declared relations from an
+    owning component, an applicable rule, or a decision linked to this file. The one
+    second hop is decision -> derived_from -> observation, which recovers the recorded
+    rationale of a decision already linked to this file. Returns the context and the
+    claim and relation IDs it relied on, both in deterministic order.
+    """
+    edges = list(relations)
+    base = rules_for(claims, edges, path=path, limit=len(claims) + len(edges) + 1)
+    owners = set(base["owning_components"])
+    rule_ids = {rule["claim_id"] for rule in base["applicable_rules"]}
+    layer_ids = set(base["layers"]) | set(base["bounded_contexts"])
+    anchors = owners | rule_ids
+    buckets: dict[str, dict[str, set[str]]] = {
+        "contracts": {}, "decisions": {}, "history": {}, "verification_refs": {},
+    }
+    relation_ids: set[str] = set()
+
+    def link(bucket: str, target: str, rel: Mapping[str, Any], via: str = "") -> None:
+        text = f"{via}relation {rel['subject']} {rel['predicate']} {rel['object']}"
+        buckets[bucket].setdefault(target, set()).add(text)
+        relation_ids.add(rel["id"])
+
+    for rel in edges:
+        s, p, o = rel["subject"], rel["predicate"], rel["object"]
+        s_kind, o_kind = claims.get(s, {}).get("kind"), claims.get(o, {}).get("kind")
+        if p == "exposes" and s in owners and o_kind == "contract":
+            link("contracts", o, rel)
+        elif p == "flows_to" and (s in owners or o in owners):
+            carried = rel.get("attributes", {}).get("carries")
+            if claims.get(carried, {}).get("kind") == "contract":
+                link("contracts", carried, rel)
+        elif p == "decided_by" and (s in anchors or o in anchors):
+            target = o if s in anchors else s
+            if claims.get(target, {}).get("kind") == "decision":
+                link("decisions", target, rel)
+        elif p in {"references", "learned_from", "contradicts"}:
+            if s in anchors and o_kind in HISTORY_KINDS:
+                link("history", o, rel)
+            elif o in anchors and s_kind in HISTORY_KINDS:
+                link("history", s, rel)
+        elif p == "tested_by" and s in anchors and o_kind == "verification":
+            link("verification_refs", o, rel)
+        elif p == "belongs_to" and s in owners and o in layer_ids:
+            relation_ids.add(rel["id"])
+        elif p == "applies_to" and s in rule_ids and o in owners | layer_ids:
+            relation_ids.add(rel["id"])
+    for rel in edges:
+        if (rel["predicate"] == "derived_from" and rel["subject"] in buckets["decisions"]
+                and claims.get(rel["object"], {}).get("kind") in HISTORY_KINDS):
+            link("history", rel["object"], rel, via="second hop through linked decision: ")
+
+    def items(bucket: str) -> list[dict]:
+        return [_context_item(cid, claims[cid], buckets[bucket][cid]) for cid in sorted(buckets[bucket])]
+
+    contracts, decisions = items("contracts"), items("decisions")
+    history, verification = items("history"), items("verification_refs")
+    lists = {"contracts": contracts, "decisions": decisions, "history": history,
+             "verification_refs": verification}
+    totals = {
+        "owning_components": len(owners), "architecture_rules": len(rule_ids),
+        "layers": len(base["layers"]), "bounded_contexts": len(base["bounded_contexts"]),
+        **{name: len(group) for name, group in lists.items()},
+    }
+    omitted = {name: max(0, total - limit) for name, total in totals.items()}
+    truncated = any(omitted.values())
+
+    gaps: list[dict] = []
+    if not owners:
+        gaps.append({"category": "ownership", "status": "NOT_ASSESSED", "note": NOT_ASSESSED_NOTE})
+    elif len(owners) > 1:
+        shown = min(len(owners), limit)
+        gaps.append({"category": "ownership", "status": "AMBIGUOUS",
+                     "note": f"{len(owners)} reviewed components declare this path; "
+                             f"{shown} shown, {len(owners) - shown} omitted by limit."})
+    if not rule_ids:
+        gaps.append({"category": "architecture_rules", "status": "NOT_ASSESSED",
+                     "note": "No rule matched this path by declared scope or graph link. "
+                             "This is not evidence that no rule applies."})
+    for name, group in lists.items():
+        if not group:
+            note = (_EMPTY_CATEGORY_NOTES[name] if anchors else
+                    "Cannot assess: no owning component or applicable rule anchors this path.")
+            gaps.append({"category": name, "status": "NOT_ASSESSED", "note": note})
+    # Include owner and layer claims as well as the expanded linked categories:
+    # a hypothetical owner or constraint is not an established obligation.
+    considered_ids = owners | layer_ids | rule_ids | {
+        item["claim_id"] for group in lists.values() for item in group
+    }
+    inactive = sorted(cid for cid in considered_ids
+                      if claims[cid].get("epistemic_status") in INACTIVE_STATUSES)
+    if inactive:
+        gaps.append({"category": "epistemic_status", "status": "EPISTEMIC_CAVEAT",
+                     "note": f"{len(inactive)} contextual record(s) are superseded, contested or "
+                             f"invalidated: {', '.join(inactive[:8])}. "
+                             "They are not current obligations."})
+    hypothetical = sorted(cid for cid in considered_ids
+                          if claims[cid].get("epistemic_status") == "hypothetical")
+    if hypothetical:
+        gaps.append({"category": "epistemic_status", "status": "HYPOTHETICAL_CAVEAT",
+                     "note": f"{len(hypothetical)} contextual record(s) are hypothetical: "
+                             f"{', '.join(hypothetical[:8])}. "
+                             "These are unconfirmed possibilities, not established architectural obligations."})
+    if truncated:
+        gaps.append({"category": "limits", "status": "TRUNCATED",
+                     "note": f"Categories above the limit of {limit} are cut; see omitted counts."})
+
+    owner_list = sorted(owners)[:limit]
+    layer_list = base["layers"][:limit]
+    context_list = base["bounded_contexts"][:limit]
+    rule_list = base["applicable_rules"][:limit]
+    context = {
+        "target_path": path,
+        "ownership": {
+            "coverage_status": base["coverage_status"], "components": owner_list,
+            "ambiguous": base["ownership_ambiguous"],
+            "layers": layer_list, "bounded_contexts": context_list,
+        },
+        "architecture_rules": rule_list,
+        "contracts": contracts[:limit], "decisions": decisions[:limit],
+        "history": history[:limit], "verification_refs": verification[:limit],
+        "knowledge_gaps": gaps, "omitted": omitted, "truncated": truncated,
+        "note": CONTEXT_NOTE,
+    }
+    returned: set[str] = {*owner_list, *layer_list, *context_list, *(r["claim_id"] for r in rule_list)}
+    for group in (contracts, decisions, history, verification):
+        returned.update(item["claim_id"] for item in group[:limit])
+    return context, sorted(returned), sorted(relation_ids)
 
 
 def term(claims: Mapping[str, dict], relations: Iterable[dict], *, name: str, limit: int) -> dict:
