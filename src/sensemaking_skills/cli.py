@@ -9,6 +9,8 @@ responsibilities, rank capabilities, or decide what work should happen next.
 
 from __future__ import annotations
 
+import codecs
+import contextlib
 import json
 import subprocess
 import sys
@@ -828,8 +830,43 @@ register_strategy_commands(cli)
 register_decision_journey_commands(cli)
 
 
+_ASCII_ESCAPE = "sensemaking_ascii_escape"
+
+
+def _ascii_escape(error: UnicodeError) -> tuple[str, int]:
+    """Write each character the stream cannot encode as a JSON-compatible escape."""
+    if not isinstance(error, UnicodeEncodeError):
+        raise error
+    escapes = []
+    for char in error.object[error.start:error.end]:
+        code = ord(char)
+        if code > 0xFFFF:
+            code -= 0x10000
+            escapes.append(f"\\u{0xD800 + (code >> 10):04x}\\u{0xDC00 + (code & 0x3FF):04x}")
+        else:
+            escapes.append(f"\\u{code:04x}")
+    return "".join(escapes), error.end
+
+
+def _escape_unencodable_output() -> None:
+    """Keep console output from failing on a code page that cannot encode it.
+
+    Redirected output on Windows uses the legacy code page, so Campaign text such
+    as an arrow raised UnicodeEncodeError after the command had already written
+    its state. Characters the stream can encode are written unchanged; the rest
+    become escapes that remain valid inside JSON string values.
+    """
+    codecs.register_error(_ASCII_ESCAPE, _ascii_escape)
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if reconfigure is not None:
+            with contextlib.suppress(ValueError, OSError):
+                reconfigure(errors=_ASCII_ESCAPE)
+
+
 def main():
     """Entry point for CLI."""
+    _escape_unencodable_output()
     try:
         cli()
     except KeyboardInterrupt:
