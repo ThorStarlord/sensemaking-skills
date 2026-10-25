@@ -197,11 +197,13 @@
     {
       "id": "component:legacy-brief-producer",
       "kind": "component",
-      "statement": "Legacy Python producer of the brief artifact id; known to write tracked artifacts directly (open finding).",
+      "statement": "Legacy Python RepoSensemakerSkill, kept importable but fail-closed. Its run() writes no files and returns success false, artifact_id null, authority null and code LEGACY_PRODUCER_UNSUPPORTED, naming the agent-native repo-sensemaker Skill. run_repo_sensemaker_skill() and run_skill(RepoSensemakerSkill(...)) return that same result. instantiate_skill('RepoSensemakerSkill') returns a RepoSensemakerSkill instance; calling its run() produces the result.",
       "authority_kind": "code",
       "authority_ref": "src/sensemaking_skills/skills/repo_sensemaker.py",
       "evidence_refs": [
-        "file:src/sensemaking_skills/skills/repo_sensemaker.py"
+        "file:src/sensemaking_skills/skills/repo_sensemaker.py",
+        "file:src/sensemaking_skills/runner.py",
+        "file:tests/test_legacy_repo_sensemaker_fail_closed.py"
       ],
       "epistemic_status": "observed",
       "attributes": {
@@ -305,12 +307,14 @@
     {
       "id": "rule:runtime-owns-artifact-paths",
       "kind": "architecture_rule",
-      "statement": "Producers write only to the runtime-supplied artifact path; they must not recompute artifacts/<id>.md. Known open violation: component:legacy-brief-producer.",
+      "statement": "Producers write an artifact only to the path the runtime supplies as context expected_output_path and never recompute artifacts/<id>.md themselves. The one sanctioned flat-path fallback is skill_executor.resolve_output_path when an executor runs standalone with no supplied path; the runtime resolves paths in OrchestrationRunner._resolve_artifact_path.",
       "authority_kind": "document",
       "authority_ref": "docs/adr/0010-runtime-owns-artifact-path-resolution.md",
       "evidence_refs": [
         "file:docs/adr/0010-runtime-owns-artifact-path-resolution.md",
-        "file:CLAUDE.md"
+        "file:CLAUDE.md",
+        "file:scripts/skill_executor.py",
+        "file:scripts/workflow-runtime.py"
       ],
       "epistemic_status": "declared",
       "attributes": {
@@ -318,7 +322,8 @@
         "severity": "error",
         "applies_to": [
           "src/sensemaking_skills/skills/**",
-          "skills/**"
+          "skills/**",
+          "scripts/skill_executor.py"
         ]
       }
     },
@@ -423,6 +428,79 @@
       "epistemic_status": "declared",
       "attributes": {
         "artifact_id": "semantic_query_receipt"
+      }
+    },
+    {
+      "id": "observation:legacy-brief-producer-bypasses-runtime-paths",
+      "kind": "observation",
+      "statement": "At aa13f40 (2026-10-23), SkillsOrchestrator.run_repo_sensemaker_skill() wrote a generated file inventory to <project_root>/artifacts/repository_sensemaking_brief.md through PathResolver.artifact_path; on a disposable clone it replaced the tracked brief with content failing validate-brief.py and returned success true with authority authorized_autonomously.",
+      "authority_kind": "document",
+      "authority_ref": "artifacts/history/2026-10-23-repository-sensemaking-brief-observation.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-23-repository-sensemaking-brief-observation.md",
+        "file:tests/test_legacy_repo_sensemaker_fail_closed.py"
+      ],
+      "epistemic_status": "observed",
+      "attributes": {
+        "examined_revision": "aa13f40115b52f9e7687d742cbc8430d5a9a4a25",
+        "scope": "Historical: behaviour before the 2026-10-25 fail-closed repair, not the current producer. The validator errors were content-level, so a path fix alone would not have made the brief contract-valid."
+      }
+    },
+    {
+      "id": "decision:legacy-brief-producer-fails-closed",
+      "kind": "decision",
+      "statement": "Owner decision on Q-1 (2026-10-25): keep the legacy brief producer's API importable but make it fail closed. The other Q-1 options, removing it and keeping it as is, were not chosen. A path fix alone would still write contract-invalid content.",
+      "authority_kind": "owner",
+      "authority_ref": ".sensemaking/receipts/2026-10-25-legacy-brief-producer-fail-closed.session.yaml",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/skills/repo_sensemaker.py",
+        "file:API.md",
+        "file:tests/test_legacy_repo_sensemaker_fail_closed.py"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "question_ref": "2026-10-23-observe-skills#Q-1",
+        "scope": "Legacy RepoSensemakerSkill only; the legacy WorkflowPlannerSkill is not covered"
+      }
+    },
+    {
+      "id": "verification:legacy-brief-producer-fail-closed-tests",
+      "kind": "verification",
+      "statement": "Regression tests that every legacy execution route (RepoSensemakerSkill.run(), run_repo_sensemaker_skill(), run_skill(), and instantiate_skill() followed by run()) returns the same LEGACY_PRODUCER_UNSUPPORTED failure and leaves a sentinel brief and the rest of the target tree unchanged.",
+      "authority_kind": "test",
+      "authority_ref": "tests/test_legacy_repo_sensemaker_fail_closed.py",
+      "evidence_refs": [
+        "file:tests/test_legacy_repo_sensemaker_fail_closed.py"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "verification:executor-path-handoff-tests",
+      "kind": "verification",
+      "statement": "Tests that resolve_output_path prefers the runtime-supplied path and that OrchestrationRunner.execute_step hands the session-scoped path to the executor.",
+      "authority_kind": "test",
+      "authority_ref": "tests/test_executor_path_handoff.py",
+      "evidence_refs": [
+        "file:tests/test_executor_path_handoff.py"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "observation:legacy-plan-producer-overwrites-tracked-plan",
+      "kind": "observation",
+      "statement": "SkillsOrchestrator.run_workflow_planner_skill() runs the legacy WorkflowPlannerSkill, which writes workflow_orchestration_plan to <project_root>/artifacts/workflow_orchestration_plan.md through BaseSkill.write_artifact rather than a runtime-supplied path. Its generated sections omit the contract's required sections, and it reports success.",
+      "authority_kind": "code",
+      "authority_ref": "src/sensemaking_skills/skills/workflow_planner.py",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/skills/workflow_planner.py",
+        "file:src/sensemaking_skills/skills/base.py",
+        "file:src/sensemaking_skills/runner.py",
+        "file:skills/workflow-planner/references/artifact-contracts.yaml"
+      ],
+      "epistemic_status": "observed",
+      "attributes": {
+        "examined_revision": "b5fc38960491655ffa5d01547c281485a4d59c00",
+        "scope": "Legacy compatibility path only. Not covered by the Q-1 fail-closed decision; its disposition is an open owner question."
       }
     }
   ],
@@ -579,6 +657,85 @@
         "file:skills/workflow-planner/references/artifact-contracts.yaml"
       ],
       "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:legacy-brief-producer-tested",
+      "subject": "component:legacy-brief-producer",
+      "predicate": "tested_by",
+      "object": "verification:legacy-brief-producer-fail-closed-tests",
+      "evidence_refs": [
+        "file:tests/test_legacy_repo_sensemaker_fail_closed.py"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:legacy-brief-producer-decision",
+      "subject": "component:legacy-brief-producer",
+      "predicate": "decided_by",
+      "object": "decision:legacy-brief-producer-fails-closed",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/skills/repo_sensemaker.py"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:legacy-brief-producer-decision-origin",
+      "subject": "decision:legacy-brief-producer-fails-closed",
+      "predicate": "derived_from",
+      "object": "observation:legacy-brief-producer-bypasses-runtime-paths",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-23-repository-sensemaking-brief-observation.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:path-rule-applies-to-legacy-brief-producer",
+      "subject": "rule:runtime-owns-artifact-paths",
+      "predicate": "applies_to",
+      "object": "component:legacy-brief-producer",
+      "evidence_refs": [
+        "file:docs/adr/0010-runtime-owns-artifact-path-resolution.md",
+        "file:src/sensemaking_skills/skills/repo_sensemaker.py"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:legacy-producer-contradicts-path-ownership",
+      "subject": "observation:legacy-brief-producer-bypasses-runtime-paths",
+      "predicate": "contradicts",
+      "object": "rule:runtime-owns-artifact-paths",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-23-repository-sensemaking-brief-observation.md",
+        "file:docs/adr/0010-runtime-owns-artifact-path-resolution.md"
+      ],
+      "epistemic_status": "superseded",
+      "attributes": {
+        "scope": "Historical; resolved on 2026-10-25 when the producer was made fail-closed"
+      }
+    },
+    {
+      "id": "rel:path-rule-tested",
+      "subject": "rule:runtime-owns-artifact-paths",
+      "predicate": "tested_by",
+      "object": "verification:executor-path-handoff-tests",
+      "evidence_refs": [
+        "file:tests/test_executor_path_handoff.py"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:legacy-plan-producer-contradicts-path-ownership",
+      "subject": "observation:legacy-plan-producer-overwrites-tracked-plan",
+      "predicate": "contradicts",
+      "object": "rule:runtime-owns-artifact-paths",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/skills/workflow_planner.py",
+        "file:src/sensemaking_skills/skills/base.py"
+      ],
+      "epistemic_status": "observed",
+      "attributes": {
+        "scope": "Legacy compatibility path only; open"
+      }
     }
   ]
 }

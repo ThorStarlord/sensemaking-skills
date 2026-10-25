@@ -1,0 +1,245 @@
+artifact_id: semantic_query_receipt
+schema_version: 1
+session_ref: 2026-10-25-legacy-brief-producer-fail-closed
+state: final
+created_at: "2026-10-25T03:51:00Z"
+updated_at: "2026-10-25T03:51:00Z"
+target_repository: ThorStarlord/sensemaking-skills
+modes: [RECALL, RECONCILE]
+decision: "PATH-1/T1: what reviewed knowledge governs the legacy brief producer and the runtime-owned artifact-path rule before the fail-closed repair, and which records the repair makes false."
+cli_identity:
+  sensemaking_source_ref: b5fc38960491655ffa5d01547c281485a4d59c00
+  invocation_prefix: sensemaking-skills (editable install of this checkout; semantic CLI unchanged by this session)
+  version_output: "sensemaking-skills, version 1.0.0rc5.dev0"
+index:
+  indexed_ref: a044e686f8535ef4dbd6be8c81a08abdfabe89a6
+  current_head: 9250e3dc93cb8876c1ca3df85de0abe6cf3a101c
+  worktree_clean: true
+  uncommitted_changes_not_indexed: false
+queries:
+  - id: QY-1
+    operation: build
+    terms: []
+    subject: null
+    expect_kinds: []
+    target_ref: b5fc38960491655ffa5d01547c281485a4d59c00
+    result: {hit_count: 0, claim_ids: [], truncated: false, not_assessed_kinds: []}
+    outcome: NOT_APPLICABLE
+    decision_relevant: false
+  - id: QY-2
+    operation: explain
+    terms: []
+    subject: component:legacy-brief-producer
+    expect_kinds: [verification, contract]
+    target_ref: b5fc38960491655ffa5d01547c281485a4d59c00
+    result: {hit_count: 1, claim_ids: [component:legacy-brief-producer], truncated: false, not_assessed_kinds: [verification, contract]}
+    outcome: PARTIAL
+    decision_relevant: true
+  - id: QY-3
+    operation: explain
+    terms: []
+    subject: rule:runtime-owns-artifact-paths
+    expect_kinds: [verification, component]
+    target_ref: b5fc38960491655ffa5d01547c281485a4d59c00
+    result: {hit_count: 1, claim_ids: [rule:runtime-owns-artifact-paths], truncated: false, not_assessed_kinds: [verification, component]}
+    outcome: PARTIAL
+    decision_relevant: true
+  - id: QY-4
+    operation: explain
+    terms: []
+    subject: contract:repository-sensemaking-brief
+    expect_kinds: [component, verification]
+    target_ref: b5fc38960491655ffa5d01547c281485a4d59c00
+    result: {hit_count: 2, claim_ids: [contract:repository-sensemaking-brief, component:repo-sensemaker-skill], truncated: false, not_assessed_kinds: [verification]}
+    outcome: PARTIAL
+    decision_relevant: true
+  - id: QY-5
+    operation: workspace-impact
+    terms: []
+    subject: null
+    expect_kinds: []
+    target_ref: b5fc38960491655ffa5d01547c281485a4d59c00
+    result: {hit_count: 1, claim_ids: [component:legacy-brief-producer], truncated: false, not_assessed_kinds: []}
+    outcome: HIT
+    decision_relevant: true
+  - id: QY-6
+    operation: proposal-check
+    terms: []
+    subject: null
+    expect_kinds: []
+    target_ref: 5d68b028f5c5a501f7022acdbc6fddd57a0afa45
+    result: {hit_count: 0, claim_ids: [], truncated: false, not_assessed_kinds: []}
+    outcome: NOT_APPLICABLE
+    decision_relevant: false
+  - id: QY-7
+    operation: build
+    terms: []
+    subject: null
+    expect_kinds: []
+    target_ref: a044e686f8535ef4dbd6be8c81a08abdfabe89a6
+    result: {hit_count: 0, claim_ids: [], truncated: false, not_assessed_kinds: []}
+    outcome: NOT_APPLICABLE
+    decision_relevant: false
+  - id: QY-8
+    operation: explain
+    terms: []
+    subject: component:legacy-brief-producer
+    expect_kinds: [verification, decision, observation]
+    target_ref: a044e686f8535ef4dbd6be8c81a08abdfabe89a6
+    result: {hit_count: 4, claim_ids: [component:legacy-brief-producer, decision:legacy-brief-producer-fails-closed, rule:runtime-owns-artifact-paths, verification:legacy-brief-producer-fail-closed-tests], truncated: false, not_assessed_kinds: [observation]}
+    outcome: PARTIAL
+    decision_relevant: false
+  - id: QY-9
+    operation: explain
+    terms: []
+    subject: rule:runtime-owns-artifact-paths
+    expect_kinds: [verification, component, observation]
+    target_ref: a044e686f8535ef4dbd6be8c81a08abdfabe89a6
+    result: {hit_count: 5, claim_ids: [rule:runtime-owns-artifact-paths, component:legacy-brief-producer, observation:legacy-brief-producer-bypasses-runtime-paths, observation:legacy-plan-producer-overwrites-tracked-plan, verification:executor-path-handoff-tests], truncated: false, not_assessed_kinds: []}
+    outcome: HIT
+    decision_relevant: false
+  - id: QY-10
+    operation: contradictions
+    terms: []
+    subject: rule:runtime-owns-artifact-paths
+    expect_kinds: []
+    target_ref: a044e686f8535ef4dbd6be8c81a08abdfabe89a6
+    result: {hit_count: 3, claim_ids: [observation:legacy-brief-producer-bypasses-runtime-paths, observation:legacy-plan-producer-overwrites-tracked-plan, rule:runtime-owns-artifact-paths], truncated: false, not_assessed_kinds: []}
+    outcome: HIT
+    decision_relevant: false
+  - id: QY-11
+    operation: explain
+    terms: []
+    subject: decision:legacy-brief-producer-fails-closed
+    expect_kinds: [observation, component, alternative]
+    target_ref: a044e686f8535ef4dbd6be8c81a08abdfabe89a6
+    result: {hit_count: 3, claim_ids: [decision:legacy-brief-producer-fails-closed, component:legacy-brief-producer, observation:legacy-brief-producer-bypasses-runtime-paths], truncated: false, not_assessed_kinds: [alternative]}
+    outcome: PARTIAL
+    decision_relevant: false
+  - id: QY-12
+    operation: search
+    terms: [fail closed, LEGACY_PRODUCER_UNSUPPORTED]
+    subject: null
+    expect_kinds: []
+    target_ref: a044e686f8535ef4dbd6be8c81a08abdfabe89a6
+    result: {hit_count: 3, claim_ids: [component:legacy-brief-producer, decision:legacy-brief-producer-fails-closed, verification:legacy-brief-producer-fail-closed-tests], truncated: false, not_assessed_kinds: []}
+    outcome: HIT
+    decision_relevant: false
+  - id: QY-13
+    operation: changes
+    terms: []
+    subject: null
+    expect_kinds: []
+    target_ref: a044e686f8535ef4dbd6be8c81a08abdfabe89a6
+    result: {hit_count: 33, claim_ids: [component:legacy-brief-producer, rule:runtime-owns-artifact-paths, decision:legacy-brief-producer-fails-closed, observation:legacy-brief-producer-bypasses-runtime-paths, observation:legacy-plan-producer-overwrites-tracked-plan, verification:executor-path-handoff-tests, verification:legacy-brief-producer-fail-closed-tests], truncated: false, not_assessed_kinds: []}
+    outcome: HIT
+    decision_relevant: false
+  - id: QY-14
+    operation: history
+    terms: []
+    subject: component:legacy-brief-producer
+    expect_kinds: []
+    target_ref: a044e686f8535ef4dbd6be8c81a08abdfabe89a6
+    result: {hit_count: 2, claim_ids: [component:legacy-brief-producer], truncated: false, not_assessed_kinds: []}
+    outcome: HIT
+    decision_relevant: false
+  - id: QY-15
+    operation: audit
+    terms: []
+    subject: null
+    expect_kinds: []
+    target_ref: a044e686f8535ef4dbd6be8c81a08abdfabe89a6
+    result: {hit_count: 43, claim_ids: [component:legacy-brief-producer], truncated: false, not_assessed_kinds: []}
+    outcome: HIT
+    decision_relevant: false
+  - id: QY-16
+    operation: workspace-impact
+    terms: []
+    subject: null
+    expect_kinds: []
+    target_ref: a044e686f8535ef4dbd6be8c81a08abdfabe89a6
+    result: {hit_count: 0, claim_ids: [], truncated: false, not_assessed_kinds: []}
+    outcome: HIT
+    decision_relevant: false
+source_checks:
+  - claim_id: component:legacy-brief-producer
+    sources: [src/sensemaking_skills/runner.py:181-188, artifacts/history/2026-10-23-repository-sensemaking-brief-observation.md:101-134]
+    result: SUPPORTED
+  - claim_id: rule:runtime-owns-artifact-paths
+    sources: [docs/adr/0010-runtime-owns-artifact-path-resolution.md:17-22, CLAUDE.md:83-90, scripts/skill_executor.py:592-608]
+    result: SUPPORTED
+  - claim_id: contract:repository-sensemaking-brief
+    sources: [skills/workflow-planner/references/artifact-contracts.yaml:117-135]
+    result: SUPPORTED
+misses:
+  - id: M-1
+    query_ref: QY-2
+    needed_for: Which tests and contract cover the legacy brief producer before changing its behaviour.
+    kind: NOT_ASSESSED
+    resolved_by: "Source inspection: runner.py:181-188, skills/base.py:59-80, paths.py:60-68; a repository search found no test of any legacy route."
+    follow_up: ADDED
+    proposal_ref: .sensemaking/knowledge/architecture.json
+  - id: M-2
+    query_ref: QY-3
+    needed_for: "Which components and tests implement runtime-owned artifact paths (ADR 0010); the same need as 2026-10-23-observe-skills#M-1."
+    kind: NOT_ASSESSED
+    resolved_by: "Source inspection: scripts/skill_executor.py:592-608, scripts/workflow-runtime.py:1905, tests/test_executor_path_handoff.py."
+    follow_up: ADDED
+    proposal_ref: .sensemaking/knowledge/architecture.json
+  - id: M-3
+    query_ref: QY-4
+    needed_for: Which check verifies the brief contract that the legacy output must satisfy.
+    kind: NOT_ASSESSED
+    resolved_by: "Ran scripts/validate-brief.py on the legacy output: NO_LOGIC_TRACE, MISSING_HANDOFF_SECTION, MISSING_EVIDENCE_EXCERPTS, MISSING_HANDOFF_BLOCK."
+    follow_up: DEFERRED
+    proposal_ref: null
+reconcile:
+  - claim_id: component:legacy-brief-producer
+    disposition: REVISE
+    applied: true
+    proposal_ref: .sensemaking/knowledge/architecture.json
+    proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID
+  - claim_id: rule:runtime-owns-artifact-paths
+    disposition: REVISE
+    applied: true
+    proposal_ref: .sensemaking/knowledge/architecture.json
+    proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID
+  - claim_id: observation:legacy-brief-producer-bypasses-runtime-paths
+    disposition: ADD
+    applied: true
+    proposal_ref: .sensemaking/knowledge/architecture.json
+    proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID
+  - claim_id: decision:legacy-brief-producer-fails-closed
+    disposition: ADD
+    applied: true
+    proposal_ref: .sensemaking/knowledge/architecture.json
+    proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID
+  - claim_id: verification:legacy-brief-producer-fail-closed-tests
+    disposition: ADD
+    applied: true
+    proposal_ref: .sensemaking/knowledge/architecture.json
+    proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID
+  - claim_id: verification:executor-path-handoff-tests
+    disposition: ADD
+    applied: true
+    proposal_ref: .sensemaking/knowledge/architecture.json
+    proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID
+  - claim_id: observation:legacy-plan-producer-overwrites-tracked-plan
+    disposition: ADD
+    applied: true
+    proposal_ref: .sensemaking/knowledge/architecture.json
+    proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID
+  - claim_id: contract:repository-sensemaking-brief
+    disposition: CONFIRM
+    applied: false
+    proposal_ref: null
+    proposal_check: NOT_RUN
+  - claim_id: inv:runtime-owned-artifact-paths
+    disposition: NO_MODEL_CHANGE
+    applied: false
+    proposal_ref: artifacts/history/2026-10-23-knowledge-proposal-product-contracts.json
+    proposal_check: NOT_RUN
+persistence: committed
+action_authorized: false
+semantic_truth_established: false
+immutable: true
