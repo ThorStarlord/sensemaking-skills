@@ -11,6 +11,7 @@ create an evidence directory.
 import hashlib
 import inspect
 import re
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -20,6 +21,9 @@ import yaml
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PACKAGE_PATH = REPO_ROOT / "docs" / "experiments" / "STAGE-1-AUTEUR-POST-REMEDIATION-PREPARATION.md"
 CHECKLIST_PATH = REPO_ROOT / "docs" / "experiments" / "GATE-D-STALE-DIAGNOSIS-CHECKLIST.md"
+
+sys.path.insert(0, str(REPO_ROOT / "tests" / "support"))
+from repo_tree import iter_tree, read_text_if_present
 
 EVIDENCE_0015_DIR = "experiments/evidence/0015-stage1-auteur-controlled-learning-attempt"
 FULL_SHA = re.compile(r"^[0-9a-f]{40}$")
@@ -3382,7 +3386,7 @@ class StaleAuthorizationPathIsGone(unittest.TestCase):
 
     def _repo_text_files(self):
         skip = {".git", "node_modules", "__pycache__", ".pytest_cache", ".venv", "build", "dist"}
-        for path in REPO_ROOT.rglob("*"):
+        for path in iter_tree(REPO_ROOT):
             if not path.is_file():
                 continue
             if any(part in skip for part in path.parts):
@@ -3405,7 +3409,9 @@ class StaleAuthorizationPathIsGone(unittest.TestCase):
     def test_stale_authorization_record_path_absent_repository_wide(self):
         offenders = []
         for path in self._repo_text_files():
-            body = path.read_text(encoding="utf-8", errors="replace")
+            body = read_text_if_present(path, encoding="utf-8", errors="replace")
+            if body is None:
+                continue  # removed by a concurrent build after the walk listed it
             for lineno, line in enumerate(body.splitlines(), start=1):
                 if STALE_AUTH_RECORD_STEM in line:
                     offenders.append(f"{path.relative_to(REPO_ROOT)}:{lineno}")
