@@ -107,3 +107,12 @@ are part of that API. These rules exist because each was violated and caused a r
   core `SKILL.md`, name the decision they change, why they must be visible when the Skill
   loads, and which existing guidance does not already cover them. Otherwise put the detail in
   an existing reference and leave a one-line trigger in the core.
+
+## Local verification scope
+
+Match local checks to the change's risk. The hosted full-suite CI job remains the comprehensive safety net.
+
+- **Level A (always):** run the tests you added or changed, the existing tests for the behavior you changed, and the relevant validators, lint and static checks. "Test only the changes" means the changed behavior and its plausible regressions, not just the new test files. For a documentation-only change, run the validators and the tests that read the edited file.
+- **Level B (real boundaries):** also run the tests for a shared interface or API, an artifact producer/consumer contract, a serialization or schema, a permission boundary, external command execution, or runtime integration. Choose these from actual callers and contracts, not file names.
+- **Level C (stated reason only):** run the whole suite locally, once, only when the blast radius cannot be bounded by Levels A and B, for example a packaging change or an unfamiliar shared path. If hosted CI already passed the full-suite job on the exact commit, reuse that result. Never disable unrelated tests to shorten a run.
+- **Explain the scope:** in the final report, say which checks ran, why they cover the change's risk, and what CI still checks.
