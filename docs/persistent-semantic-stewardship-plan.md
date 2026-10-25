@@ -326,6 +326,18 @@ owner-intent inference or unsupported release/merge recommendation.
 from connected product + architecture + history knowledge rather than a
 file-inventory summary.
 
+**Owner construction compass (2026-10-25):** Continue PATH-1 as a
+construction-first product trajectory. Strategic Analysis and this roadmap are
+navigation tools for selecting valuable architecture and implementation,
+**not independent testing gates**. When a bounded reversible product
+improvement can be retained and its normal use will reveal the important
+tradeoffs, prefer BUILD over repeating synthetic unit/evidence cycles in the
+current construction phase. Preserve exact source and uncertainty disclosure,
+existing CI policy, and separate release/qualification claims. The first
+maintenance pressure selected under this compass is the shared authored-pack
+fingerprint fanout: improve record-level audit interpretation rather than
+request another benchmark, a new ontology or a second planner.
+
 ## 10. Wave 5 — Multi-session stewardship and cumulative learning
 
 **Objective:** Prove that knowledge **compounds** over a sequence of real

@@ -141,19 +141,37 @@ Source change and semantic change are different questions:
 - **Cited evidence change:** an implementation, test or decision source referenced by the record has changed, with no automatic conclusion about the record's validity.
 - **Semantic reinterpretation:** a source-checking agent establishes a consequential change in meaning, rationale, decision status or applicability; neither a hash nor an unchanged file proves this.
 
-**Known limitation at audit granularity (self-repository episode, 2026-10-21; still present):**
-`_authored_records()` fingerprints the entire `.sensemaking/knowledge/*.json`
-container for every record it contains. Editing one record can therefore
-cause `knowledge-audit` to flag every record in the pack as having changed
-source bytes. Similarly, `knowledge-query --operation changes` compares
-full record payloads, including `attributes.source_sha256`, so metadata-only
-fingerprint changes can appear as `changed` claim/relation IDs. These
-signals remain valid at their **stated** source/revision granularity but
-are too coarse to infer which individual authored records changed meaning.
-Treat them as re-inspection candidates rather than semantic deltas. The
-integrated `change_classification` output (below) helps interpret this
-fanout for `changes`; it does not remove it from `knowledge-audit` or from
-the raw delta ID lists.
+**Shared authored-pack source granularity:** `_authored_records()` fingerprints
+the entire `.sensemaking/knowledge/*.json` container for every record it holds.
+Editing one record still causes the conservative `knowledge-audit` source-byte
+result to report drift across the pack. Likewise, `changes` still reports raw
+indexed payload differences, including generated fingerprints. Neither signal
+alone establishes individual authored changes or semantic invalidity.
+
+**Construction addition (PATH-1/T11):** `knowledge-audit` now returns an
+additive `authored_record_audit` for indexed authored claims and relations
+whose original JSON container changed or became unavailable at the specified
+clean current revision. The current pack is read only through the existing
+tracked-source safety checks and each old ID is normalized through the same
+authored-record parser. The output distinguishes:
+
+- `authored_fields_changed`: the corresponding record's normalized authored
+  fields at the **same previous pack path** differ.
+- `authored_fields_unchanged`: the same record's authored fields are unchanged,
+  even though its container bytes changed; this is **not** semantic validity.
+- `record_absent_from_original_pack`: the old ID is no longer in that file.
+  It may have moved; this is **not** proof of deletion from the repository.
+- `not_assessed`: current pack or record could not be parsed/compared safely.
+
+`authored_record_audit.records` and original `affected_records` retain the
+existing `--limit`; counts are computed before truncation. Per-record rows also
+report **other changed/missing supporting source paths** so an unchanged authored
+record never clears a changed implementation or governing decision. The original
+`source_status_counts` and conservative source-byte audit remain unchanged.
+A current snapshot does **not** have to be independently indexed for this
+record-level comparison, but must be the exact clean Git HEAD. Inspect
+original sources and semantics before RECONCILE. `changes.change_classification`
+continues to distinguish the two-index indexed-payload case described below.
 
 ### Additive indexed change classification (integrated, PR #561)
 

@@ -3,7 +3,10 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 
-from .knowledge import CLAIM_KINDS, V2_CLAIM_KINDS
+from .knowledge import (
+    AUTHORED_SCHEMA_VERSIONS, CLAIM_KINDS, V2_CLAIM_KINDS,
+    read_authored_claim, read_authored_relation, record_dict,
+)
 
 
 def validate_retrieval_options(
@@ -206,6 +209,65 @@ def _authored_fields(record: dict) -> dict | None:
                       if key not in {"source_sha256", "authority_verified"}}
     return {**{key: value for key, value in record.items()
                if key not in {"source_ref", "attributes"}}, "attributes": authored_attrs}
+
+
+
+def assess_current_authored_record(
+    indexed: dict, *, record_type: str, current_pack: object,
+) -> dict:
+    """Compare one indexed Git-authored record with its current pack entry.
+
+    This is a per-record *representation* comparison. Missing entries could
+    have moved, been removed or been replaced; no semantic validity follows.
+    Source-byte auditing remains independent and conservative.
+    """
+    result = {
+        "assessment_status": "NOT_ASSESSED",
+        "authored_fields_changed": None,
+        "record_at_original_path": None,
+    }
+    prior_path = _authored_pack(indexed)
+    prior_fields = _authored_fields(indexed)
+    if prior_path is None or prior_fields is None or record_type not in {"claim", "relation"}:
+        result["unassessed_reason"] = "not_a_supported_indexed_authored_record"
+        return result
+    if not isinstance(current_pack, dict) or (
+        type(current_pack.get("schema_version")) is not int
+        or current_pack["schema_version"] not in AUTHORED_SCHEMA_VERSIONS
+        or not isinstance(current_pack.get("claims"), list)
+        or not isinstance(current_pack.get("relations"), list)
+        or len(current_pack["claims"]) > 500
+        or len(current_pack["relations"]) > 1000
+    ):
+        result["unassessed_reason"] = "current_authored_pack_missing_or_invalid"
+        return result
+    group = current_pack["claims" if record_type == "claim" else "relations"]
+    matches = [row for row in group
+               if isinstance(row, dict) and row.get("id") == indexed.get("id")]
+    if len(matches) == 0:
+        result["record_at_original_path"] = False
+        result["unassessed_reason"] = "record_absent_from_original_pack_may_have_moved"
+        return result
+    if len(matches) > 1:
+        result["unassessed_reason"] = "duplicate_record_id_in_current_pack"
+        return result
+    try:
+        reader = read_authored_claim if record_type == "claim" else read_authored_relation
+        current = record_dict(reader(
+            matches[0], source_ref=f"file:{prior_path}",
+            schema_version=current_pack["schema_version"],
+        ))
+        current_fields = _authored_fields(current)
+    except (ValueError, TypeError, KeyError, AttributeError):
+        result["unassessed_reason"] = "current_record_invalid_or_unparseable"
+        return result
+    if current_fields is None:
+        result["unassessed_reason"] = "normalized_authored_fields_unavailable"
+        return result
+    result["assessment_status"] = "ASSESSED"
+    result["authored_fields_changed"] = prior_fields != current_fields
+    result["record_at_original_path"] = True
+    return result
 
 
 def _source_fingerprints(record: dict) -> dict[str, str] | None:

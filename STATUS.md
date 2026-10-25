@@ -463,6 +463,20 @@ disclose selected-but-omitted claim/relation counts and bounded IDs as a
 plane ownership paths. No new runtime authority, routing, schema or unit/evidence
 tests are introduced in this construction phase.
 
+**2026-10-25 owner clarification — construction and architecture:** Continuous
+Construction IS the Probe; the roadmap and Strategic Analysis serve as a
+compass for selecting product value, not as a test or pause gate. Continue
+architect-and-builder work inside accepted ADR 0031 and PATH-1 with source
+review and explicit claim ceilings. Do not author/run or wait for unit and
+synthetic evidence tests in this construction phase; preserve existing CI and
+protected release constraints. Merge authorized construction PRs promptly.
+
+**2026-10-25 PATH-1/T11:** The next retained product responsibility is a
+record-aware addition to `knowledge-audit` that distinguishes changed authored
+fields from shared-pack byte-drift fanout using the current clean Git revision.
+The conservative source audit remains intact. This is useful normal
+construction maintenance rather than another standalone qualification loop.
+
 ## Current next step
 
 **ACTIVE CONSTRUCTION — PATH-1, ACCRETE PRODUCT KNOWLEDGE THROUGH GENUINE RESPONSIBILITIES.**
