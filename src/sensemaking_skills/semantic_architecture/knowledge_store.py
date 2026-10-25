@@ -597,7 +597,7 @@ def audit_knowledge_sources(
                         data = _source(root, tracked, pack).read_bytes()
                         if len(data) > 2_000_000:
                             raise ValueError("oversized current authored pack")
-                        current_packs[pack] = json.loads(data)
+                        current_packs[pack] = json.loads(data.decode("utf-8"))
                     except (ValueError, OSError, UnicodeError):
                         current_packs[pack] = None
                 detail = assess_current_authored_record(
