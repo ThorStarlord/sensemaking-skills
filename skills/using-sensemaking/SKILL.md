@@ -789,9 +789,13 @@ When you select a Skill:
 
 Use this boundary rule:
 
-> **Skill = one bounded responsibility/artifact, not the whole engineering lifecycle.**
+> **A specialized worker Skill owns only its declared responsibility and artifacts, not the entire engineering lifecycle.**
 
-A Skill should not silently expand from diagnosis into repair, from repair into merge, or from recommendation into external publication.
+This `using-sensemaking` Skill is the **active agent's portable control guidance**
+for Architect -> Builder -> Reconcile, not a worker Skill that automatically
+runs or merges anything. Specialized Skills should not silently expand from
+diagnosis into repair, from repair into merge, or from recommendation into
+external publication.
 
 When work is delegated to a Skill, subagent, workflow, or external execution system, preserve the evidence-return boundary:
 
