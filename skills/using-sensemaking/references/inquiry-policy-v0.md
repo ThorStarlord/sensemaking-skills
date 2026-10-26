@@ -307,31 +307,19 @@ Avoid:
 - turning Inquiry Policy outcomes into runtime enums or numeric scores merely for implementation convenience.
 
 
-## Moved from the using-sensemaking entrypoint (verbatim)
+## Owner and external evidence
 
-### Inquiry Policy v0
+When inquiry is warranted, name the smallest sufficient evidence, its source,
+the bounded evidence-producing responsibility if one is needed, the authority
+it needs, and a stop condition.
 
-Before turning an unresolved uncertainty into investigation, ask:
+- If the missing premise is owner intent, ask the owner rather than searching
+  the repository. Use an `owner_decision_capsule` when the choice needs a
+  reconstructible options/tradeoff packet.
+- If the needed evidence is external and unavailable or unauthorized, record
+  the external dependency rather than fabricating a local substitute.
+- When authorized external evidence is obtained and its provenance or
+  currentness is decision-relevant, preserve it in an
+  `external_evidence_packet`.
 
-> **Given the current decision and epistemic state, what should I learn next, if anything?**
-
-Inquiry is warranted only when additional evidence could materially change responsibility, scope, authority path, continuation, verification, or closure **and** obtaining that evidence is worth its cost.
-
-```text
-uncertainty exists
-!= inquiry required
-
-more evidence possible
-!= more evidence worth obtaining
-
-NO_INQUIRY_NEEDED
-= valid successful policy result
-```
-
-When inquiry is warranted, identify the smallest sufficient evidence, its source, the bounded evidence-producing responsibility (if one is needed), authority, and a stop condition.
-
-If the missing premise is owner intent, ask the owner rather than searching the repository; use an `owner_decision_capsule` when the choice needs a reconstructible options/tradeoff packet. If the needed evidence is external and unavailable or unauthorized, record the external dependency rather than fabricating a local substitute. When authorized external evidence is obtained and its provenance/currentness is decision-relevant, preserve it in an `external_evidence_packet`.
-
-Inquiry selection is not action authorization. Returned evidence comes back to the active semantic controller for adjudication.
-
-Read `references/inquiry-policy-v0.md` when explicit inquiry selection is material. Policy Hierarchy v0 is defined in `../../docs/policy-hierarchy-v0.md`.
+Returned evidence comes back to the active agent for adjudication.
