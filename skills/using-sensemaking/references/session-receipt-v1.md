@@ -2,7 +2,13 @@
 
 **Status:** contract reference for `using-sensemaking` (proposed ADR 0032)  
 **Validator:** `scripts/validate-receipt.py` (also routed by `sensemaking-skills validate --artifact <file>`)  
-**Reader:** `scripts/summarize-receipts.py`
+**Reader:** `scripts/summarize-receipts.py` (optional framework tool)
+
+**Applicability:** This reference defines the contract **when a durable session
+receipt is warranted and supported**. The portable Architect -> Builder ->
+Reconcile loop does not require one for ordinary single-context coding, or a
+Sensemaking checkout/CLI in the target. The scripts named here must actually
+be available before invoking them. See `portable-construction-loop-v1.md`.
 
 ## 1. What a receipt is and is not
 
@@ -29,6 +35,9 @@ into a receipt.
 
 ## 2. Lifecycle: open, update, finalize
 
+When using a receipt, follow this lifecycle. Opening one is **not** a
+prerequisite for ordinary standalone coding work in a new repository.
+
 | Moment | What to do | `state` | `stop.disposition` | `persistence` |
 |---|---|---|---|---|
 | After Section 1 (goal + authority) is established | **Open** the receipt | `in_progress` | `IN_PROGRESS` | `pending` |
@@ -42,8 +51,10 @@ tombstone, not a failure of the receipt. Once `final`, a receipt is
 receipt and point back via `continuity.resumes` and
 `continuity.resolves_questions`.
 
-One receipt per session. A session that is resumed in a fresh context writes a
-**new** receipt with `continuity.resumes: <prior session_ref>`.
+When this contract is used, keep **one receipt per participating session**.
+A session resumed in a fresh context writes a **new** receipt with
+`continuity.resumes: <prior session_ref>` rather than editing an immutable
+final record.
 
 ## 3. Location and persistence
 
@@ -78,13 +89,16 @@ repository first, then reference it.
 
 ## 4. Reading receipts at session start (the consumer)
 
-Before Section 1, if `.sensemaking/receipts/` exists in the target repository:
+Before Section 1, if `.sensemaking/receipts/` exists in the target repository,
+read relevant existing receipts. When the optional framework's script exists:
 
 ```bash
 python scripts/summarize-receipts.py --repo <target-repo>
 ```
 
-(`scripts/` is the framework checkout or the installed validator runtime.)
+(`scripts/` is the framework checkout or the installed validator runtime,
+**not** necessarily the target repository.) Otherwise read the relevant
+source YAML directly; do not require a framework checkout merely to begin.
 Then:
 
 1. **UNFINISHED** receipts: an earlier session stopped without finalizing.
@@ -222,7 +236,9 @@ sensemaking-skills validate --artifact .sensemaking/receipts/<session_ref>.sessi
 | Level-3 strategy changed | `STATUS.md`, `strategic_reconciliation` | record a finding; the strategy lives there |
 | durable architectural lesson | `.sensemaking/knowledge/*.json` via the Steward | record a finding with `disposition: handed_off` |
 
-The receipt is the always-present minimum; the others remain triggered by need.
+When a receipt is warranted and available, it is the smallest typed
+continuation record. Other specialized artifacts remain triggered by need;
+ordinary work can be retained in PR/Git without a receipt.
 
 ## 8. Minimal example (a narrow task)
 
