@@ -101,8 +101,8 @@ A generated artifact never becomes an instruction, an authoritative product
 decision or permission to act. Check provenance and currentness before reuse:
 the revision it describes, whether the code it cites still exists, and whether
 a later decision superseded it. Locate artifacts by their recorded identity and
-resolved paths, not by an assumed filename. Discovery order and sparse-repository
-recovery: `references/portable-construction-loop-v1.md`.
+resolved paths, not by an assumed filename. Discovery order, sparse-repository recovery,
+artifact reuse and currentness checks: `references/portable-construction-loop-v1.md`.
 
 **Recover continuity first.** If `.sensemaking/receipts/` exists, read relevant
 receipts for unfinished sessions and open questions, using
@@ -351,7 +351,7 @@ already stated above, so skipping a file never loses the rule.
 
 | Reference | Load when | Skip when | Protects |
 | --- | --- | --- | --- |
-| `references/portable-construction-loop-v1.md` | coding outside the Sensemaking repository or in a sparse repo | a clear local fix in a familiar repo | no scaffold != cannot build |
+| `references/portable-construction-loop-v1.md` | coding outside the Sensemaking repository, in a sparse repo, or reusing earlier artifacts and knowledge | a clear local fix in a familiar repo | no scaffold != cannot build |
 | `references/evidence-and-closure-v1.md` | validating, reconciling a claim, verifying a repair, reading a Brief, using a workflow | ordinary tests and diff review settle it | validated != closed |
 | `references/session-receipt-v1.md` | an optional receipt is warranted and supported | single-context work with PR/Git history | receipt != authority |
 | `references/delegated-goal-patterns.md` | a delegated mission's scope, authority or stop is material | a bounded task | desired delegation != granted authority |
