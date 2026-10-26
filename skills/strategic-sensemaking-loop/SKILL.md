@@ -164,6 +164,18 @@ When a bounded responsibility is selected:
 2. verify exact authority for the contemplated action;
 3. choose the warranted action shape and lightest execution boundary.
 
+For **real software construction**, use the **portable Architect -> Builder ->
+Reconcile contract** in `using-sensemaking` and its bundled
+`references/portable-construction-loop-v1.md`. The active agent performs
+the bounded edit, reviews real consumers and checks under the **target
+repository's** policies, then returns evidence here for multi-increment
+continuation. This Skill owns the outer mission/resume boundary, **not** a
+duplicate build procedure. Neither the portable inner loop nor this outer
+loop requires a target `CLAUDE.md`, `AGENTS.md`, product strategy,
+`STATUS.md`, Grounding Pack, or Sensemaking CLI. If those sources exist,
+read only their decision-relevant content; missing scaffolding is not a
+reason to invent goals or block a warranted local fix.
+
 Descriptive action shapes include:
 
 ```text
