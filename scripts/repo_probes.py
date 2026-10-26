@@ -510,12 +510,52 @@ def vendored_skill_drift(
     }
 
 
+def _references_drift(repo_skill_dir: Path, installed_skill_dir: Path) -> tuple[str, List[str]]:
+    """Compare a skill's references/ subtree between repo and installed copies.
+
+    A Skill's core SKILL.md loads its references on demand, so a stale or
+    missing reference changes behavior even when SKILL.md matches. Returns
+    ("none" | "line_ending_only" | "content_drift", sorted differing paths).
+    Files outside references/ are not compared.
+    """
+    def files(root: Path) -> Dict[str, Path]:
+        base = root / "references"
+        if not base.is_dir():
+            return {}
+        return {
+            p.relative_to(root).as_posix(): p
+            for p in base.rglob("*")
+            if p.is_file() and "__pycache__" not in p.parts
+        }
+
+    repo_files = files(repo_skill_dir)
+    installed_files = files(installed_skill_dir)
+    differing: List[str] = []
+    line_ending_only = False
+    for rel in sorted(set(repo_files) | set(installed_files)):
+        repo_bytes = _read_bytes(repo_files[rel]) if rel in repo_files else None
+        inst_bytes = _read_bytes(installed_files[rel]) if rel in installed_files else None
+        if repo_bytes is not None and repo_bytes == inst_bytes:
+            continue
+        if (
+            repo_bytes is not None
+            and inst_bytes is not None
+            and repo_bytes.replace(b"\r\n", b"\n") == inst_bytes.replace(b"\r\n", b"\n")
+        ):
+            line_ending_only = True
+            continue
+        differing.append(rel)
+    if differing:
+        return "content_drift", differing
+    return ("line_ending_only" if line_ending_only else "none"), []
+
+
 def probe_skill_distribution(
     repo_root: Path,
     installed_skills_root: Path | None = None,
     skill_names: Sequence[str] | None = None,
 ) -> Dict[str, object]:
-    """Compare canonical skills/*/SKILL.md against installed copies.
+    """Compare canonical skills/*/SKILL.md and references/ against installed copies.
 
     Installed copies default to ~/.agents/skills; Path.home() resolves both
     Windows (C:\\Users\\<user>\\.agents\\skills) and Unix (/home/<user>/.agents/skills)
@@ -588,6 +628,15 @@ def probe_skill_distribution(
         else:
             drift_type = "content_drift"
 
+        differing_references: List[str] = []
+        if drift_type != "missing_installed":
+            ref_drift, differing_references = _references_drift(
+                skill_md.parent, installed_skills_root / skill_name
+            )
+            rank = {"none": 0, "line_ending_only": 1, "content_drift": 2}
+            if rank[ref_drift] > rank[drift_type]:
+                drift_type = ref_drift
+
         if drift_type == "none":
             synchronized_count += 1
             continue
@@ -597,15 +646,16 @@ def probe_skill_distribution(
             content_drift_count += 1
         else:
             missing_installed_count += 1
-        drifted_skills.append(
-            {
-                "skill_name": skill_name,
-                "repo_lines": repo_lines,
-                "installed_lines": installed_lines,
-                "hash_match": hash_match,
-                "drift_type": drift_type,
-            }
-        )
+        entry: Dict[str, object] = {
+            "skill_name": skill_name,
+            "repo_lines": repo_lines,
+            "installed_lines": installed_lines,
+            "hash_match": hash_match,
+            "drift_type": drift_type,
+        }
+        if differing_references:
+            entry["differing_references"] = differing_references
+        drifted_skills.append(entry)
 
     return {
         "total_skills_checked": total_skills_checked,
