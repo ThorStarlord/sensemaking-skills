@@ -25,14 +25,18 @@
 
 ## Current construction orientation
 
-For the current owner-directed architect-and-builder phase, read
+For engineering work, the bundled
+[`using-sensemaking` Skill](skills/using-sensemaking/SKILL.md) contains the
+**portable** Architect -> Builder -> Reconcile procedure. Invoke/load it
+through the coding-agent harness when relevant; this repository instruction
+is a discovery aid, not a precondition for the Skill to work elsewhere.
+For **this repository's** architect-and-builder phase, read
 [Value-Directed Continuous Construction](docs/value-directed-continuous-construction.md)
-before choosing a new repository-level responsibility. It ties product value,
-the current strategic compass, selective ontology/architecture RECALL, bounded
-divergence/convergence, construction, source review, and knowledge reconciliation
-together without adding a planner or changing authority. Use the explicit
-verification exception in `CLAUDE.md` for this phase, not a blanket
-no-tests rule for releases or other work.
+and the [local build-loop profile](docs/agents/build-loop.md) when selecting
+repository-level responsibilities. They supply current product context and
+local owner conventions rather than portable requirements. Apply the
+explicit verification/merge exception in `CLAUDE.md` here; never export
+this repo's no-local-unit-tests or prompt-merge policy to other targets.
 
 ## Local verification
 

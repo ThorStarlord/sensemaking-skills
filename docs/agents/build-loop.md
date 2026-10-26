@@ -1,170 +1,91 @@
-# Build Loop: Choosing and Building an Increment
+# Build Loop: Sensemaking Skills Local Construction Profile
 
-This is the **operational application** of
-[Value-Directed Continuous Construction](../value-directed-continuous-construction.md),
-which explains the product-value-led Architect + Builder philosophy. `CLAUDE.md`
-carries the brief entry trigger and the current PR and local verification rules.
-This reference does not add a Skill, runtime, artifact type, planner, or
-permission to change a higher-level decision.
+**Scope:** This page applies the portable
+[`using-sensemaking` Skill](../../skills/using-sensemaking/SKILL.md) and its
+[bundled construction reference](../../skills/using-sensemaking/references/portable-construction-loop-v1.md)
+to **developing this repository**. It is **not** the portable build-loop
+implementation and is **not required** in target repositories using the
+installed Skill.
 
-The **active coding agent** remains the semantic controller (ADR 0013).
-Architect, Builder and Close are complementary responsibilities within one
-adaptive engineering loop, not separate agents, mandatory approvals or a
-three-stage runtime. They can overlap and revisit one another when new
-implementation evidence changes the warranted design.
+[Value-Directed Continuous Construction](../value-directed-continuous-construction.md)
+states the product-value-led development philosophy for this repository.
+`CLAUDE.md` holds the current owner-directed branch, local verification and
+PR-merge instructions. This page connects that philosophy and those local
+sources to the portable Architect -> Builder -> Reconcile capability; it
+creates no new Skill, runtime, artifact, strategy or authority.
 
-```text
-PRODUCT INTENT + CURRENT EVIDENCE
-        -> ARCHITECT: decide the warranted increment (brief decision note)
-        -> BUILDER: implement, inspect, revise within authority
-        -> CLOSE: PR evidence, relevant reconciliation, next decision
-```
+## Local product and strategic grounding
 
-**Every PR gets a short decision note in its description.** For an obvious,
-low-consequence fix this can be two sentences; substantial architectural
-choices require enough detail to reconstruct the selection. No extra
-repository artifact, numerical score, minimum candidate count or mandatory
-STATUS entry is created by this rule.
+For an actual `sensemaking-skills` increment, read **selectively**:
 
-## 1. Architect: select a valuable, warranted responsibility
+- `CONTEXT.md` ("Current product definition") and
+  `docs/product-strategy.md`: product goals, intended benefit and
+  explicit epistemic ceilings.
+- Accepted ADR 0029: scope, non-goals and agent-owned semantic control.
+  Accepted ADR 0031: the Persistent Semantic Stewardship destination.
+  Other accepted owner decisions and authority-bearing sources when
+  relevant. The two sources used by PR #599 are **not** a future
+  two-document authority allowlist.
+- `docs/persistent-semantic-stewardship-plan.md` sections 12 and 14:
+  value criteria and *illustrative* construction trajectory, **not** a
+  deterministic backlog.
+- `STATUS.md` "Current next step", relevant current Level-3 reconciliation
+  and applicable unresolved owner boundaries.
+- The current owning code/consumers, Git history, prior relevant PR, and
+  task-specific reviewed semantic knowledge or Steward RECALL when it
+  could change the decision.
 
-### Orient using the smallest useful context
+Root `roadmap.md` and `goal.md` are historical, not current
+implementation queues. Both authored goal records
+`goal:longterm-stewardship` and
+`goal:compounding-product-knowledge` remain unchanged by the owner's
+2026-10-26 reconciliation. Never silently merge them, assert an additional
+relationship, or infer product authority from an indexed record.
 
-1. **Previous result first:** inspect the most recent relevant merged PR, its
-   source/diff, observed CI and follow-up observations. Consult `STATUS.md`
-   if the prior increment changed the strategic or capability state. Do not
-   assume the next responsibility from the former PR's proposed backlog.
-2. **Product and strategic compass**, proportionately:
-   - `CONTEXT.md` ("Current product definition") and
-     `docs/product-strategy.md` (accepted purpose and product value);
-   - `docs/adr/0029-current-product-boundary.md` (scope, external authority)
-     and `docs/adr/0031-persistent-semantic-stewardship.md` (selected
-     long-term destination), plus any later applicable accepted decision;
-   - `docs/persistent-semantic-stewardship-plan.md` section 12
-     (value/claim criteria) and section 14 (illustrative construction order);
-   - `STATUS.md` ("Current next step"), latest relevant Level-3 analysis,
-     reconciliation and open owner boundaries.
-3. **Targeted model and implementation reality:** where materially useful,
-   inspect current code, its consumers and contracts, and selective Steward
-   RECALL of `.sensemaking/knowledge/` and its original source references.
-   Distinguish accepted commitments, observations, inferences, hypotheses,
-   supersession and NOT_ASSESSED. Do not read the entire ontology or
-   source-of-truth map when a bounded question is already answered.
-4. **Authority:** establish the allowed engineering, merge and external
-   actions independently of recommendations and retrieved knowledge.
+## Local PR and verification conventions
 
-Root `roadmap.md` and `goal.md` are historical, not operative construction
-backlogs. Section 14 of the stewardship plan is an indicative trajectory, not
-an obligation to implement the next numbered package.
+Use the **portable Skill** for proportional architect selection, real
+implementation, in-scope redesign, review, decision-relevant reconciliation,
+and the boundary between one increment and a multi-increment strategic
+mission. The following details are **local overrides/choices**, not
+portable defaults:
 
-**Product goals, non-goals and authority derive from sources accepted within
-their actual scope:** owner-ratified intent, current product strategy, accepted
-ADRs (including ADRs 0029 and 0031), and other appropriately authoritative
-product records. Product-strategy.md and ADR 0029 were the sources for PR #599,
-**not** an exclusive allowlist for subsequent records. Code and a semantic
-index do not establish normative authority. Both existing goal records,
-`goal:longterm-stewardship` and `goal:compounding-product-knowledge`,
-remain as authored; do not silently merge, reclassify or add relationships.
+1. **Every construction PR** has a short source-grounded decision note in
+   the description. Two sentences suffice for a clear local repair;
+   consequential selection records real alternatives, the intended useful
+   slice, affected contracts and review/verification limits. Do not
+   generate fixed candidate counts, numeric priorities or a separate
+   handoff artifact for an obvious change.
+2. Use a separate `claude/<topic>` branch for each PR, per `CLAUDE.md`.
+3. In the current owner-declared CONSTRUCTION phase, **do not add or
+   manually run local unit/synthetic evidence tests**. Inspect the source
+   and diff, perform proportionate non-test mechanical checks where
+   appropriate and report `NOT_RUN` accurately. This phase-specific
+   exception does **not** apply to other repositories or release
+   qualification.
+4. Under the owner's explicit local policy, **merge authorized PRs
+   promptly after a clean source/diff review without waiting for hosted
+   CI**. Preserve actual GitHub protections, hosted CI and release gates;
+   do not knowingly merge consequential dangerous failures or invent
+   check results. A material post-merge failure becomes a warranted
+   repair responsibility.
+5. Keep routine decisions and evidence in PR/Git history. Update
+   `STATUS.md` only when strategy, actual capability, meaningful
+   limitations or next responsibility changes materially. Reconcile
+   reviewed knowledge only if source-grounded, durable learning will
+   improve later decisions.
+6. When an in-scope Builder discovery changes the design, update the
+   same PR note and continue. Reassess responsibility or ask for owner
+   input if outcome, product authority or protected scope changes.
 
-### Explore and converge proportionately
+## Boundary and interpretation
 
-- **Clear, local responsibility:** identify the concrete defect/contract or
-  requested outcome and its source; proceed without manufacturing alternatives.
-- **Material design uncertainty:** consider genuinely different approaches,
-  simplifications, dependencies, and what would make the preferred design
-  wrong. Compare qualitatively, not with a numeric score.
-- **A genuine Level-3 reopening:** use the existing
-  [Strategic Exploration Funnel](../../skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md).
-  Do not run a full repository breadth/depth exercise for a known repair or
-  an already-selected construction responsibility.
-
-For a consequential choice, ask whether the approach creates user/agent
-value, advances an accepted goal or protects a real contract, fits the
-selected architecture, has a complete useful slice, preserves authority,
-can be revised, and costs less (including omission cost) than worthwhile
-alternatives. The best warranted action is not always the smallest patch,
-largest feature, easiest test, or next item in a historical plan.
-
-### Write the decision note in the PR
-
-A **small repair** may use:
-
-```text
-Increment: Fix <observed problem / affected contract>.
-Why: <source of the problem and how this repair serves product integrity>.
-```
-
-For **material selection**, expand only fields relevant to the decision:
-
-```text
-Increment: <intended useful outcome>
-Serves: <accepted goal, contract, owner request or real user problem + source>
-Alternatives: <material options and the reason for this choice, if any>
-Slice: <in-scope behavior/files, affected consumers and exclusions>
-Done when: <observable contract or bounded acceptance condition>
-Verify: <source/diff checks, any suitable mechanical checks; CI may finish after merge>
-Observe: <what genuine later use could reveal, when decision-relevant>
-Authority: <authorized / specific reserved decision>
-```
-
-An increment may be legitimate maintenance or a repair even if it does not
-correspond to a specific strategy section or plan package. Label it
-accurately; do not invent a `Serves` citation to turn it into a roadmap
-advance. Where alternatives are immaterial, state that briefly or omit the
-field. Where the next action is owner-gated, do not fabricate approval.
-
-## 2. Builder: construct and adapt without silent scope expansion
-
-- Implement the selected useful slice in the active working context. Query
-  Steward `context-for` or change impact where source-linked architecture,
-  ownership, constraints or history would materially change the edit; no
-  mandatory query for every file.
-- **Update the decision note within the same PR** when implementation evidence
-  warrants a better approach **and** goal, responsibility, authorized scope and
-  safety boundaries remain intact. Architect and Builder can reason together;
-  do not require a new PR or ceremony merely for a better local design.
-- **Return to architectural selection** if a premise fails or the change
-  materially alters the outcome, responsibility, relevant authority, or
-  affected boundary. Escalate a genuinely reserved owner decision; park
-  unrelated discoveries for future selection.
-- Inspect current consumers/contracts and the diff. Follow the current
-  `CLAUDE.md` construction exception: do not write or manually run local
-  unit/synthetic evidence tests; disclose `NOT_RUN`. Do appropriate source,
-  static, mechanical or real-path checks when applicable and distinguish
-  those observations from unit tests or semantic proof.
-- Use **one `claude/<topic>` branch per PR**. Put the decision note,
-  implementation evidence, and verification limits in the PR description.
-
-## 3. Close: integrate, reconcile and continue
-
-- After a clean source/diff review and within granted authority, **merge the
-  PR promptly without waiting for hosted CI or local unit/evidence tests**.
-  Existing GitHub CI and repository protections remain in place. Never
-  bypass required checks or knowingly integrate a substantive dangerous
-  failure; report pending/failed/successful checks accurately. If CI later
-  reveals a material regression, select a warranted repair responsibility.
-- Confirm the PR actually merged and identify the new `main` commit.
-  A merge is not proof of behavioral correctness, longitudinal improvement,
-  release qualification, or repair closure.
-- Let the PR and Git history retain **routine** decision notes, technical
-  details and findings. Update `STATUS.md` **only when** the increment
-  materially changes strategic state, current capabilities, meaningful
-  limitations, or the next agent's decision context.
-- Reconcile reviewed semantic knowledge only for consequential reusable
-  facts, rationales, corrections, constraints, or contradictions. Do not
-  generate records solely to increase counts or demonstrate compliance.
-- The next Architect reads the relevant prior PR and actual results before
-  choosing a new responsibility. When no further warranted, authorized work
-  is apparent, stopping is valid.
-
-## Guardrails
-
-| Failure | Proportional guard |
-| --- | --- |
-| First visible defect substitutes for a strategic frontier | Compare product opportunities at a true Level-3 decision; do not promote routine maintenance |
-| Artificially many candidates or scores | Explore only alternatives capable of changing the decision |
-| A compulsory two-agent handoff | Architect and Builder are roles of the same active semantic controller |
-| Silent redesign | Update the note within scope; reopen the choice if outcome or authority changes |
-| Review ritual displaces construction | Two-sentence note for clear, reversible repairs |
-| Every PR expands STATUS or ontology | Retain routine evidence in PR/Git; reconcile only consequential durable knowledge |
-| Test or CI status becomes semantic proof | Report exact observed checks and their claim ceiling |
+This repository's operating instructions help its maintainers. They
+must **never** be treated as an install-time dependency, an instruction
+that `using-sensemaking` must be invoked through `CLAUDE.md`, or a
+blanket merge/test policy in `auteur`, `React_incremental_game_prototype`,
+or any other target. Another coding agent can use the bundled portable
+loop **after loading the Skill**, grounded in whatever authentic sources
+that target has. Discovery still depends on its host/Skill installation;
+missing documentation neither guarantees auto-loading nor prevents the
+Skill from functioning when loaded.

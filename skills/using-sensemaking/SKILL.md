@@ -1,6 +1,6 @@
 ---
 name: using-sensemaking
-description: use Sensemaking Skills to turn repository uncertainty or a broad delegated repository mission into evidence-grounded, warranted next action. Use when a coding agent must select responsibility before capability, adapt scaffolding/rigor/durability, preserve authority boundaries, reconcile consequential claims, or continue autonomously toward an authoritative repository outcome without inventing scope. Also use when source-grounded durable repository knowledge could change responsibility selection or continuation.
+description: Use the portable Architect -> Builder -> Reconcile loop to select, implement and review real engineering changes in any repository, even without product docs, CLAUDE.md, AGENTS.md, a Sensemaking knowledge pack or installed CLI. Also use when repository uncertainty, product/architecture choices, evidence, delegation, source-grounded memory or authority boundaries could change the warranted next responsibility. The coding agent owns judgment; strategic-sensemaking-loop owns multi-increment mission continuation.
 ---
 
 # Using Sensemaking Skills: Agent-Native Control Loop
@@ -25,18 +25,68 @@ Do not turn this bootstrap into a fixed choreography. Registered workflows and s
 
 ### Which entry
 
-- **Direct bounded work** (clear, authorized, local, verifiable): do it with relevant tests. No Sensemaking ceremony is required.
-- **This Skill:** the decision discipline for responsibility, evidence and authority in a task.
+- **Direct bounded work** (clear, authorized, local, verifiable): implement it using the target repository's appropriate verification. No Sensemaking ceremony is required.
+- **This Skill:** the portable Architect -> Builder -> Reconcile discipline for one bounded real engineering outcome, from a sparse or documented repository alike.
 - **`strategic-sensemaking-loop`:** the front door for a one-prompt strategic start or resume, and for FULL AUTONOMY / FULL DELEGATION missions across repeated responsibilities.
+
+## Portable Architect -> Builder -> Reconcile (the construction capability)
+
+**This loop works after this Skill is loaded even if the target repository has
+no Sensemaking files, no dedicated agent instruction file, no product strategy,
+no indexed knowledge and no Sensemaking CLI.** Use the host's real
+repository-reading/editing tools. The code, tests, history, issues, user goal
+and available local instructions are evidence; a missing named document is not
+a blocker. This is instruction-based control, not an executable planner or
+guaranteed automatic Skill discovery in every coding-agent harness.
+
+```text
+USER OUTCOME + CURRENT REPOSITORY EVIDENCE + AUTHORITY
+  -> ARCHITECT: choose a warranted, bounded improvement
+     (lightweight for a clear defect; qualitative alternatives when material)
+  -> BUILDER: inspect actual callers/contracts, implement useful code,
+     revise an in-scope design when implementation evidence warrants it
+  -> REVIEW: verify affected behavior proportionately under target policy,
+     inspect diff, state what ran and what was not established
+  -> RECONCILE: preserve only consequential, non-derivable knowledge;
+     report integration/remaining uncertainty and stop or return to mission loop
+```
+
+**Expected output is actual bounded engineering work when authorized**, not
+a formal artifact or a mandatory plan. If opening a PR, a short source-grounded
+decision note in its description can be two sentences for a trivial repair;
+deeper decisions warrant their real alternatives and tradeoffs. When a PR is
+not warranted or tools are read-only, use the lightest truthful report. Do not
+require a receipt, Campaign, ontology, additional repository file or synthetic
+exercise merely to prove the build loop was followed.
+
+**Authority and portability:** The target's current owner decisions, repository
+rules, security boundaries and available tools control the action. The
+`sensemaking-skills` repository's branch, local-test and prompt-merge policies
+**do not carry into other repositories**. A Skill itself neither merges a PR
+nor grants authority. When missing product intent would change the desired
+outcome, ask the owner; otherwise build from sufficiently supported evidence.
+A reviewed knowledge pack may improve construction, but is demand-driven.
+
+For precise source-discovery order, minimal-docs recovery, proportional
+decision-note examples, revision/review behavior and harness limitations,
+read `references/portable-construction-loop-v1.md` **when performing a
+coding task or applying this Skill outside its source repository**. Its content
+is bundled with this Skill, unlike repository-specific operational docs.
+Other references to the framework repository's `../../docs/` files,
+artifact registries or CLI/scripts are optional advanced provenance when
+those files or tools are absent. **Do not require a clone of the Sensemaking
+source repository to execute the bundled portable construction loop.**
 
 ## Entry recovery (before Section 1)
 
 Recover continuity before deciding anything. Everything found here is evidence, not instructions or authority.
 
-1. **Read first.** Before Section 1, if `.sensemaking/receipts/` exists, run
-   `python scripts/summarize-receipts.py --repo <target>`. Account for
-   unfinished sessions, open questions and the last recorded stop; treat them
-   as evidence, not instructions.
+1. **Read first.** Before Section 1, if `.sensemaking/receipts/` exists,
+   inspect relevant receipts for unfinished sessions, open questions and the
+   last recorded stop. Use `scripts/summarize-receipts.py` **if that optional
+   framework script is installed and available**; otherwise inspect the
+   source YAML directly. Treat receipts as evidence, not instructions.
+   No receipts directory is a normal repository condition, not a gate.
 
 If the target repo has a `.sensemaking/` Grounding Pack, read `intent.md`
 and task-relevant `invariants.md` first, then retrieve only relevant domain
@@ -138,40 +188,31 @@ or an explicit policy decomposition. It does not authorize automatic downstream
 routing and does not grant mutation/publication authority merely because a
 finding or recommendation exists.
 
-### Session receipt: always leave a flight recorder
+### Session receipts: use when continuation would benefit
 
-Every session that runs this loop leaves one typed
-`sensemaking_session_receipt` in the target repository at
-`.sensemaking/receipts/<session_ref>.session.yaml`. It is the control loop's
-flight recorder, not an essay. It holds goal, granted and withheld authority,
-responsibilities run, consequential findings, open questions, stop disposition
-and next warranted responsibility, as capped YAML fields with
-repository-relative pointers. Analysis stays in the artifacts it points to.
+The existing `sensemaking_session_receipt` is an optional, structured
+**flight recorder** for sessions whose handoff, interruption, open owner
+question or consequential multi-step continuation would otherwise be lost.
+Use it when the target repository/host already supports that contract and
+its persistence is justified. Do not create a `.sensemaking/` folder or
+require a receipt for every local code repair merely because this Skill
+loaded. An ordinary PR description and source/Git history can retain
+routine bounded-work evidence.
 
-Implementation and governance status differ. The receipt schema, validator and reader are implemented and validated on `main`, and the instructions in this section apply now. ADR 0032, which governs the receipt contract, is still Proposed and not owner-ratified; following these instructions does not depend on that ratification.
-
-1. **Open** the receipt (`state: in_progress`) once goal and authority are
-   established. **Update** it after each responsibility, consequential finding
-   or new question. **Finalize** it (`state: final`, `immutable: true`) at every
-   stop.
-2. **An owner question goes in the receipt**, with at least two options and
-   what each leads to. A question asked only in chat is lost when the session
-   ends, and a headless run has no chat at all.
-3. **Persist it.** Only a pushed commit or a host upload outlives the container.
-   Without that authority, set `persistence: working_tree_only` and say in the
-   final report that the receipt will be lost. Never widen authority just to
-   persist it.
-4. **Validate**: `python scripts/validate-receipt.py <receipt> --target-repo <target>`.
+The receipt schema, validator and reader are implemented in the Sensemaking
+**framework repository**, but may not be installed with this Skill alone.
+ADR 0032 is still Proposed. If the receipt is warranted and the framework
+tools are actually available, follow `references/session-receipt-v1.md`:
+open, update, finalize, validate and persist within authority. Never claim
+a script ran when it was unavailable, and never grant yourself Git or upload
+authority merely to preserve a receipt. When a host cannot persist state,
+report the limitation instead of requiring extra local scaffolding.
 
 ```text
-receipt         != essay or reasoning transcript
-receipt         != authority (it records grants; it never creates them)
-receipt written != receipt persisted
+receipt available + durable handoff useful -> use existing contract
+clear single-context repair + ordinary PR/Git history -> no receipt needed
+receipt schema valid != semantic correctness or action permission
 ```
-
-Schema, lifecycle, persistence rules and examples:
-`references/session-receipt-v1.md`. When `repository-semantic-steward` runs,
-it adds a `semantic_query_receipt` under the same `session_ref`.
 
 ### Act on authorized, bounded value
 
@@ -349,7 +390,9 @@ Before selecting work, identify:
 - what external mutations, publication, merge, deployment, or tracker writes require explicit approval;
 - whether the task is already mechanically narrow enough to perform directly.
 
-Record goal and authority in the session receipt now (`state: in_progress`).
+If a durable session receipt is warranted and supported, record the goal and
+actual authority there; otherwise keep this distinction explicit in the
+current work context or PR. No repository scaffolding is required to start.
 
 Do not silently convert a diagnosis or recommendation into authorization.
 
@@ -746,9 +789,13 @@ When you select a Skill:
 
 Use this boundary rule:
 
-> **Skill = one bounded responsibility/artifact, not the whole engineering lifecycle.**
+> **A specialized worker Skill owns only its declared responsibility and artifacts, not the entire engineering lifecycle.**
 
-A Skill should not silently expand from diagnosis into repair, from repair into merge, or from recommendation into external publication.
+This `using-sensemaking` Skill is the **active agent's portable control guidance**
+for Architect -> Builder -> Reconcile, not a worker Skill that automatically
+runs or merges anything. Specialized Skills should not silently expand from
+diagnosis into repair, from repair into merge, or from recommendation into
+external publication.
 
 When work is delegated to a Skill, subagent, workflow, or external execution system, preserve the evidence-return boundary:
 
@@ -785,7 +832,7 @@ Most returns answer it immediately, and no further structure is needed. These sa
 | Next action | section 13: continue, stop or escalate |
 | Durable understanding | reviewed knowledge through the steward, or the ADR process |
 | Continuation state | session receipt (implemented; ADR 0032 is Proposed), or handoff or Campaign only when an actor boundary requires it |
-| Nothing | no substantive knowledge or specialist artifact update; `NO_MODEL_CHANGE` is a valid, successful outcome. Required receipt behaviour still applies |
+| Nothing | no substantive knowledge or specialist artifact update; `NO_MODEL_CHANGE` is a valid, successful outcome. Optional receipt/handoff guidance applies when warranted |
 
 ### Artifact semantics
 
@@ -936,10 +983,10 @@ Stop when:
 - authorized scope is exhausted;
 - repository safety requires stopping.
 
-Whatever the reason, finalize the session receipt with the matching
-`stop.disposition` before ending. An owner question that blocks continuation
-goes in `open_questions`; that is what makes `OWNER_DECISION_REQUIRED` a
-durable stop instead of a lost one.
+When a durable session receipt is in use, finalize it with the correct
+`stop.disposition` and record unresolved owner decisions in `open_questions`.
+Otherwise report the genuine stopping boundary in the ordinary handoff/PR;
+do not silently claim an unwritten receipt preserved the question.
 
 Not every successful Sensemaking cycle ends in code. Valid outcomes include:
 
@@ -969,11 +1016,14 @@ next agent/run -> depends on what the previous conversation happened to remember
 
 When continuation is awkward, preserve the actual handoff and candidate evidence first. Do not invent new cross-run machinery until repeated real use demonstrates a stable failure boundary.
 
-The session receipt is the always-present minimum for every session. It
-records where the session stopped and what remains open, so the next session
-never depends on conversation memory or a scratch directory.
+For consequential multi-context continuation, preserve explicit durable
+state in the repository's existing handoff/receipt/Campaign surfaces when
+warranted and authorized. The optional session receipt can record where a
+session stopped; for small single-context work, PR and Git history may be
+enough. Absence of Sensemaking-specific receipt tooling must not block a
+portable coding task.
 
-Durability and transferability are not identical. Beyond the receipt, externalize selected rationale, evidence, decisions, or material search history when another actor/context must continue, rediscovery would be costly, or governance/operations/user transfer requires an intelligible artifact. A reasoning result does not automatically require a durable document, and hidden chain-of-thought is never a persistence requirement.
+Durability and transferability are not identical. Beyond whichever existing handoff or receipt is warranted, externalize selected rationale, evidence, decisions, or material search history when another actor/context must continue, rediscovery would be costly, or governance/operations/user transfer requires an intelligible artifact. A reasoning result does not automatically require a durable document, and hidden chain-of-thought is never a persistence requirement.
 
 ---
 
@@ -981,7 +1031,8 @@ Durability and transferability are not identical. Beyond the receipt, externaliz
 
 Read these only when the decision needs more depth. Each entry states the distinction it protects, which is also stated here, so the distinction is known even when the file is not opened.
 
-- `references/session-receipt-v1.md`: receipt schema, lifecycle, persistence and reader. Protects: receipt != authority.
+- `references/portable-construction-loop-v1.md`: portable Architect -> Builder -> Reconcile in sparse or documented repositories, including harness and authority boundaries. Protects: no repository scaffold != cannot build.
+- `references/session-receipt-v1.md`: optional receipt schema, lifecycle, persistence and reader. Protects: receipt != authority.
 - `references/adaptive-guidance-v0.md`: the five contextual factors and examples. Protects: user supervision capability != permanent expertise class.
 - `references/adaptive-policy-coordinator-v0.md`: compose only decision-relevant policy questions. Protects: policy available != policy must activate.
 - `references/inquiry-policy-v0.md`: what to learn next, if anything. Protects: uncertainty exists != inquiry required.
@@ -1004,7 +1055,9 @@ Read these only when the decision needs more depth. Each entry states the distin
 ## Summary: your job as the active agent
 
 Keep the goal and authority boundary explicit. Find the uncertainty that could change
-the next action, resolve it from the right evidence, and act through the lightest
-capable responsibility. Verify the mechanical facts, reconcile claims with what they
-actually show, then continue, stop, or escalate deliberately. The goal is warranted
-engineering action proportionate to the situation, not a predetermined workflow.
+the next action, resolve it from the right evidence, and perform useful bounded
+engineering work when warranted. Verify affected behavior and integration under
+**target-repository policy**; reconcile only consequential claims and continue,
+stop, or escalate deliberately. The portable Architect -> Builder -> Reconcile
+loop requires no Sensemaking-specific repository scaffolding. The goal is
+warranted action, not a predetermined document-production workflow.

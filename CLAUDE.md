@@ -91,11 +91,17 @@ research paths.
 
 ## Choosing and building an increment
 
-Use [Value-Directed Continuous Construction](docs/value-directed-continuous-construction.md)
-as the product-value-led policy and [the build loop](docs/agents/build-loop.md)
-for the **operational** Architect + Builder + Close practice. The roles may
-interleave within one active coding agent; they do not create a planner,
-approval gate, or additional semantic authority.
+Use the [portable `using-sensemaking` Skill](skills/using-sensemaking/SKILL.md)
+for the general **Architect -> Builder -> Reconcile construction capability**.
+It can operate after loading in a target repository without `CLAUDE.md`,
+`AGENTS.md`, `CONTEXT.md`, an index, or a Sensemaking CLI. For **this
+repository's** product-value orientation read
+[Value-Directed Continuous Construction](docs/value-directed-continuous-construction.md);
+for **local** branch, review and merge conventions read
+[the build-loop profile](docs/agents/build-loop.md) and the PR rules below.
+The roles may interleave in one active coding agent, without a planner,
+approval gate, or new semantic authority. For multi-increment strategic
+missions, `strategic-sensemaking-loop` owns outer continuation.
 
 - **Before selecting:** inspect the last relevant PR/readout and current
   source reality. Read the compass proportionately: `CONTEXT.md` "Current
