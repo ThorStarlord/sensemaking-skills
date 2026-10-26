@@ -210,7 +210,8 @@ upstream recommendation     != unquestionable premise
 precondition unresolved     != automatic strategic reopening
 ```
 
-Treat an inherited responsibility as a defeasible conclusion: check only the
+**Inherited-responsibility prerequisite backstop:** treat an inherited
+responsibility as a defeasible conclusion: check only the
 prerequisites that could make it premature or misframed, and return upstream
 when one materially defeats it. Cheap reversible construction within authority
 is often better evidence than a separate experiment; experiment design belongs

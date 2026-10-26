@@ -95,7 +95,10 @@ python scripts/probe_skill_distribution.py --no-write
 ```
 
 The probe reports synchronized, line-ending-only, content-drift, and missing
-Skill copies. To intentionally synchronize missing/content-drifted copies from
+Skill copies. It compares each Skill's `SKILL.md` and every file under its
+`references/` directory, because a Skill's core loads its references on demand:
+a matching `SKILL.md` with a stale or missing reference is reported as
+`content_drift` with the affected `differing_references`. To intentionally synchronize missing/content-drifted copies from
 the repository source:
 
 ```bash
