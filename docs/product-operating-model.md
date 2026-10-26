@@ -8,6 +8,12 @@ This is a compact value-stream and responsibility map. The more detailed
 operating guide remains [agent-native-operating-workflow.md](agent-native-operating-workflow.md).
 The canonical higher-scope control model is
 [strategic-outer-loop.md](strategic-outer-loop.md).
+The owner's current Architect + Builder construction posture is documented in
+[Value-Directed Continuous Construction](value-directed-continuous-construction.md):
+product-value-led selection, proportional divergent/convergent exploration,
+retained implementation, and RECALL -> BUILD -> RECONCILE. It is an operating
+interpretation under the existing Level-4/Level-3 authorities, not another
+strategy, workflow engine or permission source.
 The current product boundary is [ADR 0029](adr/0029-current-product-boundary.md);
 ADR 0014 is retained as historical evidence for the narrower July 2026 boundary.
 The Level-4 Persona & Adaptive Guidance Model v0 interpretation is frozen in
