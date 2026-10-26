@@ -105,9 +105,12 @@ what to do next. Good tests and reviews provide indispensable evidence but
 are not the ultimate success metric. Durable learning is evidenced when
 **later episodes** correctly reuse or revise earlier product understanding.
 
-This is a **selected architectural direction, not an already implemented
-semantic database**. The existing Grounding Pack remains a compact retrieval
-entry point under ADR 0030. For the planned build, see
+This is a **selected long-term destination, not a completed or independently
+qualified platform**. Its S1-S4 foundation now includes Git-reviewed semantic
+records and a rebuildable SQLite query index; later-session decision value
+and comparative improvement remain unproven. The existing Grounding Pack
+remains a compact retrieval entry point under ADR 0030. For the continuing
+construction trajectory, see
 [`persistent-semantic-stewardship-plan.md`](persistent-semantic-stewardship-plan.md).
 No new control level, automatic semantic router, factory executor or merge/
 release authority is created by this revision.
