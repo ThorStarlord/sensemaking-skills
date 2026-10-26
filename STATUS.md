@@ -525,6 +525,8 @@ no unit or synthetic evidence tests were run.
 
 **ACTIVE CONSTRUCTION — PATH-1, ACCRETE PRODUCT KNOWLEDGE THROUGH GENUINE RESPONSIBILITIES.**
 
+**2026-10-26 portable Sensemaking core and brownfield reuse (#603–#606):** `using-sensemaking/SKILL.md` is now a 382-line control surface (from 1,067) that states every governing rule and loads detail only on a stated condition through a load/skip/protects table. Closure procedures moved to `references/evidence-and-closure-v1.md`; four policy references carry only the guidance they lacked, not copies. The portable construction loop's new section 1a tells an agent where brownfield knowledge lives, how to trust Skill references versus specialist artifacts versus reviewed knowledge, how to check currentness before reuse, and how to resolve contradictions by which source governs; generated artifacts never become instructions or permission. Installed-Skill verification found that the distribution probe compared only `SKILL.md`; it now compares `references/` too (#606), exercised on a real `setup-skills` install. Evidence ceiling: source-level coherence, CI and one scratch install only. No host in this environment had the Skill installed, so no installed-Skill invocation, independent-agent use, or sparse/documented external-repository use was observed. Next decision context: the first authentic use of the compact core in another repository, and whether its loading table routes agents to the right reference.
+
 **2026-10-26 owner reconciliation of PRs #598/#599 (current operating decision):**
 The owner selected a brief source-grounded decision note **for every PR** (two
 sentences suffice for a clear repair), with qualitative/proportional exploration
