@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "claims": [
+    {
+      "id": "goal:compounding-product-knowledge",
+      "kind": "goal",
+      "statement": "The product outcome is typed, source-grounded knowledge of a product's purpose, architecture, constraints, decisions and history that compounds to improve future engineering decisions, rather than test or documentation volume.",
+      "authority_kind": "policy",
+      "authority_ref": "docs/product-strategy.md",
+      "evidence_refs": ["file:docs/product-strategy.md"],
+      "epistemic_status": "declared",
+      "attributes": {
+        "decision_changed": "Which increment to build: a candidate that serves no such goal is maintenance, not a roadmap increment.",
+        "claim_ceiling": "Selected product direction; compounding benefit not yet demonstrated"
+      }
+    },
+    {
+      "id": "con:agent-owns-semantic-control",
+      "kind": "constraint",
+      "statement": "The active coding agent remains the semantic controller. Deterministic machinery may expose, validate, preserve and reconstruct explicit state but may not silently convert available information into strategic selection or authority.",
+      "authority_kind": "policy",
+      "authority_ref": "docs/adr/0029-current-product-boundary.md",
+      "evidence_refs": ["file:docs/adr/0029-current-product-boundary.md"],
+      "epistemic_status": "declared",
+      "attributes": {
+        "decision_changed": "Whether a design may automate a choice; any automation that selects or authorizes is rejected."
+      }
+    },
+    {
+      "id": "ng:deterministic-planner",
+      "kind": "non_goal",
+      "statement": "No deterministic semantic planner, StrategicPlanner or OuterLoopEngine, and no automatic Strategic Frontier ranking.",
+      "authority_kind": "policy",
+      "authority_ref": "docs/adr/0029-current-product-boundary.md",
+      "evidence_refs": ["file:docs/adr/0029-current-product-boundary.md"],
+      "epistemic_status": "declared",
+      "attributes": {
+        "decision_changed": "Rejects candidates that build planning, ranking or routing engines."
+      }
+    },
+    {
+      "id": "ng:automatic-selection",
+      "kind": "non_goal",
+      "statement": "No automatic responsibility, capability, Skill, workflow, repository or product-thesis selection.",
+      "authority_kind": "policy",
+      "authority_ref": "docs/adr/0029-current-product-boundary.md",
+      "evidence_refs": ["file:docs/adr/0029-current-product-boundary.md"],
+      "epistemic_status": "declared",
+      "attributes": {
+        "decision_changed": "Rejects features that pick the next responsibility or Skill on the agent's behalf."
+      }
+    },
+    {
+      "id": "ng:autonomous-operations",
+      "kind": "non_goal",
+      "statement": "The product does not perform autonomous merge, release, deployment, publication or production operations, or default direct third-party tracker mutation.",
+      "authority_kind": "policy",
+      "authority_ref": "docs/adr/0029-current-product-boundary.md",
+      "evidence_refs": ["file:docs/adr/0029-current-product-boundary.md"],
+      "epistemic_status": "declared",
+      "attributes": {
+        "decision_changed": "Rejects product features that merge, release or publish on their own; an agent acting under explicit owner direction is outside this non-goal.",
+        "scope": "Product capability scope, not the owner's development workflow"
+      }
+    },
+    {
+      "id": "ng:mechanical-semantic-truth",
+      "kind": "non_goal",
+      "statement": "No semantic truth claims derived from mechanical validation alone.",
+      "authority_kind": "policy",
+      "authority_ref": "docs/adr/0029-current-product-boundary.md",
+      "evidence_refs": ["file:docs/adr/0029-current-product-boundary.md"],
+      "epistemic_status": "declared",
+      "attributes": {
+        "decision_changed": "How results are reported: a validator PASS is never presented as a correct conclusion."
+      }
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel:compounding-goal-constrained",
+      "subject": "goal:compounding-product-knowledge",
+      "predicate": "constrained_by",
+      "object": "con:agent-owns-semantic-control",
+      "evidence_refs": ["file:docs/product-strategy.md"],
+      "attributes": {
+        "scope": "Product strategy states that ADR 0029's execution/authority boundary remains controlling"
+      }
+    }
+  ]
+}
