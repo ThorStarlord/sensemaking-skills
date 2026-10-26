@@ -525,6 +525,29 @@ no unit or synthetic evidence tests were run.
 
 **ACTIVE CONSTRUCTION — PATH-1, ACCRETE PRODUCT KNOWLEDGE THROUGH GENUINE RESPONSIBILITIES.**
 
+**2026-10-26 owner reconciliation of PRs #598/#599 (current operating decision):**
+The owner selected a brief source-grounded decision note **for every PR** (two
+sentences suffice for a clear repair), with qualitative/proportional exploration
+rather than fixed candidate counts or numeric scores. Architect and Builder are
+complementary responsibilities and may interleave; the Builder updates the
+same PR note for an in-scope redesign, returning to selection only when the
+responsibility, outcome, scope or authority changes. The conceptual
+`docs/value-directed-continuous-construction.md` and operational
+`docs/agents/build-loop.md` now have distinct, linked roles. Use one
+`claude/<topic>` branch per PR; **merge authorized increments promptly after
+clean source/diff review without waiting for hosted CI**, retaining GitHub
+CI, protections, release gates and truthful pending/failure reporting;
+known consequential defects are not exempt. PR/Git preserve routine readouts;
+update STATUS only for consequential capability, strategic or continuation
+changes. Product authorities are accepted owner decisions, applicable current
+strategy and ratified ADRs (including ADR 0031), not a fixed two-document
+allowlist. **Both product goals in reviewed knowledge remain unchanged** by
+owner selection; no semantic merge or new relationship is asserted. This
+reconciles the historical #598 green-CI-before-merge rule and #599 source
+allowlist claim without reopening PATH-1, changing code/schema, or claiming
+independent long-term agent benefit. Local unit/synthetic evidence tests remain
+not run during the explicit construction phase.
+
 **2026-10-26 — owner-endorsed Value-Directed Continuous Construction guidance:**
 [Value-Directed Continuous Construction](docs/value-directed-continuous-construction.md)
 now explains the Architect + Builder posture, product-definition-first context,
@@ -543,9 +566,9 @@ independent knowledge-compounding results.
 
 **2026-10-25 PATH-1 construction — legacy `run_workflow` contract:** Source inspection found that `SkillsOrchestrator.run_workflow` dropped a supplied `problem_statement` without error. The runtime takes the user's problem as a positional argument, but the method never forwarded it, so a legacy caller got a repo-inferred run. `context_artifacts` was silently ignored as well. The method now forwards `problem_statement` after `--` and raises `ValueError` for `context_artifacts`, which points to `from_session`. API.md's contract matches the code: retired `yolo_execution` raises, the return is the integer exit code, and the parameter list is current. Correction (2026-10-26): this was selected by a defect hunt, not against the product definition or the roadmap; it serves no goal in product strategy §1 and is maintenance of a legacy surface, not a roadmap increment. Candidates checked: the knowledge plane was not reopened, because T21 found no use evidence for a further increment. Distribution was verified complete from source: the build hook copies the canonical `skills/` tree and discovery finds every `SKILL.md`. The referenced CLI commands resolve, and the flags in the examples checked against `--help` exist; `campaign advanced` commands also resolve at top level without appearing in its help. Open issues are research, qualification or governance items by title, and #255 is owner-blocked. The legacy contract was selected as the verified silent-drop in the fail-closed direction the owner set for legacy producers. Verification was static only: AST, ruff, and the repository validators. No unit or synthetic evidence tests were written or run.
 
-**2026-10-26 agent build loop:** `CLAUDE.md` now says how to choose an increment, not only how to behave: read the compass (CONTEXT.md product definition, product strategy, ADR 0029, stewardship plan §12 and §14, this file's current next step), write a decision note, build only that slice, then reconcile. Detail is in `docs/agents/build-loop.md`. Root `roadmap.md` is marked as historical for agents. Owner decisions taken on the owner's delegation: one `claude/<topic>` branch per PR; merge after a clean source review once hosted CI is green (about 2.5 minutes), replacing merge-without-waiting; local unit and synthetic evidence tests stay out of construction. Probe: the next increments' PR descriptions carry a decision note whose `Serves` line cites the compass.
+**2026-10-26 agent build loop:** `CLAUDE.md` now says how to choose an increment, not only how to behave: read the compass (CONTEXT.md product definition, product strategy, ADR 0029, stewardship plan §12 and §14, this file's current next step), write a decision note, build only that slice, then reconcile. Detail is in `docs/agents/build-loop.md`. Root `roadmap.md` is marked as historical for agents. Owner decisions recorded at the time: one `claude/<topic>` branch per PR; merge after a clean review once hosted CI is green (about 2.5 minutes), replacing merge-without-waiting; local unit and synthetic evidence tests stay out of construction. **The green-CI prerequisite was superseded by the later 2026-10-26 owner reconciliation above.** Probe: the next increments' PR descriptions carry a decision note whose `Serves` line cites the compass.
 
-**2026-10-26 product intent in reviewed knowledge:** The architect step found that this repo's reviewed knowledge held 1 goal, 0 non-goals and 0 constraints among 79 claims, although the product definition leads with intent and the plan's §4 queries need a goal. `.sensemaking/knowledge/product.json` adds one goal (knowledge that compounds, from product strategy §1), one constraint (the agent owns semantic control, from ADR 0029's boundary law) and four non-goals (ADR 0029's out-of-scope list). Each record names the decision it changes. Owner decision taken on delegation: only `docs/product-strategy.md` and ADR 0029 count as authority for goals. A `.sensemaking/intent.md` was rejected because the Grounding Pack template says to link `CONTEXT.md` and ADRs rather than duplicate them. Verification: `knowledge-proposal-check` VALID, repository validators, hosted CI. Probe: later decision notes cite these records when accepting or rejecting a candidate.
+**2026-10-26 product intent in reviewed knowledge:** The architect step found that this repo's reviewed knowledge held 1 goal, 0 non-goals and 0 constraints among 79 claims, although the product definition leads with intent and the plan's §4 queries need a goal. `.sensemaking/knowledge/product.json` adds one goal (knowledge that compounds, from product strategy §1), one constraint (the agent owns semantic control, from ADR 0029's boundary law) and four non-goals (ADR 0029's out-of-scope list). Each record names the decision it changes. Historical source selection: `docs/product-strategy.md` and ADR 0029 were used to ground this increment's authored records; the claim that they are the **only** legitimate goal authorities was corrected by the later 2026-10-26 owner reconciliation above (including accepted ADR 0031 and other scope-appropriate ratified sources). A `.sensemaking/intent.md` was rejected because the Grounding Pack template says to link `CONTEXT.md` and ADRs rather than duplicate them. Verification: `knowledge-proposal-check` VALID, repository validators, hosted CI. Probe: later decision notes cite these records when accepting or rejecting a candidate.
 
 T16 keeps advisory generic-validator findings visible to machine clients without promoting them to blocking failure and isolates sequential calls. T15 aligns the generic repository-brief validation path with ADR 0024's optional, non-blocking Section 15 contract and retains source-linked validator knowledge. Continue with the next independently warranted real engineering responsibility; do not treat this code review as test execution or S5/S6 evidence.
 T9 (PR #580) integrated optional architecture exploration with persistent
