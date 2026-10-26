@@ -31,6 +31,7 @@ import sys
 from pathlib import Path
 from typing import List, Tuple
 
+from . import __version__
 from .harness_adapters import (
     HarnessAdapterError,
     resolve_harness_destinations,
@@ -342,8 +343,18 @@ def setup_skills(
                 "normal Skill discovery/invocation surface."
             )
             print("The setup command does not select or invoke any Skill.")
-            print("\nThe Python package is still required for Skill helper commands:")
-            print("  pip install sensemaking-skills")
+            print(
+                "\nSkill helper commands (for example `semantic`) need a "
+                "sensemaking-skills CLI from the same source as these Skills."
+            )
+            print(f"These Skills came from sensemaking-skills {__version__}.")
+            print("Confirm a CLI before relying on it:")
+            print("  sensemaking-skills --version")
+            print("  sensemaking-skills semantic --help")
+            print(
+                "The published PyPI distribution may lag this source and lack "
+                "these commands; see INSTALLATION.md for pinned installs."
+            )
         else:
             print("\nStatus: PARTIAL FAILURE - Some installations failed")
             print("Existing divergent Skill copies are reported above and are")

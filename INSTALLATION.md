@@ -21,6 +21,13 @@ sensemaking-skills --version
 
 A PyPI version, a repository development version, and a frozen release candidate are distinct provenance claims.
 
+A lagging published distribution can lack both the current Skill set and the
+`semantic` commands the `repository-semantic-steward` Skill uses. Check
+`sensemaking-skills semantic --help` before relying on it. To use the Skills
+in another repository, install them and their CLI from the same source
+revision: either from source (below), or pinned to a commit as described
+under "Verify and pin the CLI" in `skills/repository-semantic-steward/SKILL.md`.
+
 ## Install from source
 
 ```bash
