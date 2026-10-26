@@ -268,6 +268,23 @@
         "file:tests/test_semantic_knowledge_self_repo.py"
       ],
       "epistemic_status": "declared"
+    },
+    {
+      "id": "lesson:installed-skill-currency-includes-references",
+      "kind": "lesson",
+      "statement": "An installed Skill copy is current only if its references match as well as its SKILL.md: the compact using-sensemaking core loads load-bearing rules from references on demand, so a matching entrypoint with stale references changes agent behavior.",
+      "authority_kind": "code",
+      "authority_ref": "scripts/repo_probes.py",
+      "evidence_refs": [
+        "file:scripts/repo_probes.py",
+        "file:INSTALLATION.md",
+        "file:skills/using-sensemaking/SKILL.md"
+      ],
+      "epistemic_status": "observed",
+      "attributes": {
+        "decision_changed": "Whether a host's installed Sensemaking Skill can be reported as current after a merge.",
+        "claim_ceiling": "Observed on one scratch setup-skills install; hosted or remote Skill surfaces are not covered by the file probe."
+      }
     }
   ],
   "relations": [
