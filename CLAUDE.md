@@ -59,6 +59,13 @@ other coding-agent harnesses or target repositories.
 
 ## Current operating discipline
 
+For the present owner-endorsed **Value-Directed Continuous Construction**
+approach, see `docs/value-directed-continuous-construction.md`. Use the current
+product definition and Level-3 compass, combine Architect + Builder judgment,
+explore alternatives proportionately, and use source-linked
+RECALL -> BUILD -> RECONCILE where it changes a consequential decision.
+This guide does not alter ADR authority or the local verification exception below.
+
 The active coding agent owns the top-level control loop (ADR 0013). Use
 `docs/agent-native-operating-workflow.md` as the current operating map.
 
