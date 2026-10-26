@@ -100,9 +100,9 @@ Use epistemic labels only where they clarify material reasoning; do not turn the
 
 ## References
 
-- [Artifact Contract](../../workflow-planner/references/artifact-contracts.yaml): `architectural_review_recommendation`
+- [Artifact Contract](../workflow-planner/references/artifact-contracts.yaml): `architectural_review_recommendation`
 - Historical workflow registry identity: `architectural-review-planning-workflow` is compatibility-only provenance, not the current invocation path.
-- [Skill Registry](../../workflow-planner/references/skill-registry.yaml): `architectural-review`
+- [Skill Registry](../workflow-planner/references/skill-registry.yaml): `architectural-review`
 - [Design Document](../../docs/skill-design-architectural-review.md): Full specification
 - [Template](./references/architectural-review-template.md): Artifact template
 - [Trigger Policy](./references/architectural-review-trigger-policy.md): When to invoke this skill

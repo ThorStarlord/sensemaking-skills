@@ -5,6 +5,8 @@ Performs three checks:
 1. npm scripts exist (references in AGENTS.md exist in package.json)
 2. skill IDs cross-ref (workflow-registry steps reference existing skills)
 3. artifact contracts resolve (artifact refs in registry exist in contracts)
+4. relative Skill links resolve (`../` paths in SKILL.md and references/ resolve
+   from the file that contains them)
 
 Exit codes:
   0: All checks passed
@@ -166,6 +168,32 @@ def check_artifact_contracts():
     return errors
 
 
+_DOTDOT_LINK = re.compile(r"(?:`|\]\()(\.\./[A-Za-z0-9_./-]+\.(?:md|ya?ml|py|json))")
+
+
+def check_relative_skill_links(skills_dir="skills"):
+    """Check 4: `../` paths in Skill docs resolve from their containing file.
+
+    Only `../` paths are checked: they are unambiguous file-relative paths.
+    Paths written relative to the Skill or repository root (for example
+    `references/x.md` or `docs/x.md`) follow other conventions and are not
+    judged here.
+    """
+    errors = []
+    root = Path(skills_dir)
+    files = sorted(root.glob("*/SKILL.md")) + sorted(root.glob("*/references/**/*.md"))
+    for path in files:
+        text = path.read_text(encoding="utf-8", errors="replace")
+        for number, line in enumerate(text.splitlines(), 1):
+            for match in _DOTDOT_LINK.finditer(line):
+                target = match.group(1)
+                if not (path.parent / target).resolve().exists():
+                    errors.append(
+                        f"UNRESOLVED_SKILL_LINK: {path.as_posix()}:{number} -> {target}"
+                    )
+    return errors
+
+
 def main():
     """Run all checks"""
     all_errors = []
@@ -197,6 +225,15 @@ def main():
     if artifact_errors:
         print(f"FAILED ({len(artifact_errors)} errors)")
         all_errors.extend(artifact_errors)
+    else:
+        print("PASSED")
+
+    # Check 4: relative Skill links
+    print("Check 4: relative Skill links resolve...", end=" ")
+    link_errors = check_relative_skill_links()
+    if link_errors:
+        print(f"FAILED ({len(link_errors)} errors)")
+        all_errors.extend(link_errors)
     else:
         print("PASSED")
 
