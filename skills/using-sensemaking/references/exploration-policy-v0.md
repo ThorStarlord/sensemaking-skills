@@ -421,3 +421,39 @@ RECOMBINE / RESTART / VERIFY / EXIT_SEARCH
 ```
 
 For one-shot/local work, keep Exploration Policy implicit.
+
+
+## Moved from the using-sensemaking entrypoint (verbatim)
+
+### Exploration Policy v0
+
+When iterative search has multiple meaningful attempts, use the material search history to allocate the next search move:
+
+```text
+EXPLOIT
+EXPLORE
+CHALLENGE
+DIAGNOSE
+RECOMBINE
+RESTART
+VERIFY
+EXIT_SEARCH
+```
+
+`EXIT_SEARCH` is valid when additional search is unlikely to improve the decision enough to justify its cost.
+
+Search history is a decision-relevant projection of existing evidence/provenance. Keep it transient for small work and reuse existing Campaign/handoff/STATUS/repository-history surfaces when continuation makes it durable.
+
+```text
+search history exists
+!= SearchState schema required
+
+Exploration Policy
+!= Strategic Frontier ranking
+```
+
+Keep this implicit for one-shot/local work; do not turn the modes into a score or routing table.
+
+Critic or explorer output is evidence for the active agent; it is not automatic veto, approval, or authority.
+
+Read `references/exploration-policy-v0.md` when iterative search allocation is material. For explicit inquiry selection, read `references/inquiry-policy-v0.md`. For challenge/exploration triggers, delegation evidence return, and persistence guidance, read `references/practical-agent-architecture-v0.md`.
