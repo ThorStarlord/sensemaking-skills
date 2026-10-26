@@ -6,7 +6,7 @@
 
 **Working label:** *Value-Directed Continuous Construction* is a descriptive name for the owner's working preference, not a standardized methodology, another strategic level, a registered Skill, or an executable planner.
 
-**Document roles:** This page states the construction philosophy and product-value policy. The [agent build loop](agents/build-loop.md) applies it to one PR: a proportional Architect/Builder/Close cycle with a brief decision note. `CLAUDE.md` provides the short entry trigger and the current integration/verification rules. These pages complement one another; they are not competing control layers.
+**Document roles:** This page states this repository's value-directed construction philosophy and operating preference. The **portable** [using-sensemaking Skill](../skills/using-sensemaking/SKILL.md) and its [construction reference](../skills/using-sensemaking/references/portable-construction-loop-v1.md) now define the reusable Architect -> Builder -> Reconcile capability **without requiring this or any other target-repository document**. The [local agent build-loop profile](agents/build-loop.md) connects that capability to this repository's goals and owner conventions. `CLAUDE.md` supplies local triggers and branch/verification/merge instructions. No document here is a portable installation prerequisite.
 
 ## 1. Build toward product value, not activity volume
 
