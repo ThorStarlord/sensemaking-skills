@@ -98,12 +98,26 @@ The probe reports synchronized, line-ending-only, content-drift, and missing
 Skill copies. It compares each Skill's `SKILL.md` and every file under its
 `references/` directory, because a Skill's core loads its references on demand:
 a matching `SKILL.md` with a stale or missing reference is reported as
-`content_drift` with the affected `differing_references`. To intentionally synchronize missing/content-drifted copies from
+`content_drift` with the affected `differing_references`. Installed references
+that no longer exist in the repository copy are also listed as
+`obsolete_references`. `hash_match` describes `SKILL.md` only;
+`references_match` is true only when every reference is byte-identical.
+Other files in a Skill directory (assets, scripts, local notes) are outside the
+probe's coverage and are neither compared nor removed. To intentionally synchronize missing/content-drifted copies from
 the repository source:
 
 ```bash
 python scripts/probe_skill_distribution.py --sync --no-write
 ```
+
+`--sync` writes. `--no-write` only suppresses the payload file; it does not
+make `--sync` read-only. For each Skill it writes, sync copies the repository
+copy and removes obsolete regular files inside that Skill's own `references/`
+directory, listing them first. It never touches other installed Skills or
+files outside `references/`, and it refuses a Skill whose installation reaches
+outside itself through a symlink. After syncing it probes again and exits 2
+unless the selected Skills converged; refused, failed and remaining paths are
+printed. Use `--skill NAME` against a shared installed root.
 
 You may instead use the applicable `setup-skills` target/scope with `--force`
 when replacement is intentional.
