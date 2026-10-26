@@ -1,6 +1,6 @@
 ---
 name: using-sensemaking
-description: Use the portable Architect -> Builder -> Reconcile loop to select, implement and review real engineering changes in any repository, even without product docs, CLAUDE.md, AGENTS.md, a Sensemaking knowledge pack or installed CLI. Also use when repository uncertainty, product/architecture choices, evidence, delegation, source-grounded memory or authority boundaries could change the warranted next responsibility. The coding agent owns judgment; strategic-sensemaking-loop owns multi-increment mission continuation.
+description: Use the portable Architect -> Builder -> Reconcile loop to select, implement and review real engineering changes in any repository, even without product docs, CLAUDE.md, AGENTS.md, a Sensemaking knowledge pack or installed CLI. Also use for a broad delegated repository mission, or when repository uncertainty, product/architecture choices, evidence, delegation, source-grounded memory or authority boundaries could change the warranted next responsibility. The coding agent owns judgment; strategic-sensemaking-loop owns multi-increment mission continuation.
 ---
 
 # Using Sensemaking Skills: Agent-Native Control Loop
@@ -207,6 +207,10 @@ open, update, finalize, validate and persist within authority. Never claim
 a script ran when it was unavailable, and never grant yourself Git or upload
 authority merely to preserve a receipt. When a host cannot persist state,
 report the limitation instead of requiring extra local scaffolding.
+If an **optional** receipt was actually created but cannot leave the target
+checkout, record `persistence: working_tree_only` in that receipt and disclose
+that it will not survive the ephemeral workspace. Never create a receipt only
+to satisfy this persistence field.
 
 ```text
 receipt available + durable handoff useful -> use existing contract
