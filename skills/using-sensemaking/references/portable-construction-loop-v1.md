@@ -1,0 +1,164 @@
+# Portable Architect -> Builder -> Reconcile (v1)
+
+**Purpose:** The active coding agent can turn a user-authorized software
+engineering outcome into actual bounded implementation, source-grounded
+review, and decision-relevant learning in **any** target repository. This
+reference belongs to the distributed `using-sensemaking` Skill. It is not a
+repository-specific agent instruction, runtime engine, automatic planner,
+new artifact type, or grant of GitHub/external-action authority.
+
+**Inputs:** (1) current user goal and explicit delegation/authority;
+(2) accessible target repository and exact source/working-tree state;
+(3) whatever task-relevant code, tests, history, issues, architecture,
+documentation, owner decisions and local agent instructions actually exist;
+(4) available editing, verification and version-control tools.
+**Outputs:** implemented bounded change **when authorized and warranted**,
+proportionate reasoning/decision record, observed review and verification
+limits, consequential source-linked knowledge updates if worthwhile, and an
+honest continuation or stopping disposition. When action is blocked, output
+the narrow unresolved source/authority gap, not an invented implementation.
+
+## 1. Portable entry: discover evidence without assuming repository scaffolding
+
+1. Identify the **target** (repository and revision/working-tree state),
+   the human-facing outcome and affected behavior. Confirm whether the user
+   requested analysis, coding, a PR, a merge or a longer autonomous mission;
+   these do not grant one another's authority.
+2. Read *available* local instructions and applicable approved policies, if
+   present. Filenames vary: `AGENTS.md`, `CLAUDE.md`, workspace/project
+   guides, contributor docs and owner-ratified decisions are examples,
+   **not required input paths**. A missing or conflicting document is
+   evidence to assess, not a requirement to fabricate a matching file.
+3. Gather the **smallest sufficient** task-relevant sources: existing
+   behavior and affected callers, tests/contracts, build configuration,
+   README/specifications when present, current issues and Git history.
+   Pin claims to actual source/revision; differentiate normative intent,
+   observed implementation, inferred rationale, hypotheses and unknowns.
+4. If no product strategy exists, **do not infer owner preferences solely
+   from code**. Repair an observed defect or implement an already specified
+   outcome within scope when warranted. For genuinely open product direction
+   that changes the correct action, request an owner choice or use existing
+   strategic decision support. Absence of an ontology/pack/index, named
+   roadmap, or documentation file is never itself an implementation gate.
+5. Use the host's **available** repository-reading, editing and verification
+   tools. If Sensemaking CLI, indexing, specialized Skills or receipt scripts
+   are unavailable, continue with ordinary source inspection and direct
+   coding rather than pretending a tool ran. The portable loop is an
+   **instruction capability**, not an executable service.
+
+## 2. ARCHITECT: identify one warranted engineering responsibility
+
+Ask what would make the target system more useful or correct, whether that
+change is supported by real evidence, and whether the contemplated action is
+authorized. If the task is already a clear, low-risk, local repair, keep
+this implicit and proceed promptly.
+
+For uncertain, consequential or architecture-affecting work:
+- establish the governing intent/contract and current behavior;
+- consider only **materially different** alternatives, including smaller
+  repairs, simplifications, safe reversible construction and justified deferment;
+- compare product value, affected consumers, reversibility, opportunity cost,
+  risks, verification burden and owner/external dependencies **qualitatively**;
+- choose a useful, bounded outcome with observable acceptance conditions and
+  the correct scope of authority;
+- investigate the **nearest decision-changing uncertainty** only when further
+  evidence could change the choice enough to justify its cost.
+
+Do **not** require a five-option quota, numerical scores, a mandatory
+repository-wide strategic reanalysis, or a formal specification for routine
+work. A product strategy is an interpretive compass, not an automatic backlog.
+
+## 3. BUILDER: perform real work and revise the design with evidence
+
+- Inspect the real interfaces, callers and contracts before editing. Implement
+  the smallest complete **valuable** slice, not necessarily the fewest lines.
+- When a better local approach emerges, **revise the decision record and
+  implementation within the same authorized outcome and scope**. Architect
+  and Builder are roles of the same active agent; no extra handoff is required.
+- If the premise, target outcome, scope, ownership, risk or protected authority
+  materially changes, revisit selection or escalate; do not silently redesign
+  the requested product or broaden to unrelated repositories.
+- Review the diff and affected paths. Perform target-repository-appropriate
+  checks and real-path inspection where warranted and available. The
+  **target's** instructions and the current owner's explicit exceptions
+  determine test/CI/merge policy; this Skill imposes **no universal**
+  "no tests" or "merge before CI" rule.
+- Keep decisions in the lightest available channel: a short PR description,
+  commit rationale, review note or final report. A small repair may need
+  just **two source-grounded sentences**; complex changes warrant a fuller
+  rationale. No PR, Campaign, status file or structured artifact is required
+  solely to prove the loop ran.
+
+A helpful **optional** decision note, only as detailed as needed:
+
+```text
+Outcome: <what user/agent behavior should improve>
+Warrant: <user request, source, contract, observed defect>
+Choice: <meaningful alternative and tradeoff, if material>
+Scope: <affected behavior, boundaries, exclusions>
+Evidence: <diff review, real checks/results and what was NOT_RUN>
+Next: <reconcile, continue, stop or owner-reserved decision>
+```
+
+## 4. RECONCILE: keep only knowledge that improves later decisions
+
+- Distinguish implementation, review, validation, observed correctness,
+  genuine user benefit and authoritative closure; one does not prove another.
+- When current work changes a **non-derivable, consequential** decision,
+  constraint, architectural fact or lesson, update the relevant source-linked
+  reviewed record **if the target has such a knowledge surface and the edit
+  is authorized**. Use Repository Semantic Steward RECALL/RECONCILE when
+  available and decision-relevant; build or bootstrap knowledge demand-first,
+  never as a compulsory prerequisite.
+- If no knowledge system exists, ordinary PR/commit records may be sufficient.
+  Add a durable note, ADR or compact knowledge pack only when later
+  collaborators would otherwise lose decision-changing understanding.
+  `NO_MODEL_CHANGE` and no new files are valid outcomes.
+- Check actual PR/commit/merge status when claiming integration, and separate
+  open, pending, failing and completed verification results.
+- A bounded task may finish here. For **multiple independent responsibilities
+  under a delegated strategic/terminal mission**, return to
+  `strategic-sensemaking-loop` for continuation; do not turn this inner
+  loop into an autonomous issue-queue processor.
+
+## 5. Harness and repository boundaries
+
+The Skill is **harness-agnostic in instructions**, not guaranteed auto-loaded.
+A host must make it discoverable or the user/agent must explicitly invoke it.
+Optional target-repository pointers can make discovery more reliable across
+environments, but a missing `AGENTS.md` or `CLAUDE.md` never removes its
+capability **after the Skill is loaded**. Do not claim every host supports
+Skill invocation, Git mutation, GitHub PR creation or autonomous execution.
+
+If the target's rules forbid a change, tests are unavailable, merge is
+reserved, or the host has read-only access, make the maximum truthful
+authorized progress and name the remaining boundary. A plugin/connector
+result, project document, semantic index, CI pass and user delegation
+are **not interchangeable** sources of permission.
+
+## 6. Authentic-use examples and evidence ceiling
+
+**Sparse repository, known bug:** user reports an actual failing interaction.
+Inspect the behavior, owning code and any existing checks/history. Make one
+warranted repair if authorized, review diff, apply local verification, record
+specific limits and stop. Do not first create product strategy, `STATUS.md`,
+or an ontology to satisfy this Skill.
+
+**Documented project, architecture-affecting change:** follow current owner
+intent, component contracts and relevant decisions. Compare the few approaches
+that could change the choice, implement a coherent slice, verify affected
+consumers, and reconcile a source-linked reusable architectural lesson only
+when the change warrants it.
+
+**Open product choice:** when source evidence does not establish whether the
+owner wants solution A or B and selecting one would redefine the product,
+present the concrete decision and stop that protected transition. A smaller
+independently warranted fix may still proceed.
+
+**Authentic portability observation:** when evaluating this instruction in
+real work, distinguish (a) code actually changed and integrated, (b) source
+review/target checks, (c) the host actually loading the Skill, (d) selective
+use of existing documentation and reviewed knowledge, and (e) later independent
+agent benefit. A source-level review alone establishes none of (c)--(e).
+Do not invent a code change or run a synthetic exercise merely to claim a
+successful portability probe.
