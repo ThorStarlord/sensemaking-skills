@@ -377,7 +377,7 @@ already stated above, so skipping a file never loses the rule.
 | `references/adaptive-policy-coordinator-v0.md` | several policy questions matter at once | one policy question or none | policy available != policy must activate |
 | `references/practical-agent-architecture-v0.md` | challenge vs exploration, delegated evidence return, persistence | no delegation or challenge in play | worker recommendation != parent decision |
 | `references/golden-paths-v1.md` | composing Skills for a recurring situation | the responsibility is already chosen | golden path != workflow engine |
-| `references/policy-details-v1.md` | the consolidated policy summaries are needed verbatim | always otherwise (kept pending owner decision O3) | no added authority |
+| `references/policy-details-v1.md` | the consolidated policy summaries are needed verbatim | always otherwise (kept by default in #566; owner choice O3 was left open, not decided) | no added authority |
 
 Framework-repository documents (`../../CONTEXT.md`, `../../docs/`, ADRs, the
 consequence-depth research note) are optional provenance when present; this
