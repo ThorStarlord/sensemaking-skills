@@ -23,6 +23,17 @@
    change the next responsibility, claim, or authority decision. Do not turn
    unresolved hypotheses into confident claims.
 
+## Current construction orientation
+
+For the current owner-directed architect-and-builder phase, read
+[Value-Directed Continuous Construction](docs/value-directed-continuous-construction.md)
+before choosing a new repository-level responsibility. It ties product value,
+the current strategic compass, selective ontology/architecture RECALL, bounded
+divergence/convergence, construction, source review, and knowledge reconciliation
+together without adding a planner or changing authority. Use the explicit
+verification exception in `CLAUDE.md` for this phase, not a blanket
+no-tests rule for releases or other work.
+
 ## Local verification
 
 Choose local test scope by the change's risk. The full policy is in `CLAUDE.md`, section "Local verification scope"; follow it.
