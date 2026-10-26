@@ -421,27 +421,10 @@ prior strategic analysis
 ```
 
 
-## Moved from the using-sensemaking entrypoint (verbatim)
+## Where reconciled state goes
 
-### Learning / Reconciliation Policy v0
-
-After consequential evidence returns, ask:
-
-> **What explicit claims, uncertainties, responsibility, continuation state, or strategic frame should change—if anything?**
-
-`NO_MODEL_CHANGE` is valid. Other useful dispositions include confirming or revising claims, resolving/opening uncertainty, changing responsibility, continuing, stopping, escalating, reopening strategy, or requiring Level-4 thesis review.
-
-```text
-result returned
-!= state update automatic
-
-learning
-!= model-weight update
-
-authority need discovered
-!= authority granted
-```
-
-Persist only the explicit decision-relevant update another context must reconstruct, using existing Campaign / STATUS / ADR / handoff / evidence surfaces. At Level 3, `strategic-repository-reconciliation` provides a first-class artifact when the relationship to a prior `strategic_repository_analysis` itself must be durable.
-
-Read `references/learning-reconciliation-policy-v0.md` when returned evidence can materially change the decision model.
+Persist only the explicit decision-relevant update another context must
+reconstruct, using existing Campaign, STATUS, ADR, handoff or evidence
+surfaces. At Level 3, `strategic-repository-reconciliation` provides a
+first-class artifact when the relationship to a prior
+`strategic_repository_analysis` itself must be durable.
