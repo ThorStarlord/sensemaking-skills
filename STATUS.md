@@ -2,7 +2,7 @@
 
 **Source version:** 1.0.0rc5.dev0
 **Release target:** 1.0.0rc5 (development; post-RC4 reduced-scope candidate target)
-**Last updated:** 2026-10-25  
+**Last updated:** 2026-10-26  
 **Current phase:** **CONSTRUCTION** during RC5 development. Persistent semantic stewardship S1–S4, PR #558's active-workspace recall/coverage slice and PRs #559–#568 are integrated on `main`. The legacy brief producer (PR #568) and the legacy workflow planner (PATH-1/T2) fail closed. The governing Level-3 analysis, [`SRA-2026-10-23-observation-aa13f40`](artifacts/history/2026-10-23-strategic-repository-analysis.md), selects PATH-1: accrete reviewed product knowledge through genuine engineering responsibilities. The [2026-10-24 reconciliation](artifacts/history/2026-10-24-strategic-reconciliation.md) reaffirmed it without reopening Level 3. Independent S5/S6 qualification remains open for release-stage verification.
 
 - **2026-10-14 proactive product-target discovery — HISTORICAL OWNER DIRECTION, NOW APPLIED:** Absence of a ready-made unused issue does not prove that a repository has no valuable frontier. Within an authorized candidate repository, independent Trial 002 operators may conduct bounded strategic opportunity discovery and have an intrinsically valuable objective ratified *before* the participant runs. Trial 002 still tests an externally pinned outcome, while Trial 003 tests participant-led target selection. Operator records in Issue #515 subsequently admitted Chess-Mentor-Engine #101 and attempted Session A; the attempt was void after workspace credits expired, and Trial 002R remains NOT RUN. This historical direction is not evidence of a passing autonomy trial.
