@@ -27,7 +27,7 @@ catalog.
 | Need | Start here |
 | --- | --- |
 | Human installation / first use | [`GETTING_STARTED.md`](GETTING_STARTED.md) |
-| Coding-agent repository work | [`skills/using-sensemaking/SKILL.md`](skills/using-sensemaking/SKILL.md) |
+| Coding-agent repository work, including real implementation in repos without Sensemaking docs | [`skills/using-sensemaking/SKILL.md`](skills/using-sensemaking/SKILL.md) and its [portable construction reference](skills/using-sensemaking/references/portable-construction-loop-v1.md) |
 | One-prompt strategic start/resume or full-autonomy terminal mission | [`skills/strategic-sensemaking-loop/SKILL.md`](skills/strategic-sensemaking-loop/SKILL.md) |
 | Deciding how a repository/product could evolve from here | [`skills/strategic-repository-analysis/SKILL.md`](skills/strategic-repository-analysis/SKILL.md) |
 | CLI lookup | [`docs/cli-reference.md`](docs/cli-reference.md) |
@@ -43,6 +43,18 @@ normal path
 capability exists
 != capability belongs in the default cognitive path
 ```
+
+**Portable construction:** once the host loads `using-sensemaking`, its
+Architect -> Builder -> Reconcile instructions can guide an agent making
+real changes in an unfamiliar repository with no `CLAUDE.md`, `AGENTS.md`,
+`CONTEXT.md`, `.sensemaking/` pack or Sensemaking CLI. The active coding
+agent still needs repository access, the correct authority and its host's
+editing/verification tools. Discovery is host-dependent; optional local
+agent-file pointers improve discoverability but are not execution gates.
+The separate `docs/agents/build-loop.md` is this **repository's local
+construction profile** and does not export its merge/test policy to
+other projects. Longer strategic multi-increment work uses
+`strategic-sensemaking-loop` as the outer front door.
 
 Specialized Skills remain directly invokable when their bounded responsibility
 is explicitly the task. The full Skill catalogue, system atlas, policy
