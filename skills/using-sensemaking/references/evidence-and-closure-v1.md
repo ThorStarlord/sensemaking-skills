@@ -75,11 +75,11 @@ interpretations versus hypotheses, unresolved uncertainty, fog classification
 when useful, recommendations and planning metadata, and any machine-readable
 handoff fields the current contract requires.
 
-- **Contract source of truth:** `../workflow-planner/references/artifact-contracts.yaml`.
+- **Contract source of truth:** `../../workflow-planner/references/artifact-contracts.yaml`.
   Read fields from the contract, not from memory or from this prose.
 - **Fog is diagnostic metadata.** The four canonical fog types
   (`product_fog`, `ui_fog`, `docs_fog`, `architecture_fog`) are defined in
-  `../../docs/canonical-vocabulary.yaml` when that file is available. A
+  `../../../docs/canonical-vocabulary.yaml` when that file is available. A
   repository can show several; classify the primary one only when the
   contract or analysis calls for it.
 - **Recommendation fields are not commands.** `recommended_workflow_id` or
