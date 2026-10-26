@@ -91,19 +91,34 @@ research paths.
 
 ## Choosing and building an increment
 
-Before building, read the compass and write a decision note; build only that
-slice; then reconcile. Detail: `docs/agents/build-loop.md`.
+Use [Value-Directed Continuous Construction](docs/value-directed-continuous-construction.md)
+as the product-value-led policy and [the build loop](docs/agents/build-loop.md)
+for the **operational** Architect + Builder + Close practice. The roles may
+interleave within one active coding agent; they do not create a planner,
+approval gate, or additional semantic authority.
 
-- **Compass:** `CONTEXT.md` "Current product definition",
-  `docs/product-strategy.md`, ADR 0029 (scope),
-  `docs/persistent-semantic-stewardship-plan.md` §12 and §14, and `STATUS.md`
-  "Current next step". Root `roadmap.md` is historical; do not use it.
-- If the decision note cannot cite the goal it serves, do not build it as a
-  roadmap increment.
-- If the design proves wrong mid-build, return to the note; do not redesign
-  silently.
-- Goals, non-goals and authority come from owner or accepted sources, never
-  from code.
+- **Before selecting:** inspect the last relevant PR/readout and current
+  source reality. Read the compass proportionately: `CONTEXT.md` "Current
+  product definition", `docs/product-strategy.md`, accepted ADRs including
+  0029 (scope) and 0031 (destination), the stewardship plan's sections 12
+  (value criteria) and 14 (indicative construction order), and `STATUS.md`
+  "Current next step". Root `roadmap.md` is historical, not a backlog.
+- **For every PR:** include a brief source-grounded decision note in its
+  description. A simple repair can take two sentences. Explore qualitatively
+  and proportionately, without fixed candidate counts or numeric scores;
+  a full Level-3 funnel requires a real strategic reopening.
+- **While building:** revise the note when the design changes within the
+  same goal and authority. Return to selection if the outcome, responsibility,
+  scope or protected boundary materially changes.
+- **After building:** review and integrate within authority, retain routine
+  evidence in PR/Git, reconcile consequential semantic knowledge, and update
+  `STATUS.md` only when it changes strategic/capability state or the next
+  agent's decision context.
+- **Product authority:** accepted owner intent, current product strategy,
+  applicable ratified ADRs and authoritative product sources govern within
+  their scope. Code, an index, or a past increment's source list does not
+  create or restrict normative authority. Both existing stewardship goals
+  remain authored; no automatic consolidation is implied.
 
 ## Verification discipline (artifacts are the API)
 
@@ -155,10 +170,15 @@ the current `sensemaking-skills` construction PRs, **do not add or manually run
 unit tests or synthetic evidence tests locally**; complete source/diff
 inspection and state `NOT_RUN` plainly.
 
-**PR rules (owner decision 2026-10-26):** push each PR on its own
-`claude/<topic>` branch and open it without asking. Merge after a clean source
-review once hosted CI is green (the full run takes about 2.5 minutes); do not
-merge with a failing check. A red `main` is the next responsibility.
+**PR rules (owner reconciliation 2026-10-26, superseding the
+earlier green-CI-before-merge rule):** push each PR on its own
+`claude/<topic>` branch and open it without asking. After a clean
+source/diff review and applicable authorization, **merge promptly without
+waiting for hosted CI or local unit/synthetic evidence tests**. Preserve
+existing hosted CI, branch protections and release gates; do not bypass
+required checks or knowingly merge a consequential dangerous failure.
+Report pending or unrun checks accurately. If post-merge CI identifies a
+material failure, assess and repair it as the next warranted responsibility.
 
 Keep all existing GitHub CI, branch protection and release qualification
 contracts unchanged. Merged construction is not proof of tested correctness,
