@@ -8,6 +8,12 @@ This is a compact value-stream and responsibility map. The more detailed
 operating guide remains [agent-native-operating-workflow.md](agent-native-operating-workflow.md).
 The canonical higher-scope control model is
 [strategic-outer-loop.md](strategic-outer-loop.md).
+The owner's current Architect + Builder construction posture is documented in
+[Value-Directed Continuous Construction](value-directed-continuous-construction.md):
+product-value-led selection, proportional divergent/convergent exploration,
+retained implementation, and RECALL -> BUILD -> RECONCILE. It is an operating
+interpretation under the existing Level-4/Level-3 authorities, not another
+strategy, workflow engine or permission source.
 The current product boundary is [ADR 0029](adr/0029-current-product-boundary.md);
 ADR 0014 is retained as historical evidence for the narrower July 2026 boundary.
 The Level-4 Persona & Adaptive Guidance Model v0 interpretation is frozen in
@@ -99,9 +105,12 @@ what to do next. Good tests and reviews provide indispensable evidence but
 are not the ultimate success metric. Durable learning is evidenced when
 **later episodes** correctly reuse or revise earlier product understanding.
 
-This is a **selected architectural direction, not an already implemented
-semantic database**. The existing Grounding Pack remains a compact retrieval
-entry point under ADR 0030. For the planned build, see
+This is a **selected long-term destination, not a completed or independently
+qualified platform**. Its S1-S4 foundation now includes Git-reviewed semantic
+records and a rebuildable SQLite query index; later-session decision value
+and comparative improvement remain unproven. The existing Grounding Pack
+remains a compact retrieval entry point under ADR 0030. For the continuing
+construction trajectory, see
 [`persistent-semantic-stewardship-plan.md`](persistent-semantic-stewardship-plan.md).
 No new control level, automatic semantic router, factory executor or merge/
 release authority is created by this revision.

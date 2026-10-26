@@ -4,6 +4,17 @@
 **Scope:** Semantic Architecture construction after the qualified Phase 10 Outcome A  
 **Further empirical validation:** Intentionally deferred until the Construction Diminishing-Returns Gate is reached or a consequential architecture choice becomes evidence-dependent
 
+**Current construction-phase application (2026-10-26):** The owner-endorsed
+[Value-Directed Continuous Construction](../value-directed-continuous-construction.md)
+guide applies the existing product direction across Architect + Builder work.
+The explicit current `sensemaking-skills` construction exception in
+[CLAUDE.md](../../CLAUDE.md) defers manually authored, run or awaited local
+unit/synthetic evidence tests. The continuous-verification section below
+describes the general assurance/qualification model; this local exception
+does not cancel hosted CI, release qualification, source/diff inspection,
+mechanical safeguards or accurate `NOT_RUN` disclosures. It does not turn
+implementation into empirical proof.
+
 ## Decision
 
 Phase 10 already ran three real-repository episodes and selected **Outcome A**: keep `semantic_reasoning_profile` as an optional companion audit/reconstruction artifact. That result remains valid and is not reopened by this policy.
