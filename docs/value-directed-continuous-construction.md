@@ -6,6 +6,8 @@
 
 **Working label:** *Value-Directed Continuous Construction* is a descriptive name for the owner's working preference, not a standardized methodology, another strategic level, a registered Skill, or an executable planner.
 
+**Document roles:** This page states the construction philosophy and product-value policy. The [agent build loop](agents/build-loop.md) applies it to one PR: a proportional Architect/Builder/Close cycle with a brief decision note. `CLAUDE.md` provides the short entry trigger and the current integration/verification rules. These pages complement one another; they are not competing control layers.
+
 ## 1. Build toward product value, not activity volume
 
 The selected Level-4 destination is **Persistent Semantic Stewardship**: source-grounded, typed, queryable knowledge of product intent, domain, capabilities, architecture, evidence, decisions, and history that later coding agents can reuse and challenge. ADR 0031 selects that destination; continuous product-grounded development is its operating/learning loop, while lean decision assistance remains appropriate for simple tasks.
@@ -39,7 +41,7 @@ The current Level-3 PATH-1 direction is to **accrete useful product knowledge th
 
 **Builder:** implement a bounded valuable change; inspect the real consumers and contracts; integrate it within authority; observe its consequences.
 
-The two responsibilities can operate in the same agent and working context. Do not create a separate architect/worker pipeline or approval ceremony for an otherwise clear, authorized fix.
+The two responsibilities can operate in the same agent and working context, and may interleave as implementation reveals new facts. Do not create a separate architect/worker pipeline or approval ceremony for an otherwise clear, authorized fix. Every PR retains a brief decision note; clear local repairs can document the chosen responsibility in two sentences. A material in-scope design revision updates that note, while a changed outcome or authority returns to selection.
 
 Use **divergent then convergent exploration** in proportion to the decision:
 
@@ -78,7 +80,7 @@ Keep three evidence questions separate:
 | Does its declared behavior work correctly within scope? | Proportionate verification, contract checks, existing CI, runtime/behavioral evidence as required |
 | Does the capability improve agent outcomes over time? | Genuine later-episode use, correct knowledge reuse/correction, and comparative evidence when a comparative claim is made |
 
-**Current local construction exception:** For the owner's current `sensemaking-skills` construction PRs, [CLAUDE.md](../CLAUDE.md) directs agents **not to write, manually run, or wait for unit tests or synthetic evidence tests**. Do source inspection, review the diff, run relevant non-test static/mechanical checks where appropriate, and state `NOT_RUN` accurately. Leave existing hosted CI, branch protections, and release-qualification contracts intact. This exception is phase- and repository-scoped; it does not erase the ordinary verification policy or justify merging known destructive behavior.
+**Current local construction exception:** For the owner's current `sensemaking-skills` construction PRs, [CLAUDE.md](../CLAUDE.md) directs agents **not to add or manually run local unit or synthetic evidence tests**. Do source inspection, review the diff, run relevant non-test static/mechanical checks where appropriate, and state `NOT_RUN` accurately. The owner separately chose **prompt merge after clean review without waiting for hosted CI**; CI still runs, and any post-merge substantive failure warrants a bounded repair. Existing branch protections and release-qualification contracts remain intact. This phase- and repository-scoped exception does not erase the ordinary verification policy or justify knowingly integrating a consequential defect.
 
 The earlier [build-first Semantic Architecture policy](semantic-architecture/build-first-policy.md) distinguishes mechanical verification from further empirical validation and remains relevant in its original scope. Apply the newer explicit construction exception to local test execution without rewriting previous qualifications.
 
@@ -106,13 +108,13 @@ Read `semantic-architecture/ontology.md` and related references as needed; do no
 
 For each independent construction increment:
 
-1. Establish the bounded responsibility, affected contract, and actual source identity.
-2. Implement with an appropriate scope and review changes against relevant code, product intent and consumers.
-3. Preserve necessary documentation and semantic reconciliation; avoid unrelated edits.
-4. Open an ordinary PR and inspect its diff, base/head, reviewability and mergeability.
-5. **Merge authorized construction PRs promptly** under the owner's standing direction, without manually running or waiting for local unit/evidence tests. Do not bypass GitHub protections, force-push to evade a protected path, or deliberately integrate a known consequential defect.
-6. Verify that GitHub reports a merge and the resulting commit is on `main`. Report existing CI as pending, passing or failing based on observed results; do not claim an unrun check passed.
-7. Continue with another independently warranted responsibility if one exists; otherwise explain the stopping boundary.
+1. Establish the bounded responsibility, relevant contract and current source identity. Put a **brief decision note in every PR**, proportional to the choice.
+2. Implement and review the change against actual consumers, applicable product intent, and the authorization boundary. If an in-scope design improves, update the note; return to selection for changed outcome/scope/authority.
+3. Preserve consequential documentation/semantic knowledge without creating an entry in `STATUS.md` for routine work. PR description and Git history retain ordinary increment evidence.
+4. Use one `claude/<topic>` branch per PR; inspect the proposed diff, base/head, reviewability and mergeability.
+5. **Merge authorized construction PRs promptly after clean source/diff review, without waiting for hosted CI or local unit/evidence tests** (owner choice 2026-10-26). Existing GitHub CI continues to run; do not bypass required checks, disregard an already-known material failure, force-push around protections or knowingly integrate a consequential defect.
+6. Verify GitHub reports a merge and the resulting commit is on `main`. State CI as pending, passing or failing only from observed results, and investigate a meaningful post-merge failure as the next warranted repair responsibility.
+7. Read the merged result before selecting the next independent worthwhile responsibility. Stopping remains valid when no further warranted action exists.
 
 Owner delegation covers ordinary repository-answerable engineering and authorized construction merges; it does **not** unilaterally grant release/deployment, secrets/billing changes, destructive unrelated mutations, Level-4 thesis revision or a new external product scope. Respect enforced policy and repository rules regardless of their current configuration.
 
@@ -140,6 +142,6 @@ EVIDENCE LIMITS: source review, mechanical checks, observed CI, NOT_RUN claims
 CONTINUATION: next independently warranted responsibility or justified stop
 ```
 
-The retained sources are the authority. This report is an orientation/handoff aid, **not** a new master strategy file, a planner result or a reason to reopen settled analysis.
+Retain a brief decision note in each PR, then adapt the detail of its final readout to the consequence of the work; it is not a requirement to write every field for trivial fixes. The retained sources are the authority. This report is an orientation/handoff aid, **not** a new master strategy file, a planner result or a reason to reopen settled analysis.
 
 **Compact principle:** Build when product value, evidence and authority support a useful bounded increment; explore when alternatives could change that decision; verify to the level required by the claim; reconcile learning so the next agent can reason from better sources.
