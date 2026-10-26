@@ -89,6 +89,22 @@ See `docs/decision-orchestration-boundary.md` for the control-ownership boundary
 and `docs/research/control-model-research-agenda.md` for explicitly non-ratified
 research paths.
 
+## Choosing and building an increment
+
+Before building, read the compass and write a decision note; build only that
+slice; then reconcile. Detail: `docs/agents/build-loop.md`.
+
+- **Compass:** `CONTEXT.md` "Current product definition",
+  `docs/product-strategy.md`, ADR 0029 (scope),
+  `docs/persistent-semantic-stewardship-plan.md` §12 and §14, and `STATUS.md`
+  "Current next step". Root `roadmap.md` is historical; do not use it.
+- If the decision note cannot cite the goal it serves, do not build it as a
+  roadmap increment.
+- If the design proves wrong mid-build, return to the note; do not redesign
+  silently.
+- Goals, non-goals and authority come from owner or accepted sources, never
+  from code.
+
 ## Verification discipline (artifacts are the API)
 
 This repo's founding principle is *artifacts are the API between skills*. Field names
@@ -135,9 +151,15 @@ are part of that API. These rules exist because each was violated and caused a r
 **Current owner construction direction (2026-10-25):** In the architect/builder
 phase, Continuous Construction IS the Probe. Use the accepted roadmap and
 Strategic Analysis as a compass, not as a gate that delays retained work. For
-the current `sensemaking-skills` construction PRs, **do not add, manually run,
-or wait for unit tests or synthetic evidence tests**; complete source/diff
-inspection, merge authorized PRs promptly, and state `NOT_RUN` plainly.
+the current `sensemaking-skills` construction PRs, **do not add or manually run
+unit tests or synthetic evidence tests locally**; complete source/diff
+inspection and state `NOT_RUN` plainly.
+
+**PR rules (owner decision 2026-10-26):** push each PR on its own
+`claude/<topic>` branch and open it without asking. Merge after a clean source
+review once hosted CI is green (the full run takes about 2.5 minutes); do not
+merge with a failing check. A red `main` is the next responsibility.
+
 Keep all existing GitHub CI, branch protection and release qualification
 contracts unchanged. Merged construction is not proof of tested correctness,
 semantic truth or distribution/release readiness.
