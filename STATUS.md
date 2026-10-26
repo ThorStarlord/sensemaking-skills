@@ -525,6 +525,20 @@ no unit or synthetic evidence tests were run.
 
 **ACTIVE CONSTRUCTION — PATH-1, ACCRETE PRODUCT KNOWLEDGE THROUGH GENUINE RESPONSIBILITIES.**
 
+**2026-10-26 — owner-endorsed Value-Directed Continuous Construction guidance:**
+[Value-Directed Continuous Construction](docs/value-directed-continuous-construction.md)
+now explains the Architect + Builder posture, product-definition-first context,
+roadmap/Strategic Analysis as a compass rather than a test or automatic backlog,
+proportional divergence/convergence, value/reversibility/omission-cost selection,
+source-linked ontology/architecture RECALL -> BUILD -> RECONCILE, and the
+distinction between construction learning, mechanical correctness, and
+longitudinal product benefit. The current local unit/synthetic evidence-test
+deferral and prompt authorized PR merges remain governed by `CLAUDE.md`; hosted
+CI, protected actions, and release qualification are unchanged. This documents
+the accepted construction practice; it does not reopen Level 3/4, select an
+implementation responsibility, modify schema/code/semantic records, or claim
+independent knowledge-compounding results.
+
 **2026-10-25 PATH-1 construction — encoding-safe CLI output:** On a Windows code page, Campaign text the output stream cannot encode (for example an arrow) made `campaign init --json`, `working-context --json` and `status` fail with `UnicodeEncodeError`. `init` had already written the Campaign state, so an existing campaign was reported as a failed command. `main()` now writes only the characters the active stream cannot encode, as JSON-compatible `\uXXXX` escapes (surrogate pairs above U+FFFF). Encodable output and UTF-8 output are unchanged, and no encoding is forced. Manual CLI probes with cp1252 and UTF-8 stdout: the probed commands exit 0 where they previously exited 1, escaped JSON parses and round-trips the original mission, and the error path emits a valid ASCII payload. Residual: characters cp1252 can encode, such as an em dash, remain cp1252 bytes in redirected Windows output; a UTF-8 output policy is a separate owner decision. The reviewed console rule now cites the guard. No unit or synthetic evidence tests were written or run.
 
 **2026-10-25 PATH-1 construction — legacy `run_workflow` contract:** Source inspection found that `SkillsOrchestrator.run_workflow` dropped a supplied `problem_statement` without error. The runtime takes the user's problem as a positional argument, but the method never forwarded it, so a legacy caller got a repo-inferred run. `context_artifacts` was silently ignored as well. The method now forwards `problem_statement` after `--` and raises `ValueError` for `context_artifacts`, which points to `from_session`. API.md's contract matches the code: retired `yolo_execution` raises, the return is the integer exit code, and the parameter list is current. Compass selection this cycle: the knowledge plane was not reopened, because T21 found no use evidence for a further increment. Distribution was verified complete from source: the build hook copies the canonical `skills/` tree and discovery finds every `SKILL.md`. The referenced CLI commands resolve, and the flags in the examples checked against `--help` exist; `campaign advanced` commands also resolve at top level without appearing in its help. Open issues are research, qualification or governance items by title, and #255 is owner-blocked. The legacy contract was selected as the verified silent-drop in the fail-closed direction the owner set for legacy producers. Verification was static only: AST, ruff, and the repository validators. No unit or synthetic evidence tests were written or run.
