@@ -528,16 +528,7 @@ Stop investigating once the next warranted action is stable. Do not exhaust ever
 
 ### Make warrant explicit when useful
 
-For consequential work, ask:
-
-1. **What exactly am I trying to justify now?**
-2. **What must be true for that target to be warranted?**
-3. **Which unresolved premise could change responsibility, scope, authority, continuation, or closure?**
-4. **Is more reasoning worth more than acting now?**
-
-Useful warrant targets include a claim, inquiry, responsibility, action, continue/stop/escalate decision, closure claim, or protected transition such as merge/publication.
-
-Keep these distinctions explicit:
+Name the target before judging it, and keep these distinctions explicit:
 
 ```text
 warrant != confidence score
@@ -545,7 +536,8 @@ warrant != authorization
 warrant for target A != warrant for target B
 ```
 
-Use the lightest amount of explicit structure that preserves the decision boundary.
+Use the lightest explicit structure that preserves the decision boundary. Full
+procedure, prompts and worked targets: `references/warrant-choice-policy-v0.md`.
 
 ### Inherited-responsibility prerequisite backstop
 
@@ -574,11 +566,8 @@ precondition materially defeats responsibility
 
 ### Learning / Reconciliation Policy v0
 
-After consequential evidence returns, ask:
-
-> **What explicit claims, uncertainties, responsibility, continuation state, or strategic frame should change—if anything?**
-
-`NO_MODEL_CHANGE` is valid. Other useful dispositions include confirming or revising claims, resolving/opening uncertainty, changing responsibility, continuing, stopping, escalating, reopening strategy, or requiring Level-4 thesis review.
+After consequential evidence returns, change only the explicit state the decision
+needs. `NO_MODEL_CHANGE` is a valid disposition.
 
 ```text
 result returned
@@ -591,17 +580,13 @@ authority need discovered
 != authority granted
 ```
 
-Persist only the explicit decision-relevant update another context must reconstruct, using existing Campaign / STATUS / ADR / handoff / evidence surfaces. At Level 3, `strategic-repository-reconciliation` provides a first-class artifact when the relationship to a prior `strategic_repository_analysis` itself must be durable.
-
-Read `references/learning-reconciliation-policy-v0.md` when returned evidence can materially change the decision model.
+Persist only the decision-relevant update another context must reconstruct.
+Full procedure and dispositions: `references/learning-reconciliation-policy-v0.md`.
 
 ### Inquiry Policy v0
 
-Before turning an unresolved uncertainty into investigation, ask:
-
-> **Given the current decision and epistemic state, what should I learn next, if anything?**
-
-Inquiry is warranted only when additional evidence could materially change responsibility, scope, authority path, continuation, verification, or closure **and** obtaining that evidence is worth its cost.
+Inquiry is warranted only when evidence could materially change the decision and
+is worth its cost. `NO_INQUIRY_NEEDED` is a valid result.
 
 ```text
 uncertainty exists
@@ -609,18 +594,11 @@ uncertainty exists
 
 more evidence possible
 != more evidence worth obtaining
-
-NO_INQUIRY_NEEDED
-= valid successful policy result
 ```
 
-When inquiry is warranted, identify the smallest sufficient evidence, its source, the bounded evidence-producing responsibility (if one is needed), authority, and a stop condition.
-
-If the missing premise is owner intent, ask the owner rather than searching the repository; use an `owner_decision_capsule` when the choice needs a reconstructible options/tradeoff packet. If the needed evidence is external and unavailable or unauthorized, record the external dependency rather than fabricating a local substitute. When authorized external evidence is obtained and its provenance/currentness is decision-relevant, preserve it in an `external_evidence_packet`.
-
-Inquiry selection is not action authorization. Returned evidence comes back to the active semantic controller for adjudication.
-
-Read `references/inquiry-policy-v0.md` when explicit inquiry selection is material. Policy Hierarchy v0 is defined in `../../docs/policy-hierarchy-v0.md`.
+Owner intent is asked, not searched for. Inquiry selection is not action
+authorization. Full procedure, evidence packets and stop conditions:
+`references/inquiry-policy-v0.md`.
 
 ### Challenge and exploration when commitment risk is material
 
@@ -642,22 +620,8 @@ otherwise
 
 ### Exploration Policy v0
 
-When iterative search has multiple meaningful attempts, use the material search history to allocate the next search move:
-
-```text
-EXPLOIT
-EXPLORE
-CHALLENGE
-DIAGNOSE
-RECOMBINE
-RESTART
-VERIFY
-EXIT_SEARCH
-```
-
-`EXIT_SEARCH` is valid when additional search is unlikely to improve the decision enough to justify its cost.
-
-Search history is a decision-relevant projection of existing evidence/provenance. Keep it transient for small work and reuse existing Campaign/handoff/STATUS/repository-history surfaces when continuation makes it durable.
+When iterative search has several meaningful attempts, use the search history to
+choose the next move. `EXIT_SEARCH` is valid when more search is not worth its cost.
 
 ```text
 search history exists
@@ -667,12 +631,8 @@ Exploration Policy
 != Strategic Frontier ranking
 ```
 
-Keep this implicit for one-shot/local work; do not turn the modes into a score or routing table.
-
-Critic or explorer output is evidence for the active agent; it is not automatic veto, approval, or authority.
-
-Read `references/exploration-policy-v0.md` when iterative search allocation is material. For explicit inquiry selection, read `references/inquiry-policy-v0.md`. For challenge/exploration triggers, delegation evidence return, and persistence guidance, read `references/practical-agent-architecture-v0.md`.
-
+Critic or explorer output is evidence for the active agent, not an automatic veto
+or approval. Full procedure and modes: `references/exploration-policy-v0.md`.
 ---
 
 ## 4. Resolve uncertainty from the right source

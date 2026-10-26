@@ -508,3 +508,27 @@ Avoid:
 - building a `WarrantEngine` service/class merely because the policy has a name;
 - storing warrant as a universal lifecycle state;
 - creating a new schema merely to encode documentation-level dispositions.
+
+
+## Moved from the using-sensemaking entrypoint (verbatim)
+
+### Make warrant explicit when useful
+
+For consequential work, ask:
+
+1. **What exactly am I trying to justify now?**
+2. **What must be true for that target to be warranted?**
+3. **Which unresolved premise could change responsibility, scope, authority, continuation, or closure?**
+4. **Is more reasoning worth more than acting now?**
+
+Useful warrant targets include a claim, inquiry, responsibility, action, continue/stop/escalate decision, closure claim, or protected transition such as merge/publication.
+
+Keep these distinctions explicit:
+
+```text
+warrant != confidence score
+warrant != authorization
+warrant for target A != warrant for target B
+```
+
+Use the lightest amount of explicit structure that preserves the decision boundary.
