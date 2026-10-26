@@ -114,7 +114,7 @@ For each independent construction increment:
 6. Verify that GitHub reports a merge and the resulting commit is on `main`. Report existing CI as pending, passing or failing based on observed results; do not claim an unrun check passed.
 7. Continue with another independently warranted responsibility if one exists; otherwise explain the stopping boundary.
 
-Owner delegation covers ordinary repository-answerable engineering and authorized construction merges; it does **not** unilaterally grant release/deployment, secrets/billing changes, destructive unrelated mutations, Level-4 thesis revision or a new external product scope. Respect enforced policy, even where `main` currently lacks branch protection.
+Owner delegation covers ordinary repository-answerable engineering and authorized construction merges; it does **not** unilaterally grant release/deployment, secrets/billing changes, destructive unrelated mutations, Level-4 thesis revision or a new external product scope. Respect enforced policy and repository rules regardless of their current configuration.
 
 ## 8. Keep the next agent's context small and durable
 
