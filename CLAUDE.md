@@ -103,6 +103,20 @@ The roles may interleave in one active coding agent, without a planner,
 approval gate, or new semantic authority. For multi-increment strategic
 missions, `strategic-sensemaking-loop` owns outer continuation.
 
+**Construction continuation (current phase):**
+`GOAL -> SPIKE (only if needed) -> BUILD -> INTEGRATE -> CONTINUE`.
+A spike resolves decision-changing uncertainty; it does not finish the capability.
+After a spike or merged PR, compare current behavior with the authorized
+end-to-end outcome. If a necessary vertical layer remains missing, build the
+next warranted, authorized increment rather than automatically expanding
+unit/integration tests, an evaluation harness or external qualification.
+Apply verification required by the change and current repository policy;
+do not ignore known consequential defects or confuse CI with closure.
+Within an explicitly delegated terminal mission, continue across bounded
+responsibilities until the outcome is satisfied, no further work is warranted,
+or a genuine authority, safety or external boundary stops progress. A bounded
+repair request does not silently authorize a larger mission.
+
 - **Before selecting:** inspect the last relevant PR/readout and current
   source reality. Read the compass proportionately: `CONTEXT.md` "Current
   product definition", `docs/product-strategy.md`, accepted ADRs including

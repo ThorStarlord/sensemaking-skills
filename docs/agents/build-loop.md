@@ -42,6 +42,23 @@ implementation queues. Both authored goal records
 2026-10-26 reconciliation. Never silently merge them, assert an additional
 relationship, or infer product authority from an indexed record.
 
+## Continue after a spike or merged increment
+
+**Remember:** `GOAL -> SPIKE? -> BUILD -> INTEGRATE -> CONTINUE`.
+The optional spike settles an uncertainty, not the whole capability. After
+any spike or merged PR, compare the actual source/behavior with the authorized
+end-to-end goal. If a necessary vertical layer remains and another increment
+is warranted and authorized, build it instead of defaulting to more unit or
+integration tests, a new evaluation harness or external field validation.
+Perform the verification demanded by the actual change and this repository's
+current policy; known consequential defects still need repair, and hosted CI
+and release boundaries remain intact. For an explicitly delegated terminal
+mission, continue through subsequent bounded responsibilities until the
+terminal goal or a genuine stop boundary. A bounded request does not expand
+into an unlimited mission. See [the local continuation rule](../../CLAUDE.md)
+and [the existing construction guide](../value-directed-continuous-construction.md);
+this is a reminder of their policy, not a new process or approval gate.
+
 ## Local PR and verification conventions
 
 Use the **portable Skill** for proportional architect selection, real
