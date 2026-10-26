@@ -72,6 +72,10 @@ decision-note examples, revision/review behavior and harness limitations,
 read `references/portable-construction-loop-v1.md` **when performing a
 coding task or applying this Skill outside its source repository**. Its content
 is bundled with this Skill, unlike repository-specific operational docs.
+Other references to the framework repository's `../../docs/` files,
+artifact registries or CLI/scripts are optional advanced provenance when
+those files or tools are absent. **Do not require a clone of the Sensemaking
+source repository to execute the bundled portable construction loop.**
 
 ## Entry recovery (before Section 1)
 
@@ -1015,7 +1019,7 @@ session stopped; for small single-context work, PR and Git history may be
 enough. Absence of Sensemaking-specific receipt tooling must not block a
 portable coding task.
 
-Durability and transferability are not identical. Beyond the receipt, externalize selected rationale, evidence, decisions, or material search history when another actor/context must continue, rediscovery would be costly, or governance/operations/user transfer requires an intelligible artifact. A reasoning result does not automatically require a durable document, and hidden chain-of-thought is never a persistence requirement.
+Durability and transferability are not identical. Beyond whichever existing handoff or receipt is warranted, externalize selected rationale, evidence, decisions, or material search history when another actor/context must continue, rediscovery would be costly, or governance/operations/user transfer requires an intelligible artifact. A reasoning result does not automatically require a durable document, and hidden chain-of-thought is never a persistence requirement.
 
 ---
 
