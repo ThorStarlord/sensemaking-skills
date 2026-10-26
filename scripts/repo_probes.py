@@ -510,13 +510,17 @@ def vendored_skill_drift(
     }
 
 
-def _references_drift(repo_skill_dir: Path, installed_skill_dir: Path) -> tuple[str, List[str]]:
+def _references_drift(
+    repo_skill_dir: Path, installed_skill_dir: Path
+) -> tuple[str, List[str], List[str]]:
     """Compare a skill's references/ subtree between repo and installed copies.
 
     A Skill's core SKILL.md loads its references on demand, so a stale or
     missing reference changes behavior even when SKILL.md matches. Returns
-    ("none" | "line_ending_only" | "content_drift", sorted differing paths).
-    Files outside references/ are not compared.
+    ("none" | "line_ending_only" | "content_drift", sorted differing paths,
+    sorted destination-only paths). Destination-only paths are installed
+    references that no longer exist in the repo copy; they are included in the
+    differing paths too. Files outside references/ are not compared.
     """
     def files(root: Path) -> Dict[str, Path]:
         base = root / "references"
@@ -531,6 +535,7 @@ def _references_drift(repo_skill_dir: Path, installed_skill_dir: Path) -> tuple[
     repo_files = files(repo_skill_dir)
     installed_files = files(installed_skill_dir)
     differing: List[str] = []
+    obsolete = sorted(set(installed_files) - set(repo_files))
     line_ending_only = False
     for rel in sorted(set(repo_files) | set(installed_files)):
         repo_bytes = _read_bytes(repo_files[rel]) if rel in repo_files else None
@@ -546,8 +551,8 @@ def _references_drift(repo_skill_dir: Path, installed_skill_dir: Path) -> tuple[
             continue
         differing.append(rel)
     if differing:
-        return "content_drift", differing
-    return ("line_ending_only" if line_ending_only else "none"), []
+        return "content_drift", differing, obsolete
+    return ("line_ending_only" if line_ending_only else "none"), [], []
 
 
 def probe_skill_distribution(
@@ -570,6 +575,15 @@ def probe_skill_distribution(
       - "line_ending_only": identical after LF normalization (CRLF vs LF only).
       - "content_drift": real content difference beyond line endings.
       - "missing_installed": installed copy missing or unreadable.
+
+    hash_match compares SKILL.md bytes only (the entrypoint). The references/
+    subtree is reported separately: drifted entries carry references_match
+    (True only when every reference is byte-identical; None when the install
+    is missing),
+    plus differing_references and obsolete_references (installed references
+    absent from the repo copy) when non-empty. drift_type is the worse of the
+    entrypoint and references verdicts. Files outside SKILL.md and
+    references/ are outside this probe's coverage.
     A repo skill whose installed copy is missing or unreadable counts as
     drifted (hash_match False, installed_lines None).
     """
@@ -629,11 +643,14 @@ def probe_skill_distribution(
             drift_type = "content_drift"
 
         differing_references: List[str] = []
+        obsolete_references: List[str] = []
+        references_match: bool | None = None
         if drift_type != "missing_installed":
-            ref_drift, differing_references = _references_drift(
+            ref_drift, differing_references, obsolete_references = _references_drift(
                 skill_md.parent, installed_skills_root / skill_name
             )
             rank = {"none": 0, "line_ending_only": 1, "content_drift": 2}
+            references_match = ref_drift == "none"
             if rank[ref_drift] > rank[drift_type]:
                 drift_type = ref_drift
 
@@ -652,9 +669,12 @@ def probe_skill_distribution(
             "installed_lines": installed_lines,
             "hash_match": hash_match,
             "drift_type": drift_type,
+            "references_match": references_match,
         }
         if differing_references:
             entry["differing_references"] = differing_references
+        if obsolete_references:
+            entry["obsolete_references"] = obsolete_references
         drifted_skills.append(entry)
 
     return {
@@ -679,7 +699,17 @@ def sync_skills(
     missing from the install are copied in full; content-drifted skills are
     overwritten when overwrite_content_drift is True (default). Skills that
     differ only by line endings are left untouched -- their installed copy is
-    treated as equivalent. Returns a summary dict listing the synced skills.
+    treated as equivalent.
+
+    For each written skill, installed references/ files absent from the repo
+    copy are removed, limited to regular files inside that skill's own
+    references/ directory. A skill whose installation contains a symlink or a
+    path resolving outside it at a destination path is refused, not written.
+    The selected skills are probed again afterwards; "converged" is True only
+    when nothing was refused or failed and no content or missing drift remains
+    among them, including drift left because overwrite_content_drift is False.
+    Returns synced_skill_count, synced_skills, removed_references, refused,
+    failed, remaining_drift and converged.
 
     skill_names optionally limits the write path to an explicit set of repo
     skill directory names, so a shared installed root can be partially
@@ -692,29 +722,114 @@ def sync_skills(
     payload = probe_skill_distribution(
         repo_root, installed_skills_root, skill_names=skill_names
     )
+    root_resolved = installed_skills_root.resolve()
     synced_skills: List[str] = []
+    removed_references: List[str] = []
+    refused: List[Dict[str, str]] = []
+    failed: List[Dict[str, str]] = []
+    attempted: List[str] = []
     for entry in payload["drifted_skills"]:
-        skill_name = entry["skill_name"]
+        skill_name = str(entry["skill_name"])
         drift_type = entry["drift_type"]
-        if drift_type == "missing_installed":
-            shutil.copytree(
-                repo_root / "skills" / skill_name,
-                installed_skills_root / skill_name,
-                dirs_exist_ok=True,
-            )
-            synced_skills.append(skill_name)
-        elif drift_type == "content_drift" and overwrite_content_drift:
-            shutil.copytree(
-                repo_root / "skills" / skill_name,
-                installed_skills_root / skill_name,
-                dirs_exist_ok=True,
-            )
-            synced_skills.append(skill_name)
+        if drift_type == "missing_installed" or (
+            drift_type == "content_drift" and overwrite_content_drift
+        ):
+            attempted.append(skill_name)
+            dest = installed_skills_root / skill_name
+            reason = _unsafe_install_target(repo_root / "skills" / skill_name, dest, root_resolved)
+            if reason:
+                refused.append({"skill_name": skill_name, "reason": reason})
+                continue
+            try:
+                shutil.copytree(repo_root / "skills" / skill_name, dest, dirs_exist_ok=True)
+                synced_skills.append(skill_name)
+                removed, kept = _remove_obsolete_references(repo_root / "skills" / skill_name, dest)
+            except OSError as exc:
+                failed.append({"skill_name": skill_name, "error": str(exc)})
+                continue
+            removed_references.extend(f"{skill_name}/{rel}" for rel in removed)
+            refused.extend({"skill_name": skill_name, "path": rel, "reason": why} for rel, why in kept)
+
+    after = (
+        probe_skill_distribution(repo_root, installed_skills_root, skill_names=skill_names)
+        if attempted
+        else payload
+    )
+    remaining = [
+        e for e in after["drifted_skills"]
+        if e["drift_type"] in ("content_drift", "missing_installed")
+    ]
 
     return {
         "synced_skill_count": len(synced_skills),
         "synced_skills": synced_skills,
+        "removed_references": removed_references,
+        "refused": refused,
+        "failed": failed,
+        "remaining_drift": remaining,
+        "converged": not (refused or failed or remaining),
     }
+
+
+def _unsafe_install_target(repo_skill_dir: Path, dest: Path, root_resolved: Path) -> str | None:
+    """Return why an installed Skill directory must not be written, or None.
+
+    Copying writes through an existing symlink, so any link at or above a
+    destination path for a repo file could redirect the write outside the
+    installation. Such targets are refused rather than repaired.
+    """
+    if dest.is_symlink():
+        return "installed skill path is a symlink"
+    if not dest.exists():
+        return None
+    dest_resolved = dest.resolve()
+    if not dest_resolved.is_relative_to(root_resolved):
+        return "installed skill path resolves outside the installed root"
+    for source in repo_skill_dir.rglob("*"):
+        target = dest / source.relative_to(repo_skill_dir)
+        if target.is_symlink():
+            return f"installed path is a symlink: {target.relative_to(dest).as_posix()}"
+        if target.exists() and not target.resolve().is_relative_to(dest_resolved):
+            return f"installed path resolves outside the skill: {target.relative_to(dest).as_posix()}"
+    return None
+
+
+def _remove_obsolete_references(
+    repo_skill_dir: Path, dest: Path
+) -> tuple[List[str], List[tuple[str, str]]]:
+    """Delete installed references absent from the repo copy, inside dest/references only.
+
+    Only regular files are removed; symlinks and anything resolving outside the
+    managed directory are kept and reported. Empty directories left behind
+    inside references/ are removed. Returns (removed paths, kept (path, reason)).
+    """
+    refs = dest / "references"
+    if not refs.is_dir():
+        return [], []
+    refs_resolved = refs.resolve()
+    repo_refs = repo_skill_dir / "references"
+    removed: List[str] = []
+    kept: List[tuple[str, str]] = []
+    for path in sorted(refs.rglob("*")):
+        rel = path.relative_to(dest).as_posix()
+        if "__pycache__" in path.parts or (repo_refs / path.relative_to(refs)).exists():
+            continue
+        if path.is_symlink():
+            kept.append((rel, "obsolete reference is a symlink; not removed"))
+            continue
+        if not path.is_file():
+            continue
+        if not path.resolve().is_relative_to(refs_resolved):
+            kept.append((rel, "obsolete reference resolves outside references/; not removed"))
+            continue
+        path.unlink()
+        removed.append(rel)
+    for directory in sorted((d for d in refs.rglob("*") if d.is_dir() and not d.is_symlink()), reverse=True):
+        if not any(directory.iterdir()):
+            directory.rmdir()
+    if not any(refs.iterdir()) and not repo_refs.exists():
+        refs.rmdir()
+    return removed, kept
 
 
 def probe_all(repo_root: Path, churn_commits: int = 50) -> Dict[str, object]:

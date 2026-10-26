@@ -7,7 +7,13 @@ Prints an ASCII-only summary to stdout and writes the distribution_drift
 payload to distribution-drift.yaml (default). With --sync, missing and
 content-drifted skills are copied from skills/<skill>/ into the installed
 root first, then the probe re-runs so the payload and summary reflect the
-post-sync state. Exit 0 on success, 2 on bad paths or sync failure.
+post-sync state. Sync also removes installed references/ files that no longer
+exist in the repo copy, limited to the selected skills' own references/
+directories, and refuses installations reached through symlinks. Exit 0 on
+success, 2 on bad paths, sync failure, or a sync that did not converge.
+
+--no-write only suppresses writing the payload file; it does not make --sync
+read-only. Without --sync the probe never modifies the installed root.
 """
 
 from __future__ import annotations
@@ -27,7 +33,11 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--repo-root", default=".", help="Repository to probe (default: current dir)")
     parser.add_argument("--installed-dir", default=None, help="Installed skills root (default: ~/.agents/skills)")
     parser.add_argument("--output", default="distribution-drift.yaml", help="Payload output path")
-    parser.add_argument("--no-write", action="store_true", help="Print summary only")
+    parser.add_argument(
+        "--no-write",
+        action="store_true",
+        help="Do not write the payload file (does not cancel --sync mutations)",
+    )
     parser.add_argument(
         "--sync",
         action="store_true",
@@ -68,6 +78,15 @@ def main(argv: list[str]) -> int:
     )
 
     if args.sync:
+        planned = [
+            f"{e['skill_name']}/{rel}"
+            for e in payload["drifted_skills"]
+            for rel in e.get("obsolete_references", [])
+        ]
+        if planned:
+            print("SYNC PLAN: removing obsolete managed references:")
+            for rel in planned:
+                print(f"  - {rel}")
         try:
             sync_summary = sync_skills(
                 repo_root, installed_skills_root=installed_root, skill_names=args.skill
@@ -86,6 +105,15 @@ def main(argv: list[str]) -> int:
             )
         else:
             print("  nothing to sync")
+        for rel in sync_summary["removed_references"]:
+            print(f"  removed obsolete reference: {rel}")
+        for item in sync_summary["refused"]:
+            where = f" {item['path']}" if item.get("path") else ""
+            print(f"  refused: {item['skill_name']}{where}: {item['reason']}")
+        for item in sync_summary["failed"]:
+            print(f"  failed: {item['skill_name']}: {item['error']}")
+        for item in sync_summary["remaining_drift"]:
+            print(f"  still drifted after sync: {item['skill_name']} ({item['drift_type']})")
         payload = probe_skill_distribution(
             repo_root, installed_skills_root=installed_root, skill_names=args.skill
         )
@@ -111,8 +139,17 @@ def main(argv: list[str]) -> int:
         print(
             f"  drift: {entry['skill_name']} ({entry['drift_type']} "
             f"repo_lines={entry['repo_lines']} installed_lines={entry['installed_lines']} "
-            f"hash_match={entry['hash_match']})"
+            f"hash_match={entry['hash_match']} references_match={entry.get('references_match')})"
         )
+        for key in ("differing_references", "obsolete_references"):
+            for rel in entry.get(key, []):
+                print(f"    {key.split('_')[0]}: {rel}")
+    if args.sync and not sync_summary["converged"]:
+        print(
+            "[probe-skill-distribution] ERROR: sync did not converge; see refused, failed or remaining drift above",
+            file=sys.stderr,
+        )
+        return 2
     return 0
 
 
