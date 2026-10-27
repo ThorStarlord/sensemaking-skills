@@ -42,6 +42,19 @@ implementation queues. Both authored goal records
 2026-10-26 reconciliation. Never silently merge them, assert an additional
 relationship, or infer product authority from an indexed record.
 
+## Keep recent receipts from becoming a backlog
+
+A recent session receipt or PR recommendation is history, not a new local
+priority. Repeated diagnostics and repairs of one support surface (such as
+the receipt reader) warrant checking for selection anchoring, not another
+fix by default. When the next responsibility is open, compare the candidate
+against current PATH-1 product value, source-grounded gaps and a materially
+different credible outcome. If recommending "stop receipt polish; return to
+PATH-1", identify a concrete possible capability and its owning source and
+consequence, or report that the specific next responsibility remains unknown.
+No mandatory candidate count, extra Skill, strategic reopening or approval
+gate follows from this check. Clear authorized bounded work remains direct.
+
 ## Continue after a spike or merged increment
 
 **Remember:** `GOAL -> SPIKE? -> BUILD -> INTEGRATE -> CONTINUE`.
