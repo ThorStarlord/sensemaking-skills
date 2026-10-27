@@ -52,7 +52,7 @@ implementation.
    coding rather than pretending a tool ran. The portable loop is an
    **instruction capability**, not an executable service.
 
-### Target-only entry: diagnose before asking
+### Repository-only entry: discover what to build without a feature prompt
 
 **Method and target are different roles.** "Use `using-sensemaking` to diagnose
 `repo X`" invokes that Skill as the method and names the entire repository as
@@ -63,14 +63,31 @@ because the Skill is being invoked. If ambiguity remains and choosing wrong
 would change the outcome, clarify *which system* is the target, not *which
 feature* the owner wants built.
 
-For "Use using-sensemaking on repo X" with no selected implementation outcome,
-start with authorized **read-only** source orientation. Recover current product
-purpose where available, behavior, previous decisions, relevant receipts and
-material gaps. Use focused diagnosis, `repo-sensemaker` or strategic analysis
-only as warranted; a full Brief, ontology or new owner answer is not a
-prerequisite. Report findings, uncertainty and the next warranted responsibility
-(or justified no-change). Do **not** first ask the owner to choose among
-reviewing, implementing or demonstrating the Skill.
+**The target repository is the only required task-specific input** when
+this Skill is deliberately invoked for discovery. The missing feature is the
+*output to discover*, not context the owner must supply. Start with authorized
+read-only investigation, proportionate to what could change the choice:
+
+- Reconstruct what the product is for and its current direction from applicable
+  owner decisions, contracts and repository evidence. If owner intent is absent,
+  do not invent a product thesis from code.
+- Examine existing capabilities and actual owning code/consumers, not merely
+  documentation filenames, recent receipts or the invoked Skill. Look for a
+  consequential difference between intended and implemented behavior; broaden
+  across relevant product areas enough to challenge the first familiar fix.
+- Compare credible, materially distinct responses (including defer/no change
+  when supported) by useful retained outcome, evidence, opportunity cost and
+  authority. No fixed candidate count or mandatory strategic reopening.
+- Select one **concrete next responsibility**: the behavior to add or correct,
+  affected source area, first useful outcome, reason to prefer it and material
+  uncertainty. If evidence does not warrant a build, name the specific missing
+  evidence or owner choice, a worthwhile next inquiry if available, and the
+  scope actually checked. Do not imply that an unexamined repository is done.
+
+Use focused inspection, `repo-sensemaker` or strategic analysis only if it
+could change the choice. A full Brief, ontology or owner-selected feature is
+not a prerequisite. Do **not** ask the owner to select a feature or choose
+review/build/demo before this source-grounded discovery.
 
 Connect the sources to the decision rather than merely listing them. Identify
 the relevant product purpose and current direction where available, check
@@ -83,7 +100,10 @@ When sources appear to disagree, assess which governs and investigate a
 decision-changing conflict or state what remains unresolved. If the evidence
 cannot support a priority, say so instead of inventing one. Keep the
 investigation and explanation proportional; neither a comprehensive repository
-survey nor a fixed decision template is required.
+survey nor a fixed decision template is required. The explanation must connect
+product goal -> observed capability gap -> considered response -> specific
+next responsibility. Listing documents read, reporting only that one Skill
+needs no edit, or restating the roadmap does not fulfill repository discovery.
 
 If the current authority also delegates implementation, build a warranted
 bounded change. Otherwise report recommendations and request only a genuinely
@@ -220,7 +240,9 @@ RECONCILE instead of overwriting either side.
 Ask what would make the target system more useful or correct, whether that
 change is supported by real evidence, and whether the contemplated action is
 authorized. If the task is already a clear, low-risk, local repair, keep
-this implicit and proceed promptly.
+this implicit and proceed promptly. When only a repository is supplied,
+responsibility selection itself is the task: do not end at a scoped maintenance
+verdict without evaluating the repository's actual product opportunities.
 
 For uncertain, consequential or architecture-affecting work:
 - establish the governing intent/contract and current behavior;
