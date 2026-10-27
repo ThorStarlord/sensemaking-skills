@@ -208,6 +208,7 @@ def test_summarizer_tracks_open_questions_tombstones_and_repeated_misses(tmp_pat
 
     resolver = _fixture_body("session-final-owner-stop.md")
     resolver.update(session_ref="2026-10-26-fixture-resolution", open_questions=[], findings=[])
+    resolver["updated_at"] = "2026-10-26T12:00:00Z"
     resolver["continuity"]["resolves_questions"] = ["2026-10-24-fixture-owner-stop#Q-1"]
     resolver["stop"] = {"disposition": "GOAL_SATISFIED", "reason": "Owner chose deprecation; implemented."}
     resolver["next"] = {"warranted_responsibility": None, "blocked_on": []}

@@ -8,7 +8,8 @@ It reports, mechanically and without judging meaning:
   - every receipt (session_ref, state, stop disposition, persistence);
   - receipts still `in_progress` (sessions that never finalized: possibly interrupted);
   - open questions not resolved by any later receipt's continuity.resolves_questions;
-  - the latest final session's next warranted responsibility and blockers;
+  - final sessions' next responsibilities and predecessor links, plus the
+    latest final session by update time (not a relevance or authority decision);
   - knowledge misses not yet ADDED or closed as NO_MODEL_CHANGE;
   - misses whose subject or terms recur across two or more sessions;
   - receipts that were not durably persisted;
@@ -80,8 +81,8 @@ def summarize(receipt_dir: Path) -> dict[str, Any]:
         record = {"file": path.name, "data": data}
         (sessions if artifact_id == _validator.SESSION_RECEIPT_ID else queries).append(record)
 
-    sessions.sort(key=lambda r: (r["data"]["session_ref"], r["data"]["updated_at"]))
-    queries.sort(key=lambda r: (r["data"]["session_ref"], r["data"]["updated_at"]))
+    sessions.sort(key=lambda r: (r["data"]["updated_at"], r["data"]["session_ref"]))
+    queries.sort(key=lambda r: (r["data"]["updated_at"], r["data"]["session_ref"]))
 
     resolved: set[str] = set()
     for record in sessions:
@@ -103,15 +104,23 @@ def summarize(receipt_dir: Path) -> dict[str, Any]:
                 })
 
     finals = [r for r in sessions if r["data"]["state"] == "final"]
-    latest = finals[-1]["data"] if finals else None
-    next_step = None
-    if latest is not None:
-        next_step = {
-            "from_session": latest["session_ref"],
-            "stop": latest["stop"]["disposition"],
-            "warranted_responsibility": latest["next"]["warranted_responsibility"],
-            "blocked_on": latest["next"]["blocked_on"],
+    final_sessions = [
+        {
+            "from_session": r["data"]["session_ref"],
+            "updated_at": r["data"]["updated_at"],
+            "resumes": r["data"]["continuity"].get("resumes"),
+            "stop": r["data"]["stop"]["disposition"],
+            "warranted_responsibility": r["data"]["next"]["warranted_responsibility"],
+            "blocked_on": r["data"]["next"]["blocked_on"],
         }
+        for r in finals
+    ]
+    latest = final_sessions[-1] if final_sessions else None
+    # A tie is not a chronological ordering; disclose it instead of silently
+    # treating the lexicographic tiebreak as a later session.
+    latest_ties = [r["from_session"] for r in final_sessions
+                   if latest is not None and r["updated_at"] == latest["updated_at"]]
+    next_step = latest if len(latest_ties) == 1 else None
 
     unfinished = [
         {"receipt": r["file"], "updated_at": r["data"]["updated_at"]}
@@ -158,6 +167,8 @@ def summarize(receipt_dir: Path) -> dict[str, Any]:
         "unfinished": unfinished,
         "open_questions": open_questions,
         "next": next_step,
+        "final_sessions": final_sessions,
+        "latest_ties": latest_ties if len(latest_ties) > 1 else [],
         "pending_misses": pending_misses,
         "repeated_misses": repeated_misses,
         "not_durable": not_durable,
@@ -177,11 +188,22 @@ def _print_text(summary: dict[str, Any]) -> None:
         flag = "BLOCKING " if q["blocking"] else ""
         lines.append(f"  {flag}{q['ref']} [{q['source']}] {q['question']}")
         lines.extend(f"    - option: {option}" for option in q["options"])
+    lines.append("FINAL SESSIONS (chronological; assess relevance and linked corrections):")
+    for session in summary["final_sessions"]:
+        predecessor = f" resumes={session['resumes']}" if session["resumes"] else ""
+        lines.append(
+            f"  {session['from_session']} updated={session['updated_at']}"
+            f"{predecessor} stop={session['stop']} next={session['warranted_responsibility']}"
+        )
+        if session["blocked_on"]:
+            lines.append(f"    blocked on: {', '.join(session['blocked_on'])}")
     nxt = summary["next"]
     if nxt:
         lines.append(f"NEXT (from {nxt['from_session']}, stop={nxt['stop']}): {nxt['warranted_responsibility']}")
         if nxt["blocked_on"]:
             lines.append(f"  blocked on: {', '.join(nxt['blocked_on'])}")
+    elif summary["latest_ties"]:
+        lines.append(f"NEXT: latest update time tied: {', '.join(summary['latest_ties'])}")
     else:
         lines.append("NEXT: no final session receipt")
     lines.append(f"PENDING KNOWLEDGE MISSES: {len(summary['pending_misses'])}")

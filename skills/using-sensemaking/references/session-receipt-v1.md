@@ -129,11 +129,13 @@ Then:
    acting. Apply the question ratchet: repository evidence first, then the
    owner. When answered, list it in your receipt's
    `continuity.resolves_questions` as `<session_ref>#Q-<n>`.
-3. **NEXT**: the latest final session's warranted responsibility is a
-   *defeasible* starting point (Section 3 inherited-responsibility backstop),
-   not an instruction. Check timestamps and relevant `continuity.resumes`
-   links in the source receipts: a summary's ordering alone may not establish
-   which same-day receipt is latest or whether a correction supersedes it.
+3. **NEXT**: the final session with the latest `updated_at` is a *defeasible*
+   starting point (Section 3 inherited-responsibility backstop), not an
+   instruction. The reader lists final sessions with their timestamps,
+   predecessor links and next responsibilities; a tie for the latest update
+   time is reported without choosing one. Inspect relevant source receipts:
+   chronology does not establish relevance or whether a linked session
+   actually supersedes a finding or recommendation.
 4. **PENDING / REPEATED KNOWLEDGE MISSES** are inputs for
    `repository-semantic-steward` RECONCILE, not a backlog.
 
