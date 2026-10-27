@@ -72,7 +72,11 @@ active receipt. If the original is final, use a new receipt linked through
 the revised `next` or a justified stop. Report the correction to the user as
 well. If a summary does not surface the linked correction, read the relevant
 receipts directly before acting on an older recommendation. A correction does
-not itself authorize the newly proposed action.
+not itself authorize the newly proposed action. If the owner corrects
+the diagnostic **target or breadth**, record the misinterpreted scope and the
+corrected one; a component-only `GOAL_SATISFIED` does not close a repository-wide
+request. Continue the original read-authorized diagnosis against the corrected
+target before recording final closure, or state a genuine remaining boundary.
 
 ## 3. Location and persistence
 
