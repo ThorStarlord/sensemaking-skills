@@ -63,6 +63,15 @@ promoted       != merged
 merged         != original-finding closure
 ```
 
+**Separate method, target and scope.** When a prompt names both a Skill to
+use and a repository to diagnose, the named Skill is the *method*, not
+implicitly the target. "Use `using-sensemaking` on the `sensemaking-skills`
+repository" targets the repository; "diagnose `using-sensemaking` itself"
+explicitly narrows the target to that Skill. Use the user's wording and
+conversation context to establish the target and breadth before selecting
+sources or claiming no change. If two materially different targets remain
+plausible, ask one scope question; do not ask the user to preselect a feature.
+
 **Diagnose before asking for a feature.** If the user names a repository
 (including this Skill itself) and asks to apply Sensemaking, inspect its
 current source, governing intent, prior decisions and consequential gaps.
@@ -345,6 +354,11 @@ responsibility, say what changed and reconcile the affected continuation
 record. Update an in-progress receipt; for a finalized receipt, preserve it
 and record the correction in a linked successor as described in the receipt
 reference. Do not treat a corrected recommendation as still warranted.
+**A corrected target reopens the unfinished original diagnosis:** a conclusion
+about one component does not establish a repository-wide conclusion. Preserve
+that finding at its actual scope, reorient to the corrected target and continue
+within existing read authority; only stop when that scope is assessed or a
+real stop boundary is reached. Scope correction grants no new write authority.
 
 `NO_MODEL_CHANGE` is a valid, successful outcome. Currentness checks feed
 judgment; they never change strategy or knowledge on their own:
