@@ -10,7 +10,7 @@ It reports, mechanically and without judging meaning:
   - open questions not resolved by any later receipt's continuity.resolves_questions;
   - final sessions' next responsibilities and predecessor links, plus the
     latest final session by update time (not a relevance or authority decision);
-  - knowledge misses not yet ADDED or closed as NO_MODEL_CHANGE;
+  - knowledge misses recorded as ADD_PROPOSED or DEFERRED at the time;
   - misses whose subject or terms recur across two or more sessions;
   - receipts that were not durably persisted;
   - receipts that fail validation.
@@ -41,6 +41,11 @@ def _load_validator():
 
 
 _validator = _load_validator()
+
+_MISS_STATUS_NOTE = (
+    "Statuses are historical as recorded in each receipt; later sessions may "
+    "have resolved them. Check later receipts and current knowledge."
+)
 
 
 def _ascii(text: Any) -> str:
@@ -170,6 +175,7 @@ def summarize(receipt_dir: Path) -> dict[str, Any]:
         "final_sessions": final_sessions,
         "latest_ties": latest_ties if len(latest_ties) > 1 else [],
         "pending_misses": pending_misses,
+        "pending_misses_note": _MISS_STATUS_NOTE,
         "repeated_misses": repeated_misses,
         "not_durable": not_durable,
         "invalid": invalid,
@@ -206,7 +212,8 @@ def _print_text(summary: dict[str, Any]) -> None:
         lines.append(f"NEXT: latest update time tied: {', '.join(summary['latest_ties'])}")
     else:
         lines.append("NEXT: no final session receipt")
-    lines.append(f"PENDING KNOWLEDGE MISSES: {len(summary['pending_misses'])}")
+    lines.append(f"HISTORICAL KNOWLEDGE MISSES (ADD_PROPOSED or DEFERRED): {len(summary['pending_misses'])}")
+    lines.append(f"  {_MISS_STATUS_NOTE}")
     for m in summary["pending_misses"]:
         ref = f" proposal={m['proposal_ref']}" if m["proposal_ref"] else ""
         lines.append(f"  {m['ref']} {m['follow_up']}: {m['needed_for']}{ref}")

@@ -136,8 +136,11 @@ Then:
    time is reported without choosing one. Inspect relevant source receipts:
    chronology does not establish relevance or whether a linked session
    actually supersedes a finding or recommendation.
-4. **PENDING / REPEATED KNOWLEDGE MISSES** are inputs for
-   `repository-semantic-steward` RECONCILE, not a backlog.
+4. **HISTORICAL / REPEATED KNOWLEDGE MISSES** are inputs for
+   `repository-semantic-steward` RECONCILE, not a backlog. The reader lists
+   follow-up statuses as recorded in each receipt, without reconciling later
+   resolutions. Check relevant later receipts and current knowledge before
+   treating a miss as unresolved; JSON retains the `pending_misses` name.
 
 A receipt is evidence about a past session. It does not override current code,
 current owner intent or the current Level-3 projection.

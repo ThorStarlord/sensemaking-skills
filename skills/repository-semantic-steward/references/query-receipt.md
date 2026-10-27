@@ -182,11 +182,14 @@ disposable by design. The pins (`indexed_ref`, `current_head`,
 
 ## 5. How misses feed RECONCILE
 
-When available, `scripts/summarize-receipts.py` lists misses still
-`ADD_PROPOSED` or `DEFERRED` and any subject or term missed in **two or more
-sessions**. During RECONCILE (`references/reconciliation.md`), read relevant
-existing receipts through that optional tool or directly before choosing
-dispositions. A repeated miss is evidence that a source-linked ADD is
+When available, `scripts/summarize-receipts.py` lists misses recorded as
+`ADD_PROPOSED` or `DEFERRED` in their original receipts and any subject or
+term missed in **two or more sessions**. Those statuses are historical: the
+reader does not reconcile later resolutions. Its JSON `pending_misses` field
+retains its existing name and has the same historical meaning, disclosed in
+`pending_misses_note`. During RECONCILE (`references/reconciliation.md`),
+inspect relevant later receipts and current knowledge before treating a miss
+as unresolved. A repeated miss is evidence that a source-linked ADD may be
 warranted. It is not by itself proof, and not a quota.
 
 ## 6. Validate
