@@ -161,14 +161,14 @@ no index exists.
 
 ```text
 AUTHORIZED PURPOSE (DIAGNOSE OR BUILD) + REPOSITORY EVIDENCE + AUTHORITY
-  -> ARCHITECT: choose a warranted, bounded improvement
-     (lightweight for a clear defect; real alternatives when material)
-  -> BUILDER: inspect actual callers and contracts, implement useful code,
-     revise an in-scope design when implementation evidence warrants it
-  -> REVIEW: verify affected behavior proportionately under target policy,
-     inspect the diff, state what ran and what was not established
-  -> RECONCILE: keep only consequential, non-derivable knowledge; report
-     remaining uncertainty; stop or return to the mission loop
+  -> ARCHITECT / DIAGNOSE: inspect evidence, identify findings and a
+     warranted responsibility (or justified no-change)
+  -> BUILDER (only if authorized): inspect actual contracts and callers,
+     implement a useful bounded change, revise in-scope design if warranted
+  -> REVIEW: check evidence and any diff proportionately under target policy;
+     disclose what was and was not established
+  -> RECONCILE: retain only consequential knowledge; report remaining
+     uncertainty; stop or return to the authorized mission loop
 ```
 
 The expected output is actual bounded engineering work when authorized, not a
