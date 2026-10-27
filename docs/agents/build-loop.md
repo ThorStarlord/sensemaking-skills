@@ -55,6 +55,49 @@ consequence, or report that the specific next responsibility remains unknown.
 No mandatory candidate count, extra Skill, strategic reopening or approval
 gate follows from this check. Clear authorized bounded work remains direct.
 
+## Observed repository-only discovery miss (2026-10-27)
+
+An owner-shared coding-agent transcript at `e11a44f` exposed a failure of
+**task grounding during actual Skill use**, despite the existing
+method-versus-target and repository-only discovery instructions (PRs #619 and
+#620). The owner intended `using-sensemaking` as the method applied to the
+whole `sensemaking-skills` repository. The agent instead declared the Skill
+component its explicit target, investigated prior Skill-only receipts, and
+closed with "no further Skill edit warranted". It acknowledged the wrong
+scope only after the owner challenged the conclusion; the intended
+repository-wide discovery was not shown to complete.
+
+The reported working-tree-only receipt,
+`.sensemaking/receipts/2026-10-27-use-sensemaking-skill-target.session.yaml`,
+listed `target_repository: ThorStarlord/sensemaking-skills`, but its actual
+responsibility was "Diagnose the using-sensemaking Skill as the explicit
+target" and its stop disposition was `NO_FURTHER_WARRANT` for that component.
+A matching repository identity field **does not establish semantic coverage**.
+The transcript's `Get-Content STATUS.md -TotalCount 220` also could not read
+the later "Current next step" section; it did not demonstrate a full current
+product-capability comparison. This is owner-supplied episode evidence, not a
+Git-committed receipt or an independent agent-success/failure rate.
+
+**Leading hypothesis, not proven cause:** premature component-level task
+framing, reinforced by related historical receipts, displaced product-level
+discovery. Incomplete context delivery or other instruction-application
+failures have not been ruled out. The real gap is between *knowledge present
+in the Skill* and *knowledge used to select and close a responsibility*.
+
+**Decision-relevant follow-up:** investigate where the original target was
+lost in a real invocation and whether the current lightweight entry/closure
+judgment can prevent premature `NO_FURTHER_WARRANT`. At entry, distinguish
+invoked method, requested target, intended outcome and authority. Before
+closure, compare the owner's requested scope with the source areas actually
+examined, selected responsibility, final claim **and** receipt; if one
+component was assessed, do not infer repository-wide completion. Continue the
+authorized discovery after a scope correction. Use ordinary source and
+session evidence to decide whether any further implementation is needed;
+do not default to another receipt feature, large Skill rewrite, mechanical
+validator or synthetic evaluation. This is a candidate engineering
+investigation, **not** a ratified automatic PATH-1 backlog item or evidence
+that the documented safeguard already works.
+
 ## Continue after a spike or merged increment
 
 **Remember:** `GOAL -> SPIKE? -> BUILD -> INTEGRATE -> CONTINUE`.
