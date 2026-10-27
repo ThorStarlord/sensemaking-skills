@@ -1,6 +1,6 @@
 ---
 name: using-sensemaking
-description: Use the portable Architect -> Builder -> Reconcile loop to diagnose a named repository even when no feature is specified, or to select, implement and review warranted engineering work. Works without product docs, CLAUDE.md, AGENTS.md, a Sensemaking knowledge pack or installed CLI. Also use for broad delegated repository missions or when repository uncertainty, product/architecture choices, evidence, delegation, source-grounded memory or authority boundaries could change the next responsibility. The coding agent owns judgment; strategic-sensemaking-loop owns multi-increment mission continuation.
+description: Given only a target repository, discover the next warranted engineering responsibility from product intent, implementation evidence, current capabilities and credible alternatives without asking the owner to choose a feature. Use the portable Architect -> Builder -> Reconcile loop to implement authorized bounded work, review outcomes and retain decision-relevant learning. Works in sparse or well-documented repositories and for broader delegated missions; the coding agent owns judgment and strategic-sensemaking-loop owns multi-increment mission continuation.
 ---
 
 # Using Sensemaking Skills: Agent-Native Control Loop
@@ -18,18 +18,19 @@ nothing, and no artifact field selects or dispatches a downstream Skill.
 > enough decision-relevant evidence at acceptable downside and cost. Assurance
 > bounds action; it does not automatically outrank value creation.
 
-**The Skill carries the method; the repository carries its knowledge; you apply
-both to the current engineering responsibility.** Everything below works after
-this Skill loads, even when the target repository has no `CLAUDE.md`,
+**The Skill carries the method; the repository carries its knowledge. When
+no engineering responsibility is supplied, you discover one.** Everything
+below works after this Skill loads, even when the target repository has no `CLAUDE.md`,
 `AGENTS.md`, `CONTEXT.md`, Grounding Pack, knowledge index or Sensemaking CLI.
 
 ### Which entry
 
 - **Direct bounded work** (clear, authorized, local, verifiable): implement it
   with the target repository's own verification. No Sensemaking ceremony.
-- **Target-only request** ("use/apply Sensemaking on this repository"):
-  diagnose from current sources first. No user-selected feature is required,
-  and read-only diagnosis does not authorize implementation.
+- **Repository-only discovery** ("use/apply Sensemaking on this repository"):
+  discover a warranted next engineering responsibility from current sources,
+  product purpose and credible gaps. The repository is sufficient input; no
+  owner-selected feature is needed. Discovery alone authorizes no implementation.
 - **This Skill:** Architect -> Builder -> Review -> Reconcile for one bounded
   diagnostic or engineering responsibility, in a sparse or documented repository.
 - **`strategic-sensemaking-loop`:** the front door for a one-prompt strategic
@@ -71,6 +72,19 @@ explicitly narrows the target to that Skill. Use the user's wording and
 conversation context to establish the target and breadth before selecting
 sources or claiming no change. If two materially different targets remain
 plausible, ask one scope question; do not ask the user to preselect a feature.
+
+**Repository-only discovery is the default.** When this Skill is invoked with
+only a repository target, finding *what to build next* is the assigned task.
+Recover its product goals and governing decisions; inspect actual capabilities,
+consumers and consequential gaps with enough breadth to challenge an obvious
+recent-component candidate. Select a bounded next responsibility whose
+specific useful behavior, owning source area and why-now warrant are supported
+by evidence and a meaningful alternative. If none can be justified, explain
+which product areas were assessed and the decisive missing evidence, genuine
+owner choice or no-change reason; propose a bounded next inquiry when useful.
+A component-only no-edit finding cannot close a repository-wide discovery,
+and "continue the roadmap" is not a selected responsibility. This default
+remains read-only unless implementation authority is separately granted.
 
 **Diagnose before asking for a feature.** If the user names a repository
 (or explicitly targets this Skill as a component) and asks to apply
@@ -424,7 +438,7 @@ already stated above, so skipping a file never loses the rule.
 
 | Reference | Load when | Skip when | Protects |
 | --- | --- | --- | --- |
-| `references/portable-construction-loop-v1.md` | target-only diagnosis, coding outside the Sensemaking repository, sparse repos, or earlier-artifact reuse | a clear local fix in a familiar repo | no preselected feature != blocked diagnosis |
+| `references/portable-construction-loop-v1.md` | repository-only responsibility discovery, coding outside the Sensemaking repository, sparse repos, or earlier-artifact reuse | a clear local fix in a familiar repo | no preselected feature != blocked discovery |
 | `references/evidence-and-closure-v1.md` | validating, reconciling a claim, verifying a repair, reading a Brief, using a workflow | ordinary tests and diff review settle it | validated != closed |
 | `references/session-receipt-v1.md` | every session using this Skill | never; follow the contract when a receipt can be written | receipt != authority |
 | `references/delegated-goal-patterns.md` | a delegated mission's scope, authority or stop is material | a bounded task | desired delegation != granted authority |
