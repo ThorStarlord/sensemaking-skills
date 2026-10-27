@@ -1,0 +1,54 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-10-27-receipt-commit-push-authority
+state: final
+created_at: "2026-10-27T08:23:09Z"
+updated_at: "2026-10-27T08:23:34Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: 64ade308733d85cc9d04246d67d5c2e732b80354
+  end_ref: 9653c5ee53581f10b58d8d3ae41bf56b3f85049f
+  worktree_clean_at_end: false
+skill_identity:
+  load_mode: manual_explicit_load
+  sensemaking_source_ref: 64ade308733d85cc9d04246d67d5c2e732b80354
+goal:
+  statement: "[owner: 2026-10-27] Find and implement a warranted improvement to using-sensemaking itself."
+  source: owner_message
+  source_ref: null
+delegation:
+  granted: [read, local_write, run_local_commands, commit, push]
+  withheld: [open_pr, merge, release, deploy]
+continuity:
+  resumes: 2026-10-27-apply-skill-to-itself
+  campaign_ref: null
+  resolves_questions: ["2026-10-27-apply-skill-to-itself#Q-1"]
+responsibilities:
+  - id: R-1
+    responsibility: Clarify receipt persistence and separate commit from push authority
+    capability: ordinary_coding
+    status: completed
+    reason: Clarified separate permissions and local-only commit persistence in session and query receipt guidance.
+    artifact_refs: []
+    validation:
+      - command: git diff --check
+        result: PASS
+      - command: local unit and synthetic evidence tests
+        result: NOT_RUN
+findings:
+  - id: F-1
+    statement: Receipt instructions now distinguish a local commit from separately authorized push and off-host persistence.
+    epistemic_status: OBSERVED
+    evidence_refs: [skills/using-sensemaking/references/session-receipt-v1.md, skills/repository-semantic-steward/references/query-receipt.md]
+    disposition: resolved
+open_questions: []
+stop:
+  disposition: GOAL_SATISFIED
+  reason: Implemented and source-reviewed one bounded improvement; code commit is ready to push to main.
+next:
+  warranted_responsibility: null
+  blocked_on: []
+persistence: committed
+claim_ceiling: Source review does not establish agent behavior or remote persistence; NO_MODEL_CHANGE.
+action_authorized_by_receipt: false
+immutable: true
