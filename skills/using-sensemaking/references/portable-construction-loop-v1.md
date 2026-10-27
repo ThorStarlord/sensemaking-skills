@@ -3,9 +3,10 @@
 **Purpose:** The active coding agent can diagnose a named repository without
 a preselected feature, or turn an authorized engineering outcome into bounded
 implementation, source-grounded review and decision-relevant learning in
-**any** target repository. This reference belongs to the distributed `using-sensemaking` Skill. It is not a
-repository-specific agent instruction, runtime engine, automatic planner,
-new artifact type, or grant of GitHub/external-action authority.
+**any** target repository. This reference belongs to the distributed
+`using-sensemaking` Skill. It is not a repository-specific agent instruction,
+runtime engine, automatic planner, new artifact type, or grant of
+GitHub/external-action authority.
 
 **Inputs:** (1) current user request (a target-only diagnostic request is
 sufficient to begin reading) and applicable delegation/authority;
