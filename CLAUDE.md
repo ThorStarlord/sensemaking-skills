@@ -1,6 +1,9 @@
 ## SessionStart hook
 
-At session start, the **using-sensemaking** bootstrap skill is available to agents.
+At session start, the **using-sensemaking** bootstrap skill is available to agents
+where it is installed. If the Skill tool does not list it (for example in a fresh
+cloud session), read `skills/using-sensemaking/SKILL.md` directly, or install it
+from this checkout with `sensemaking-skills setup-skills --target claude --scope user`.
 
 This skill teaches agents:
 - Fog classification (4 types)

@@ -8,7 +8,7 @@ platform: ["Claude Code", "Cursor (planned)", "OpenCode (planned)"]
 
 # SessionStart: Load Sensemaking Bootstrap Skill
 
-When a session starts in this repository, the **using-sensemaking** bootstrap skill becomes available to agents.
+When a session starts in this repository, the **using-sensemaking** bootstrap skill is available to agents **only if it is installed** in a skills directory the host discovers. A fresh host (for example a new cloud session) may have no installed copy; the Skill tool then cannot load it, and the agent reads `skills/using-sensemaking/SKILL.md` directly instead.
 
 ## SessionStart Bootstrap Reminder
 
@@ -29,28 +29,33 @@ Before using sensemaking-skills in a repository, read the bootstrap skill:
 /skill using-sensemaking
 ```
 
-**Or read directly:**
+**Or read directly** (required when the Skill tool does not list it):
 ```
 skills/using-sensemaking/SKILL.md
 ```
 
-This skill teaches (section numbers refer to `skills/using-sensemaking/SKILL.md`):
-- When repository sensemaking is warranted, and when it is not (section 2)
+To make it invocable on a host that lacks it, install from this checkout:
+`sensemaking-skills setup-skills --target claude --scope user`.
+
+This skill teaches (section numbers refer to `skills/using-sensemaking/SKILL.md`;
+procedures live in `references/evidence-and-closure-v1.md`):
+- When repository sensemaking is warranted, and when it is not ("Which entry"; section 3)
 - Select responsibility before Skill (section 5)
 - How to read a Repository Sensemaking Brief; `recommended_workflow_id` is a
-  recommendation/planning field, not execution authority (section 6)
-- Validate mechanically without confusing PASS with truth or closure (section 9)
+  recommendation, not execution authority (section 6; reference section 4)
+- Validate mechanically without confusing PASS with truth or closure
+  (section 6; reference section 1)
 - Reconcile material work claims; verify repairs against the original finding
-  (sections 10-11)
-- Authority: KNOW vs. DECIDE vs. ACT vs. PUBLISH (section 12)
-- Continue, stop, or escalate (section 13); durable continuation (section 14)
+  (section 6; reference sections 2-3)
+- Authority: KNOW vs. DECIDE vs. ACT vs. PUBLISH (section 1)
+- Continue, stop, or escalate; durable continuation (section 8)
 
 **Then**, when a request arrives:
-1. Decide whether repository sensemaking is warranted (section 2); if not, do bounded work
-2. If warranted, produce the `repository_sensemaking_brief` with `repo-sensemaker` and validate it mechanically (section 9)
+1. Decide whether repository sensemaking is warranted ("Which entry"; section 3); if not, do bounded work
+2. If warranted, produce the `repository_sensemaking_brief` with `repo-sensemaker` and validate it mechanically (section 6)
 3. Read the brief (section 6): fog type is diagnostic metadata; `recommended_workflow_id` does not authorize execution
 4. Select the next responsibility before any Skill, workflow, or patch (section 5)
-5. Continue, stop, or escalate (section 13); a validator PASS is not closure
+5. Continue, stop, or escalate (section 8); a validator PASS is not closure
 
 ---
 
@@ -60,7 +65,7 @@ This skill teaches (section numbers refer to `skills/using-sensemaking/SKILL.md`
 ```
 User: "Diagnose my codebase"
 Agent: [reads using-sensemaking skill via /skill using-sensemaking]
-Agent: [decides whether repository sensemaking is warranted -- section 2]
+Agent: [decides whether repository sensemaking is warranted -- section 3]
 Agent: [if so, invokes repo-sensemaker; then selects responsibility before Skill -- section 5]
 ```
 
@@ -86,7 +91,7 @@ Those are agent responsibilities, taught by the skill.
 ## What This Hook Does
 
 1. **Describes a convention** -- read `using-sensemaking` before using the skills; this file does not register anything
-2. **Surfaces availability** -- via `CLAUDE.md` and the installed skill, agents know the skill exists and can invoke it
+2. **Surfaces availability** -- via `CLAUDE.md`, agents know the skill exists; they can invoke it where it is installed and read it directly where it is not
 3. **Does NOT inspect the repo** -- nothing runs fog classification at session start
 4. **Does NOT orchestrate** -- nothing invokes workflows or validates artifacts at session start
 
@@ -125,13 +130,13 @@ head -10 skills/using-sensemaking/SKILL.md
 ### Test 3: Skill teaches correct behavior
 ```bash
 # Verify the skill teaches responsibility before Skill (section 5):
-grep -n "Select responsibility before Skill" skills/using-sensemaking/SKILL.md
+grep -n "Responsibility before capability" skills/using-sensemaking/SKILL.md
 
-# Verify the skill separates validation from closure (section 9):
+# Verify the skill separates validation from closure (section 6):
 grep -n "!= closure" skills/using-sensemaking/SKILL.md
 
-# Verify the skill treats recommended_workflow_id as a recommendation, not execution authority (section 6):
-grep -n "recommendation/planning field" skills/using-sensemaking/SKILL.md
+# Verify the skill treats recommendation fields as recommendations, not execution authority (section 6):
+grep -n "recommendation field -> not a command" skills/using-sensemaking/SKILL.md
 ```
 
 ### Test 4: Hook doesn't orchestrate
@@ -149,7 +154,8 @@ grep -v "Do NOT.*inspect\|Do NOT.*orchestrate" .claude/hooks/sessionstart.md
    - No hook is configured: `.claude/settings.json` is `{}`; this file is a description
    - `CLAUDE.md` ("SessionStart hook" section) names the skill and points here
    - The skill tree is copied into an agent-discoverable skills directory (`~/.claude/skills` per `INSTALLATION.md`; `~/.agents/skills` or the Superpowers plugin cache per `src/sensemaking_skills/setup_skills.py`, which never silently overwrites an installed copy); `scripts/probe_skill_distribution.py` reports drift between `skills/<skill>/` and the installed copy
-   - Agent invokes via `/skill using-sensemaking` or the Skill tool, or reads `skills/using-sensemaking/SKILL.md` directly
+   - Nothing installs that copy automatically; a host that never ran `setup-skills` (such as a fresh cloud session) has none
+   - Agent invokes via `/skill using-sensemaking` or the Skill tool where installed, or reads `skills/using-sensemaking/SKILL.md` directly
    - Skill content is loaded from a file; the repository copy and an installed copy can drift (see the distribution probe)
 
 2. **Cursor/OpenCode**:
@@ -170,11 +176,11 @@ grep -v "Do NOT.*inspect\|Do NOT.*orchestrate" .claude/hooks/sessionstart.md
   - NO: does NOT execute anything (no hook is configured)
 
 - **Skill responsibility**: the bootstrap skill teaches the agent-native control loop
-  - Skill tells agents WHEN repository sensemaking is warranted (section 2)
+  - Skill tells agents WHEN repository sensemaking is warranted ("Which entry"; section 3)
   - Skill tells agents to select responsibility before Skill (section 5)
   - Skill tells agents HOW to read the brief; `recommended_workflow_id` is not execution authority (section 6)
-  - Skill tells agents HOW to validate mechanically without treating PASS as closure (section 9)
-  - Skill tells agents WHEN to continue, stop, or escalate (section 13)
+  - Skill tells agents HOW to validate mechanically without treating PASS as closure (section 6)
+  - Skill tells agents WHEN to continue, stop, or escalate (section 8)
   - Agent decides whether to follow these rules (they're not enforced)
 
 ### Platform Limitations
@@ -182,6 +188,7 @@ grep -v "Do NOT.*inspect\|Do NOT.*orchestrate" .claude/hooks/sessionstart.md
 | Limitation | Impact | Mitigation |
 |-----------|--------|-----------|
 | No executable hook | Nothing runs at session start; an agent that does not read `CLAUDE.md` will not see the reminder | `CLAUDE.md` names the skill; the installed skill is discoverable via the Skill tool |
+| No installed copy | On a fresh host the Skill tool cannot load `using-sensemaking` | Read `skills/using-sensemaking/SKILL.md` directly, or run `setup-skills --target claude --scope user` |
 | Installed-copy drift | The installed skill copy may lag the repository copy | `scripts/probe_skill_distribution.py` reports drift; `setup_skills.py --force` or the probe's `--sync` replaces it explicitly |
 | Cursor/OpenCode | No hook exists on any platform | Same file-based convention: read the skill file |
 | File path availability | Must be relative to repo root | `.claude/` and `skills/` directories standard |
