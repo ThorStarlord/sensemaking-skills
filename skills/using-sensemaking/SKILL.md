@@ -73,8 +73,9 @@ sources or claiming no change. If two materially different targets remain
 plausible, ask one scope question; do not ask the user to preselect a feature.
 
 **Diagnose before asking for a feature.** If the user names a repository
-(including this Skill itself) and asks to apply Sensemaking, inspect its
-current source, governing intent, prior decisions and consequential gaps.
+(or explicitly targets this Skill as a component) and asks to apply
+Sensemaking, inspect its current source, governing intent, prior decisions
+and consequential gaps.
 Choose focused inspection, `repo-sensemaker` or strategic analysis according
 to what would change the decision. Identify findings and the next warranted
 responsibility (or justified no-change) without demanding a review/build/demo
@@ -354,6 +355,7 @@ responsibility, say what changed and reconcile the affected continuation
 record. Update an in-progress receipt; for a finalized receipt, preserve it
 and record the correction in a linked successor as described in the receipt
 reference. Do not treat a corrected recommendation as still warranted.
+
 **A corrected target reopens the unfinished original diagnosis:** a conclusion
 about one component does not establish a repository-wide conclusion. Preserve
 that finding at its actual scope, reorient to the corrected target and continue
