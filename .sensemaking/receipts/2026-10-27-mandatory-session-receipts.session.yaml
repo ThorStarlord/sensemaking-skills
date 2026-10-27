@@ -1,0 +1,54 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-10-27-mandatory-session-receipts
+state: final
+created_at: "2026-10-27T08:19:10Z"
+updated_at: "2026-10-27T08:19:38Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: eaab6b73e018f10b6e636b955fc62e8a051be67c
+  end_ref: d5a9dfede3b41012765cd8bd007617e32d1d6882
+  worktree_clean_at_end: false
+skill_identity:
+  load_mode: manual_explicit_load
+  sensemaking_source_ref: eaab6b73e018f10b6e636b955fc62e8a051be67c
+goal:
+  statement: Apply using-sensemaking to itself; always create a session receipt.
+  source: owner_message
+  source_ref: null
+delegation:
+  granted: [read, local_write, run_local_commands]
+  withheld: [push, open_pr, merge, release, deploy]
+continuity:
+  resumes: null
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: Align session receipt guidance with owner decision
+    capability: ordinary_coding
+    status: completed
+    reason: Owner directed that session receipts always be created.
+    artifact_refs: []
+    validation:
+      - command: git diff --check
+        result: PASS
+      - command: local unit and synthetic evidence tests
+        result: NOT_RUN
+findings:
+  - id: F-1
+    statement: Owner directed a session receipt for every using-sensemaking session.
+    epistemic_status: RATIFIED
+    evidence_refs: [skills/using-sensemaking/SKILL.md]
+    disposition: resolved
+open_questions: []
+stop:
+  disposition: GOAL_SATISFIED
+  reason: Updated receipt guidance and reviewed the affected instructions.
+next:
+  warranted_responsibility: null
+  blocked_on: []
+persistence: committed
+claim_ceiling: Source review does not establish agent behavior or durable persistence.
+action_authorized_by_receipt: false
+immutable: true
