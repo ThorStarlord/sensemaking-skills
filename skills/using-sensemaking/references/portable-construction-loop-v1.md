@@ -112,6 +112,15 @@ decision, and retrieve only what the current responsibility needs.
 6. **Continuation state:** session receipts, Campaign workspaces and handoffs,
    when present.
 
+**Do not inherit a task queue from continuity.** A previous `next` proposal,
+its timestamp, or several recent sessions about one supporting subsystem
+recovers the history of prior choices, not the priority of the next one. When
+selection is open, check whether those proposals remain warranted against
+current product commitments, actual implementation and competing product
+gaps. Repeated local fixes may indicate a genuinely important problem *or*
+selection anchoring; neither is proven by the receipt count. For a known
+bounded task, skip this comparison.
+
 **Three categories, three trust rules:**
 
 | Category | What it tells you | How to treat it |
@@ -206,6 +215,16 @@ For uncertain, consequential or architecture-affecting work:
   the correct scope of authority;
 - investigate the **nearest decision-changing uncertainty** only when further
   evidence could change the choice enough to justify its cost.
+
+**Compare the right level of alternatives.** If arguing for stopping repairs
+in subsystem A to resume product work in B, inspect enough governing purpose,
+current source and credible missing behavior to name a possible bounded
+responsibility in B and explain why its expected value competes with A.
+Checking two variants of the same A repair does not establish that B is a
+better product opportunity. If the evidence supports only "stop A", present B
+as an unselected direction and state what remains to choose; do not invent a
+specific improvement. Neither repeated receipt topics nor a roadmap label
+select the next responsibility on their own.
 
 Do **not** require a five-option quota, numerical scores, a mandatory
 repository-wide strategic reanalysis, or a formal specification for routine

@@ -143,7 +143,13 @@ Then:
    treating a miss as unresolved; JSON retains the `pending_misses` name.
 
 A receipt is evidence about a past session. It does not override current code,
-current owner intent or the current Level-3 projection.
+current owner intent or the current Level-3 projection. In an open-ended
+selection, a recent `next` or repeated same-subsystem recommendations must be
+reassessed against current product needs and credible other responsibilities,
+not executed because they dominate the receipt history. If the evidence
+supports stopping that subsystem but not a concrete alternative, say so;
+leave the next responsibility open rather than manufacture one. A previously
+authorized bounded task does not require re-selection.
 
 ## 5. Schema (all fields required unless marked nullable)
 
