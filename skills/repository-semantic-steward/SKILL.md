@@ -125,18 +125,16 @@ RECALL. It composes existing source-pinned queries for divergence, qualitative
 comparison and adversarial challenge without introducing a new Steward mode,
 semantic planner, authority, schema or mandatory index bootstrap.
 
-## Report gaps and record receipts when warranted
+## Report gaps and record query receipts
 
 Report decision-relevant gaps that affect the current result, along with source
 checks and remaining uncertainty, in the task output whether or not a receipt
-exists. A consequential gap needing future follow-up can itself warrant a
-supported session receipt and its companion query receipt. When no session
-receipt is warranted or supported, Steward use alone does not require either
-receipt; ordinary output is not automatically available to later sessions or
-the receipt summarizer.
+exists. `using-sensemaking` calls for a session receipt in every session. If
+the host or authority prevents writing it, report the limitation; ordinary
+output is not automatically available to later sessions or the summarizer.
 
-When using a warranted, supported `sensemaking_session_receipt`, record Steward
-operations in one companion `semantic_query_receipt` at
+When using a `sensemaking_session_receipt`, record Steward CLI operations
+specified in the query receipt reference in one companion `semantic_query_receipt` at
 `.sensemaking/receipts/<session_ref>.query.yaml`, sharing the session's
 `session_ref`. It records:
 

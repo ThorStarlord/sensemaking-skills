@@ -39,7 +39,8 @@ this Skill loads, even when the target repository has no `CLAUDE.md`,
 Before selecting work, identify the user's actual goal, the authorized scope,
 which external mutations need explicit approval (merge, publication,
 deployment, tracker writes), and whether the task is already narrow enough to
-do directly. Keep these four questions separate:
+do directly. Once goal and authority are known, open the session receipt as
+described in Section 7. Keep these four questions separate:
 
 | Question | Who answers |
 | --- | --- |
@@ -319,16 +320,16 @@ non-derivable lesson only when its source, the decision it changes and its
 staleness condition are clear. Do not document every commit or turn a working
 hypothesis into a permanent rule.
 
-**Session receipts are optional.** Use a `sensemaking_session_receipt` only when
-handoff, interruption, an open owner question or multi-step continuation would
-otherwise be lost and the host supports it. A consequential knowledge gap that
-needs future follow-up can itself create such a continuation need. Follow
+**Create a session receipt for every session using this Skill** [owner: 2026-10-27],
+including ordinary single-context work. Open it after the goal and authority are
+known, update it as work proceeds, and finalize it at the stop. Follow
 `references/session-receipt-v1.md`; receipts live under `.sensemaking/receipts/`.
-Never create a `.sensemaking/` folder or a receipt merely because this Skill
-loaded, never claim a framework script ran when it was unavailable, and never
-grant yourself Git or upload authority to preserve one. If an optional receipt
-was actually created but cannot leave the checkout, record
-`persistence: working_tree_only` and disclose that it will not survive.
+Create the directory when needed and permitted. If the host or authority prevents
+writing a receipt, report that it could not be created; do not invent one or
+claim a framework script ran when unavailable. Never grant yourself Git or
+upload authority to preserve a receipt. If one was written but cannot leave
+the checkout, record `persistence: working_tree_only` and disclose that it will
+not survive the checkout.
 
 ```text
 receipt schema valid != semantic correctness or action permission
@@ -366,7 +367,7 @@ already stated above, so skipping a file never loses the rule.
 | --- | --- | --- | --- |
 | `references/portable-construction-loop-v1.md` | coding outside the Sensemaking repository, in a sparse repo, or reusing earlier artifacts and knowledge | a clear local fix in a familiar repo | no scaffold != cannot build |
 | `references/evidence-and-closure-v1.md` | validating, reconciling a claim, verifying a repair, reading a Brief, using a workflow | ordinary tests and diff review settle it | validated != closed |
-| `references/session-receipt-v1.md` | an optional receipt is warranted and supported | single-context work with PR/Git history | receipt != authority |
+| `references/session-receipt-v1.md` | every session using this Skill | never; follow the contract when a receipt can be written | receipt != authority |
 | `references/delegated-goal-patterns.md` | a delegated mission's scope, authority or stop is material | a bounded task | desired delegation != granted authority |
 | `references/experiment-economy-v1.md` | an experiment or isolation is actually under consideration | reversible construction can answer it | uncertainty != experiment |
 | `references/inquiry-policy-v0.md` | choosing what to learn next is itself consequential | the next action is already stable | uncertainty exists != inquiry required |

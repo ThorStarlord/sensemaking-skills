@@ -27,7 +27,7 @@ NO_MODEL_CHANGE   = valid, and recorded so it is visible
 
 ## 2. When to write it
 
-When a session receipt is warranted and supported, Steward invocations that run
+When a session receipt is available, Steward invocations that run
 `orient`, `build`, a `knowledge-query` operation, `knowledge-audit` or
 `knowledge-proposal-check` write or update **one** companion query receipt per
 session, beside the session receipt:
@@ -37,7 +37,7 @@ session, beside the session receipt:
 ```
 
 `session_ref` is the same value as the session's `sensemaking_session_receipt`.
-Open it `in_progress` when receipt use is warranted, append queries as they run,
+Open it `in_progress` when those operations begin, append queries as they run,
 and finalize it when the Steward responsibility ends (`state: final`,
 `immutable: true`). If several modes run in one session (for example RECALL,
 then RECONCILE), list them all in `modes`. Persistence follows the same rule as
@@ -45,18 +45,14 @@ the session receipt: it survives only when committed and pushed or uploaded by
 the host (`skills/using-sensemaking/references/session-receipt-v1.md`, section 3).
 Do not infer permission to persist it. If a receipt was written but cannot leave
 the checkout, record `working_tree_only` and disclose that it will not survive.
-If a later gap makes the receipt warranted, record earlier operations and
-results only as supported by available evidence; disclose omissions rather
-than inventing them.
-
-A consequential gap needing future follow-up can itself warrant a supported
-session receipt and companion query receipt. If no session receipt is warranted
-or supported, Steward use alone does not require a query receipt. Report
-decision-relevant gaps affecting the current result in task output in either
-case; when a query receipt is used, record qualifying misses there too. Task
-output alone is not automatically counted by the receipt summarizer across
-sessions. Consider durable knowledge changes separately under existing review
-and authority rules.
+Record earlier operations and results only as supported by available evidence;
+disclose omissions rather than inventing them. `using-sensemaking` calls for a
+session receipt in every session. If the host or authority prevents writing it,
+report the limitation. Report decision-relevant gaps affecting the current
+result in task output; when a query receipt is used, record qualifying misses
+there too. Task output alone is not automatically counted by the receipt
+summarizer across sessions. Consider durable knowledge changes separately under
+existing review and authority rules.
 
 ## 3. Recording a miss (the required part)
 

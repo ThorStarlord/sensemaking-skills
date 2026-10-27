@@ -4,11 +4,11 @@
 **Validator:** `scripts/validate-receipt.py` (also routed by `sensemaking-skills validate --artifact <file>`)  
 **Reader:** `scripts/summarize-receipts.py` (optional framework tool)
 
-**Applicability:** This reference defines the contract **when a durable session
-receipt is warranted and supported**. The portable Architect -> Builder ->
-Reconcile loop does not require one for ordinary single-context coding, or a
-Sensemaking checkout/CLI in the target. The scripts named here must actually
-be available before invoking them. See `portable-construction-loop-v1.md`.
+**Applicability:** Create a session receipt for every session using
+`using-sensemaking`, including ordinary single-context coding. A Sensemaking
+checkout or CLI is not required; scripts named here must be available before
+invoking them. If the host or authority prevents writing a receipt, report that
+it could not be created. See `portable-construction-loop-v1.md`.
 
 ## 1. What a receipt is and is not
 
@@ -35,8 +35,8 @@ into a receipt.
 
 ## 2. Lifecycle: open, update, finalize
 
-When using a receipt, follow this lifecycle. Opening one is **not** a
-prerequisite for ordinary standalone coding work in a new repository.
+Follow this lifecycle for every session. A host or authority limitation on
+writing a receipt must be reported; it does not grant additional authority.
 
 | Moment | What to do | `state` | `stop.disposition` | `persistence` |
 |---|---|---|---|---|
@@ -51,7 +51,7 @@ tombstone, not a failure of the receipt. Once `final`, a receipt is
 receipt and point back via `continuity.resumes` and
 `continuity.resolves_questions`.
 
-When this contract is used, keep **one receipt per participating session**.
+Keep **one receipt per session**.
 A session resumed in a fresh context writes a **new** receipt with
 `continuity.resumes: <prior session_ref>` rather than editing an immutable
 final record.
@@ -236,9 +236,9 @@ sensemaking-skills validate --artifact .sensemaking/receipts/<session_ref>.sessi
 | Level-3 strategy changed | `STATUS.md`, `strategic_reconciliation` | record a finding; the strategy lives there |
 | durable architectural lesson | `.sensemaking/knowledge/*.json` via the Steward | record a finding with `disposition: handed_off` |
 
-When a receipt is warranted and available, it is the smallest typed
-continuation record. Other specialized artifacts remain triggered by need;
-ordinary work can be retained in PR/Git without a receipt.
+The session receipt is the smallest typed continuation record. Other specialized
+artifacts remain triggered by need. Creating a receipt does not grant authority
+to persist it beyond the checkout.
 
 ## 8. Minimal example (a narrow task)
 
