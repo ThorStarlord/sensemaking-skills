@@ -63,6 +63,19 @@ prerequisite. Report findings, uncertainty and the next warranted responsibility
 (or justified no-change). Do **not** first ask the owner to choose among
 reviewing, implementing or demonstrating the Skill.
 
+Connect the sources to the decision rather than merely listing them. Identify
+the relevant product purpose and current direction where available, check
+decisive owner or accepted decisions and prior knowledge at their scope and revision,
+and explain how the finding affects the product or an agent's work. Compare
+the proposed responsibility with a meaningful alternative, including no change
+when appropriate. Give the reason for its value and its evidence limits; a
+local discrepancy is not automatically consequential or the highest-value work.
+When sources appear to disagree, assess which governs and investigate a
+decision-changing conflict or state what remains unresolved. If the evidence
+cannot support a priority, say so instead of inventing one. Keep the
+investigation and explanation proportional; neither a comprehensive repository
+survey nor a fixed decision template is required.
+
 If the current authority also delegates implementation, build a warranted
 bounded change. Otherwise report recommendations and request only a genuinely
 needed owner choice or additional action grant. A target-only request grants

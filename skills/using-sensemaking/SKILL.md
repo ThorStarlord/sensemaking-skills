@@ -74,6 +74,13 @@ remains after source inspection. Honor an explicit review-only, demonstration,
 implementation or terminal-mission request. Diagnosis/recommendation alone
 never authorizes changes, publication or merge.
 
+For an open-ended diagnosis, connect the recommendation to the relevant
+product purpose, current direction and governing decisions. Explain the
+consequence of the finding and why the proposed responsibility is worth
+doing; a source list or local inconsistency alone does not establish priority.
+Check apparent contradictions against their authority, scope and currentness.
+Retrieve selectively, and state when the sources do not support a choice.
+
 The target repository's owner decisions, rules, security boundaries and tools
 control the action. Another repository's branch, test or merge policy does not
 carry over. Missing authority for a repository-wide priority does not block a
@@ -319,6 +326,12 @@ result returned            != state update automatic
 learning                   != model-weight update
 authority need discovered  != authority granted
 ```
+
+When new evidence or an owner correction changes a reported finding or next
+responsibility, say what changed and reconcile the affected continuation
+record. Update an in-progress receipt; for a finalized receipt, preserve it
+and record the correction in a linked successor as described in the receipt
+reference. Do not treat a corrected recommendation as still warranted.
 
 `NO_MODEL_CHANGE` is a valid, successful outcome. Currentness checks feed
 judgment; they never change strategy or knowledge on their own:

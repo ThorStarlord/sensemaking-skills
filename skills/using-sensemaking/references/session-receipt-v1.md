@@ -42,7 +42,7 @@ writing a receipt must be reported; it does not grant additional authority.
 |---|---|---|---|---|
 | After Section 1 (goal + authority) is established | **Open** the receipt | `in_progress` | `IN_PROGRESS` | `pending` |
 | After each responsibility completes, or a finding/question appears | **Update** it in place | `in_progress` | `IN_PROGRESS` | `pending` |
-| At any stop (Section 13) | **Finalize** it | `final` | terminal value | how it was persisted |
+| At any stop (Section 8 of the Skill) | **Finalize** it | `final` | terminal value | how it was persisted |
 
 **Target-only diagnostic entry:** "Use using-sensemaking on repo X" supplies a
 valid read-only goal. Preserve the user's actual wording in `goal.statement`
@@ -64,6 +64,15 @@ Keep **one receipt per session**.
 A session resumed in a fresh context writes a **new** receipt with
 `continuity.resumes: <prior session_ref>` rather than editing an immutable
 final record.
+
+If later evidence or an owner correction changes a finding or recommended next
+responsibility, record what it supersedes and the revised disposition in the
+active receipt. If the original is final, use a new receipt linked through
+`continuity.resumes`; identify the earlier finding or recommendation and record
+the revised `next` or a justified stop. Report the correction to the user as
+well. If a summary does not surface the linked correction, read the relevant
+receipts directly before acting on an older recommendation. A correction does
+not itself authorize the newly proposed action.
 
 ## 3. Location and persistence
 
@@ -122,7 +131,9 @@ Then:
    `continuity.resolves_questions` as `<session_ref>#Q-<n>`.
 3. **NEXT**: the latest final session's warranted responsibility is a
    *defeasible* starting point (Section 3 inherited-responsibility backstop),
-   not an instruction.
+   not an instruction. Check timestamps and relevant `continuity.resumes`
+   links in the source receipts: a summary's ordering alone may not establish
+   which same-day receipt is latest or whether a correction supersedes it.
 4. **PENDING / REPEATED KNOWLEDGE MISSES** are inputs for
    `repository-semantic-steward` RECONCILE, not a backlog.
 
@@ -208,7 +219,7 @@ Authority values: `read`, `local_write`, `run_local_commands`, `commit`,
 `push`, `open_pr`, `merge`, `release`, `deploy`, `tracker_write`,
 `knowledge_edit`, `external_publication`.
 
-Stop dispositions map onto Section 13 ("Continue, stop, or escalate"):
+Stop dispositions map onto Section 8 of the Skill ("Continue, stop or escalate"):
 `GOAL_SATISFIED`, `NO_FURTHER_WARRANT` (further work unwarranted, or the next
 action is stable and remaining uncertainty cannot change it),
 `AUTHORITY_BOUNDARY`, `SCOPE_EXHAUSTED`, `SAFETY_STOP`; plus
