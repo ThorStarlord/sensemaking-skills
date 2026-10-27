@@ -66,6 +66,15 @@ Use `--dry-run` to preview. Divergent installed Skill trees are preserved unless
 
 You do not need to create a Campaign for every task. The coding agent should use the lightest process that preserves the required engineering invariants.
 
+**You do not need to know what to build first.** A prompt such as "Use
+`using-sensemaking` on this repository" is enough to start a read-only,
+source-grounded diagnosis. The agent should examine available current code,
+product decisions and consequential gaps, then explain the next warranted
+responsibility (including no-change) without requiring you to choose a
+feature. An explicit review-only, demonstration, implementation or full-mission
+request takes precedence. Diagnosis does not grant write, push or merge
+permission; authorized construction follows the target repository's policy.
+
 ### Ground an unfamiliar target repository for autonomous work
 
 Start with the target's product intent and current code, not a procedural

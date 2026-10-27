@@ -44,6 +44,15 @@ writing a receipt must be reported; it does not grant additional authority.
 | After each responsibility completes, or a finding/question appears | **Update** it in place | `in_progress` | `IN_PROGRESS` | `pending` |
 | At any stop (Section 13) | **Finalize** it | `final` | terminal value | how it was persisted |
 
+**Target-only diagnostic entry:** "Use using-sensemaking on repo X" supplies a
+valid read-only goal. Preserve the user's actual wording in `goal.statement`
+with `goal.source: owner_message`; describe source-grounded diagnosis as the
+agent-selected responsibility, not as a separately owner-approved feature.
+Lack of a user-selected implementation outcome is **not** a blocking
+`owner_intent` question. Use `OWNER_DECISION_REQUIRED` only after inspecting
+available sources when a material owner choice actually blocks the next
+permitted step. The receipt records the applicable authority, never grants it.
+
 Writing early is the point: a session killed mid-run leaves an `in_progress`
 receipt that the next session's reader reports as **UNFINISHED**. That is a
 tombstone, not a failure of the receipt. Once `final`, a receipt is

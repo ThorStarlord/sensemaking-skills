@@ -1,6 +1,6 @@
 ---
 name: using-sensemaking
-description: Use the portable Architect -> Builder -> Reconcile loop to select, implement and review real engineering changes in any repository, even without product docs, CLAUDE.md, AGENTS.md, a Sensemaking knowledge pack or installed CLI. Also use for a broad delegated repository mission, or when repository uncertainty, product/architecture choices, evidence, delegation, source-grounded memory or authority boundaries could change the warranted next responsibility. The coding agent owns judgment; strategic-sensemaking-loop owns multi-increment mission continuation.
+description: Use the portable Architect -> Builder -> Reconcile loop to diagnose a named repository even when no feature is specified, or to select, implement and review warranted engineering work. Works without product docs, CLAUDE.md, AGENTS.md, a Sensemaking knowledge pack or installed CLI. Also use for broad delegated repository missions or when repository uncertainty, product/architecture choices, evidence, delegation, source-grounded memory or authority boundaries could change the next responsibility. The coding agent owns judgment; strategic-sensemaking-loop owns multi-increment mission continuation.
 ---
 
 # Using Sensemaking Skills: Agent-Native Control Loop
@@ -27,8 +27,11 @@ this Skill loads, even when the target repository has no `CLAUDE.md`,
 
 - **Direct bounded work** (clear, authorized, local, verifiable): implement it
   with the target repository's own verification. No Sensemaking ceremony.
+- **Target-only request** ("use/apply Sensemaking on this repository"):
+  diagnose from current sources first. No user-selected feature is required,
+  and read-only diagnosis does not authorize implementation.
 - **This Skill:** Architect -> Builder -> Review -> Reconcile for one bounded
-  engineering outcome, in a sparse or a documented repository.
+  diagnostic or engineering responsibility, in a sparse or documented repository.
 - **`strategic-sensemaking-loop`:** the front door for a one-prompt strategic
   start or resume, and for FULL AUTONOMY / FULL DELEGATION missions across
   repeated responsibilities. It owns outer continuation; this Skill stays the
@@ -39,8 +42,10 @@ this Skill loads, even when the target repository has no `CLAUDE.md`,
 Before selecting work, identify the user's actual goal, the authorized scope,
 which external mutations need explicit approval (merge, publication,
 deployment, tracker writes), and whether the task is already narrow enough to
-do directly. Once goal and authority are known, open the session receipt as
-described in Section 7. Keep these four questions separate:
+do directly. A target-only request supplies a read-only diagnostic purpose;
+it need not specify an implementation outcome. Once that purpose and its
+available authority are identified, open the session receipt as described in
+Section 7. Keep these four questions separate:
 
 | Question | Who answers |
 | --- | --- |
@@ -57,6 +62,17 @@ validated      != closed
 promoted       != merged
 merged         != original-finding closure
 ```
+
+**Diagnose before asking for a feature.** If the user names a repository
+(including this Skill itself) and asks to apply Sensemaking, inspect its
+current source, governing intent, prior decisions and consequential gaps.
+Choose focused inspection, `repo-sensemaker` or strategic analysis according
+to what would change the decision. Identify findings and the next warranted
+responsibility (or justified no-change) without demanding a review/build/demo
+choice first. Ask only when a material owner-intent or permission boundary
+remains after source inspection. Honor an explicit review-only, demonstration,
+implementation or terminal-mission request. Diagnosis/recommendation alone
+never authorizes changes, publication or merge.
 
 The target repository's owner decisions, rules, security boundaries and tools
 control the action. Another repository's branch, test or merge policy does not
@@ -144,15 +160,15 @@ no index exists.
 ## 3. Architect -> Builder -> Review -> Reconcile
 
 ```text
-USER OUTCOME + CURRENT REPOSITORY EVIDENCE + AUTHORITY
-  -> ARCHITECT: choose a warranted, bounded improvement
-     (lightweight for a clear defect; real alternatives when material)
-  -> BUILDER: inspect actual callers and contracts, implement useful code,
-     revise an in-scope design when implementation evidence warrants it
-  -> REVIEW: verify affected behavior proportionately under target policy,
-     inspect the diff, state what ran and what was not established
-  -> RECONCILE: keep only consequential, non-derivable knowledge; report
-     remaining uncertainty; stop or return to the mission loop
+AUTHORIZED PURPOSE (DIAGNOSE OR BUILD) + REPOSITORY EVIDENCE + AUTHORITY
+  -> ARCHITECT / DIAGNOSE: inspect evidence, identify findings and a
+     warranted responsibility (or justified no-change)
+  -> BUILDER (only if authorized): inspect actual contracts and callers,
+     implement a useful bounded change, revise in-scope design if warranted
+  -> REVIEW: check evidence and any diff proportionately under target policy;
+     disclose what was and was not established
+  -> RECONCILE: retain only consequential knowledge; report remaining
+     uncertainty; stop or return to the authorized mission loop
 ```
 
 The expected output is actual bounded engineering work when authorized, not a
@@ -366,7 +382,7 @@ already stated above, so skipping a file never loses the rule.
 
 | Reference | Load when | Skip when | Protects |
 | --- | --- | --- | --- |
-| `references/portable-construction-loop-v1.md` | coding outside the Sensemaking repository, in a sparse repo, or reusing earlier artifacts and knowledge | a clear local fix in a familiar repo | no scaffold != cannot build |
+| `references/portable-construction-loop-v1.md` | target-only diagnosis, coding outside the Sensemaking repository, sparse repos, or earlier-artifact reuse | a clear local fix in a familiar repo | no preselected feature != blocked diagnosis |
 | `references/evidence-and-closure-v1.md` | validating, reconciling a claim, verifying a repair, reading a Brief, using a workflow | ordinary tests and diff review settle it | validated != closed |
 | `references/session-receipt-v1.md` | every session using this Skill | never; follow the contract when a receipt can be written | receipt != authority |
 | `references/delegated-goal-patterns.md` | a delegated mission's scope, authority or stop is material | a bounded task | desired delegation != granted authority |
