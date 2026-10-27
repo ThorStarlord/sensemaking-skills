@@ -66,14 +66,21 @@ Use `--dry-run` to preview. Divergent installed Skill trees are preserved unless
 
 You do not need to create a Campaign for every task. The coding agent should use the lightest process that preserves the required engineering invariants.
 
-**You do not need to know what to build first.** A prompt such as "Use
-`using-sensemaking` on this repository" is enough to start a read-only,
-source-grounded diagnosis. The agent should examine available current code,
-product decisions and consequential gaps, then explain the next warranted
-responsibility (including no-change) without requiring you to choose a
-feature. An explicit review-only, demonstration, implementation or full-mission
-request takes precedence. Diagnosis does not grant write, push or merge
-permission; authorized construction follows the target repository's policy.
+**Give the Skill a repository, not a feature request.** Once
+`using-sensemaking` is invoked, "Use `using-sensemaking` on this repository"
+is sufficient to discover **what to build next**. The agent retrieves current
+product intent and authority, inspects implemented capabilities and meaningful
+gaps, considers credible alternatives and recommends a concrete, bounded next
+engineering responsibility: useful outcome, relevant code/consumers, source
+evidence, why it matters and remaining uncertainty. A list of files read, a
+review of just the Skill itself or "return to the roadmap" is not that output.
+If nothing is warranted, the agent explains the scope checked and decisive
+missing evidence, owner choice or justified no-change; it does not invent work.
+
+This repository-only entry authorizes discovery, **not automatically code
+changes, push or merge**. Explicit requests for bounded implementation or
+an ongoing delegated construction mission take precedence and retain the
+target repository's authority and verification boundaries.
 
 For example, "Use `using-sensemaking` to diagnose the `sensemaking-skills`
 repository" names a **method** and a **repository-wide target**. "Diagnose
