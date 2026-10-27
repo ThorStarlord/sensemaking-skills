@@ -80,6 +80,12 @@ consequence of the finding and why the proposed responsibility is worth
 doing; a source list or local inconsistency alone does not establish priority.
 Check apparent contradictions against their authority, scope and currentness.
 Retrieve selectively, and state when the sources do not support a choice.
+When recommending a priority shift ("stop refining A; build B"), compare A
+with a credible materially different, source-grounded engineering outcome in
+B, its expected value, and relevant uncertainty. A strategic direction alone
+is not a selected responsibility. If B is not yet grounded, report selection
+as open rather than claim a completed comparison. No candidate quota, scoring
+or mandatory strategic reopening.
 
 The target repository's owner decisions, rules, security boundaries and tools
 control the action. Another repository's branch, test or merge policy does not
@@ -145,6 +151,13 @@ receipts for unfinished sessions and open questions, using
 actually installed. If a `.sensemaking/` Grounding Pack exists, read `intent.md`
 and task-relevant `invariants.md` first. No receipts or pack is a normal
 condition.
+
+**Recover history, not priorities.** A receipt's `next`, a recent PR, and
+repeated findings are candidate evidence, not an automatic task queue. When
+the next responsibility is open, challenge recency and same-subsystem
+anchoring against current product purpose, governing decisions and actual
+source gaps before selecting work. A known bounded task needs no survey of
+alternatives.
 
 **Question ratchet.** Before asking the owner, inspect recorded intent,
 decisions, ADRs and owner-authored issues or PRs. Reuse an answer while its
