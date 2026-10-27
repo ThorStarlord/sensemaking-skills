@@ -415,6 +415,14 @@ receipt schema valid != semantic correctness or action permission
 **Continue** while the goal is unsatisfied, another responsibility is knowable
 and warranted, you have authority, and repository safety permits.
 
+**Before closing repository-only discovery**, compare the owner's requested
+target and purpose with the product areas actually investigated, the selected
+responsibility, and the scope of the conclusion and receipt. A matching
+`target_repository` field alone does not establish repository-wide coverage.
+If a component-only no-change finding is about to close a whole-repository
+request, correct the task frame and continue permitted discovery. This is a
+semantic judgment, not a new artifact, validator or approval gate.
+
 **Stop** when the goal is satisfied, further work is unwarranted, the next
 action is stable and remaining uncertainty cannot change it, a real authority
 boundary is reached, scope is exhausted, or safety requires it.
