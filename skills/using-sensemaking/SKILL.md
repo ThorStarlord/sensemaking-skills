@@ -169,12 +169,14 @@ source-pinned index reflects its committed revision, never your working tree. Lo
 resolved paths, not by an assumed filename. Discovery order, sparse-repository recovery,
 artifact reuse and currentness checks: `references/portable-construction-loop-v1.md`.
 
-**Recover continuity first.** If `.sensemaking/receipts/` exists, read relevant
-receipts for unfinished sessions and open questions, using
-`scripts/summarize-receipts.py` only if that optional framework script is
-actually installed. If a `.sensemaking/` Grounding Pack exists, read `intent.md`
-and task-relevant `invariants.md` first. No receipts or pack is a normal
-condition.
+**Continuity is evidence, not the discovery target.** If
+`.sensemaking/receipts/` exists, read relevant receipts for unfinished sessions
+and open questions, using `scripts/summarize-receipts.py` only if that optional
+script is installed. For repository-only discovery, establish current product
+intent and implemented capabilities before treating a prior `next` as a
+candidate; a recent receipt does not set the scope or outcome. If a
+`.sensemaking/` Grounding Pack exists, read `intent.md` and task-relevant
+`invariants.md`. No receipts or pack is a normal condition.
 
 **Recover history, not priorities.** A receipt's `next`, a recent PR, and
 repeated findings are candidate evidence, not an automatic task queue. When
