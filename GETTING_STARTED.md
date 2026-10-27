@@ -74,6 +74,7 @@ responsibility (including no-change) without requiring you to choose a
 feature. An explicit review-only, demonstration, implementation or full-mission
 request takes precedence. Diagnosis does not grant write, push or merge
 permission; authorized construction follows the target repository's policy.
+
 For example, "Use `using-sensemaking` to diagnose the `sensemaking-skills`
 repository" names a **method** and a **repository-wide target**. "Diagnose
 `skills/using-sensemaking/` itself" explicitly scopes the target to that
