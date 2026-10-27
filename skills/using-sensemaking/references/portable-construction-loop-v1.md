@@ -3,8 +3,7 @@
 **Purpose:** The active coding agent can diagnose a named repository without
 a preselected feature, or turn an authorized engineering outcome into bounded
 implementation, source-grounded review and decision-relevant learning in
-**any** target repository. This
-reference belongs to the distributed `using-sensemaking` Skill. It is not a
+**any** target repository. This reference belongs to the distributed `using-sensemaking` Skill. It is not a
 repository-specific agent instruction, runtime engine, automatic planner,
 new artifact type, or grant of GitHub/external-action authority.
 
@@ -18,8 +17,9 @@ documentation, owner decisions and local agent instructions actually exist;
 reading is authorized; implemented bounded change **when authorized and
 warranted**; proportionate reasoning/decision record, observed review and
 verification limits, consequential source-linked knowledge updates if
-worthwhile, and an honest continuation or stopping disposition. When action is blocked, output
-the narrow unresolved source/authority gap, not an invented implementation.
+worthwhile, and an honest continuation or stopping disposition. When action
+is blocked, output the narrow unresolved source/authority gap, not an invented
+implementation.
 
 ## 1. Portable entry: discover evidence without assuming repository scaffolding
 
@@ -27,7 +27,8 @@ the narrow unresolved source/authority gap, not an invented implementation.
    the user's task purpose and authorized actions. The task may simply be to
    diagnose the repository and find warranted work, without a selected
    implementation feature. Distinguish explicit analysis, demonstration,
-   coding, PR, merge and longer-mission requests; none grants the others' authority.
+   coding, PR, merge and longer-mission requests; none grants the others'
+   authority.
 2. Read *available* local instructions and applicable approved policies, if
    present. Filenames vary: `AGENTS.md`, `CLAUDE.md`, workspace/project
    guides, contributor docs and owner-ratified decisions are examples,
