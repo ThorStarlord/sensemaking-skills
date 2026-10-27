@@ -23,7 +23,7 @@ receipt             != essay or narrative report
 receipt             != reviewed knowledge (.sensemaking/knowledge/*.json)
 receipt             != Campaign state (it may point to one)
 receipt             != authority grant (it records authority; it never creates it)
-receipt written     != receipt persisted (only a commit/push or host upload survives)
+receipt written     != off-host persistence
 ```
 
 The receipt carries **facts and pointers**. Analysis lives in the artifacts it
@@ -67,14 +67,17 @@ The directory sits beside `.sensemaking/knowledge/` but is **not** ingested by
 the semantic knowledge index (which reads only `intent.md`, `context.md`,
 `invariants.md`, `decisions/*.md` and `knowledge/*.json`).
 
-**A receipt survives only if it leaves the container.** A cloud or CI checkout
-is as ephemeral as `/tmp`. Therefore:
+**A local commit is not proof that a receipt left the host.** A cloud or CI
+checkout can be as ephemeral as `/tmp`. Therefore:
 
 - if the session may commit, commit the receipt with (or as) the session's last
-  change and push it with that change; set `persistence: committed`;
+  change and set `persistence: committed`; push it only if push is separately
+  authorized. If the commit remains local, disclose that it may be lost with
+  the local repository or host;
 - if a host uploads run outputs (CI artifact, runner store), set
   `persistence: host_uploaded`;
-- if neither is allowed, set `persistence: working_tree_only` and **say in the
+- if the receipt is neither committed nor uploaded, set
+  `persistence: working_tree_only` and **say in the
   final report that the receipt will be lost with the checkout**. The validator
   warns with `RECEIPT_NOT_DURABLE`.
 

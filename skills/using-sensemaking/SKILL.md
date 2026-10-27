@@ -327,9 +327,10 @@ known, update it as work proceeds, and finalize it at the stop. Follow
 Create the directory when needed and permitted. If the host or authority prevents
 writing a receipt, report that it could not be created; do not invent one or
 claim a framework script ran when unavailable. Never grant yourself Git or
-upload authority to preserve a receipt. If one was written but cannot leave
-the checkout, record `persistence: working_tree_only` and disclose that it will
-not survive the checkout.
+upload authority to preserve a receipt. If one was written but neither
+committed nor uploaded, record `persistence: working_tree_only` and disclose
+that it will not survive the checkout. A local commit does not authorize a push
+or establish off-host persistence.
 
 ```text
 receipt schema valid != semantic correctness or action permission

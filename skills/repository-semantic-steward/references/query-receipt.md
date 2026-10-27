@@ -41,10 +41,11 @@ Open it `in_progress` when those operations begin, append queries as they run,
 and finalize it when the Steward responsibility ends (`state: final`,
 `immutable: true`). If several modes run in one session (for example RECALL,
 then RECONCILE), list them all in `modes`. Persistence follows the same rule as
-the session receipt: it survives only when committed and pushed or uploaded by
-the host (`skills/using-sensemaking/references/session-receipt-v1.md`, section 3).
-Do not infer permission to persist it. If a receipt was written but cannot leave
-the checkout, record `working_tree_only` and disclose that it will not survive.
+the session receipt (`skills/using-sensemaking/references/session-receipt-v1.md`,
+section 3). Commit and push require their respective authority; a local commit
+does not prove the receipt has left the host. If it is neither committed nor
+uploaded, record `working_tree_only` and disclose that it will not survive the
+checkout.
 Record earlier operations and results only as supported by available evidence;
 disclose omissions rather than inventing them. `using-sensemaking` calls for a
 session receipt in every session. If the host or authority prevents writing it,
