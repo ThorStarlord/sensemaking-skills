@@ -1,29 +1,33 @@
 # Portable Architect -> Builder -> Reconcile (v1)
 
-**Purpose:** The active coding agent can turn a user-authorized software
-engineering outcome into actual bounded implementation, source-grounded
-review, and decision-relevant learning in **any** target repository. This
+**Purpose:** The active coding agent can diagnose a named repository without
+a preselected feature, or turn an authorized engineering outcome into bounded
+implementation, source-grounded review and decision-relevant learning in
+**any** target repository. This
 reference belongs to the distributed `using-sensemaking` Skill. It is not a
 repository-specific agent instruction, runtime engine, automatic planner,
 new artifact type, or grant of GitHub/external-action authority.
 
-**Inputs:** (1) current user goal and explicit delegation/authority;
+**Inputs:** (1) current user request (a target-only diagnostic request is
+sufficient to begin reading) and applicable delegation/authority;
 (2) accessible target repository and exact source/working-tree state;
 (3) whatever task-relevant code, tests, history, issues, architecture,
 documentation, owner decisions and local agent instructions actually exist;
 (4) available editing, verification and version-control tools.
-**Outputs:** implemented bounded change **when authorized and warranted**,
-proportionate reasoning/decision record, observed review and verification
-limits, consequential source-linked knowledge updates if worthwhile, and an
-honest continuation or stopping disposition. When action is blocked, output
+**Outputs:** grounded diagnosis and next warranted responsibility when only
+reading is authorized; implemented bounded change **when authorized and
+warranted**; proportionate reasoning/decision record, observed review and
+verification limits, consequential source-linked knowledge updates if
+worthwhile, and an honest continuation or stopping disposition. When action is blocked, output
 the narrow unresolved source/authority gap, not an invented implementation.
 
 ## 1. Portable entry: discover evidence without assuming repository scaffolding
 
 1. Identify the **target** (repository and revision/working-tree state),
-   the human-facing outcome and affected behavior. Confirm whether the user
-   requested analysis, coding, a PR, a merge or a longer autonomous mission;
-   these do not grant one another's authority.
+   the user's task purpose and authorized actions. The task may simply be to
+   diagnose the repository and find warranted work, without a selected
+   implementation feature. Distinguish explicit analysis, demonstration,
+   coding, PR, merge and longer-mission requests; none grants the others' authority.
 2. Read *available* local instructions and applicable approved policies, if
    present. Filenames vary: `AGENTS.md`, `CLAUDE.md`, workspace/project
    guides, contributor docs and owner-ratified decisions are examples,
@@ -45,6 +49,24 @@ the narrow unresolved source/authority gap, not an invented implementation.
    are unavailable, continue with ordinary source inspection and direct
    coding rather than pretending a tool ran. The portable loop is an
    **instruction capability**, not an executable service.
+
+### Target-only entry: diagnose before asking
+
+For "Use using-sensemaking on repo X" with no selected implementation outcome,
+start with authorized **read-only** source orientation. Recover current product
+purpose where available, behavior, previous decisions, relevant receipts and
+material gaps. Use focused diagnosis, `repo-sensemaker` or strategic analysis
+only as warranted; a full Brief, ontology or new owner answer is not a
+prerequisite. Report findings, uncertainty and the next warranted responsibility
+(or justified no-change). Do **not** first ask the owner to choose among
+reviewing, implementing or demonstrating the Skill.
+
+If the current authority also delegates implementation, build a warranted
+bounded change. Otherwise report recommendations and request only a genuinely
+needed owner choice or additional action grant. A target-only request grants
+neither code mutation nor push, PR, merge, release or product-thesis authority.
+Explicit review-only, demonstration, implementation and terminal-mission
+requests take precedence over this diagnostic fallback.
 
 ### 1a. Reuse what the repository already knows (brownfield)
 
