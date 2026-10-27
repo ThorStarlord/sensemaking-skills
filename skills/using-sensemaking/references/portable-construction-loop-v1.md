@@ -54,6 +54,15 @@ implementation.
 
 ### Target-only entry: diagnose before asking
 
+**Method and target are different roles.** "Use `using-sensemaking` to diagnose
+`repo X`" invokes that Skill as the method and names the entire repository as
+the target. The Skill directory is only the target if the owner explicitly
+asks to diagnose that component. Establish diagnostic breadth from the prompt
+and existing conversation; do not treat a named Skill as the target merely
+because the Skill is being invoked. If ambiguity remains and choosing wrong
+would change the outcome, clarify *which system* is the target, not *which
+feature* the owner wants built.
+
 For "Use using-sensemaking on repo X" with no selected implementation outcome,
 start with authorized **read-only** source orientation. Recover current product
 purpose where available, behavior, previous decisions, relevant receipts and
@@ -82,6 +91,14 @@ needed owner choice or additional action grant. A target-only request grants
 neither code mutation nor push, PR, merge, release or product-thesis authority.
 Explicit review-only, demonstration, implementation and terminal-mission
 requests take precedence over this diagnostic fallback.
+
+**Correct scope before closing.** When the owner identifies a mistaken target,
+keep the earlier component-level finding scoped to that component. Reassess the
+original request against the corrected target and continue the already
+permitted diagnosis; do not stop after acknowledging the misread or promote
+"no change to this Skill" into "no change to the repository". Preserve a
+correction in the active or linked successor receipt under its existing
+lifecycle, without inferring new implementation/publication authority.
 
 ### 1a. Reuse what the repository already knows (brownfield)
 
