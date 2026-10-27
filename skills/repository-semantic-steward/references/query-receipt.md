@@ -2,7 +2,7 @@
 
 **Status:** contract reference for `repository-semantic-steward` (proposed ADR 0032)  
 **Validator:** `scripts/validate-receipt.py` (also routed by `sensemaking-skills validate --artifact <file>`)  
-**Reader:** `scripts/summarize-receipts.py`
+**Reader:** `scripts/summarize-receipts.py` (optional framework tool)
 
 ## 1. Why the Steward writes a receipt
 
@@ -27,21 +27,36 @@ NO_MODEL_CHANGE   = valid, and recorded so it is visible
 
 ## 2. When to write it
 
-Every Steward invocation that runs `orient`, `build`, a `knowledge-query`
-operation, `knowledge-audit` or `knowledge-proposal-check` writes or updates
-**one** query receipt per session, beside the session receipt:
+When a session receipt is warranted and supported, Steward invocations that run
+`orient`, `build`, a `knowledge-query` operation, `knowledge-audit` or
+`knowledge-proposal-check` write or update **one** companion query receipt per
+session, beside the session receipt:
 
 ```text
 <target-repo>/.sensemaking/receipts/<session_ref>.query.yaml
 ```
 
 `session_ref` is the same value as the session's `sensemaking_session_receipt`.
-Open it `in_progress` at the first query, append each query as it runs, and
-finalize it when the Steward responsibility ends (`state: final`,
+Open it `in_progress` when receipt use is warranted, append queries as they run,
+and finalize it when the Steward responsibility ends (`state: final`,
 `immutable: true`). If several modes run in one session (for example RECALL,
 then RECONCILE), list them all in `modes`. Persistence follows the same rule as
 the session receipt: it survives only when committed and pushed or uploaded by
 the host (`skills/using-sensemaking/references/session-receipt-v1.md`, section 3).
+Do not infer permission to persist it. If a receipt was written but cannot leave
+the checkout, record `working_tree_only` and disclose that it will not survive.
+If a later gap makes the receipt warranted, record earlier operations and
+results only as supported by available evidence; disclose omissions rather
+than inventing them.
+
+A consequential gap needing future follow-up can itself warrant a supported
+session receipt and companion query receipt. If no session receipt is warranted
+or supported, Steward use alone does not require a query receipt. Report
+decision-relevant gaps affecting the current result in task output in either
+case; when a query receipt is used, record qualifying misses there too. Task
+output alone is not automatically counted by the receipt summarizer across
+sessions. Consider durable knowledge changes separately under existing review
+and authority rules.
 
 ## 3. Recording a miss (the required part)
 
@@ -170,13 +185,16 @@ disposable by design. The pins (`indexed_ref`, `current_head`,
 
 ## 5. How misses feed RECONCILE
 
-`scripts/summarize-receipts.py` lists misses still `ADD_PROPOSED` or `DEFERRED`
-and any subject or term missed in **two or more sessions**. During RECONCILE
-(`references/reconciliation.md`), read that list before choosing
+When available, `scripts/summarize-receipts.py` lists misses still
+`ADD_PROPOSED` or `DEFERRED` and any subject or term missed in **two or more
+sessions**. During RECONCILE (`references/reconciliation.md`), read relevant
+existing receipts through that optional tool or directly before choosing
 dispositions. A repeated miss is evidence that a source-linked ADD is
 warranted. It is not by itself proof, and not a quota.
 
 ## 6. Validate
+
+When the optional validator is available:
 
 ```bash
 python scripts/validate-receipt.py .sensemaking/receipts/<session_ref>.query.yaml --target-repo .

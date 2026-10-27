@@ -321,7 +321,8 @@ hypothesis into a permanent rule.
 
 **Session receipts are optional.** Use a `sensemaking_session_receipt` only when
 handoff, interruption, an open owner question or multi-step continuation would
-otherwise be lost and the host supports it. Follow
+otherwise be lost and the host supports it. A consequential knowledge gap that
+needs future follow-up can itself create such a continuation need. Follow
 `references/session-receipt-v1.md`; receipts live under `.sensemaking/receipts/`.
 Never create a `.sensemaking/` folder or a receipt merely because this Skill
 loaded, never claim a framework script ran when it was unavailable, and never
