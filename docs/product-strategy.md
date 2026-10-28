@@ -1,7 +1,7 @@
 # Sensemaking Skills Product Strategy
 
 **Status:** current product hypothesis and strategic authority  
-**Updated:** 2026-10-15  
+**Updated:** 2026-10-28  
 **Control level:** Level 4 — Product Thesis / Strategy Revision  
 **Scope:** public repository strategy; empirical claims retain the ceilings of their source evidence
 
@@ -25,17 +25,38 @@ The 2026-09-11 Product Boundary Reconciliation v1 is an owner-ratified Level-4
 
 ## 1. Product purpose
 
-Sensemaking Skills exists to enable **long-term autonomous software
-stewardship** by equipping capable coding agents with persistent, typed,
-queryable, evidence-grounded understanding of a product's purpose, domain,
-architecture, constraints, decisions, verification and engineering history.
-Specialized Skills help agents acquire, challenge, reconcile and apply that
-knowledge while developing software across responsibilities and sessions.
+Sensemaking Skills exists to make a software repository **understandable and
+its possible evolution intelligently reasoned about**, across agents and time.
+It equips capable coding agents to build persistent, typed, queryable,
+evidence-grounded understanding of a product's purpose, domain, architecture,
+capabilities, constraints, decisions and history. It also helps them explore and
+compare what the product could become, select or recommend a warranted direction,
+and preserve that reasoning so the next session starts from it. Ordinary users
+need only one Skill, `using-sensemaking`, which composes the specialized Skills.
 
-Selecting the correct next engineering responsibility remains essential, but
-is now an **instrumental capability** inside a longer arc of cumulative
-product understanding and development. This is a selected product direction,
-not a claim that durable semantic memory already improves outcomes.
+**Implementation is an optional downstream use of that understanding, not the
+product's primary output.** A warranted next responsibility, an architecture
+synthesis, a strategic disposition, retained knowledge, and a justified
+no-change conclusion are all complete outcomes. This is a selected product
+direction, not a claim that durable semantic memory already improves outcomes.
+
+### Level-4 revision 2026-10-28: ontology-first adaptive Sensemaking (ADR 0034)
+
+The owner selected seven governing decisions, recorded in
+[ADR 0034](adr/0034-ontology-first-adaptive-sensemaking.md):
+
+1. Sensemaking is an ontology-grounded repository understanding and prospective
+   reasoning system, not primarily an implementation agent or task picker.
+2. `using-sensemaking` is the single public entrypoint and adaptive controller.
+3. First repository-level engagement establishes source-grounded domain and
+   architecture knowledge before any repository-wide strategic selection.
+4. Possibility-space coverage precedes strategic convergence.
+5. The active agent composes specialized reasoning adaptively and may revisit it.
+6. Implementation is optional and separately authorized.
+7. There is one semantic controller; strategic continuation supports it.
+
+ADR 0031's destination and ADR 0029's boundary are unchanged. The benefits of
+ontology-first entry and single-entrypoint composition are **unproven**.
 
 ### Level-4 revision 2026-10-15: persistent semantic stewardship (ADR 0031)
 
@@ -168,14 +189,14 @@ scaffolding and more visible machinery are not the same thing.
 
 ## 4. Job to Be Done
 
-> When I delegate a consequential repository goal whose correct next engineering
-> responsibility is uncertain, help my coding agent surface relevant
-> considerations, establish sufficient evidence, determine the warranted
-> responsibility, exercise the judgment I delegated within granted authority,
-> execute bounded work when authorized, and preserve a structured, revisable
-> understanding of the product so later agents can reuse, challenge, and improve
-> earlier decisions across many development episodes; stop or escalate when
-> the relevant authority or evidence boundary is reached.
+> When I point my coding agent at a repository, help it understand what the
+> product is and how it is built, explore what it could become, compare
+> alternatives and their consequences, and select or recommend a warranted
+> direction, all within the judgment and authority I delegated. Preserve that
+> understanding and reasoning in a structured, revisable form so later agents can
+> reuse, challenge and improve it across many sessions. Realize a selected
+> direction only when I separately authorize implementation, and stop or
+> escalate when the relevant authority or evidence boundary is reached.
 
 Triggering situations include an unfamiliar repository, ambiguous architecture
 problem, large refactor, modernization effort, uncertain roadmap,
@@ -195,9 +216,10 @@ plus Skill-mediated reasoning around a capable coding agent:
 ```text
 typed product/domain/architecture knowledge
 + evidence-bound provenance and temporal history
-+ specialized Skills for exploration, challenge and learning
-+ warranted engineering responsibility
++ specialized Skills for exploration, synthesis, challenge and learning
++ explored and compared possible futures, with their consequences
 + authority boundaries and uncertainty
++ optional, separately authorized construction
 + code/test/runtime verification
 + long-term knowledge reconciliation
 ```
@@ -244,8 +266,9 @@ outer-loop foundation and require explicit owner direction when resumed.
 - A persistent, typed, queryable knowledge system for software product intent,
   capabilities, architecture, constraints, evidence, decisions and history,
   operated by coding agents through specialized Skills.
-- A cumulative engineering-development loop that improves that knowledge
-  through implementation, verification, experience and correction.
+- A cumulative reasoning loop (understand, explore, synthesize, evaluate,
+  reconcile) that improves that knowledge; implementation, verification and
+  experience feed it when they happen (ADR 0034).
 - Reconstructible semantic understanding that remains contestable and
   source-grounded across independent agent sessions.
 
@@ -254,6 +277,8 @@ surfaces below form a partial foundation, not a finished semantic platform.
 
 ### Probably is
 
+- Ontology-grounded repository understanding and prospective reasoning,
+  entered through `using-sensemaking`.
 - Repository decision support.
 - Repository sensemaking.
 - Opinionated engineering guidance for high-delegation agent-assisted work.

@@ -2,9 +2,14 @@
 
 ## Current product definition
 
-Sensemaking Skills is an **agent-native semantic knowledge and engineering
-reasoning layer for software-development agents**. The owner-selected
-2026-10-15 long-term destination is a **persistent, typed, queryable,
+Sensemaking Skills is an **ontology-grounded repository understanding and
+prospective reasoning system for software-development agents** (owner-selected
+2026-10-28, [ADR 0034](docs/adr/0034-ontology-first-adaptive-sensemaking.md)).
+Its primary outcome is durable, source-grounded understanding of a repository
+and informed reasoning about what it could become; implementation is an
+optional, separately authorized downstream use. `using-sensemaking` is the
+single public entrypoint and composes the specialized Skills adaptively. The
+owner-selected 2026-10-15 long-term destination is a **persistent, typed, queryable,
 evidence-grounded model of the product and its development history**, used and
 improved through specialized Skills across many engineering episodes.
 Existing repository decision support and Campaign/authority machinery remain

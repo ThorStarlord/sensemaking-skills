@@ -94,17 +94,23 @@ research paths.
 
 ## Choosing and building an increment
 
-Use the [portable `using-sensemaking` Skill](skills/using-sensemaking/SKILL.md)
-for the general **Architect -> Builder -> Reconcile construction capability**.
-It can operate after loading in a target repository without `CLAUDE.md`,
-`AGENTS.md`, `CONTEXT.md`, an index, or a Sensemaking CLI. For **this
+The product is ontology-grounded repository understanding and prospective
+reasoning ([ADR 0034](docs/adr/0034-ontology-first-adaptive-sensemaking.md));
+the [portable `using-sensemaking` Skill](skills/using-sensemaking/SKILL.md) is
+its single public entrypoint. Its **Architect -> Builder -> Reconcile
+construction capability** is an optional downstream use, and this repository's
+own construction phase uses it. The Skill can operate after loading in a target
+repository without `CLAUDE.md`, `AGENTS.md`, `CONTEXT.md`, an index, or a
+Sensemaking CLI. The rules below govern how **this** repository is built, not
+what the product does for users. For **this
 repository's** product-value orientation read
 [Value-Directed Continuous Construction](docs/value-directed-continuous-construction.md);
 for **local** branch, review and merge conventions read
 [the build-loop profile](docs/agents/build-loop.md) and the PR rules below.
 The roles may interleave in one active coding agent, without a planner,
 approval gate, or new semantic authority. For multi-increment strategic
-missions, `strategic-sensemaking-loop` owns outer continuation.
+missions, `strategic-sensemaking-loop` supplies continuation under the
+`using-sensemaking` controller.
 
 **Construction continuation (current phase):**
 `GOAL -> SPIKE (only if needed) -> BUILD -> INTEGRATE -> CONTINUE`.
