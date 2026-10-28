@@ -274,7 +274,9 @@
       "evidence_refs": [
         "file:docs/superpowers/plans/2026-10-28-product-possibility-idea-library.md:line:58",
         "file:docs/idea-library.md",
-        "file:docs/semantic-architecture/product-possibility-ontology.md"
+        "file:docs/semantic-architecture/product-possibility-ontology.md",
+        "file:skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md:line:172",
+        "file:skills/repository-semantic-steward/references/knowledge-contract.md:line:40"
       ],
       "attributes": {
         "concept": "ProductPossibility",
@@ -299,9 +301,16 @@
             "basis": "Its next increments use existing claim kinds and queries."
           },
           "realization": {
-            "value": "PARTIALLY_IMPLEMENTED",
+            "value": "IMPLEMENTED_BASELINE",
             "establishment": "inferred",
-            "basis": "Documentary library and typed records with retrieval through existing queries exist; exploration integration (plan PR 4) is absent. Assessed at d1dee16 plus the change adding this file."
+            "basis": "Records, retrieval through existing queries and exploration guidance (funnel section 4, steward knowledge contract) exist since plan PR 4. Agent adherence and cross-session use are not established.",
+            "history": [
+              {
+                "value": "PARTIALLY_IMPLEMENTED",
+                "assessed_ref": "d1dee16552e9347bf795a37a59aa12c07291b71d",
+                "basis": "Records and retrieval existed; exploration integration (plan PR 4) was absent."
+              }
+            ]
           }
         },
         "disposition_history": [
@@ -311,9 +320,16 @@
             "authority": "owner",
             "source": "docs/superpowers/plans/2026-10-28-product-possibility-idea-library.md",
             "rationale": "First increment (plan PR 1 and part of PR 2), then PR 3 under the owner's follow-up message; no ADR records it."
+          },
+          {
+            "value": "SELECTED",
+            "date": "2026-10-28",
+            "authority": "owner plan PR 4, delegated continuation",
+            "source": "docs/superpowers/plans/2026-10-28-product-possibility-idea-library.md",
+            "rationale": "Exploration integration built as Skill guidance."
           }
         ],
-        "assessed_ref": "d1dee16552e9347bf795a37a59aa12c07291b71d",
+        "assessed_ref": "274e585c0a594c25235f12f34074effa1837b631",
         "value_hypothesis": "A later agent recovers an earlier possibility and its reasoning, connects it to current evidence and makes a better-grounded assessment; not demonstrated across sessions."
       }
     },
@@ -325,7 +341,9 @@
       "authority_kind": "hypothesis",
       "authority_ref": "docs/superpowers/plans/2026-10-28-product-possibility-idea-library.md",
       "evidence_refs": [
-        "file:docs/superpowers/plans/2026-10-28-product-possibility-idea-library.md:line:249"
+        "file:docs/superpowers/plans/2026-10-28-product-possibility-idea-library.md:line:249",
+        "file:skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md:line:172",
+        "file:skills/strategic-repository-analysis/SKILL.md:line:83"
       ],
       "attributes": {
         "concept": "ProductPossibility",
@@ -338,8 +356,15 @@
         },
         "dimensions": {
           "alignment": {
-            "value": "ADJACENT",
-            "basis": "ADR 0031 names exploration and synthesis in the reasoning plane but not synthesis of product futures from retained possibilities."
+            "value": "ALIGNED",
+            "basis": "The owner's plan PR 4 and follow-up message (2026-10-28) direct exploration to recall retained possibilities and record consequential new synthesis, resolving the earlier scope question.",
+            "history": [
+              {
+                "value": "ADJACENT",
+                "assessed_ref": "d0af33beb52e94b375d6a471e9990df11c8c424d",
+                "basis": "ADR 0031 names exploration and synthesis in the reasoning plane but not synthesis of product futures from retained possibilities."
+              }
+            ]
           },
           "ambition": {
             "value": "SUBSTANTIAL",
@@ -350,9 +375,16 @@
             "basis": "Its prerequisites (records, exploration guidance) are being built."
           },
           "realization": {
-            "value": "NOT_ASSESSED",
+            "value": "PARTIALLY_IMPLEMENTED",
             "establishment": "inferred",
-            "basis": "No completeness basis; lexical search of skills/ found no guidance for synthesizing retained possibilities."
+            "basis": "Since plan PR 4, funnel section 4 and strategic-repository-analysis section 1B tell agents to recall retained possibilities and retain new syntheses; one same-session exploration is recorded (plan PR 3). Cross-session use is not established.",
+            "history": [
+              {
+                "value": "NOT_ASSESSED",
+                "assessed_ref": "d0af33beb52e94b375d6a471e9990df11c8c424d",
+                "basis": "No completeness basis; lexical search of skills/ found no guidance for synthesizing retained possibilities."
+              }
+            ]
           }
         },
         "disposition_history": [
@@ -362,9 +394,16 @@
             "authority": "owner plan",
             "source": "docs/superpowers/plans/2026-10-28-product-possibility-idea-library.md",
             "rationale": "Example of recombination; not selected."
+          },
+          {
+            "value": "SELECTED",
+            "date": "2026-10-28",
+            "authority": "owner plan PR 4 and follow-up message",
+            "source": "docs/superpowers/plans/2026-10-28-product-possibility-idea-library.md",
+            "rationale": "Guidance for recall and retention built; cross-session behavior not claimed."
           }
         ],
-        "assessed_ref": "d0af33beb52e94b375d6a471e9990df11c8c424d"
+        "assessed_ref": "274e585c0a594c25235f12f34074effa1837b631"
       }
     },
     {
@@ -744,7 +783,8 @@
       "authority_ref": "docs/idea-library.md",
       "evidence_refs": [
         "file:docs/idea-library.md",
-        "file:docs/semantic-architecture/persistent-knowledge-cli.md:line:127"
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md:line:127",
+        "file:skills/repository-semantic-steward/references/reconciliation.md:line:33"
       ],
       "attributes": {
         "concept": "ProductPossibility",
@@ -769,10 +809,17 @@
             "basis": "Mechanism exists."
           },
           "realization": {
-            "value": "PARTIALLY_IMPLEMENTED",
+            "value": "IMPLEMENTED_BASELINE",
             "establishment": "inferred",
-            "basis": "workspace-impact listed 13 records (5 possibilities) citing an edited library file (query receipt QY-11); no guidance tells agents to use it during construction.",
-            "observation_ref": ".sensemaking/receipts/2026-10-28-possibility-reconciliation-and-knowledge.query.yaml#QY-11"
+            "basis": "workspace-impact surfaces possibility records citing changed files (QY-11), and since plan PR 4 the steward reconciliation reference tells agents how to reconcile them. First use on plan PR 4: 6 records flagged by path; inspecting 4 uncited changed files found 3 more affected possibilities.",
+            "observation_ref": ".sensemaking/receipts/2026-10-28-possibility-reconciliation-and-knowledge.query.yaml#QY-11",
+            "history": [
+              {
+                "value": "PARTIALLY_IMPLEMENTED",
+                "assessed_ref": "3892c38d2bb782247d17894968b4bca4263554f1",
+                "basis": "Mechanism worked on possibility records; no guidance existed."
+              }
+            ]
           }
         },
         "disposition_history": [
@@ -782,9 +829,16 @@
             "authority": "agent",
             "source": "docs/idea-library.md",
             "rationale": "Candidate input to plan PR 7."
+          },
+          {
+            "value": "SELECTED",
+            "date": "2026-10-28",
+            "authority": "owner plan PR 7, delegated continuation",
+            "source": "docs/superpowers/plans/2026-10-28-product-possibility-idea-library.md",
+            "rationale": "Guidance added to the steward reconciliation reference and used on plan PR 4."
           }
         ],
-        "assessed_ref": "3892c38d2bb782247d17894968b4bca4263554f1",
+        "assessed_ref": "274e585c0a594c25235f12f34074effa1837b631",
         "value_hypothesis": "Keeps the possibility landscape current by re-inspecting a short list instead of periodic global review."
       }
     },
@@ -928,13 +982,14 @@
     {
       "id": "cap:breadth-exploration-guidance",
       "kind": "capability",
-      "statement": "Level-3 strategic analysis guidance maps systems and explores grounded and counterfactual breadth before converging; exploration-only requests end with an opportunity landscape.",
+      "statement": "Level-3 strategic analysis guidance maps systems, recalls retained possibility records, and explores grounded and counterfactual breadth before converging, marking observations restated, revised or new; exploration-only requests end with an opportunity landscape and only consequential new or revised possibilities are retained.",
       "epistemic_status": "declared",
       "authority_kind": "document",
       "authority_ref": "skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md",
       "evidence_refs": [
         "file:skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md:line:161",
-        "file:skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md:line:172"
+        "file:skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md:line:172",
+        "file:skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md:line:199"
       ],
       "attributes": {
         "concept": "ProductCapability",
@@ -976,14 +1031,16 @@
     {
       "id": "cap:possibility-records",
       "kind": "capability",
-      "statement": "Retained ProductPossibility records with stable poss: identifiers, separated dimensions, typed relationships and disposition history are authored in Git and retrievable through existing knowledge queries.",
+      "statement": "Retained ProductPossibility records with stable poss: identifiers, separated dimensions, typed relationships and disposition history are authored in Git, retrievable through existing knowledge queries, and recalled and retained during exploration under the steward knowledge contract.",
       "epistemic_status": "declared",
       "authority_kind": "owner",
       "authority_ref": "docs/superpowers/plans/2026-10-28-product-possibility-idea-library.md",
       "evidence_refs": [
         "file:docs/idea-library.md",
         "file:docs/semantic-architecture/product-possibility-ontology.md",
-        "file:docs/superpowers/plans/2026-10-28-product-possibility-idea-library.md"
+        "file:docs/superpowers/plans/2026-10-28-product-possibility-idea-library.md",
+        "file:skills/repository-semantic-steward/references/knowledge-contract.md:line:40",
+        "file:skills/repository-semantic-steward/references/architecture-exploration.md"
       ],
       "attributes": {
         "concept": "ProductCapability",
@@ -1040,16 +1097,32 @@
       "id": "observation:funnel-breadth-guidance",
       "kind": "observation",
       "statement": "At d0af33b, the exploration funnel reference defines grounded and counterfactual divergence and a breadth opportunity landscape, gives that landscape no durable identity, and states that prior exploratory ideas remain hypotheses.",
-      "epistemic_status": "observed",
+      "epistemic_status": "superseded",
       "authority_kind": "document",
       "authority_ref": "skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md",
       "evidence_refs": [
         "file:skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md:line:92",
-        "file:skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md:line:161",
-        "file:skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md:line:172"
+        "file:skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md:line:161"
       ],
       "attributes": {
         "observed_ref": "d0af33beb52e94b375d6a471e9990df11c8c424d",
+        "role": "implementation_evidence",
+        "superseded_note": "True of d0af33b; superseded for current reasoning by observation:funnel-recalls-retained-possibilities."
+      }
+    },
+    {
+      "id": "observation:funnel-recalls-retained-possibilities",
+      "kind": "observation",
+      "statement": "Since plan PR 4, the exploration funnel reference instructs recalling retained poss: records before breadth, marking observations restated, revised or new, and retaining only consequential new or revised possibilities through the steward's RECONCILE.",
+      "epistemic_status": "observed",
+      "authority_kind": "document",
+      "authority_ref": "skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md",
+      "evidence_refs": [
+        "file:skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md:line:172",
+        "file:skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md:line:199"
+      ],
+      "attributes": {
+        "observed_ref": "plan PR 4 change on top of 274e585c0a594c25235f12f34074effa1837b631",
         "role": "implementation_evidence"
       }
     },
@@ -1334,7 +1407,7 @@
       "id": "rel:guidance-evidence-funnel",
       "subject": "cap:breadth-exploration-guidance",
       "predicate": "references",
-      "object": "observation:funnel-breadth-guidance",
+      "object": "observation:funnel-recalls-retained-possibilities",
       "epistemic_status": "declared",
       "evidence_refs": [
         "file:skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md:line:172"
@@ -1848,6 +1921,19 @@
       ],
       "attributes": {
         "establishment": "hypothesized"
+      }
+    },
+    {
+      "id": "rel:funnel-observation-supersedes",
+      "subject": "observation:funnel-recalls-retained-possibilities",
+      "predicate": "supersedes",
+      "object": "observation:funnel-breadth-guidance",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md:line:172"
+      ],
+      "attributes": {
+        "establishment": "observed change between revisions"
       }
     }
   ]

@@ -37,6 +37,19 @@ The example path is illustrative, not a claim that the document exists. All `fil
 - A dependency relation must be sourced in actual architecture/code evidence; same-directory placement and syntax-only imports are insufficient.
 - Only accepted domain ownership workflows can change target-repository canonical/product state.
 
+## Product possibility records
+
+A retained product possibility (a potential future of the product; conceptual model in `docs/semantic-architecture/product-possibility-ontology.md` of the Sensemaking Skills repository) uses existing kinds and predicates:
+
+- an `opportunity` claim with a stable `poss:<slug>` id and `attributes.concept: ProductPossibility`; dimensions (alignment, ambition, horizon, realization) and an append-only `disposition_history` live in attributes. Speculative or synthesized possibilities are `hypothetical` with `authority_kind: hypothesis`;
+- the realized ability is a separate `capability` claim linked by `implemented_by`; mechanically observed implementation evidence is an `observation` claim (`observed`, authority `code` or `document`) the capability `references`;
+- `requires_capability` only for a genuine prerequisite; `contradicts` for a conflict with a non-goal or decision; `derived_from` for origin; a shared premise is one `hypothesis` claim that each possibility `references`;
+- relations without a matching predicate (`extends`, `complements`, `alternativeTo`, weaker enabling) use `references` with `attributes.conceptual_relation`, and every relation records `attributes.establishment` (`inferred`, `ratified`, `hypothesized`);
+- cite the record of origin as evidence; cite a curated library only where it is that origin. Evidence matches by file, so extra citations add re-inspection noise;
+- construction paths and evidence prerequisites are not possibilities: keep paths in their analyses and prerequisites as `hypothesis` claims.
+
+A possibility record is memory, not a backlog item or authorization.
+
 ## Existing CLI
 
 ```bash

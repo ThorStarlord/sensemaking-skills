@@ -79,8 +79,9 @@ them as declared claims and verify any that matter to the frontier.
 
 For architecture-heavy, long-horizon decisions, when the owner-selected
 ADR 0031 knowledge index exists **at the target Git revision**, query relevant
-goals, capabilities, decision history, contradictions and explicit
-relationships before comparing construction paths. See
+goals, capabilities, decision history, contradictions, explicit
+relationships and retained product possibilities (`poss:` records; funnel
+section 4) before comparing construction paths. See
 `../../docs/semantic-architecture/persistent-knowledge-cli.md`.
 Treat results as source pointers and defeasible claims, not a complete
 option set, normative authority, or evidence that an apparent gap is a
