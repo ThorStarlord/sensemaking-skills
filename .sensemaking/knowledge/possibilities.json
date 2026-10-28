@@ -904,6 +904,11 @@
                 "date": "2026-10-28",
                 "assessed_ref": "d9ad4c8d182ff612addbd6e08bcb2cddc3697385",
                 "result": "REVISE (taxonomy): plan PR H's guidance turned declined engineering candidates into poss: records; corrected to classify before retention. No poss: record had been created under the old wording."
+              },
+              {
+                "date": "2026-10-28",
+                "assessed_ref": "e581d0138371e43976f8abeca3f48138c522cce3",
+                "result": "First target-repository use (Atlas Midgard; same agent and session that wrote the guidance; owner-authorized knowledge edits): recall found no retained records, and declined candidates were classified (kept as construction paths in the strategic analysis, none as poss:). Not independent, so the revisit condition is not met."
               }
             ]
           }
@@ -944,7 +949,8 @@
       "authority_kind": "hypothesis",
       "authority_ref": "artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
       "evidence_refs": [
-        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md"
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "file:docs/normal-use/prospective-reasoning-atlas-001.md"
       ],
       "attributes": {
         "concept": "ProductPossibility",
@@ -969,9 +975,17 @@
             "basis": "Encodings use existing kinds; needs one explicitly authorized target repository."
           },
           "realization": {
-            "value": "NOT_ASSESSED",
+            "value": "IMPLEMENTED_BASELINE",
             "establishment": "inferred",
-            "basis": "No target repository was inspected; this repository's prospective-reasoning.json is the in-repository precedent."
+            "basis": "Atlas Midgard (2026-10-28) holds an architectural synthesis, a strategic analysis and 21 reviewed records of its own options, consequences, preference and decision, retrieved by id and from the implementing files. Same session only: later reuse is not observed.",
+            "observation_ref": "docs/normal-use/prospective-reasoning-atlas-001.md",
+            "history": [
+              {
+                "value": "NOT_ASSESSED",
+                "assessed_ref": "2a8c6f867c8f4b1fb50caec0a095a690ccef2d92",
+                "basis": "No target repository was inspected; this repository's prospective-reasoning.json is the in-repository precedent."
+              }
+            ]
           }
         },
         "disposition_history": [
@@ -981,10 +995,18 @@
             "authority": "agent",
             "source": "artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
             "rationale": "Coincides with plan PR J's intended outcome; recorded as the possibility PR J would advance, not an independent proposal."
+          },
+          {
+            "value": "SELECTED",
+            "date": "2026-10-28",
+            "authority": "owner mission 2026-10-28, first target-repository application",
+            "source": "docs/normal-use/prospective-reasoning-atlas-001.md",
+            "rationale": "Applied in Atlas Midgard; value depends on a later independent session there."
           }
         ],
-        "assessed_ref": "2a8c6f867c8f4b1fb50caec0a095a690ccef2d92",
-        "value_hypothesis": "Later sessions in a target repository reuse earlier architectural and strategic reasoning instead of regenerating it."
+        "assessed_ref": "e581d0138371e43976f8abeca3f48138c522cce3",
+        "value_hypothesis": "Later sessions in a target repository reuse earlier architectural and strategic reasoning instead of regenerating it.",
+        "revisit_when": "An independent later session in Atlas Midgard (or another authorized target) reads these records while deciding."
       }
     },
     {
