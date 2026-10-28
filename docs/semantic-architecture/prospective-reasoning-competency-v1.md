@@ -67,6 +67,20 @@ The reference case is encoded in `.sensemaking/knowledge/prospective-reasoning.j
 
 **Conclusion:** no competency question lost an answer, and neither masquerade risk materialized under the encoding convention. Plan PR I (new kinds or predicates) stays unwarranted. The remaining gaps (CQ-092, CQ-097, CQ-098 structure) belong in an analysis artifact, which plan PR D provides.
 
+## Results after the artifact contract (plan PR D)
+
+The reference case conforms to the `architectural_synthesis` contract and passes `scripts/validate-output.py architectural_synthesis` (generic and focused validators).
+
+| CQ | Field that now carries it | Mechanical check |
+| --- | --- | --- |
+| CQ-090 | `target_possibility_refs` | `poss:` ids |
+| CQ-092 | each option's `proposed_structure`, `reuses_refs`, `proposed_transitions` (`target_ref`, `change`) | at least two options; transitions name what would change |
+| CQ-097 | `preference_feedback` (`consequence_ref`, `outcome`, `effect`) | the consequence must be cited by an option; outcome from the ontology's feedback list |
+| CQ-098 | `provisional_preference` (`status: PROVISIONAL`, attribution, rationale, scope) or `null` with `no_preference_reason`; each option's `comparison_outcome` and `comparison_reason` | any other status is rejected; exactly the preferred option is `PROVISIONALLY_PREFERRED` |
+| CQ-099 | the whole artifact, with `target_source_identity` and `analysis_ref` | authorization and truth flags must be `false` |
+
+The checks are structural. They cannot tell whether options are materially different, a comparison is sound or a preference is warranted; that stays agent judgment, open to review.
+
 ## Encoding predictions for plan PR C
 
 | Concept | Predicted encoding | Reason |

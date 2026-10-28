@@ -13,7 +13,7 @@ does not prove the conclusion.
 | --- | --- |
 | Generic artifact/plan | `validate-artifact.py`, `validate-output.py`, `validate-plan.py`, `validate-and-report.py`, `validate-and-record.py`, `record-validation.py` |
 | Repository sensemaking | `validate-brief.py`, `validate-repo.py`, `validate-alignment.py` (problem frame vs brief boundary), `validate-probe-report.py`, `validate-unknowns-map.py`, `validate-prompt-handoff.py`, `validate-run-log.py` |
-| Strategic / architectural | `validate-strategic-state.py`, `validate-strategic-companion.py`, `validate-strategic-repository-analysis.py`, `validate-multi-repository-strategic-analysis.py`, `validate-candidate-directions.py`, `validate-architectural-review-recommendation.py`, `validate-change-impact-analysis.py`, `validate-semantic-reasoning-profile.py` |
+| Strategic / architectural | `validate-strategic-state.py`, `validate-strategic-companion.py`, `validate-strategic-repository-analysis.py`, `validate-multi-repository-strategic-analysis.py`, `validate-candidate-directions.py`, `validate-architectural-review-recommendation.py`, `validate-change-impact-analysis.py`, `validate-architectural-synthesis.py`, `validate-semantic-reasoning-profile.py` |
 | Intent / PRD | `validate-user-intent.py`, `validate-user-intent-amendment.py`, `validate-prd.py` |
 | Product management | `validate-pm-artifact.py`, `validate-pm-customer-model.py`, `validate-pm-feature-definition.py`, `validate-pm-launch-communication.py`, `validate-pm-measurement.py`, `validate-pm-strategy.py` |
 | Skill maintenance | `validate-skill-hygiene.py`, `validate-skill-improvement-plan.py`, `validate-skill-registry-liveness.py`, `validate-usage-research-report.py` |

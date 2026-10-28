@@ -60,7 +60,7 @@ Retained architecture options and consequences (conceptual model in `docs/semant
 - `proposesToRealize`, `mayProduce`, `mayEnable`, `alternativeTo` and `challenges` use `references` with `attributes.conceptual_relation`; a possibility produced by a consequence is `derived_from` it;
 - construction paths stay in their analyses; cite them as `<analysis path>#PATH-n` in attributes.
 
-Retain only options and consequences that would change a later decision.
+Retain only options and consequences that would change a later decision. The comparison itself (option structures, transitions, lenses, the provisional preference and its feedback) belongs in an `architectural_synthesis` artifact ([template](architectural-synthesis-template.md)); records cite it as `analysis_ref`.
 
 ## Existing CLI
 

@@ -484,6 +484,22 @@
       }
     },
     {
+      "id": "contract:architectural-synthesis",
+      "kind": "contract",
+      "statement": "The architectural_synthesis artifact contract, produced by repository-semantic-steward: a durable comparison of at least two architecture options with an optional PROVISIONAL preference that is never a decision.",
+      "authority_kind": "document",
+      "authority_ref": "skills/workflow-planner/references/artifact-contracts.yaml",
+      "evidence_refs": [
+        "file:skills/workflow-planner/references/artifact-contracts.yaml",
+        "file:skills/repository-semantic-steward/references/architectural-synthesis-template.md",
+        "file:scripts/validate-architectural-synthesis.py"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "artifact_id": "architectural_synthesis"
+      }
+    },
+    {
       "id": "observation:legacy-brief-producer-bypasses-runtime-paths",
       "kind": "observation",
       "statement": "At aa13f40 (2026-10-23), SkillsOrchestrator.run_repo_sensemaker_skill() wrote a generated file inventory to <project_root>/artifacts/repository_sensemaking_brief.md through PathResolver.artifact_path; on a disposable clone it replaced the tracked brief with content failing validate-brief.py and returned success true with authority authorized_autonomously.",
@@ -981,6 +997,16 @@
       "subject": "component:repository-semantic-steward-skill",
       "predicate": "exposes",
       "object": "contract:semantic-query-receipt",
+      "evidence_refs": [
+        "file:skills/workflow-planner/references/artifact-contracts.yaml"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:architectural-synthesis-exposed",
+      "subject": "component:repository-semantic-steward-skill",
+      "predicate": "exposes",
+      "object": "contract:architectural-synthesis",
       "evidence_refs": [
         "file:skills/workflow-planner/references/artifact-contracts.yaml"
       ],
