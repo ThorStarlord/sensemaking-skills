@@ -45,7 +45,7 @@ Use when the owner wants the agent to keep selecting and completing warranted
 repository responsibilities until the current product commitments are realized.
 
 When the owner explicitly grants FULL AUTONOMY / FULL DELEGATION across repeated
-responsibilities, use `strategic-sensemaking-loop` as the front door and read
+responsibilities, compose `strategic-sensemaking-loop` for continuation and read
 `skills/strategic-sensemaking-loop/references/autonomous-terminal-mission-v1.md`.
 That profile adds continuation across bounded responsibilities; it does not create
 a second goal model or expand protected-transition authority.

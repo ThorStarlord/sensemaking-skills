@@ -1,12 +1,13 @@
 interface:
   display_name: Strategic Sensemaking Loop
-  short_description: Run or resume strategic repository Sensemaking from one prompt, including full-autonomy terminal missions.
+  short_description: Resume strategic repository Sensemaking from one prompt under using-sensemaking, including full-autonomy terminal missions.
   icon: 🔁
   color: purple
 
 instructions: >
-  Use SKILL.md as a thin orchestration front door over the existing strategic
-  Sensemaking Skills. Reconstruct the current durable boundary, invoke only
+  Use SKILL.md as the internal continuation procedure that using-sensemaking
+  composes over the existing strategic Sensemaking Skills; it is not a second
+  public entrypoint or controller. Reconstruct the current durable boundary, invoke only
   warranted specialized stages, continue through authorized repository-answerable
   work, reconcile consequential returned evidence, and continue across bounded
   responsibilities when an explicit terminal mission remains open. Stop only at

@@ -136,6 +136,21 @@ recommendation   != execution authority
 | Is the original finding actually resolved? | finding-specific / repair verification |
 | May the agent decide, mutate, publish, or merge? | authority policy + human owner where required |
 
+### One semantic controller (ADR 0034)
+
+`using-sensemaking` is the single public entrypoint, and the active agent
+applying it is the only semantic controller. Specialized Skills perform one
+responsibility and **return** to it: completed responsibility, source and
+artifact references, consequential findings, remaining uncertainty, a
+suggested continuation and the limits of the claim and authority, carried by
+their existing artifacts and reports (no master orchestration artifact).
+A specialist never selects the next specialist. `strategic-sensemaking-loop`
+supplies cross-session continuation and terminal-mission durability under that
+controller; it does not redefine responsibility selection. When a host cannot
+invoke a Skill from another Skill, the agent reads and applies the installed
+instructions in the same session; installed Skills are not an executable call
+graph. Details: `skills/using-sensemaking/references/adaptive-skill-composition-v1.md`.
+
 ## Deterministic machinery and hooks
 
 This section consolidates, in one place, what the repository's deterministic

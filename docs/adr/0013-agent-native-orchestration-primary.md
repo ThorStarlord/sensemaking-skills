@@ -4,6 +4,7 @@
 **Date**: 2026-05-24  
 **Ratified**: 2026-08-13  
 **Context**: Phase 1 Architecture Migration  
+**Related (2026-10-28)**: [ADR 0034](0034-ontology-first-adaptive-sensemaking.md) names `using-sensemaking` as the Skill that carries this agent-owned control publicly; this ADR's decision is unchanged.
 **Decision**: Shift from runner-led orchestration (CLI owns control loop) to skill-led orchestration (agents own control loop). Skills become platform-agnostic. CLI transitions from orchestrator to execution-only compatibility layer.
 
 ---
