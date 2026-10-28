@@ -20,6 +20,20 @@ The orientation does not create reviewed semantic claims. A directory name is no
 a verified architectural boundary. A filename, import, or test reference is not
 proof of product behavior. Missing edges mean NOT ASSESSED.
 
+## Ontology-first entry (ADR 0034)
+
+Since [ADR 0034](../adr/0034-ontology-first-adaptive-sensemaking.md), a
+repository-level request through `using-sensemaking` establishes this semantic
+foundation **before** any repository-wide strategic selection when no adequate
+model exists. The Steward's BOOTSTRAP owns it
+(`skills/repository-semantic-steward/references/bootstrap.md`), keeps three
+layers apart (framework ontology, target domain ontology, target knowledge
+instances), ends with a coverage report and returns to the controller, which
+usually explores possibilities next. Later sessions retrieve and deepen rather
+than repeat the bootstrap. A narrow task still inspects source directly; an
+index stays optional. Without write authority the model is provisional and not
+inherited. Whether ontology-first entry improves decisions is not yet observed.
+
 ## First-visit contract — RSB-1
 
 On a **clean checkout**, pin the full Git HEAD. Then run:

@@ -37,6 +37,18 @@ The example path is illustrative, not a claim that the document exists. All `fil
 - A dependency relation must be sourced in actual architecture/code evidence; same-directory placement and syntax-only imports are insufficient.
 - Only accepted domain ownership workflows can change target-repository canonical/product state.
 
+## Target domain ontology
+
+A target repository's domain ontology (its concepts, states, rules and boundaries) is expressed as knowledge instances of the existing vocabulary, not as new types:
+
+- a domain noun or distinction is a `domain_concept`; confusable terms use `distinct_from` or `synonym_of` (schema_version 2);
+- a user-visible behavior is a `capability` linked to its `component` (with `owned_paths` in v2) by `implemented_by`;
+- a product rule is an `invariant` or `constraint`; a placement, naming or dependency rule is an `architecture_rule` with `rule_type`, `severity` and `applies_to`;
+- states and their transitions are `lifecycle_state` claims linked by `transitions_to`; data movement is `flows_to`; meaningful partitions are `layer` and `bounded_context` with `belongs_to`;
+- intent is `goal` and `non_goal`; governing choices are `decision` claims cited by `decided_by`.
+
+Areas not yet assessed go in the bootstrap coverage report, not in claims. A new type is justified only through [schema evolution](schema-evolution.md).
+
 ## Product possibility records
 
 A retained product possibility (a potential future of the product; conceptual model in `docs/semantic-architecture/product-possibility-ontology.md` of the Sensemaking Skills repository) uses existing kinds and predicates:
