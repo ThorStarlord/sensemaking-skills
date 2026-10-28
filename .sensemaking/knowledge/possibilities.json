@@ -1,0 +1,1498 @@
+{
+  "schema_version": 1,
+  "claims": [
+    {
+      "id": "poss:persistent-semantic-stewardship",
+      "kind": "opportunity",
+      "statement": "Sensemaking evolves into a persistent, typed, queryable, provenance-aware knowledge system operated through Skills, improving how agents understand and evolve software across tasks, agents, repositories and time.",
+      "epistemic_status": "declared",
+      "authority_kind": "policy",
+      "authority_ref": "docs/adr/0031-persistent-semantic-stewardship.md",
+      "evidence_refs": [
+        "file:docs/adr/0031-persistent-semantic-stewardship.md:line:32",
+        "file:docs/idea-library.md"
+      ],
+      "attributes": {
+        "concept": "ProductPossibility",
+        "title": "Persistent semantic stewardship",
+        "library_ref": "docs/idea-library.md",
+        "origin": {
+          "ref": "docs/adr/0031-persistent-semantic-stewardship.md",
+          "date": "2026-10-15",
+          "author": "owner"
+        },
+        "dimensions": {
+          "alignment": {
+            "value": "ALIGNED",
+            "basis": "It is the accepted ADR 0031 destination."
+          },
+          "ambition": {
+            "value": "TRANSFORMATIVE",
+            "basis": "Changes the product purpose."
+          },
+          "horizon": {
+            "value": "LONG_HORIZON",
+            "basis": "The full destination needs S5 and S6 evidence, which STATUS.md:58 declares not qualified."
+          },
+          "realization": {
+            "value": "PARTIALLY_IMPLEMENTED",
+            "establishment": "inferred",
+            "basis": "S1-S3 code observed; STATUS.md:58 declares S4 guidance in source and S5/S6 not qualified."
+          }
+        },
+        "disposition_history": [
+          {
+            "value": "DEFERRED",
+            "date": null,
+            "authority": "earlier strategic conclusion",
+            "source": "docs/adr/0031-persistent-semantic-stewardship.md",
+            "rationale": "Treated as merely an optional later optimization; date not recorded in ADR 0031."
+          },
+          {
+            "value": "SELECTED",
+            "date": "2026-10-15",
+            "authority": "owner",
+            "source": "docs/adr/0031-persistent-semantic-stewardship.md",
+            "rationale": "Earlier conclusion superseded as a strategic choice, not as a negative empirical verdict."
+          }
+        ],
+        "assessed_ref": "d0af33beb52e94b375d6a471e9990df11c8c424d",
+        "value_hypothesis": "Better decisions in later, genuinely separate engineering episodes; not demonstrated."
+      }
+    },
+    {
+      "id": "poss:git-authored-knowledge-index",
+      "kind": "opportunity",
+      "statement": "Reviewed, source-pinned typed claims and relations are authored in Git, indexed into a local rebuildable SQLite database and read through bounded, provenance-preserving queries.",
+      "epistemic_status": "declared",
+      "authority_kind": "policy",
+      "authority_ref": "docs/adr/0031-persistent-semantic-stewardship.md",
+      "evidence_refs": [
+        "file:docs/adr/0031-persistent-semantic-stewardship.md",
+        "file:docs/persistent-semantic-stewardship-plan.md:line:459"
+      ],
+      "attributes": {
+        "concept": "ProductPossibility",
+        "title": "Git-reviewed knowledge with a rebuildable index",
+        "library_ref": "docs/idea-library.md",
+        "origin": {
+          "ref": "docs/persistent-semantic-stewardship-plan.md",
+          "date": "2026-10-15",
+          "author": "owner-accepted construction plan (S1-S3)"
+        },
+        "dimensions": {
+          "alignment": {
+            "value": "ALIGNED",
+            "basis": "ADR 0031 decision 7."
+          },
+          "ambition": {
+            "value": "SUBSTANTIAL",
+            "basis": "A new persistent knowledge capability."
+          },
+          "horizon": {
+            "value": "FORESEEABLE",
+            "basis": "Realized."
+          },
+          "realization": {
+            "value": "IMPLEMENTED_BASELINE",
+            "establishment": "inferred",
+            "basis": "See observation:knowledge-query-closed-operations and cap:semantic-queries."
+          }
+        },
+        "disposition_history": [
+          {
+            "value": "SELECTED",
+            "date": "2026-10-15",
+            "authority": "owner",
+            "source": "docs/adr/0031-persistent-semantic-stewardship.md",
+            "rationale": "Selected as the first construction slice of ADR 0031."
+          }
+        ],
+        "assessed_ref": "d0af33beb52e94b375d6a471e9990df11c8c424d"
+      }
+    },
+    {
+      "id": "poss:path-scoped-architecture-vocabulary",
+      "kind": "opportunity",
+      "statement": "Reviewed knowledge expresses layers, bounded contexts, lifecycle states, path-scoped architecture rules, data flow and confusable terms, so an agent can ask what applies to a file before editing it.",
+      "epistemic_status": "declared",
+      "authority_kind": "document",
+      "authority_ref": "docs/adr/0033-architecture-and-ontology-vocabulary.md",
+      "evidence_refs": [
+        "file:docs/adr/0033-architecture-and-ontology-vocabulary.md",
+        "file:docs/semantic-architecture/architecture-ontology-competency-v1.md"
+      ],
+      "attributes": {
+        "concept": "ProductPossibility",
+        "title": "Architecture and ontology vocabulary v2",
+        "library_ref": "docs/idea-library.md",
+        "origin": {
+          "ref": "docs/adr/0033-architecture-and-ontology-vocabulary.md",
+          "date": "2026-10-23",
+          "author": "agent under the owner's standing request"
+        },
+        "dimensions": {
+          "alignment": {
+            "value": "ALIGNED",
+            "basis": "Extends the ADR 0031 knowledge plane."
+          },
+          "ambition": {
+            "value": "INCREMENTAL",
+            "basis": "Extends the existing vocabulary additively."
+          },
+          "horizon": {
+            "value": "FORESEEABLE",
+            "basis": "Realized."
+          },
+          "realization": {
+            "value": "IMPLEMENTED_BASELINE",
+            "establishment": "inferred",
+            "basis": "See observation:v2-vocabulary-sets and cap:path-scoped-architecture-context."
+          }
+        },
+        "disposition_history": [
+          {
+            "value": "SELECTED",
+            "date": "2026-10-23",
+            "authority": "owner standing request",
+            "source": "STATUS.md",
+            "rationale": "Built in PR 565; ADR 0033 owner acceptance pending, so realization is not ratification."
+          }
+        ],
+        "assessed_ref": "d0af33beb52e94b375d6a471e9990df11c8c424d"
+      }
+    },
+    {
+      "id": "poss:strategic-exploration-funnel",
+      "kind": "opportunity",
+      "statement": "A genuine Level-3 analysis maps systems and explores grounded and counterfactual breadth before converging, and an exploration-only request ends with an opportunity landscape.",
+      "epistemic_status": "declared",
+      "authority_kind": "document",
+      "authority_ref": "STATUS.md",
+      "evidence_refs": [
+        "file:skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md",
+        "file:STATUS.md"
+      ],
+      "attributes": {
+        "concept": "ProductPossibility",
+        "title": "Coverage-before-convergence exploration",
+        "library_ref": "docs/idea-library.md",
+        "origin": {
+          "ref": "STATUS.md",
+          "date": null,
+          "author": "Issue 468 (STATUS.md frontier item 35)"
+        },
+        "dimensions": {
+          "alignment": {
+            "value": "ALIGNED",
+            "basis": "Integrated Level-3 guidance."
+          },
+          "ambition": {
+            "value": "INCREMENTAL",
+            "basis": "Refines existing strategic analysis."
+          },
+          "horizon": {
+            "value": "FORESEEABLE",
+            "basis": "Realized."
+          },
+          "realization": {
+            "value": "IMPLEMENTED_BASELINE",
+            "establishment": "inferred",
+            "basis": "Guidance only; see observation:funnel-breadth-guidance. Agent adherence is not established."
+          }
+        },
+        "disposition_history": [
+          {
+            "value": "SELECTED",
+            "date": null,
+            "authority": "integrated (Issue 468)",
+            "source": "STATUS.md",
+            "rationale": "Integrated with normal-use handoff."
+          }
+        ],
+        "assessed_ref": "d0af33beb52e94b375d6a471e9990df11c8c424d"
+      }
+    },
+    {
+      "id": "poss:strategic-continuity-reassessment",
+      "kind": "opportunity",
+      "statement": "Strategic analyses carry decision and path assumptions with reassessment triggers, plus read-only projections, so a later session sees what would reopen a decision without the tool reopening it.",
+      "epistemic_status": "declared",
+      "authority_kind": "document",
+      "authority_ref": "docs/strategic-candidate-directions.md",
+      "evidence_refs": [
+        "file:docs/strategic-candidate-directions.md:line:415",
+        "file:src/sensemaking_skills/strategy_cli.py:line:344"
+      ],
+      "attributes": {
+        "concept": "ProductPossibility",
+        "title": "Assumptions and reassessment triggers for strategic paths",
+        "library_ref": "docs/idea-library.md",
+        "origin": {
+          "ref": "docs/strategic-candidate-directions.md",
+          "date": null,
+          "author": "Issues 416 and 430 (reservoir section 9.5)"
+        },
+        "dimensions": {
+          "alignment": {
+            "value": "ALIGNED",
+            "basis": "Integrated strategic continuity baseline."
+          },
+          "ambition": {
+            "value": "INCREMENTAL",
+            "basis": "Adds continuity to existing analyses."
+          },
+          "horizon": {
+            "value": "FORESEEABLE",
+            "basis": "Realized."
+          },
+          "realization": {
+            "value": "IMPLEMENTED_BASELINE",
+            "establishment": "inferred",
+            "basis": "See observation:strategy-assumptions-drift-commands."
+          }
+        },
+        "disposition_history": [
+          {
+            "value": "SELECTED",
+            "date": null,
+            "authority": "integrated (Issues 416, 430)",
+            "source": "docs/strategic-candidate-directions.md",
+            "rationale": "Reservoir records it as IMPLEMENTED_BASELINE."
+          }
+        ],
+        "assessed_ref": "d0af33beb52e94b375d6a471e9990df11c8c424d"
+      }
+    },
+    {
+      "id": "poss:possibility-memory",
+      "kind": "opportunity",
+      "statement": "Retained product possibilities with stable identity, separated dimensions, explicit typed relationships and preserved rationale are recoverable by a fresh agent and used during exploration.",
+      "epistemic_status": "declared",
+      "authority_kind": "owner",
+      "authority_ref": "docs/superpowers/plans/2026-10-28-product-possibility-idea-library.md",
+      "evidence_refs": [
+        "file:docs/superpowers/plans/2026-10-28-product-possibility-idea-library.md:line:58",
+        "file:docs/idea-library.md",
+        "file:docs/semantic-architecture/product-possibility-ontology.md"
+      ],
+      "attributes": {
+        "concept": "ProductPossibility",
+        "title": "Product possibility memory (Idea Library)",
+        "library_ref": "docs/idea-library.md",
+        "origin": {
+          "ref": "docs/superpowers/plans/2026-10-28-product-possibility-idea-library.md",
+          "date": "2026-10-28",
+          "author": "owner"
+        },
+        "dimensions": {
+          "alignment": {
+            "value": "ALIGNED",
+            "basis": "ADR 0031 decision 2 places alternatives, decisions and history in the knowledge plane."
+          },
+          "ambition": {
+            "value": "SUBSTANTIAL",
+            "basis": "A new retained knowledge family and its use in exploration."
+          },
+          "horizon": {
+            "value": "FORESEEABLE",
+            "basis": "Its next increments use existing claim kinds and queries."
+          },
+          "realization": {
+            "value": "PARTIALLY_IMPLEMENTED",
+            "establishment": "inferred",
+            "basis": "Documentary library and typed records with retrieval through existing queries exist; exploration integration (plan PR 4) is absent. Assessed at d1dee16 plus the change adding this file."
+          }
+        },
+        "disposition_history": [
+          {
+            "value": "SELECTED",
+            "date": "2026-10-28",
+            "authority": "owner",
+            "source": "docs/superpowers/plans/2026-10-28-product-possibility-idea-library.md",
+            "rationale": "First increment (plan PR 1 and part of PR 2), then PR 3 under the owner's follow-up message; no ADR records it."
+          }
+        ],
+        "assessed_ref": "d1dee16552e9347bf795a37a59aa12c07291b71d",
+        "value_hypothesis": "A later agent recovers an earlier possibility and its reasoning, connects it to current evidence and makes a better-grounded assessment; not demonstrated across sessions."
+      }
+    },
+    {
+      "id": "poss:cross-episode-possibility-synthesis",
+      "kind": "opportunity",
+      "statement": "Across sessions, agents combine retained possibilities, implemented capabilities and strategic history into new, distinct product directions instead of exploring from a blank slate each time.",
+      "epistemic_status": "hypothetical",
+      "authority_kind": "hypothesis",
+      "authority_ref": "docs/superpowers/plans/2026-10-28-product-possibility-idea-library.md",
+      "evidence_refs": [
+        "file:docs/superpowers/plans/2026-10-28-product-possibility-idea-library.md:line:249",
+        "file:docs/idea-library.md"
+      ],
+      "attributes": {
+        "concept": "ProductPossibility",
+        "title": "Cross-episode possibility synthesis",
+        "library_ref": "docs/idea-library.md",
+        "origin": {
+          "ref": "docs/superpowers/plans/2026-10-28-product-possibility-idea-library.md",
+          "date": "2026-10-28",
+          "author": "owner plan section 4.4"
+        },
+        "dimensions": {
+          "alignment": {
+            "value": "ADJACENT",
+            "basis": "ADR 0031 names exploration and synthesis in the reasoning plane but not synthesis of product futures from retained possibilities."
+          },
+          "ambition": {
+            "value": "SUBSTANTIAL",
+            "basis": "A new reasoning capability across sessions."
+          },
+          "horizon": {
+            "value": "FORESEEABLE",
+            "basis": "Its prerequisites (records, exploration guidance) are being built."
+          },
+          "realization": {
+            "value": "NOT_ASSESSED",
+            "establishment": "inferred",
+            "basis": "No completeness basis; lexical search of skills/ found no guidance for synthesizing retained possibilities."
+          }
+        },
+        "disposition_history": [
+          {
+            "value": "EXPLORATORY",
+            "date": "2026-10-28",
+            "authority": "owner plan",
+            "source": "docs/superpowers/plans/2026-10-28-product-possibility-idea-library.md",
+            "rationale": "Example of recombination; not selected."
+          }
+        ],
+        "assessed_ref": "d0af33beb52e94b375d6a471e9990df11c8c424d"
+      }
+    },
+    {
+      "id": "poss:possibility-reconsideration-from-change",
+      "kind": "opportunity",
+      "statement": "A possibility's revisit_when names the claims or sources whose change would matter; when an indexed revision changes one of them, the agent sees the possibility as a reconsideration question.",
+      "epistemic_status": "hypothetical",
+      "authority_kind": "hypothesis",
+      "authority_ref": "docs/idea-library.md",
+      "evidence_refs": [
+        "file:docs/idea-library.md",
+        "file:docs/semantic-architecture/product-possibility-ontology.md",
+        "file:src/sensemaking_skills/strategy_cli.py:line:344"
+      ],
+      "attributes": {
+        "concept": "ProductPossibility",
+        "title": "Reconsideration from indexed change",
+        "library_ref": "docs/idea-library.md",
+        "origin": {
+          "ref": "docs/idea-library.md",
+          "date": "2026-10-28",
+          "author": "agent synthesis"
+        },
+        "dimensions": {
+          "alignment": {
+            "value": "ALIGNED",
+            "basis": "ADR 0031: contradictions and invalidated assumptions are recognized rather than canonized."
+          },
+          "ambition": {
+            "value": "INCREMENTAL",
+            "basis": "Reuses existing surfaces."
+          },
+          "horizon": {
+            "value": "FORESEEABLE",
+            "basis": "Reuses existing changes and strategy assumptions surfaces."
+          },
+          "realization": {
+            "value": "NOT_IMPLEMENTED",
+            "establishment": "inferred",
+            "basis": "At d0af33b no poss: records existed in .sensemaking/knowledge/ (exhaustive check of that directory)."
+          }
+        },
+        "disposition_history": [
+          {
+            "value": "EXPLORATORY",
+            "date": "2026-10-28",
+            "authority": "agent",
+            "source": "docs/idea-library.md",
+            "rationale": "Candidate alternative to plan PR 5's dedicated reconsideration query."
+          }
+        ],
+        "assessed_ref": "d0af33beb52e94b375d6a471e9990df11c8c424d",
+        "value_hypothesis": "Reconsideration can reuse changes and strategy-assumption surfaces instead of a new query."
+      }
+    },
+    {
+      "id": "poss:capability-learning-analysis",
+      "kind": "opportunity",
+      "statement": "A specialized Skill takes an explicitly selected set of normal-use and reconciliation artifacts and produces a bounded lesson candidate.",
+      "epistemic_status": "hypothetical",
+      "authority_kind": "hypothesis",
+      "authority_ref": "docs/strategic-candidate-directions.md",
+      "evidence_refs": [
+        "file:docs/strategic-candidate-directions.md:line:563",
+        "file:docs/research/capability-learning-loop-v0.md"
+      ],
+      "attributes": {
+        "concept": "ProductPossibility",
+        "title": "Cross-episode capability learning Skill",
+        "library_ref": "docs/idea-library.md",
+        "origin": {
+          "ref": "docs/strategic-candidate-directions.md",
+          "date": null,
+          "author": "reservoir section 10.6"
+        },
+        "dimensions": {
+          "alignment": {
+            "value": "ADJACENT",
+            "basis": "Evidence-gated candidate; scope depends on stable recurring need."
+          },
+          "ambition": {
+            "value": "SUBSTANTIAL",
+            "basis": "A new specialized responsibility."
+          },
+          "horizon": {
+            "value": "NOT_ASSESSED",
+            "basis": "Gated on repeated normal-use evidence whose timing is unknown."
+          },
+          "realization": {
+            "value": "NOT_IMPLEMENTED",
+            "establishment": "inferred",
+            "basis": "As a packaged or registered Skill: no skills/capability-learning-analysis/ directory and no skill-registry.yaml entry at d0af33b."
+          }
+        },
+        "disposition_history": [
+          {
+            "value": "DEFERRED",
+            "date": null,
+            "authority": "reservoir (historical record)",
+            "source": "docs/strategic-candidate-directions.md",
+            "rationale": "CANDIDATE_ONLY and evidence-gated; existing reconciliation already produces episode learning.",
+            "reason": "opportunity_value"
+          }
+        ],
+        "assessed_ref": "d0af33beb52e94b375d6a471e9990df11c8c424d",
+        "revisit_when": "Repeated normal use establishes a stable cross-episode synthesis responsibility with recurring comparison structure and material failure modes."
+      }
+    },
+    {
+      "id": "poss:cross-product-transfer",
+      "kind": "opportunity",
+      "statement": "Stewardship extends across multiple subsystems or repositories, with scoped adapters and retrieval as warranted.",
+      "epistemic_status": "declared",
+      "authority_kind": "document",
+      "authority_ref": "docs/persistent-semantic-stewardship-plan.md",
+      "evidence_refs": [
+        "file:docs/persistent-semantic-stewardship-plan.md:line:462",
+        "file:docs/adr/0031-persistent-semantic-stewardship.md:line:32"
+      ],
+      "attributes": {
+        "concept": "ProductPossibility",
+        "title": "Stewardship across products and repositories (S6)",
+        "library_ref": "docs/idea-library.md",
+        "origin": {
+          "ref": "docs/persistent-semantic-stewardship-plan.md",
+          "date": "2026-10-15",
+          "author": "stewardship plan S6"
+        },
+        "dimensions": {
+          "alignment": {
+            "value": "ALIGNED",
+            "basis": "ADR 0031 decision 1 names repositories."
+          },
+          "ambition": {
+            "value": "SUBSTANTIAL",
+            "basis": "Broadens stewardship scope."
+          },
+          "horizon": {
+            "value": "LONG_HORIZON",
+            "basis": "Depends on S5 evidence."
+          },
+          "realization": {
+            "value": "NOT_ASSESSED",
+            "establishment": "inferred",
+            "basis": "STATUS.md:58 declares S6 not qualified, an evidence statement; multi-repository mechanics exist but their contribution is not assessed."
+          }
+        },
+        "disposition_history": [
+          {
+            "value": "DEFERRED",
+            "date": "2026-10-15",
+            "authority": "stewardship plan",
+            "source": "docs/persistent-semantic-stewardship-plan.md",
+            "rationale": "Plan section 14 lists S5 evidence as its dependency.",
+            "reason": "feasibility"
+          }
+        ],
+        "assessed_ref": "d0af33beb52e94b375d6a471e9990df11c8c424d",
+        "revisit_when": "S5 evidence of reuse, correction and architectural decision value exists."
+      }
+    },
+    {
+      "id": "poss:domain-general-sensemaking",
+      "kind": "opportunity",
+      "statement": "The Sensemaking control model is applied outside software engineering, with the domain ontology, responsibilities, evidence and authority semantics replaced.",
+      "epistemic_status": "hypothetical",
+      "authority_kind": "hypothesis",
+      "authority_ref": "docs/research/control-model-research-agenda.md",
+      "evidence_refs": [
+        "file:docs/research/control-model-research-agenda.md:line:177",
+        "file:CONTEXT.md"
+      ],
+      "attributes": {
+        "concept": "ProductPossibility",
+        "title": "Domain-general Sensemaking control",
+        "library_ref": "docs/idea-library.md",
+        "origin": {
+          "ref": "docs/research/control-model-research-agenda.md",
+          "date": null,
+          "author": "research path 4"
+        },
+        "dimensions": {
+          "alignment": {
+            "value": "COUNTERFACTUAL",
+            "basis": "Alters the software-engineering domain premise; listed as not ratified in CONTEXT.md; no accepted non-goal forbids it. Exploring needs no review."
+          },
+          "ambition": {
+            "value": "TRANSFORMATIVE",
+            "basis": "Would change the product category."
+          },
+          "horizon": {
+            "value": "LONG_HORIZON",
+            "basis": "Only limited synthetic conceptual-transfer evidence exists."
+          },
+          "realization": {
+            "value": "NOT_ASSESSED",
+            "establishment": "inferred",
+            "basis": "One synthetic transfer exercise; relation of existing Domain Packs not assessed."
+          }
+        },
+        "disposition_history": [
+          {
+            "value": "EXPLORATORY",
+            "date": null,
+            "authority": "research agenda",
+            "source": "docs/research/control-model-research-agenda.md",
+            "rationale": "Transfer result does not warrant a generic framework."
+          }
+        ],
+        "assessed_ref": "d0af33beb52e94b375d6a471e9990df11c8c424d",
+        "revisit_when": "Materially new uncertainty or real use."
+      }
+    },
+    {
+      "id": "poss:automatic-strategic-planner",
+      "kind": "opportunity",
+      "statement": "A StrategicPlanner or OuterLoopEngine ranks the Strategic Frontier and selects the next responsibility.",
+      "epistemic_status": "hypothetical",
+      "authority_kind": "hypothesis",
+      "authority_ref": "docs/strategic-candidate-directions.md",
+      "evidence_refs": [
+        "file:docs/strategic-candidate-directions.md:line:684",
+        "file:docs/adr/0029-current-product-boundary.md:line:45"
+      ],
+      "attributes": {
+        "concept": "ProductPossibility",
+        "title": "Deterministic strategic planner and frontier ranking",
+        "library_ref": "docs/idea-library.md",
+        "origin": {
+          "ref": "docs/strategic-candidate-directions.md",
+          "date": null,
+          "author": "recurring proposal (reservoir section 11)"
+        },
+        "dimensions": {
+          "alignment": {
+            "value": "CONFLICTS_WITH_CURRENT_STRATEGY",
+            "basis": "ADR 0029 lists it outside current product scope."
+          },
+          "ambition": {
+            "value": "TRANSFORMATIVE",
+            "basis": "Would move semantic control from the agent to machinery."
+          },
+          "horizon": {
+            "value": "NOT_ASSESSED",
+            "basis": "Not relevant while rejected."
+          },
+          "realization": {
+            "value": "NOT_ASSESSED",
+            "establishment": "inferred",
+            "basis": "Lexical search of src/ for those class names found none at d0af33b; not a complete absence proof."
+          }
+        },
+        "disposition_history": [
+          {
+            "value": "REJECTED_FOR_NOW",
+            "date": null,
+            "authority": "ADR 0029 (current commitment)",
+            "source": "docs/adr/0029-current-product-boundary.md",
+            "rationale": "Outside current product scope.",
+            "reason": "strategic_incompatibility"
+          }
+        ],
+        "assessed_ref": "d0af33beb52e94b375d6a471e9990df11c8c424d",
+        "revisit_when": "Only a revision of ADR 0029's scope through the Level-4 process, which applies if that commitment becomes decision-changing."
+      }
+    },
+    {
+      "id": "poss:ranked-possibility-backlog",
+      "kind": "opportunity",
+      "statement": "The Idea Library scores possibilities by graph position, connectivity or labels and emits the next construction task.",
+      "epistemic_status": "hypothetical",
+      "authority_kind": "hypothesis",
+      "authority_ref": "docs/superpowers/plans/2026-10-28-product-possibility-idea-library.md",
+      "evidence_refs": [
+        "file:docs/superpowers/plans/2026-10-28-product-possibility-idea-library.md:line:777",
+        "file:docs/superpowers/plans/2026-10-28-product-possibility-idea-library.md:line:711",
+        "file:docs/idea-library.md"
+      ],
+      "attributes": {
+        "concept": "ProductPossibility",
+        "title": "The Idea Library as a ranked backlog",
+        "library_ref": "docs/idea-library.md",
+        "origin": {
+          "ref": "docs/superpowers/plans/2026-10-28-product-possibility-idea-library.md",
+          "date": "2026-10-28",
+          "author": "owner plan sections 9 and 11"
+        },
+        "dimensions": {
+          "alignment": {
+            "value": "CONFLICTS_WITH_CURRENT_STRATEGY",
+            "basis": "Automatic selection of construction work; see ng:automatic-selection."
+          },
+          "ambition": {
+            "value": "SUBSTANTIAL",
+            "basis": "Would turn memory into a selector."
+          },
+          "horizon": {
+            "value": "FORESEEABLE",
+            "basis": "Easy to build; horizon is not desirability."
+          },
+          "realization": {
+            "value": "NOT_IMPLEMENTED",
+            "establishment": "inferred",
+            "basis": "In the Idea Library: the library, model and these records contain no ranking."
+          }
+        },
+        "disposition_history": [
+          {
+            "value": "REJECTED_FOR_NOW",
+            "date": "2026-10-28",
+            "authority": "owner",
+            "source": "docs/superpowers/plans/2026-10-28-product-possibility-idea-library.md",
+            "rationale": "Avoid automatically ranking possibilities or selecting construction work.",
+            "reason": "strategic_incompatibility"
+          }
+        ],
+        "assessed_ref": "d0af33beb52e94b375d6a471e9990df11c8c424d"
+      }
+    },
+    {
+      "id": "poss:cross-repository-transaction-coordinator",
+      "kind": "opportunity",
+      "statement": "Sensemaking coordinates atomic commit, deploy and rollback across repositories.",
+      "epistemic_status": "hypothetical",
+      "authority_kind": "hypothesis",
+      "authority_ref": "docs/strategic-candidate-directions.md",
+      "evidence_refs": [
+        "file:docs/strategic-candidate-directions.md:line:229",
+        "file:docs/adr/0029-current-product-boundary.md:line:48"
+      ],
+      "attributes": {
+        "concept": "ProductPossibility",
+        "title": "Cross-repository transaction coordination",
+        "library_ref": "docs/idea-library.md",
+        "origin": {
+          "ref": "docs/strategic-candidate-directions.md",
+          "date": null,
+          "author": "reservoir section 6.2"
+        },
+        "dimensions": {
+          "alignment": {
+            "value": "CONFLICTS_WITH_CURRENT_STRATEGY",
+            "basis": "ADR 0029 line 48 lists it outside current product scope."
+          },
+          "ambition": {
+            "value": "SUBSTANTIAL",
+            "basis": "Expands failure-recovery and authority scope."
+          },
+          "horizon": {
+            "value": "LONG_HORIZON",
+            "basis": "Reservoir historical label."
+          },
+          "realization": {
+            "value": "NOT_ASSESSED",
+            "establishment": "inferred",
+            "basis": "Reservoir states Multi-Repository Campaigns intentionally do not promise atomic behavior; no implementation search."
+          }
+        },
+        "disposition_history": [
+          {
+            "value": "DEFERRED",
+            "date": null,
+            "authority": "reservoir (historical record)",
+            "source": "docs/strategic-candidate-directions.md",
+            "rationale": "LONG_HORIZON + REQUIRES_EVIDENCE."
+          }
+        ],
+        "assessed_ref": "d0af33beb52e94b375d6a471e9990df11c8c424d",
+        "revisit_when": "Explicit owner direction plus a concrete responsibility whose correctness depends on atomic cross-repository activation; acting on it also needs ADR 0029's scope revised."
+      }
+    },
+    {
+      "id": "cap:path-scoped-architecture-context",
+      "kind": "capability",
+      "statement": "Path-scoped architecture context queries (rules-for, term, context-for) return reviewed ownership, rules, contracts, decisions and terms bearing on a file or term.",
+      "epistemic_status": "declared",
+      "authority_kind": "code",
+      "authority_ref": "src/sensemaking_skills/semantic_architecture/knowledge_architecture.py",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_architecture.py",
+        "file:src/sensemaking_skills/semantic_cli.py:line:210"
+      ],
+      "attributes": {
+        "concept": "ProductCapability",
+        "claim_ceiling": "Bounded projection of declared records; coverage is NOT ASSESSED where nothing is modeled."
+      }
+    },
+    {
+      "id": "cap:breadth-exploration-guidance",
+      "kind": "capability",
+      "statement": "Level-3 strategic analysis guidance maps systems and explores grounded and counterfactual breadth before converging; exploration-only requests end with an opportunity landscape.",
+      "epistemic_status": "declared",
+      "authority_kind": "document",
+      "authority_ref": "skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md",
+      "evidence_refs": [
+        "file:skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md:line:161",
+        "file:skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md:line:172"
+      ],
+      "attributes": {
+        "concept": "ProductCapability",
+        "claim_ceiling": "Skill guidance; agent adherence is normal-use evidence, not established."
+      }
+    },
+    {
+      "id": "cap:strategic-reassessment-projection",
+      "kind": "capability",
+      "statement": "Read-only commands project a strategic analysis's recorded assumptions and reassessment triggers and report mechanical currentness drift without invalidating strategy.",
+      "epistemic_status": "declared",
+      "authority_kind": "code",
+      "authority_ref": "src/sensemaking_skills/strategy_cli.py",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/strategy_cli.py:line:344",
+        "file:src/sensemaking_skills/strategy_cli.py:line:457"
+      ],
+      "attributes": {
+        "concept": "ProductCapability",
+        "claim_ceiling": "Projection only; the agent judges whether a trigger is semantically met."
+      }
+    },
+    {
+      "id": "cap:possibility-records",
+      "kind": "capability",
+      "statement": "Retained ProductPossibility records with stable poss: identifiers, separated dimensions, typed relationships and disposition history are authored in Git and retrievable through existing knowledge queries.",
+      "epistemic_status": "declared",
+      "authority_kind": "owner",
+      "authority_ref": "docs/superpowers/plans/2026-10-28-product-possibility-idea-library.md",
+      "evidence_refs": [
+        "file:docs/idea-library.md",
+        "file:docs/semantic-architecture/product-possibility-ontology.md",
+        "file:docs/superpowers/plans/2026-10-28-product-possibility-idea-library.md"
+      ],
+      "attributes": {
+        "concept": "ProductCapability",
+        "claim_ceiling": "Representation and retrieval only; usefulness in later independent sessions is not established."
+      }
+    },
+    {
+      "id": "observation:knowledge-query-closed-operations",
+      "kind": "observation",
+      "statement": "At d0af33b, semantic_cli.py restricts knowledge-query --operation to a closed list of 13 operations: snapshot, search, explain, impact, why, contradictions, history, changes, workspace-impact, rules-for, term, orientation-summary and context-for.",
+      "epistemic_status": "observed",
+      "authority_kind": "code",
+      "authority_ref": "src/sensemaking_skills/semantic_cli.py",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_cli.py:line:210"
+      ],
+      "attributes": {
+        "observed_ref": "d0af33beb52e94b375d6a471e9990df11c8c424d",
+        "role": "implementation_evidence"
+      }
+    },
+    {
+      "id": "observation:v2-vocabulary-sets",
+      "kind": "observation",
+      "statement": "At d0af33b, knowledge.py defines V2_CLAIM_KINDS (layer, bounded_context, lifecycle_state, architecture_rule) and V2_PREDICATES (belongs_to, relates_to, transitions_to, flows_to, exposes, applies_to, synonym_of, distinct_from), accepted only from schema_version 2 documents.",
+      "epistemic_status": "observed",
+      "authority_kind": "code",
+      "authority_ref": "src/sensemaking_skills/semantic_architecture/knowledge.py",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/knowledge.py:line:40"
+      ],
+      "attributes": {
+        "observed_ref": "d0af33beb52e94b375d6a471e9990df11c8c424d",
+        "role": "implementation_evidence"
+      }
+    },
+    {
+      "id": "observation:strategy-assumptions-drift-commands",
+      "kind": "observation",
+      "statement": "At d0af33b, strategy_cli.py registers strategy assumptions, which projects assumptions and reassessment_triggers, and strategy drift, documented as detecting typed currentness drift without invalidating strategy.",
+      "epistemic_status": "observed",
+      "authority_kind": "code",
+      "authority_ref": "src/sensemaking_skills/strategy_cli.py",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/strategy_cli.py:line:344",
+        "file:src/sensemaking_skills/strategy_cli.py:line:457"
+      ],
+      "attributes": {
+        "observed_ref": "d0af33beb52e94b375d6a471e9990df11c8c424d",
+        "role": "implementation_evidence"
+      }
+    },
+    {
+      "id": "observation:funnel-breadth-guidance",
+      "kind": "observation",
+      "statement": "At d0af33b, the exploration funnel reference defines grounded and counterfactual divergence and a breadth opportunity landscape, gives that landscape no durable identity, and states that prior exploratory ideas remain hypotheses.",
+      "epistemic_status": "observed",
+      "authority_kind": "document",
+      "authority_ref": "skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md",
+      "evidence_refs": [
+        "file:skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md:line:92",
+        "file:skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md:line:161",
+        "file:skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md:line:172"
+      ],
+      "attributes": {
+        "observed_ref": "d0af33beb52e94b375d6a471e9990df11c8c424d",
+        "role": "implementation_evidence"
+      }
+    },
+    {
+      "id": "hyp:later-sessions-consult-knowledge",
+      "kind": "hypothesis",
+      "statement": "Separately started later sessions will query reviewed knowledge when it is relevant.",
+      "epistemic_status": "hypothetical",
+      "authority_kind": "hypothesis",
+      "authority_ref": "artifacts/history/2026-10-23-strategic-repository-analysis.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-23-strategic-repository-analysis.md:line:201"
+      ],
+      "attributes": {
+        "source_label": "ASSUMPTION-1",
+        "status_in_source": "NOT TESTED",
+        "trigger": "An independent-session record shows reviewed knowledge was skipped, or was decisive."
+      }
+    },
+    {
+      "id": "hyp:s5-independent-session-value",
+      "kind": "hypothesis",
+      "statement": "Independent later sessions reuse and correct reviewed knowledge with architectural decision value (S5 evidence).",
+      "epistemic_status": "hypothetical",
+      "authority_kind": "hypothesis",
+      "authority_ref": "docs/persistent-semantic-stewardship-plan.md",
+      "evidence_refs": [
+        "file:docs/persistent-semantic-stewardship-plan.md:line:461",
+        "file:STATUS.md:line:58"
+      ],
+      "attributes": {
+        "source_label": "S5",
+        "status_in_source": "not qualified",
+        "concept": "evidence prerequisite"
+      }
+    },
+    {
+      "id": "hyp:cross-episode-synthesis-recurs",
+      "kind": "hypothesis",
+      "statement": "Cross-episode synthesis is a stable, recurring responsibility whose structure is worth retaining.",
+      "epistemic_status": "hypothetical",
+      "authority_kind": "hypothesis",
+      "authority_ref": "docs/idea-library.md",
+      "evidence_refs": [
+        "file:docs/strategic-candidate-directions.md:line:563",
+        "file:skills/using-sensemaking/references/learning-reconciliation-policy-v0.md:line:355"
+      ],
+      "attributes": {
+        "note": "Shared premise of capability-learning-analysis and cross-episode-possibility-synthesis."
+      }
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel:poss-stewardship-serves-goal",
+      "subject": "poss:persistent-semantic-stewardship",
+      "predicate": "serves_goal",
+      "object": "goal:longterm-stewardship",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:docs/adr/0031-persistent-semantic-stewardship.md"
+      ],
+      "attributes": {
+        "establishment": "ratified"
+      }
+    },
+    {
+      "id": "rel:poss-memory-serves-goal",
+      "subject": "poss:possibility-memory",
+      "predicate": "serves_goal",
+      "object": "goal:compounding-product-knowledge",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:docs/superpowers/plans/2026-10-28-product-possibility-idea-library.md"
+      ],
+      "attributes": {
+        "establishment": "inferred"
+      }
+    },
+    {
+      "id": "rel:poss-synthesis-candidate-for-goal",
+      "subject": "poss:cross-episode-possibility-synthesis",
+      "predicate": "candidate_opportunity_for",
+      "object": "goal:compounding-product-knowledge",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:docs/superpowers/plans/2026-10-28-product-possibility-idea-library.md:line:249"
+      ],
+      "attributes": {
+        "establishment": "hypothesized"
+      }
+    },
+    {
+      "id": "rel:poss-reconsideration-candidate-for-goal",
+      "subject": "poss:possibility-reconsideration-from-change",
+      "predicate": "candidate_opportunity_for",
+      "object": "goal:longterm-stewardship",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:docs/idea-library.md"
+      ],
+      "attributes": {
+        "establishment": "hypothesized"
+      }
+    },
+    {
+      "id": "rel:poss-learning-skill-candidate-for-goal",
+      "subject": "poss:capability-learning-analysis",
+      "predicate": "candidate_opportunity_for",
+      "object": "goal:compounding-product-knowledge",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:docs/strategic-candidate-directions.md:line:563"
+      ],
+      "attributes": {
+        "establishment": "hypothesized"
+      }
+    },
+    {
+      "id": "rel:poss-transfer-candidate-for-goal",
+      "subject": "poss:cross-product-transfer",
+      "predicate": "candidate_opportunity_for",
+      "object": "goal:longterm-stewardship",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:docs/persistent-semantic-stewardship-plan.md:line:462"
+      ],
+      "attributes": {
+        "establishment": "inferred"
+      }
+    },
+    {
+      "id": "rel:poss-stewardship-realized-by-queries",
+      "subject": "poss:persistent-semantic-stewardship",
+      "predicate": "implemented_by",
+      "object": "cap:semantic-queries",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_store.py",
+        "file:STATUS.md:line:58"
+      ],
+      "attributes": {
+        "conceptual_relation": "realizedBy",
+        "establishment": "inferred",
+        "realized_part": "S1-S3 knowledge foundation only; S5 and S6 unrealized"
+      }
+    },
+    {
+      "id": "rel:poss-index-realized-by-queries",
+      "subject": "poss:git-authored-knowledge-index",
+      "predicate": "implemented_by",
+      "object": "cap:semantic-queries",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_store.py",
+        "file:src/sensemaking_skills/semantic_cli.py:line:210"
+      ],
+      "attributes": {
+        "conceptual_relation": "realizedBy",
+        "establishment": "inferred",
+        "realized_part": "whole"
+      }
+    },
+    {
+      "id": "rel:poss-v2-realized-by-context",
+      "subject": "poss:path-scoped-architecture-vocabulary",
+      "predicate": "implemented_by",
+      "object": "cap:path-scoped-architecture-context",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/knowledge.py:line:40"
+      ],
+      "attributes": {
+        "conceptual_relation": "realizedBy",
+        "establishment": "inferred",
+        "realized_part": "whole"
+      }
+    },
+    {
+      "id": "rel:poss-funnel-realized-by-guidance",
+      "subject": "poss:strategic-exploration-funnel",
+      "predicate": "implemented_by",
+      "object": "cap:breadth-exploration-guidance",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "realizedBy",
+        "establishment": "inferred",
+        "realized_part": "whole, as guidance"
+      }
+    },
+    {
+      "id": "rel:poss-continuity-realized-by-projection",
+      "subject": "poss:strategic-continuity-reassessment",
+      "predicate": "implemented_by",
+      "object": "cap:strategic-reassessment-projection",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/strategy_cli.py:line:344"
+      ],
+      "attributes": {
+        "conceptual_relation": "realizedBy",
+        "establishment": "inferred",
+        "realized_part": "whole"
+      }
+    },
+    {
+      "id": "rel:poss-memory-realized-by-records",
+      "subject": "poss:possibility-memory",
+      "predicate": "implemented_by",
+      "object": "cap:possibility-records",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:docs/idea-library.md",
+        "file:docs/semantic-architecture/product-possibility-ontology.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "realizedBy",
+        "establishment": "inferred",
+        "realized_part": "records and retrieval; exploration integration absent"
+      }
+    },
+    {
+      "id": "rel:queries-evidence-closed-operations",
+      "subject": "cap:semantic-queries",
+      "predicate": "references",
+      "object": "observation:knowledge-query-closed-operations",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_cli.py:line:210"
+      ],
+      "attributes": {
+        "role": "implementation_evidence",
+        "establishment": "pointer to observed claim"
+      }
+    },
+    {
+      "id": "rel:context-evidence-v2-sets",
+      "subject": "cap:path-scoped-architecture-context",
+      "predicate": "references",
+      "object": "observation:v2-vocabulary-sets",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/knowledge.py:line:40"
+      ],
+      "attributes": {
+        "role": "implementation_evidence",
+        "establishment": "pointer to observed claim"
+      }
+    },
+    {
+      "id": "rel:context-evidence-closed-operations",
+      "subject": "cap:path-scoped-architecture-context",
+      "predicate": "references",
+      "object": "observation:knowledge-query-closed-operations",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_cli.py:line:210"
+      ],
+      "attributes": {
+        "role": "implementation_evidence",
+        "establishment": "pointer to observed claim"
+      }
+    },
+    {
+      "id": "rel:projection-evidence-commands",
+      "subject": "cap:strategic-reassessment-projection",
+      "predicate": "references",
+      "object": "observation:strategy-assumptions-drift-commands",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/strategy_cli.py:line:344"
+      ],
+      "attributes": {
+        "role": "implementation_evidence",
+        "establishment": "pointer to observed claim"
+      }
+    },
+    {
+      "id": "rel:guidance-evidence-funnel",
+      "subject": "cap:breadth-exploration-guidance",
+      "predicate": "references",
+      "object": "observation:funnel-breadth-guidance",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md:line:172"
+      ],
+      "attributes": {
+        "role": "implementation_evidence",
+        "establishment": "pointer to observed claim"
+      }
+    },
+    {
+      "id": "rel:context-implemented-by-plane",
+      "subject": "cap:path-scoped-architecture-context",
+      "predicate": "implemented_by",
+      "object": "component:semantic-knowledge-plane",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_architecture.py"
+      ],
+      "attributes": {
+        "establishment": "inferred"
+      }
+    },
+    {
+      "id": "rel:v2-extends-index",
+      "subject": "poss:path-scoped-architecture-vocabulary",
+      "predicate": "references",
+      "object": "poss:git-authored-knowledge-index",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/knowledge.py:line:40"
+      ],
+      "attributes": {
+        "conceptual_relation": "extends",
+        "establishment": "inferred",
+        "representation_gap": "extends has no executable predicate; references plus this attribute"
+      }
+    },
+    {
+      "id": "rel:memory-extends-stewardship",
+      "subject": "poss:possibility-memory",
+      "predicate": "references",
+      "object": "poss:persistent-semantic-stewardship",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:docs/adr/0031-persistent-semantic-stewardship.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "extends",
+        "establishment": "inferred",
+        "representation_gap": "extends has no executable predicate; references plus this attribute"
+      }
+    },
+    {
+      "id": "rel:memory-requires-queries",
+      "subject": "poss:possibility-memory",
+      "predicate": "requires_capability",
+      "object": "cap:semantic-queries",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_store.py"
+      ],
+      "attributes": {
+        "conceptual_relation": "potentiallyEnabledBy",
+        "establishment": "inferred",
+        "note": "A genuine prerequisite: typed possibility records are retrieved through the index."
+      }
+    },
+    {
+      "id": "rel:memory-enabled-by-breadth",
+      "subject": "poss:possibility-memory",
+      "predicate": "references",
+      "object": "cap:breadth-exploration-guidance",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md:line:172"
+      ],
+      "attributes": {
+        "conceptual_relation": "potentiallyEnabledBy",
+        "establishment": "inferred",
+        "note": "Not a prerequisite, so not requires_capability: breadth exploration generates the landscape memory retains."
+      }
+    },
+    {
+      "id": "rel:ranked-backlog-alternative-to-memory",
+      "subject": "poss:ranked-possibility-backlog",
+      "predicate": "references",
+      "object": "poss:possibility-memory",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:docs/superpowers/plans/2026-10-28-product-possibility-idea-library.md:line:777"
+      ],
+      "attributes": {
+        "conceptual_relation": "alternativeTo",
+        "establishment": "inferred",
+        "representation_gap": "no symmetric alternative predicate; references plus this attribute"
+      }
+    },
+    {
+      "id": "rel:ranked-backlog-conflicts-selection",
+      "subject": "poss:ranked-possibility-backlog",
+      "predicate": "contradicts",
+      "object": "ng:automatic-selection",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:docs/adr/0029-current-product-boundary.md:line:47",
+        "file:docs/superpowers/plans/2026-10-28-product-possibility-idea-library.md:line:777"
+      ],
+      "attributes": {
+        "conceptual_relation": "conflictsWith",
+        "establishment": "inferred",
+        "note": "ADR 0029 names automatic responsibility selection, not possibility ranking; the owner plan rejects ranking."
+      }
+    },
+    {
+      "id": "rel:planner-conflicts-non-goal",
+      "subject": "poss:automatic-strategic-planner",
+      "predicate": "contradicts",
+      "object": "ng:deterministic-planner",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:docs/adr/0029-current-product-boundary.md:line:45"
+      ],
+      "attributes": {
+        "conceptual_relation": "conflictsWith",
+        "establishment": "ratified"
+      }
+    },
+    {
+      "id": "rel:transactions-conflict-adr-0029",
+      "subject": "poss:cross-repository-transaction-coordinator",
+      "predicate": "contradicts",
+      "object": "adr:0029",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:docs/adr/0029-current-product-boundary.md:line:48"
+      ],
+      "attributes": {
+        "conceptual_relation": "conflictsWith",
+        "establishment": "ratified",
+        "scope": "ADR 0029 'Outside current product scope' list; the reservoir still governs its historical LONG_HORIZON label"
+      }
+    },
+    {
+      "id": "rel:synthesis-derived-1",
+      "subject": "poss:cross-episode-possibility-synthesis",
+      "predicate": "derived_from",
+      "object": "poss:git-authored-knowledge-index",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:docs/superpowers/plans/2026-10-28-product-possibility-idea-library.md:line:249"
+      ],
+      "attributes": {
+        "establishment": "hypothesized"
+      }
+    },
+    {
+      "id": "rel:synthesis-derived-2",
+      "subject": "poss:cross-episode-possibility-synthesis",
+      "predicate": "derived_from",
+      "object": "poss:strategic-exploration-funnel",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:docs/superpowers/plans/2026-10-28-product-possibility-idea-library.md:line:249"
+      ],
+      "attributes": {
+        "establishment": "hypothesized"
+      }
+    },
+    {
+      "id": "rel:synthesis-derived-3",
+      "subject": "poss:cross-episode-possibility-synthesis",
+      "predicate": "derived_from",
+      "object": "poss:strategic-continuity-reassessment",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:docs/superpowers/plans/2026-10-28-product-possibility-idea-library.md:line:249"
+      ],
+      "attributes": {
+        "establishment": "hypothesized"
+      }
+    },
+    {
+      "id": "rel:synthesis-requires-records",
+      "subject": "poss:cross-episode-possibility-synthesis",
+      "predicate": "requires_capability",
+      "object": "cap:possibility-records",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:docs/idea-library.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "potentiallyEnabledBy",
+        "establishment": "hypothesized"
+      }
+    },
+    {
+      "id": "rel:synthesis-assumes-recurrence",
+      "subject": "poss:cross-episode-possibility-synthesis",
+      "predicate": "references",
+      "object": "hyp:cross-episode-synthesis-recurs",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:docs/idea-library.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "sharesAssumptionWith (via shared hypothesis)",
+        "establishment": "hypothesized"
+      }
+    },
+    {
+      "id": "rel:learning-skill-assumes-recurrence",
+      "subject": "poss:capability-learning-analysis",
+      "predicate": "references",
+      "object": "hyp:cross-episode-synthesis-recurs",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:docs/strategic-candidate-directions.md:line:563"
+      ],
+      "attributes": {
+        "conceptual_relation": "sharesAssumptionWith (via shared hypothesis)",
+        "establishment": "hypothesized"
+      }
+    },
+    {
+      "id": "rel:synthesis-assumes-consultation",
+      "subject": "poss:cross-episode-possibility-synthesis",
+      "predicate": "references",
+      "object": "hyp:later-sessions-consult-knowledge",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-23-strategic-repository-analysis.md:line:201"
+      ],
+      "attributes": {
+        "conceptual_relation": "assumes",
+        "establishment": "inferred"
+      }
+    },
+    {
+      "id": "rel:memory-assumes-consultation",
+      "subject": "poss:possibility-memory",
+      "predicate": "references",
+      "object": "hyp:later-sessions-consult-knowledge",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-23-strategic-repository-analysis.md:line:201"
+      ],
+      "attributes": {
+        "conceptual_relation": "assumes",
+        "establishment": "inferred"
+      }
+    },
+    {
+      "id": "rel:reconsideration-derived-1",
+      "subject": "poss:possibility-reconsideration-from-change",
+      "predicate": "derived_from",
+      "object": "poss:strategic-continuity-reassessment",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:docs/idea-library.md"
+      ],
+      "attributes": {
+        "establishment": "hypothesized"
+      }
+    },
+    {
+      "id": "rel:reconsideration-derived-2",
+      "subject": "poss:possibility-reconsideration-from-change",
+      "predicate": "derived_from",
+      "object": "poss:git-authored-knowledge-index",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:docs/idea-library.md"
+      ],
+      "attributes": {
+        "establishment": "hypothesized"
+      }
+    },
+    {
+      "id": "rel:reconsideration-derived-3",
+      "subject": "poss:possibility-reconsideration-from-change",
+      "predicate": "derived_from",
+      "object": "poss:possibility-memory",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:docs/idea-library.md"
+      ],
+      "attributes": {
+        "establishment": "hypothesized"
+      }
+    },
+    {
+      "id": "rel:reconsideration-requires-projection",
+      "subject": "poss:possibility-reconsideration-from-change",
+      "predicate": "requires_capability",
+      "object": "cap:strategic-reassessment-projection",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/strategy_cli.py:line:344"
+      ],
+      "attributes": {
+        "conceptual_relation": "potentiallyEnabledBy",
+        "establishment": "hypothesized"
+      }
+    },
+    {
+      "id": "rel:reconsideration-requires-queries",
+      "subject": "poss:possibility-reconsideration-from-change",
+      "predicate": "requires_capability",
+      "object": "cap:semantic-queries",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_cli.py:line:210"
+      ],
+      "attributes": {
+        "conceptual_relation": "potentiallyEnabledBy",
+        "establishment": "hypothesized"
+      }
+    },
+    {
+      "id": "rel:domain-general-extends-transfer",
+      "subject": "poss:domain-general-sensemaking",
+      "predicate": "references",
+      "object": "poss:cross-product-transfer",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:docs/research/control-model-research-agenda.md:line:177"
+      ],
+      "attributes": {
+        "conceptual_relation": "extends",
+        "establishment": "hypothesized",
+        "representation_gap": "extends has no executable predicate; references plus this attribute"
+      }
+    },
+    {
+      "id": "rel:transfer-needs-s5",
+      "subject": "poss:cross-product-transfer",
+      "predicate": "references",
+      "object": "hyp:s5-independent-session-value",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:docs/persistent-semantic-stewardship-plan.md:line:462"
+      ],
+      "attributes": {
+        "conceptual_relation": "evidence prerequisite (declared in plan section 14)",
+        "establishment": "declared in plan"
+      }
+    }
+  ]
+}
