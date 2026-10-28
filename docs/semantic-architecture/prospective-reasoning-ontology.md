@@ -155,6 +155,22 @@ recall prior possibilities, options and decisions (when they could change the an
 - In a target repository, prospective records are authored only under that repository's knowledge-edit authority, cite that repository's sources, and never import another repository's records or authority.
 - No artifact or record grants authority by existing; contract flags such as `implementation_authority_established_by_artifact` stay `false`.
 
+### 8.1 Reference integrity
+
+Validation is structural; resolution is a separate, explicit step. What each reference gets:
+
+| Reference | Artifact | Validator checks | How to resolve it |
+| --- | --- | --- | --- |
+| Preference option, feedback consequence, typed consequences against option refs | `architectural_synthesis` | link inside the artifact | the validator |
+| `frontier_refs`, capability ids, transition refs, `selected_path_id` | `strategic_repository_analysis` | link inside the artifact | the validator |
+| `poss:`, `conseq:` and option id shape; `possibility_refs` and `architecture_option_refs` prefixes | both | syntax only | `validate-architectural-synthesis.py --resolve-references`; `knowledge-query explain` at an indexed commit |
+| `assumption_refs`, `observed_premise_refs`, `reuses_refs`, transition `target_ref` | `architectural_synthesis` | non-empty strings | `--resolve-references` (defined in the artifact, recorded in reviewed knowledge, or neither) |
+| `governing_intent_refs`, `current_architecture_refs` | `architectural_synthesis` | non-empty strings | `--resolve-references` (file exists) |
+| `governing_authority_refs`, evidence refs, `architecture_synthesis_refs` | `strategic_repository_analysis` | strings | `strategy drift` (file exists, bytes changed since the recorded commit) |
+| `analysis_ref`, `file:` evidence in records | knowledge records | `knowledge-proposal-check` (cited files exist) | the same check, or the index build |
+
+Where an unresolved reference misleads: an id defined nowhere (an assumption name with no statement anywhere) cannot be reconstructed, so resolve it before an artifact becomes final, either by recording it or by stating it in the artifact. A resolved id is only present: its record may since be revised or superseded, which `history`, `changes` and `workspace-impact` report. A path's `architecture_option_refs` resolve through its cited synthesis when the options were not retained as records; listing them never selects them.
+
 ## 9. Representation now and next
 
 **Now:** this conceptual model, competency questions CQ-089 to CQ-102, a source-grounded reference case with a vocabulary-fit assessment, reviewed records for that case using existing kinds and predicates (`.sensemaking/knowledge/prospective-reasoning.json`; plan PR C), and the `architectural_synthesis` artifact contract with its template and focused validator, to which the reference case conforms (plan PR D), and optional typed consequences in that artifact plus optional links from a strategic analysis's paths to possibilities, options and syntheses (plan PR E and PR F), with guidance in the Steward's architecture-exploration and reconciliation references and the strategic funnel's section 7 (plan PR G). No claim kind, predicate, knowledge schema version, Skill or runtime is added.
