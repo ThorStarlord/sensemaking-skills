@@ -1,6 +1,6 @@
 ---
 name: using-sensemaking
-description: The single public entrypoint for Sensemaking. Given a target repository, establish or reuse source-grounded understanding of its domain and architecture, explore and compare what it could become, select or recommend a warranted direction (or justify none), and preserve that reasoning as reviewed knowledge, composing specialized Skills adaptively. Implementation is an optional downstream use that needs its own authority; the portable Architect -> Builder -> Reconcile loop serves it. Works in sparse or well-documented repositories, within granted authority, and for a broad delegated repository mission; the coding agent owns judgment and strategic-sensemaking-loop supplies multi-session continuation under this controller.
+description: Use when someone wants to understand a repository (what the product is, its domain and architecture), build durable source-grounded knowledge about it that later sessions can reuse, explore what it could become, or decide which directions are warranted; also the entrypoint for resuming earlier Sensemaking work and for a broad delegated repository mission. It establishes or reuses an ontology of the repository first, explores possibilities before converging, composes the specialized Sensemaking Skills, and selects or recommends a direction (or justifies none). Implementation is an optional downstream step that needs its own authority. Works in sparse or well-documented repositories; the coding agent owns judgment.
 ---
 
 # Using Sensemaking: Adaptive Reasoning Controller
@@ -237,7 +237,10 @@ when evidence warrants it, and revisit an earlier step when a later result
 changes its premise: consequence findings can reopen a preference, a missing
 possibility can reopen convergence. **Return to this controller after every
 consequential specialist procedure**; a specialist's suggested continuation is
-evidence for your choice, never the choice. Activity owners, when each is
+evidence for your choice, never the choice. Load a specialist by its Skill
+name through the host's Skill mechanism when one exists, so its own
+`SKILL.md` contract (validation, CLI, templates) comes with it; reading one of
+its reference files directly skips that contract. Activity owners, when each is
 warranted, feedback moves and the return convention:
 `references/adaptive-skill-composition-v1.md`.
 

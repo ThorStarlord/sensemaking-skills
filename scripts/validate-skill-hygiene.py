@@ -7,6 +7,9 @@ Performs three checks:
 3. artifact contracts resolve (artifact refs in registry exist in contracts)
 4. relative Skill links resolve (`../` paths in SKILL.md and references/ resolve
    from the file that contains them)
+5. Skill frontmatter is discoverable (every SKILL.md opens with YAML
+   frontmatter whose `name` matches its directory and whose `description` is
+   non-empty; hosts register a Skill as model-invocable only from it)
 
 Exit codes:
   0: All checks passed
@@ -194,6 +197,36 @@ def check_relative_skill_links(skills_dir="skills"):
     return errors
 
 
+def check_skill_frontmatter(skills_dir="skills"):
+    """Check 5: each SKILL.md has host-discoverable YAML frontmatter.
+
+    Claude Code and other hosts list a Skill as model-invocable only from its
+    frontmatter `name` and `description`; without them the Skill can still
+    appear as a slash command but the agent cannot select it.
+    """
+    errors = []
+    for path in sorted(Path(skills_dir).glob("*/SKILL.md")):
+        text = path.read_text(encoding="utf-8", errors="replace")
+        if not text.startswith("---\n"):
+            errors.append(f"SKILL_FRONTMATTER_MISSING: {path.as_posix()}")
+            continue
+        end = text.find("\n---", 4)
+        try:
+            meta = yaml.safe_load(text[4:end]) if end != -1 else None
+        except yaml.YAMLError:
+            meta = None
+        if not isinstance(meta, dict):
+            errors.append(f"SKILL_FRONTMATTER_INVALID: {path.as_posix()}")
+            continue
+        if meta.get("name") != path.parent.name:
+            errors.append(
+                f"SKILL_FRONTMATTER_NAME: {path.as_posix()} name={meta.get('name')!r}"
+            )
+        if not str(meta.get("description") or "").strip():
+            errors.append(f"SKILL_FRONTMATTER_DESCRIPTION: {path.as_posix()}")
+    return errors
+
+
 def main():
     """Run all checks"""
     all_errors = []
@@ -234,6 +267,15 @@ def main():
     if link_errors:
         print(f"FAILED ({len(link_errors)} errors)")
         all_errors.extend(link_errors)
+    else:
+        print("PASSED")
+
+    # Check 5: Skill frontmatter
+    print("Check 5: Skill frontmatter is discoverable...", end=" ")
+    frontmatter_errors = check_skill_frontmatter()
+    if frontmatter_errors:
+        print(f"FAILED ({len(frontmatter_errors)} errors)")
+        all_errors.extend(frontmatter_errors)
     else:
         print("PASSED")
 

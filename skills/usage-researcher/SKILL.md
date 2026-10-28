@@ -1,4 +1,7 @@
+---
+name: usage-researcher
 description: behavioral learning loop for evaluating skill performance in realistic scenarios.
+---
 
 # Role: Usage Researcher
 

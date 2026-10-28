@@ -20,13 +20,32 @@ Write a reviewed, Git-tracked file under `.sensemaking/knowledge/*.json`:
       "authority_ref": "docs/product/book-workspace.md",
       "evidence_refs": ["file:docs/product/book-workspace.md"],
       "epistemic_status": "declared"
+    },
+    {
+      "id": "comp:workspace-session",
+      "kind": "component",
+      "statement": "Restores the open Book and Chapter when the workspace reopens",
+      "authority_kind": "code",
+      "authority_ref": "src/workspace/session.py",
+      "evidence_refs": ["file:src/workspace/session.py"],
+      "epistemic_status": "observed"
     }
   ],
-  "relations": []
+  "relations": [
+    {
+      "id": "rel:book-reentry-implemented-by-session",
+      "subject": "cap:book-reentry",
+      "predicate": "implemented_by",
+      "object": "comp:workspace-session",
+      "evidence_refs": ["file:src/workspace/session.py"]
+    }
+  ]
 }
 ```
 
-The example path is illustrative, not a claim that the document exists. All `file:` references and authority paths must resolve to legitimate tracked evidence on the target repository before a committed index is built.
+A file contains exactly `schema_version`, `claims` and `relations`; put revision or provenance notes in claim attributes or the session receipt, not new top-level keys. Every claim needs `id`, `kind`, `statement`, `authority_kind`, `authority_ref` and `evidence_refs`. Every relation needs `id`, `subject`, `predicate`, `object` and `evidence_refs` (the source that establishes the relation itself). Run `semantic knowledge-proposal-check` on each file before treating it as reviewed knowledge; a file that has not passed it is a draft.
+
+The example paths are illustrative, not a claim that the documents exist. All `file:` references and authority paths must resolve to legitimate tracked evidence on the target repository before a committed index is built.
 
 ### Hard boundaries
 

@@ -72,15 +72,22 @@ suggested continuation != next responsibility
 
 1. Identify the warranted specialist responsibility.
 2. Resolve the actual installed or repository-local Skill instructions.
-3. Load or invoke that Skill through the host's supported mechanism.
+3. Invoke that Skill by name through the host's Skill mechanism (for example
+   the Skill tool with `repository-semantic-steward`). This loads its
+   `SKILL.md`, which carries its contract: how to validate, which CLI to pin,
+   which template an artifact follows. Then read the references it points to.
 4. Supply the available source context and relevant artifact references.
 5. Receive and interpret its result.
-6. Validate consequential artifacts when a validator applies.
+6. Validate consequential artifacts when a validator applies. Give an output a
+   specialist's artifact identity (for example `strategic_repository_analysis`)
+   only when it follows that specialist's template and passes its validator;
+   otherwise present it as a report.
 7. Choose the next warranted reasoning activity.
 
-When the host cannot invoke a Skill natively from another Skill, reading and
-applying the installed specialist instructions in the same session is an
-acceptable fallback. Installed Skills are not a host-independent executable
+When the host cannot invoke a Skill natively, read the specialist's `SKILL.md`
+first and then its references, in the same session; this is an acceptable
+fallback. Reading only a deep reference (such as `bootstrap.md`) skips the
+specialist's contract and is not. Installed Skills are not a host-independent executable
 call graph; do not claim one.
 
 ## 5. Return convention
