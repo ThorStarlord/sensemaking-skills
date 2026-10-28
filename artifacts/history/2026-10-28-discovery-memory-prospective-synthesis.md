@@ -1,6 +1,6 @@
 # Prospective Synthesis: Discovery Memory for Target Repositories
 
-**Kind:** reference case for the Prospective Reasoning Ontology (plan PR B); an analysis record, not a registered artifact contract yet (plan PR D will define `architectural_synthesis`)  
+**Kind:** reference case for the Prospective Reasoning Ontology (plan PR B); an `architectural_synthesis` artifact since plan PR D, which retitled sections 2 and 6 to 8 and added section 15 without changing the analysis  
 **Date:** 2026-10-28  
 **Target repository:** `ThorStarlord/sensemaking-skills` (the portable Skill it ships); assessed at `main@b6cf50998467a42fa999b2cf3a52b7271d14ec6a`  
 **Author:** active coding agent, under the owner's 2026-10-28 program plan  
@@ -19,7 +19,7 @@
   - The owner's plans: PR J requires one explicitly authorized target repository for portable application.
 - **Scope:** architecture and strategy of one portable capability. Not a Level-3 reopening of this repository's frontier: PATH-1 accretion is unaffected.
 
-## 2. Target possibility
+## 2. Target possibilities
 
 `poss:target-repository-discovery-memory` (Idea Library section 3.5; `.sensemaking/knowledge/possibilities.json`). The disposition history reads `EXPLORATORY` (agent, 2026-10-28).
 
@@ -86,7 +86,7 @@ Each option is a proposal; none of its proposed structure exists.
 
 These are trajectories, not tasks. A full `strategic_repository_analysis` is not warranted: the choice changes one portable capability, not this repository's frontier.
 
-## 6. Preliminary comparison (attributed: agent, 2026-10-28)
+## 6. Option comparison (preliminary; attributed: agent, 2026-10-28)
 
 | Lens | A local records | B receipts | C projection | D decision lines |
 | --- | --- | --- | --- | --- |
@@ -104,7 +104,7 @@ These are trajectories, not tasks. A full `strategic_repository_analysis` is not
 
 **Provisional preference:** `arch:git-reviewed-local-memory` via PATH-1. Status: PROVISIONAL, attributed to the agent, no authority.
 
-## 7. Post-convergence consequence exploration of the provisional preference
+## 7. Consequence exploration (post-convergence) of the provisional preference
 
 | Id | Predicted effect (conditional) | Category | Assumptions | Mechanism | Counterevidence or uncertainty | Would change the decision if |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -117,7 +117,7 @@ These are trajectories, not tasks. A full `strategic_repository_analysis` is not
 
 **Stop:** a further layer (for example, cross-target aggregation) would not change the choice between A to D under current authority, so depth stops here.
 
-## 8. Feedback: `REVISE_PREFERENCE` (narrowed)
+## 8. Provisional preference and feedback: `REVISE_PREFERENCE` (narrowed)
 
 `conseq:persistence-requires-write-authority` does not separate A from B, but it changes where A has value. In the default read-only mode, no option retains anything. The task report already compares alternatives in prose (`portable-construction-loop-v1.md:78`).
 
@@ -169,3 +169,156 @@ reference case         != evidence of cross-session benefit
 ## 14. Evidence
 
 All sources are cited inline in sections 2 to 7, at `main@b6cf509`. The only observed premise inside the consequence table is `conseq:persistence-requires-write-authority`. Every other consequence is hypothesized.
+
+## 15. Machine-readable summary
+
+```yaml
+artifact_id: architectural_synthesis
+schema_version: 1
+analysis_ref: artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md
+target_repository: ThorStarlord/sensemaking-skills
+target_source_identity: "main@b6cf50998467a42fa999b2cf3a52b7271d14ec6a"
+governing_intent_refs:
+  - docs/adr/0031-persistent-semantic-stewardship.md
+  - docs/adr/0029-current-product-boundary.md
+  - docs/adr/0030-target-repository-grounding.md
+  - docs/adr/0032-session-and-query-receipts.md
+  - "skills/using-sensemaking/SKILL.md:87"
+  - docs/superpowers/plans/2026-10-28-prospective-reasoning-ontology-and-synthesis.md
+target_possibility_refs:
+  - poss:target-repository-discovery-memory
+current_architecture_refs:
+  - "skills/using-sensemaking/references/portable-construction-loop-v1.md:78"
+  - "skills/using-sensemaking/references/session-receipt-v1.md:31"
+  - "skills/using-sensemaking/references/session-receipt-v1.md:103"
+  - "scripts/summarize-receipts.py:96-128"
+  - scripts/validate-receipt.py
+  - "skills/using-sensemaking/references/portable-construction-loop-v1.md:310-312"
+  - "skills/repository-semantic-steward/references/knowledge-contract.md:40"
+  - "skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md:172"
+  - "src/sensemaking_skills/semantic_architecture/knowledge_sources.py:175-181"
+  - "src/sensemaking_skills/strategy_cli.py:629"
+architecture_options:
+  - option_id: arch:git-reviewed-local-memory
+    title: Repository-local possibility records
+    proposed_structure: >-
+      Authorized discovery retains each consequential compared candidate as a
+      poss: opportunity record in the target's .sensemaking/knowledge/, with
+      disposition, revisit_when, origin and cited sources.
+    reuses_refs:
+      - cap:possibility-records
+      - cap:repository-only-discovery
+    proposed_transitions:
+      - target_ref: skills/using-sensemaking/references/portable-construction-loop-v1.md
+        change: Repository-only entry guidance to retain compared candidates as poss records when authorized.
+      - target_ref: "new:target .sensemaking/knowledge/ surface"
+        change: Created on demand in targets that have none.
+    assumption_refs:
+      - hyp:target-sessions-consult-retained-candidates
+      - hyp:discovery-sessions-can-persist-candidates
+      - hyp:target-owners-accept-knowledge-surface
+    conditional_consequence_refs:
+      - conseq:candidate-recall-in-later-discovery
+      - conseq:persistence-requires-write-authority
+      - conseq:target-maintenance-burden
+      - conseq:citation-noise
+      - conseq:knowledge-surface-bootstrap
+      - conseq:prospective-decision-memory-reuse
+    comparison_outcome: PROVISIONALLY_PREFERRED
+    comparison_reason: Highest fidelity and reconsideration support; uses an existing convention at guidance-only cost.
+  - option_id: arch:receipt-based-memory
+    title: Extended session receipt
+    proposed_structure: >-
+      An optional considered_candidates list in the session receipt, reported
+      by the receipt reader.
+    reuses_refs:
+      - contract:receipt-schema
+      - component:receipt-validator
+    proposed_transitions:
+      - target_ref: contract:receipt-schema
+        change: Optional considered_candidates field under proposed ADR 0032.
+      - target_ref: component:receipt-validator
+        change: Validate the new field.
+      - target_ref: scripts/summarize-receipts.py
+        change: Report the compared set.
+    assumption_refs:
+      - hyp:discovery-sessions-can-persist-candidates
+    conditional_consequence_refs:
+      - conseq:persistence-requires-write-authority
+    comparison_outcome: RETAINED_ALTERNATIVE
+    comparison_reason: Conflicts with the receipt's facts-and-pointers role and offers no reconsideration by identity; the lighter alternative if ADR 0032 is accepted with a candidate field.
+  - option_id: arch:strategic-artifact-projection
+    title: Projection from strategic analyses (counterfactual)
+    proposed_structure: >-
+      No new records; prior candidates are projected from strategic analyses
+      with strategy history and strategy graph.
+    reuses_refs:
+      - "src/sensemaking_skills/strategy_cli.py:629"
+    proposed_transitions: []
+    assumption_refs: []
+    conditional_consequence_refs: []
+    comparison_outcome: DECLINED
+    comparison_reason: Loses every candidate compared in ordinary discovery, which rarely produces strategic analyses; restates the declined poss:possibilities-projected-from-analyses.
+  - option_id: arch:grounding-pack-decision-log
+    title: Grounding Pack decision lines
+    proposed_structure: >-
+      Declined candidates become provenance-tagged lines in the target's
+      .sensemaking/decisions/, indexed as decision claims.
+    reuses_refs:
+      - adr:0030
+    proposed_transitions:
+      - target_ref: "target .sensemaking/decisions/"
+        change: Delegated decision lines for declined candidates.
+    assumption_refs: []
+    conditional_consequence_refs: []
+    comparison_outcome: DECLINED
+    comparison_reason: Word budgets limit capacity, and a decision line carries no typed disposition, revisit_when or relationships.
+option_comparison:
+  attribution: agent, 2026-10-28
+  lenses:
+    - fidelity
+    - reconsideration support
+    - fit with existing contracts
+    - footprint in target repositories
+    - owner legibility
+    - construction cost
+  summary: >-
+    A reuses existing mechanisms with the highest fidelity; B changes a
+    proposed contract against its stated role; C loses ordinary-discovery
+    candidates; D strains budgets and lacks typed disposition. PATH-1 uses A,
+    PATH-2 uses B, PATH-3 waits for a loss event.
+provisional_preference:
+  option_id: arch:git-reviewed-local-memory
+  status: PROVISIONAL
+  attribution: agent, 2026-10-28, no authority
+  rationale: Highest fidelity and reconsideration support at guidance-only cost, via PATH-1.
+  scope: >-
+    Only sessions that hold knowledge-edit and commit authority in the target;
+    read-only discovery keeps its compared candidates in the report.
+preference_feedback:
+  - consequence_ref: conseq:persistence-requires-write-authority
+    outcome: REVISE_PREFERENCE
+    effect: >-
+      Observed premises (read-only discovery by default; uncommitted receipts
+      are lost) narrowed the preference to sessions with knowledge-edit and
+      commit authority. A still leads B.
+derived_possibility_refs:
+  - poss:repository-local-prospective-decision-memory
+candidate_responsibility: >-
+  Portable loop guidance: when the session holds knowledge-edit and commit
+  authority in the target, retain consequential declined candidates as poss:
+  records under the knowledge contract; otherwise keep them in the report.
+  Candidate for plan PR H; not authorized.
+reconsideration_conditions:
+  - ADR 0032 is accepted and adds or invites a candidate field (reopens B).
+  - An independent discovery session ignores retained candidate records.
+  - A target owner rejects the .sensemaking/knowledge/ surface.
+  - Maintenance burden or citation noise is observed in a real target.
+unresolved_questions:
+  - How often real discovery sessions hold knowledge-edit and commit authority.
+  - Which explicitly authorized target repository plan PR J would use (owner choice).
+implementation_authority_established_by_artifact: false
+semantic_truth_established: false
+created_at: "2026-10-28"
+immutable: true
+```

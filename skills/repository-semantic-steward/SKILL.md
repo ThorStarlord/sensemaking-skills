@@ -123,7 +123,9 @@ architecture choice with genuine alternatives, read the optional
 [architecture exploration](references/architecture-exploration.md) guidance under
 RECALL. It composes existing source-pinned queries for divergence, qualitative
 comparison and adversarial challenge without introducing a new Steward mode,
-semantic planner, authority, schema or mandatory index bootstrap.
+semantic planner, authority, knowledge schema or mandatory index bootstrap. A
+comparison that must outlive the session goes in its optional
+`architectural_synthesis` artifact.
 
 ## Report gaps and record query receipts
 

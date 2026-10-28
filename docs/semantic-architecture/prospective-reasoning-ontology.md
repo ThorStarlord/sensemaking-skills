@@ -143,7 +143,7 @@ recall prior possibilities, options and decisions (when they could change the an
 
 **Post-convergence depth** is a second use of depth, distinct from the funnel's pre-convergence finalist depth: it follows the downstream effects of a provisional choice (direct changes, dependent users and components, later capabilities, new constraints and invariants, new opportunities, futures made harder, reversibility and opportunity cost). The [Consequence Depth v0 stop rule](../research/consequence-depth-and-systems-reasoning-v0.md) applies: stop when the next layer cannot change the interpretation, responsibility, architecture, verification or a strategic commitment.
 
-**Feedback outcomes** are conceptual results of the analysis, not a runtime enum: `REAFFIRM`, `REVISE_PREFERENCE`, `REOPEN_ALTERNATIVES`, `INVESTIGATE`, `DEFER`, `NO_CHANGE`, `OWNER_DECISION_REQUIRED`, `THESIS_REVIEW_REQUIRED`. Only the existing governing processes turn them into authoritative dispositions: a strategic analysis's `BUILD`, `INVESTIGATE`, `DEFER`, `NO_CHANGE`, `OWNER_DECISION` or `THESIS_REVIEW`, an owner decision, or the Level-4 process. A sound analysis may legitimately end without selection.
+**Feedback outcomes** are results of the analysis, not dispositions (the `architectural_synthesis` contract checks them as `preference_feedback` outcomes): `REAFFIRM`, `REVISE_PREFERENCE`, `REOPEN_ALTERNATIVES`, `INVESTIGATE`, `DEFER`, `NO_CHANGE`, `OWNER_DECISION_REQUIRED`, `THESIS_REVIEW_REQUIRED`. Only the existing governing processes turn them into authoritative dispositions: a strategic analysis's `BUILD`, `INVESTIGATE`, `DEFER`, `NO_CHANGE`, `OWNER_DECISION` or `THESIS_REVIEW`, an owner decision, or the Level-4 process. A sound analysis may legitimately end without selection.
 
 ## 8. Authority and currentness
 
@@ -155,17 +155,17 @@ recall prior possibilities, options and decisions (when they could change the an
 
 ## 9. Representation now and next
 
-**Now:** this conceptual model, competency questions CQ-089 to CQ-102, a source-grounded reference case with a vocabulary-fit assessment, and reviewed records for that case using existing kinds and predicates (`.sensemaking/knowledge/prospective-reasoning.json`; plan PR C). No claim kind, predicate, schema version, Skill, runtime or validator is added.
+**Now:** this conceptual model, competency questions CQ-089 to CQ-102, a source-grounded reference case with a vocabulary-fit assessment, reviewed records for that case using existing kinds and predicates (`.sensemaking/knowledge/prospective-reasoning.json`; plan PR C), and the `architectural_synthesis` artifact contract with its template and focused validator, to which the reference case conforms (plan PR D). No claim kind, predicate, knowledge schema version, Skill or runtime is added.
 
 **Where each concept is expected to live** (predictions tested in [`prospective-reasoning-competency-v1.md`](prospective-reasoning-competency-v1.md)):
 
 | Concept | Analysis artifact | Reviewed knowledge (existing vocabulary first) |
 | --- | --- | --- |
-| ArchitectureOption | `architectural_synthesis` options (plan PR D) | `alternative` claim with `arch:` id and `attributes.concept` |
+| ArchitectureOption | `architectural_synthesis` `architecture_options`, with `proposed_transitions` | `alternative` claim with `arch:` id and `attributes.concept` |
 | FutureCapabilityState | strategic path `future_state` | artifact reference, not an observed `capability` |
-| ConsequenceHypothesis | synthesis or strategic analysis section (plan PR F decides) | `hypothesis` claim with `conseq:` id |
+| ConsequenceHypothesis | the synthesis's consequence section, cited by `conditional_consequence_refs` (plan PR F decides any further structure) | `hypothesis` claim with `conseq:` id |
 | ComparativeJudgment, ProvisionalPreference | synthesis `option_comparison`, `provisional_preference` | attributes on the analysis reference; never a `decision` claim |
-| derived new possibility | listed in the synthesis | `opportunity` claim `derived_from` the consequence |
+| derived new possibility | synthesis `derived_possibility_refs` | `opportunity` claim `derived_from` the consequence |
 
 ## 10. Competency questions served
 

@@ -534,6 +534,69 @@ artifacts:
         - autonomous_execution
         - yolo_execution
 
+  # Prospective reasoning (docs/semantic-architecture/prospective-reasoning-ontology.md).
+  # Authored under the Steward's architecture-exploration procedure when a
+  # multi-option comparison must outlive the session; no separate Skill.
+  - id: architectural_synthesis
+    path: "artifacts/architectural_synthesis.md"
+    produced_by: repository-semantic-steward
+    consumed_by:
+      - user
+      - repository-semantic-steward
+      - strategic-repository-analysis
+    description: "Source-grounded comparison of materially different architectural options for target product possibilities: current architecture, proposed structures and transitions, assumptions, conditional consequences, qualitative comparison, an optional provisional preference with its feedback, and decision-changing uncertainty"
+    required_sections:
+      - governing_intent_and_scope
+      - target_possibilities
+      - current_architecture
+      - architecture_options
+      - option_comparison
+      - consequence_exploration
+      - provisional_preference_and_feedback
+      - unresolved_questions
+      - authority_and_claim_boundaries
+      - evidence
+      - machine_readable_summary
+    required_machine_fields:
+      - artifact_id
+      - schema_version
+      - target_repository
+      - target_source_identity
+      - governing_intent_refs
+      - target_possibility_refs
+      - current_architecture_refs
+      - architecture_options
+      - option_comparison
+      - provisional_preference
+      - unresolved_questions
+      - implementation_authority_established_by_artifact
+      - semantic_truth_established
+      - created_at
+      - immutable
+    recommended_machine_fields:
+      - analysis_ref
+      - preference_feedback
+      - derived_possibility_refs
+      - candidate_responsibility
+      - reconsideration_conditions
+    notes:
+      - "Authoring template: skills/repository-semantic-steward/references/architectural-synthesis-template.md."
+      - "A synthesis compares at least two materially different options; a single concrete proposal goes to architectural-review as a proposed_direction, whose input/output contract is unchanged."
+      - "Options are proposals: proposed_transitions name what would change (target_ref, change), never what has changed."
+      - "provisional_preference is null (state no_preference_reason) or status PROVISIONAL with attribution; it is never a selection or decision, and exactly the preferred option carries comparison_outcome PROVISIONALLY_PREFERRED."
+      - "preference_feedback links a conditional consequence (conseq: id cited by an option) to a feedback outcome; outcomes are analysis results, not dispositions."
+      - "Numeric score/weight/rank fields are forbidden; comparison is qualitative and attributed."
+      - "Reviewed knowledge records for options and consequences remain optional and follow the knowledge contract's prospective reasoning convention."
+      - "implementation_authority_established_by_artifact and semantic_truth_established must remain false."
+    verification:
+      generic_validator: "python scripts/validate-artifact.py architectural_synthesis {artifact_path}"
+      specialized_validators:
+        - "python scripts/validate-architectural-synthesis.py {artifact_path}"
+      required_for_modes:
+        - guided_execution
+        - autonomous_execution
+        - yolo_execution
+
   # Session receipts (proposed ADR 0032). Whole-file YAML records, not
   # Markdown documents: they live in the TARGET repository under
   # .sensemaking/receipts/ (never ingested by the semantic knowledge index) and
