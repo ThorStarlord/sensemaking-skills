@@ -1,0 +1,61 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-10-28-repair-skill-description-contract
+state: final
+created_at: "2026-10-28T07:45:25Z"
+updated_at: "2026-10-28T07:46:00Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: 46446bca5f6c1b55afe67288512ab351b86def1f
+  end_ref: 058bb446492760d2d2b6eb14066792ac8b21eea1
+  worktree_clean_at_end: true
+skill_identity:
+  load_mode: manual_explicit_load
+  sensemaking_source_ref: 46446bca5f6c1b55afe67288512ab351b86def1f
+goal:
+  statement: Continue construction under existing authority and repository policies; repair a material post-merge CI failure on main.
+  source: owner_message
+  source_ref: null
+delegation:
+  granted: [read, local_write, run_local_commands, commit, push, open_pr, merge]
+  withheld: [release, deploy, tracker_write, knowledge_edit, external_publication]
+continuity:
+  resumes: 2026-10-28-receipt-correction-and-construction
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: Repair red full suite and contracts job on main
+    capability: ordinary_coding
+    status: completed
+    reason: "Post-merge CI on PR 622's head failed one test; CLAUDE.md makes a material post-merge failure the next warranted repair."
+    artifact_refs: []
+    validation:
+      - command: frontmatter parse and pinned-term check of skills/using-sensemaking/SKILL.md
+        result: PASS
+      - command: python scripts/validate-skill-hygiene.py
+        result: PASS
+      - command: pytest tests/test_using_sensemaking_delegation_guidance.py (local)
+        result: NOT_RUN
+findings:
+  - id: F-1
+    statement: "test_using_sensemaking_frontmatter_is_skill_contract_minimal has failed since #620 (e11a44f) dropped two pinned description terms. PRs 622 and 623 inherited the failure; neither touched that frontmatter."
+    epistemic_status: OBSERVED
+    evidence_refs: [tests/test_using_sensemaking_delegation_guidance.py, skills/using-sensemaking/SKILL.md]
+    disposition: resolved
+  - id: F-2
+    statement: "Supersedes the predecessor's claim that hosted CI was merely pending. PR 622's failing checks completed before PR 623 merged and were not re-read first; that ordering error is recorded here."
+    epistemic_status: OBSERVED
+    evidence_refs: [.sensemaking/receipts/2026-10-28-receipt-correction-and-construction.session.yaml]
+    disposition: resolved
+open_questions: []
+stop:
+  disposition: GOAL_SATISFIED
+  reason: Restored both pinned terms without changing the discovery-first wording; submitted for merge under construction policy, with hosted CI to confirm.
+next:
+  warranted_responsibility: "Confirm hosted CI is green on main after this merge. Then use --temporary-checkout in genuine RECALL rather than extending it speculatively."
+  blocked_on: []
+persistence: committed
+claim_ceiling: "The failing assertion was checked by direct frontmatter parsing; the test itself was NOT_RUN locally. Green CI is not yet observed."
+action_authorized_by_receipt: false
+immutable: true
