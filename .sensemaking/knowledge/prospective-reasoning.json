@@ -307,7 +307,8 @@
       "authority_ref": "artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
       "evidence_refs": [
         "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
-        "file:skills/using-sensemaking/references/portable-construction-loop-v1.md:line:320"
+        "file:skills/using-sensemaking/references/portable-construction-loop-v1.md:line:320",
+        "file:docs/normal-use/prospective-reasoning-atlas-001.md"
       ],
       "attributes": {
         "concept": "ConsequenceHypothesis",
@@ -320,7 +321,14 @@
         ],
         "mechanism": "The portable loop's demand-first rule for knowledge surfaces.",
         "counterevidence": "No target observation yet.",
-        "would_change_decision_if": "An owner refuses the surface."
+        "would_change_decision_if": "An owner refuses the surface.",
+        "assessments": [
+          {
+            "date": "2026-10-28",
+            "assessed_ref": "e581d0138371e43976f8abeca3f48138c522cce3",
+            "result": "Occurred once without resistance, under explicit owner authority (Atlas Midgard). Burden not yet observable."
+          }
+        ]
       }
     },
     {
@@ -332,7 +340,8 @@
       "authority_ref": "artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
       "evidence_refs": [
         "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
-        "file:docs/semantic-architecture/prospective-reasoning-ontology.md"
+        "file:docs/semantic-architecture/prospective-reasoning-ontology.md",
+        "file:docs/normal-use/prospective-reasoning-atlas-001.md"
       ],
       "attributes": {
         "concept": "ConsequenceHypothesis",
@@ -345,7 +354,14 @@
         ],
         "mechanism": "Shared encoding conventions in the knowledge contract.",
         "counterevidence": "Coincides with plan PR J's intended outcome.",
-        "would_change_decision_if": "Encoding loses decisive meaning."
+        "would_change_decision_if": "Encoding loses decisive meaning.",
+        "assessments": [
+          {
+            "date": "2026-10-28",
+            "assessed_ref": "e581d0138371e43976f8abeca3f48138c522cce3",
+            "result": "Realized once in Atlas Midgard with existing kinds: options, consequences and the preference were retained and retrieved in the same session. File-level context-for reached them only after anchoring them to the implementing files."
+          }
+        ]
       }
     },
     {
@@ -419,11 +435,19 @@
       "authority_ref": "artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
       "evidence_refs": [
         "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
-        "file:skills/using-sensemaking/references/portable-construction-loop-v1.md:line:320"
+        "file:skills/using-sensemaking/references/portable-construction-loop-v1.md:line:320",
+        "file:docs/normal-use/prospective-reasoning-atlas-001.md"
       ],
       "attributes": {
         "concept": "Assumption",
-        "analysis_ref": "artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md"
+        "analysis_ref": "artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "assessments": [
+          {
+            "date": "2026-10-28",
+            "assessed_ref": "e581d0138371e43976f8abeca3f48138c522cce3",
+            "result": "Supported once: the Atlas Midgard owner explicitly authorized semantic-knowledge edits and a .sensemaking/knowledge/ surface was created there. One owner-directed case; says nothing about owners who were not asked."
+          }
+        ]
       }
     }
   ],

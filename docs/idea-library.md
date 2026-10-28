@@ -54,7 +54,7 @@ Possibilities that originate in a conversation, a plan or a synthesis have their
 | `poss:construction-time-possibility-reconciliation` | Reconcile possibilities from construction changes (new) | ALIGNED | INCREMENTAL | FORESEEABLE | IMPLEMENTED_BASELINE | SELECTED 2026-10-28 (plan PR 7 guidance) |
 | `poss:target-repository-discovery-memory` | Discovery memory for target repositories (new) | ALIGNED | SUBSTANTIAL | FORESEEABLE | NOT_ASSESSED | EXPLORATORY |
 | `poss:possibilities-projected-from-analyses` | Derive possibilities from strategic analyses (new counterfactual) | COUNTERFACTUAL | INCREMENTAL | FORESEEABLE | NOT_ASSESSED | REJECTED_FOR_NOW |
-| `poss:repository-local-prospective-decision-memory` | Prospective decision memory in target repositories (from a consequence) | ALIGNED | SUBSTANTIAL | FORESEEABLE | NOT_ASSESSED | EXPLORATORY |
+| `poss:repository-local-prospective-decision-memory` | Prospective decision memory in target repositories (from a consequence) | ALIGNED | SUBSTANTIAL | FORESEEABLE | IMPLEMENTED_BASELINE | SELECTED |
 
 Order is grouping (realized, aligned future, deferred, long-horizon, conflicting, then the three recorded from the 2026-10-28 exploration), not priority. `ranked-possibility-backlog` is `FORESEEABLE` because it would be easy to build: horizon is not desirability.
 
@@ -239,8 +239,9 @@ These grew from the typed records and queries described in section 6. Each is a 
 - **Proposed future:** a target repository's authorized knowledge surface retains architecture options, consequence hypotheses and preferences from its own reasoning, not only discovery candidates, so later sessions there reconstruct why one structure or path was preferred.
 - **Origin:** derived on 2026-10-28 from `conseq:prospective-decision-memory-reuse` in the prospective reasoning reference case.
 - **Alignment basis:** ADR 0031 decision 1 names repositories, and the owner's prospective reasoning plan (PR J) intends this outcome. `ALIGNED`, `SUBSTANTIAL`, `FORESEEABLE` (existing kinds suffice; it needs one explicitly authorized target repository).
-- **Realization:** `NOT_ASSESSED`; no target repository was inspected. This repository's `.sensemaking/knowledge/prospective-reasoning.json` is the in-repository precedent.
-- **Disposition:** `EXPLORATORY` (agent, 2026-10-28). It coincides with plan PR J's intended outcome, so it is recorded as the possibility PR J would advance, not as an independent proposal.
+- **Realization:** `IMPLEMENTED_BASELINE` since 2026-10-28 (`NOT_ASSESSED` before). Atlas Midgard holds its own architectural synthesis, strategic analysis and 21 reviewed records of options, consequences, the preference and the governing decision, retrieved by id and from the implementing files ([first application](normal-use/prospective-reasoning-atlas-001.md)). Same session only; later reuse is not observed.
+- **Disposition history:** `EXPLORATORY` (agent, 2026-10-28), the possibility plan PR J would advance; `SELECTED` by the owner's 2026-10-28 mission for the first target-repository application.
+- **Revisit when:** an independent later session in Atlas Midgard, or another authorized target, reads these records while deciding.
 - **Relations:** derived from `conseq:prospective-decision-memory-reuse`; extends `poss:target-repository-discovery-memory`.
 
 #### `poss:possibilities-projected-from-analyses`: derive possibilities from strategic analyses (counterfactual)
