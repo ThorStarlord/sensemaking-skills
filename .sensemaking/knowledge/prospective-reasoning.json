@@ -1,0 +1,830 @@
+{
+  "schema_version": 1,
+  "claims": [
+    {
+      "id": "arch:git-reviewed-local-memory",
+      "kind": "alternative",
+      "statement": "Authorized discovery retains each consequential compared candidate responsibility as a poss: opportunity record in the target repository's .sensemaking/knowledge/, with disposition, reason, revisit_when, origin and cited sources.",
+      "epistemic_status": "hypothetical",
+      "authority_kind": "hypothesis",
+      "authority_ref": "artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "file:skills/repository-semantic-steward/references/knowledge-contract.md:line:40",
+        "file:skills/using-sensemaking/references/portable-construction-loop-v1.md:line:310"
+      ],
+      "attributes": {
+        "concept": "ArchitectureOption",
+        "title": "Repository-local possibility records",
+        "analysis_ref": "artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "assessed_ref": "2a8c6f867c8f4b1fb50caec0a095a690ccef2d92",
+        "target_structure": "poss: records in the target's .sensemaking/knowledge/; guidance change in the portable loop's repository-only entry; no schema change.",
+        "reuses": "Knowledge contract possibility convention, steward RECONCILE, funnel recall, workspace-impact, index when present.",
+        "requires": "Knowledge-edit and commit authority in the target; the target owner's acceptance of a .sensemaking/knowledge/ surface.",
+        "construction_paths": [
+          "artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md#PATH-1"
+        ],
+        "comparison": {
+          "fidelity": "high",
+          "reconsideration": "workspace-impact, changes, funnel recall",
+          "contract_fit": "uses an existing convention",
+          "footprint": "new surface where absent",
+          "cost": "guidance only"
+        },
+        "preference": {
+          "status": "PROVISIONAL",
+          "attributed_to": "agent",
+          "date": "2026-10-28",
+          "authority": "none",
+          "basis": "Highest fidelity and reconsideration support at guidance-only cost.",
+          "current_scope": "Only sessions that hold knowledge-edit and commit authority in the target; read-only discovery keeps compared candidates in its report.",
+          "history": [
+            {
+              "scope": "all discovery sessions",
+              "outcome": "narrowed by REVISE_PREFERENCE after conseq:persistence-requires-write-authority"
+            }
+          ]
+        },
+        "prospective": true
+      }
+    },
+    {
+      "id": "arch:receipt-based-memory",
+      "kind": "alternative",
+      "statement": "An optional considered_candidates list in the session receipt records each compared candidate with disposition, reason and revisit_when, reported by the receipt reader.",
+      "epistemic_status": "hypothetical",
+      "authority_kind": "hypothesis",
+      "authority_ref": "artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "file:skills/using-sensemaking/references/session-receipt-v1.md:line:23",
+        "file:skills/using-sensemaking/references/session-receipt-v1.md:line:218",
+        "file:scripts/summarize-receipts.py"
+      ],
+      "attributes": {
+        "concept": "ArchitectureOption",
+        "title": "Extended session receipt",
+        "analysis_ref": "artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "assessed_ref": "2a8c6f867c8f4b1fb50caec0a095a690ccef2d92",
+        "target_structure": "Receipt schema, validator and reader extended under proposed ADR 0032.",
+        "reuses": "Receipts every session creates; receipt reader and validator.",
+        "requires": "Commit authority for persistence; ADR 0032 contract change.",
+        "construction_paths": [
+          "artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md#PATH-2"
+        ],
+        "comparison": {
+          "fidelity": "medium (capped text, no relations)",
+          "reconsideration": "none by candidate identity",
+          "contract_fit": "conflicts with the receipt's facts-and-pointers role",
+          "footprint": "none beyond receipts",
+          "cost": "schema, validator, reader"
+        },
+        "preference": {
+          "status": "NOT_PREFERRED",
+          "attributed_to": "agent",
+          "date": "2026-10-28",
+          "authority": "none",
+          "basis": "Conflicts with the receipt role and offers no reconsideration by identity.",
+          "retained_as": "Lighter alternative if ADR 0032 is accepted with a candidate field."
+        },
+        "prospective": true
+      }
+    },
+    {
+      "id": "arch:strategic-artifact-projection",
+      "kind": "alternative",
+      "statement": "No new records: prior discovery candidates are projected from strategic analyses' frontier candidates and paths with strategy history and graph.",
+      "epistemic_status": "hypothetical",
+      "authority_kind": "hypothesis",
+      "authority_ref": "artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "file:src/sensemaking_skills/strategy_cli.py:line:629",
+        "file:src/sensemaking_skills/strategy_cli.py:line:684"
+      ],
+      "attributes": {
+        "concept": "ArchitectureOption",
+        "title": "Projection from strategic analyses (counterfactual)",
+        "analysis_ref": "artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "assessed_ref": "2a8c6f867c8f4b1fb50caec0a095a690ccef2d92",
+        "target_structure": "No new structure.",
+        "reuses": "strategy history and strategy graph.",
+        "requires": "Discovery producing strategic analyses, which it usually does not.",
+        "construction_paths": [],
+        "comparison": {
+          "fidelity": "low (ordinary discovery candidates absent)",
+          "reconsideration": "strategy drift only",
+          "contract_fit": "consistent but incomplete",
+          "footprint": "none",
+          "cost": "none"
+        },
+        "preference": {
+          "status": "NOT_PREFERRED",
+          "attributed_to": "agent",
+          "date": "2026-10-28",
+          "authority": "none",
+          "basis": "Loses every candidate compared in ordinary discovery."
+        },
+        "prospective": true
+      }
+    },
+    {
+      "id": "arch:grounding-pack-decision-log",
+      "kind": "alternative",
+      "statement": "Declined discovery candidates become provenance-tagged lines in the target's Grounding Pack decisions directory, which the index ingests as decision claims.",
+      "epistemic_status": "hypothetical",
+      "authority_kind": "hypothesis",
+      "authority_ref": "artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "file:docs/adr/0030-target-repository-grounding.md:line:16",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_sources.py:line:175"
+      ],
+      "attributes": {
+        "concept": "ArchitectureOption",
+        "title": "Grounding Pack decision lines",
+        "analysis_ref": "artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "assessed_ref": "2a8c6f867c8f4b1fb50caec0a095a690ccef2d92",
+        "target_structure": "Lines in .sensemaking/decisions/*.md tagged [delegated: date].",
+        "reuses": "ADR 0030 Grounding Pack, question ratchet, budgets, grounding ingestion.",
+        "requires": "Write authority in the target.",
+        "construction_paths": [],
+        "comparison": {
+          "fidelity": "medium (prose, no typed disposition)",
+          "reconsideration": "index claims; no revisit_when",
+          "contract_fit": "consistent; strains word budgets",
+          "footprint": "pack files",
+          "cost": "guidance only",
+          "owner_legibility": "high"
+        },
+        "preference": {
+          "status": "NOT_PREFERRED",
+          "attributed_to": "agent",
+          "date": "2026-10-28",
+          "authority": "none",
+          "basis": "Word budgets and missing typed disposition fail the fidelity lens."
+        },
+        "prospective": true
+      }
+    },
+    {
+      "id": "conseq:candidate-recall-in-later-discovery",
+      "kind": "hypothesis",
+      "statement": "Later discovery in the target recalls declined candidates and their reasons instead of re-deriving them or anchoring on the last receipt's next.",
+      "epistemic_status": "hypothetical",
+      "authority_kind": "hypothesis",
+      "authority_ref": "artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "file:skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md:line:172",
+        "file:skills/using-sensemaking/SKILL.md:line:151"
+      ],
+      "attributes": {
+        "concept": "ConsequenceHypothesis",
+        "analysis_ref": "artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "assessed_ref": "2a8c6f867c8f4b1fb50caec0a095a690ccef2d92",
+        "source_option": "arch:git-reviewed-local-memory",
+        "category": "benefit",
+        "assumptions": [
+          "hyp:target-sessions-consult-retained-candidates"
+        ],
+        "mechanism": "Funnel section 4 recall; using-sensemaking lists reviewed knowledge as a source.",
+        "counterevidence": "Not tested in any independent session.",
+        "would_change_decision_if": "Sessions ignore the records."
+      }
+    },
+    {
+      "id": "conseq:persistence-requires-write-authority",
+      "kind": "hypothesis",
+      "statement": "Under default read-only discovery, neither repository-local records nor extended receipts persist anything.",
+      "epistemic_status": "hypothetical",
+      "authority_kind": "hypothesis",
+      "authority_ref": "artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "file:skills/using-sensemaking/SKILL.md:line:87",
+        "file:skills/using-sensemaking/references/session-receipt-v1.md:line:103"
+      ],
+      "attributes": {
+        "concept": "ConsequenceHypothesis",
+        "analysis_ref": "artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "assessed_ref": "2a8c6f867c8f4b1fb50caec0a095a690ccef2d92",
+        "source_option": "arch:git-reviewed-local-memory",
+        "category": "constraint",
+        "assumptions": [
+          "hyp:discovery-sessions-can-persist-candidates (challenged)"
+        ],
+        "mechanism": "Discovery is read-only by default; uncommitted receipts are working_tree_only and lost.",
+        "counterevidence": "Premises are observed rules; the prediction is not differentiating between options A and B.",
+        "would_change_decision_if": "Already changed it: REVISE_PREFERENCE narrowed option A to authorized sessions.",
+        "premise_status": "observed",
+        "decision_changing": true,
+        "feedback_outcome": "REVISE_PREFERENCE"
+      }
+    },
+    {
+      "id": "conseq:target-maintenance-burden",
+      "kind": "hypothesis",
+      "statement": "Stale candidate records accumulate in target repositories whose owners rarely use Sensemaking.",
+      "epistemic_status": "hypothetical",
+      "authority_kind": "hypothesis",
+      "authority_ref": "artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "file:skills/repository-semantic-steward/references/knowledge-contract.md:line:40"
+      ],
+      "attributes": {
+        "concept": "ConsequenceHypothesis",
+        "analysis_ref": "artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "assessed_ref": "2a8c6f867c8f4b1fb50caec0a095a690ccef2d92",
+        "source_option": "arch:git-reviewed-local-memory",
+        "category": "risk",
+        "assumptions": [
+          "Low later use in some targets"
+        ],
+        "mechanism": "Records without later RECONCILE.",
+        "counterevidence": "Mitigated by revisit_when and workspace-impact; unmeasured.",
+        "would_change_decision_if": "Burden observed in a real target."
+      }
+    },
+    {
+      "id": "conseq:citation-noise",
+      "kind": "hypothesis",
+      "statement": "Broad evidence citations make every related edit flag candidate records for re-inspection.",
+      "epistemic_status": "hypothetical",
+      "authority_kind": "hypothesis",
+      "authority_ref": "artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "file:skills/repository-semantic-steward/references/knowledge-contract.md:line:40",
+        "file:.sensemaking/receipts/2026-10-28-possibility-reconciliation-and-knowledge.query.yaml"
+      ],
+      "attributes": {
+        "concept": "ConsequenceHypothesis",
+        "analysis_ref": "artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "assessed_ref": "2a8c6f867c8f4b1fb50caec0a095a690ccef2d92",
+        "source_option": "arch:git-reviewed-local-memory",
+        "category": "risk",
+        "assumptions": [
+          "Records cite libraries or broad documents"
+        ],
+        "mechanism": "File-level evidence matching in workspace-impact.",
+        "counterevidence": "The knowledge contract now says to cite the record of origin.",
+        "would_change_decision_if": "Noise recurs despite the rule."
+      }
+    },
+    {
+      "id": "conseq:knowledge-surface-bootstrap",
+      "kind": "hypothesis",
+      "statement": "Targets without .sensemaking/knowledge/ need one created on demand, which their owners may resist.",
+      "epistemic_status": "hypothetical",
+      "authority_kind": "hypothesis",
+      "authority_ref": "artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "file:skills/using-sensemaking/references/portable-construction-loop-v1.md:line:310"
+      ],
+      "attributes": {
+        "concept": "ConsequenceHypothesis",
+        "analysis_ref": "artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "assessed_ref": "2a8c6f867c8f4b1fb50caec0a095a690ccef2d92",
+        "source_option": "arch:git-reviewed-local-memory",
+        "category": "constraint",
+        "assumptions": [
+          "hyp:target-owners-accept-knowledge-surface"
+        ],
+        "mechanism": "The portable loop's demand-first rule for knowledge surfaces.",
+        "counterevidence": "No target observation yet.",
+        "would_change_decision_if": "An owner refuses the surface."
+      }
+    },
+    {
+      "id": "conseq:prospective-decision-memory-reuse",
+      "kind": "hypothesis",
+      "statement": "The same authorized record surface could also hold architecture options, consequence hypotheses and preferences from a target repository's own reasoning.",
+      "epistemic_status": "hypothetical",
+      "authority_kind": "hypothesis",
+      "authority_ref": "artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "file:docs/semantic-architecture/prospective-reasoning-ontology.md"
+      ],
+      "attributes": {
+        "concept": "ConsequenceHypothesis",
+        "analysis_ref": "artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "assessed_ref": "2a8c6f867c8f4b1fb50caec0a095a690ccef2d92",
+        "source_option": "arch:git-reviewed-local-memory",
+        "category": "opportunity",
+        "assumptions": [
+          "Option and consequence encodings work with existing kinds (tested by plan PR C)"
+        ],
+        "mechanism": "Shared encoding conventions in the knowledge contract.",
+        "counterevidence": "Coincides with plan PR J's intended outcome.",
+        "would_change_decision_if": "Encoding loses decisive meaning."
+      }
+    },
+    {
+      "id": "observation:discovery-read-only-by-default",
+      "kind": "observation",
+      "statement": "At 2a8c6f8, using-sensemaking states that repository-only discovery remains read-only unless implementation authority is separately granted.",
+      "epistemic_status": "observed",
+      "authority_kind": "document",
+      "authority_ref": "skills/using-sensemaking/SKILL.md",
+      "evidence_refs": [
+        "file:skills/using-sensemaking/SKILL.md:line:87"
+      ],
+      "attributes": {
+        "observed_ref": "2a8c6f867c8f4b1fb50caec0a095a690ccef2d92",
+        "role": "premise"
+      }
+    },
+    {
+      "id": "observation:uncommitted-receipts-lost",
+      "kind": "observation",
+      "statement": "At 2a8c6f8, the session receipt contract says a receipt that is neither committed nor uploaded is working_tree_only and will be lost with the checkout.",
+      "epistemic_status": "observed",
+      "authority_kind": "document",
+      "authority_ref": "skills/using-sensemaking/references/session-receipt-v1.md",
+      "evidence_refs": [
+        "file:skills/using-sensemaking/references/session-receipt-v1.md:line:103"
+      ],
+      "attributes": {
+        "observed_ref": "2a8c6f867c8f4b1fb50caec0a095a690ccef2d92",
+        "role": "premise"
+      }
+    },
+    {
+      "id": "hyp:target-sessions-consult-retained-candidates",
+      "kind": "hypothesis",
+      "statement": "Later discovery sessions in a target repository consult retained candidate records when present.",
+      "epistemic_status": "hypothetical",
+      "authority_kind": "hypothesis",
+      "authority_ref": "artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "file:skills/using-sensemaking/SKILL.md:line:151"
+      ],
+      "attributes": {
+        "concept": "Assumption",
+        "analysis_ref": "artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md"
+      }
+    },
+    {
+      "id": "hyp:discovery-sessions-can-persist-candidates",
+      "kind": "hypothesis",
+      "statement": "Discovery sessions hold the authority needed to persist candidate memory in the target repository.",
+      "epistemic_status": "hypothetical",
+      "authority_kind": "hypothesis",
+      "authority_ref": "artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "file:skills/using-sensemaking/SKILL.md:line:87"
+      ],
+      "attributes": {
+        "concept": "Assumption",
+        "analysis_ref": "artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md"
+      }
+    },
+    {
+      "id": "hyp:target-owners-accept-knowledge-surface",
+      "kind": "hypothesis",
+      "statement": "Target repository owners accept a .sensemaking/knowledge/ surface created on demand.",
+      "epistemic_status": "hypothetical",
+      "authority_kind": "hypothesis",
+      "authority_ref": "artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "file:skills/using-sensemaking/references/portable-construction-loop-v1.md:line:310"
+      ],
+      "attributes": {
+        "concept": "Assumption",
+        "analysis_ref": "artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md"
+      }
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel:arch-a-proposes-discovery-memory",
+      "subject": "arch:git-reviewed-local-memory",
+      "predicate": "references",
+      "object": "poss:target-repository-discovery-memory",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "proposesToRealize",
+        "establishment": "hypothesized",
+        "representation_gap": "no executable predicate; references plus this attribute"
+      }
+    },
+    {
+      "id": "rel:arch-b-proposes-discovery-memory",
+      "subject": "arch:receipt-based-memory",
+      "predicate": "references",
+      "object": "poss:target-repository-discovery-memory",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "proposesToRealize",
+        "establishment": "hypothesized",
+        "representation_gap": "no executable predicate; references plus this attribute"
+      }
+    },
+    {
+      "id": "rel:arch-c-proposes-discovery-memory",
+      "subject": "arch:strategic-artifact-projection",
+      "predicate": "references",
+      "object": "poss:target-repository-discovery-memory",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "proposesToRealize",
+        "establishment": "hypothesized",
+        "representation_gap": "no executable predicate; references plus this attribute"
+      }
+    },
+    {
+      "id": "rel:arch-d-proposes-discovery-memory",
+      "subject": "arch:grounding-pack-decision-log",
+      "predicate": "references",
+      "object": "poss:target-repository-discovery-memory",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "proposesToRealize",
+        "establishment": "hypothesized",
+        "representation_gap": "no executable predicate; references plus this attribute"
+      }
+    },
+    {
+      "id": "rel:arch-b-alternative-to-a",
+      "subject": "arch:receipt-based-memory",
+      "predicate": "references",
+      "object": "arch:git-reviewed-local-memory",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "alternativeTo",
+        "establishment": "inferred",
+        "representation_gap": "no executable predicate; references plus this attribute"
+      }
+    },
+    {
+      "id": "rel:arch-c-alternative-to-a",
+      "subject": "arch:strategic-artifact-projection",
+      "predicate": "references",
+      "object": "arch:git-reviewed-local-memory",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "alternativeTo",
+        "establishment": "inferred",
+        "representation_gap": "no executable predicate; references plus this attribute"
+      }
+    },
+    {
+      "id": "rel:arch-d-alternative-to-a",
+      "subject": "arch:grounding-pack-decision-log",
+      "predicate": "references",
+      "object": "arch:git-reviewed-local-memory",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "alternativeTo",
+        "establishment": "inferred",
+        "representation_gap": "no executable predicate; references plus this attribute"
+      }
+    },
+    {
+      "id": "rel:arch-a-reuses-possibility-records",
+      "subject": "arch:git-reviewed-local-memory",
+      "predicate": "requires_capability",
+      "object": "cap:possibility-records",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:skills/repository-semantic-steward/references/knowledge-contract.md:line:40"
+      ],
+      "attributes": {
+        "conceptual_relation": "reuses existing capability",
+        "establishment": "inferred"
+      }
+    },
+    {
+      "id": "rel:arch-a-reuses-discovery",
+      "subject": "arch:git-reviewed-local-memory",
+      "predicate": "requires_capability",
+      "object": "cap:repository-only-discovery",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:skills/using-sensemaking/SKILL.md:line:76"
+      ],
+      "attributes": {
+        "conceptual_relation": "reuses existing capability",
+        "establishment": "inferred"
+      }
+    },
+    {
+      "id": "rel:arch-b-changes-receipt-schema",
+      "subject": "arch:receipt-based-memory",
+      "predicate": "references",
+      "object": "contract:receipt-schema",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:skills/using-sensemaking/references/session-receipt-v1.md:line:218"
+      ],
+      "attributes": {
+        "conceptual_relation": "proposesChangeTo",
+        "establishment": "hypothesized",
+        "note": "Proposed change only; deliberately not affected_by_change, which records an observed change."
+      }
+    },
+    {
+      "id": "rel:arch-b-changes-receipt-validator",
+      "subject": "arch:receipt-based-memory",
+      "predicate": "references",
+      "object": "component:receipt-validator",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:scripts/validate-receipt.py"
+      ],
+      "attributes": {
+        "conceptual_relation": "proposesChangeTo",
+        "establishment": "hypothesized",
+        "note": "Proposed change only; deliberately not affected_by_change."
+      }
+    },
+    {
+      "id": "rel:arch-c-from-declined-projection",
+      "subject": "arch:strategic-artifact-projection",
+      "predicate": "derived_from",
+      "object": "poss:possibilities-projected-from-analyses",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md"
+      ],
+      "attributes": {
+        "establishment": "inferred",
+        "note": "Same premise as the declined possibility, applied to discovery (a restatement, CQ-100)."
+      }
+    },
+    {
+      "id": "rel:arch-d-reuses-grounding-pack",
+      "subject": "arch:grounding-pack-decision-log",
+      "predicate": "references",
+      "object": "adr:0030",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:docs/adr/0030-target-repository-grounding.md:line:16"
+      ],
+      "attributes": {
+        "conceptual_relation": "reuses governing decision",
+        "establishment": "inferred"
+      }
+    },
+    {
+      "id": "rel:arch-a-may-produce-candidate-recall-in-later-discovery",
+      "subject": "arch:git-reviewed-local-memory",
+      "predicate": "references",
+      "object": "conseq:candidate-recall-in-later-discovery",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "mayProduce",
+        "establishment": "hypothesized",
+        "representation_gap": "no executable predicate; references plus this attribute"
+      }
+    },
+    {
+      "id": "rel:arch-a-may-produce-persistence-requires-write-authority",
+      "subject": "arch:git-reviewed-local-memory",
+      "predicate": "references",
+      "object": "conseq:persistence-requires-write-authority",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "mayProduce",
+        "establishment": "hypothesized",
+        "representation_gap": "no executable predicate; references plus this attribute"
+      }
+    },
+    {
+      "id": "rel:arch-a-may-produce-target-maintenance-burden",
+      "subject": "arch:git-reviewed-local-memory",
+      "predicate": "references",
+      "object": "conseq:target-maintenance-burden",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "mayProduce",
+        "establishment": "hypothesized",
+        "representation_gap": "no executable predicate; references plus this attribute"
+      }
+    },
+    {
+      "id": "rel:arch-a-may-produce-citation-noise",
+      "subject": "arch:git-reviewed-local-memory",
+      "predicate": "references",
+      "object": "conseq:citation-noise",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "mayProduce",
+        "establishment": "hypothesized",
+        "representation_gap": "no executable predicate; references plus this attribute"
+      }
+    },
+    {
+      "id": "rel:arch-a-may-produce-knowledge-surface-bootstrap",
+      "subject": "arch:git-reviewed-local-memory",
+      "predicate": "references",
+      "object": "conseq:knowledge-surface-bootstrap",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "mayProduce",
+        "establishment": "hypothesized",
+        "representation_gap": "no executable predicate; references plus this attribute"
+      }
+    },
+    {
+      "id": "rel:arch-a-may-produce-prospective-decision-memory-reuse",
+      "subject": "arch:git-reviewed-local-memory",
+      "predicate": "references",
+      "object": "conseq:prospective-decision-memory-reuse",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "mayProduce",
+        "establishment": "hypothesized",
+        "representation_gap": "no executable predicate; references plus this attribute"
+      }
+    },
+    {
+      "id": "rel:arch-b-may-produce-persistence",
+      "subject": "arch:receipt-based-memory",
+      "predicate": "references",
+      "object": "conseq:persistence-requires-write-authority",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "mayProduce",
+        "establishment": "hypothesized",
+        "note": "Applies to both A and B; does not differentiate them."
+      }
+    },
+    {
+      "id": "rel:persistence-premise-read-only",
+      "subject": "conseq:persistence-requires-write-authority",
+      "predicate": "references",
+      "object": "observation:discovery-read-only-by-default",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:skills/using-sensemaking/SKILL.md:line:87"
+      ],
+      "attributes": {
+        "role": "observed premise",
+        "establishment": "pointer to observed claim"
+      }
+    },
+    {
+      "id": "rel:persistence-premise-receipts-lost",
+      "subject": "conseq:persistence-requires-write-authority",
+      "predicate": "references",
+      "object": "observation:uncommitted-receipts-lost",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:skills/using-sensemaking/references/session-receipt-v1.md:line:103"
+      ],
+      "attributes": {
+        "role": "observed premise",
+        "establishment": "pointer to observed claim"
+      }
+    },
+    {
+      "id": "rel:persistence-challenges-assumption",
+      "subject": "conseq:persistence-requires-write-authority",
+      "predicate": "references",
+      "object": "hyp:discovery-sessions-can-persist-candidates",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:skills/using-sensemaking/SKILL.md:line:87"
+      ],
+      "attributes": {
+        "conceptual_relation": "challenges",
+        "establishment": "inferred",
+        "representation_gap": "no executable predicate; references plus this attribute"
+      }
+    },
+    {
+      "id": "rel:recall-assumes-consultation",
+      "subject": "conseq:candidate-recall-in-later-discovery",
+      "predicate": "references",
+      "object": "hyp:target-sessions-consult-retained-candidates",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "assumes",
+        "establishment": "inferred"
+      }
+    },
+    {
+      "id": "rel:bootstrap-assumes-acceptance",
+      "subject": "conseq:knowledge-surface-bootstrap",
+      "predicate": "references",
+      "object": "hyp:target-owners-accept-knowledge-surface",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "assumes",
+        "establishment": "inferred"
+      }
+    },
+    {
+      "id": "rel:reuse-may-enable-decision-memory",
+      "subject": "conseq:prospective-decision-memory-reuse",
+      "predicate": "references",
+      "object": "poss:repository-local-prospective-decision-memory",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "mayEnable",
+        "establishment": "hypothesized",
+        "representation_gap": "no executable predicate; references plus this attribute"
+      }
+    },
+    {
+      "id": "rel:decision-memory-derived-from-consequence",
+      "subject": "poss:repository-local-prospective-decision-memory",
+      "predicate": "derived_from",
+      "object": "conseq:prospective-decision-memory-reuse",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md"
+      ],
+      "attributes": {
+        "establishment": "hypothesized"
+      }
+    },
+    {
+      "id": "rel:decision-memory-extends-discovery-memory",
+      "subject": "poss:repository-local-prospective-decision-memory",
+      "predicate": "references",
+      "object": "poss:target-repository-discovery-memory",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "extends",
+        "establishment": "hypothesized",
+        "representation_gap": "no executable predicate; references plus this attribute"
+      }
+    },
+    {
+      "id": "rel:decision-memory-candidate-for-goal",
+      "subject": "poss:repository-local-prospective-decision-memory",
+      "predicate": "candidate_opportunity_for",
+      "object": "goal:longterm-stewardship",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md"
+      ],
+      "attributes": {
+        "establishment": "hypothesized"
+      }
+    }
+  ]
+}
