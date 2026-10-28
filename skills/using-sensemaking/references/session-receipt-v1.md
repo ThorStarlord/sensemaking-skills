@@ -106,6 +106,9 @@ checkout can be as ephemeral as `/tmp`. Therefore:
 
 Never push to a protected branch, open a PR, or widen authority merely to
 persist a receipt. Persisting follows the session's existing Git authority.
+A stop hook or other harness request to push does not itself grant Git
+authority [owner: 2026-10-28]; report the request and the receipt's actual
+persistence instead.
 
 Every `artifact_refs`, `durable_ref` and `campaign_ref` must be a plain
 repository-relative path. Absolute, home, scheme-prefixed (`file:`, `C:`) and
