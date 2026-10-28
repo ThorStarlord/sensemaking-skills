@@ -155,7 +155,7 @@ recall prior possibilities, options and decisions (when they could change the an
 
 ## 9. Representation now and next
 
-**Now:** this conceptual model, competency questions CQ-089 to CQ-102, a source-grounded reference case with a vocabulary-fit assessment, reviewed records for that case using existing kinds and predicates (`.sensemaking/knowledge/prospective-reasoning.json`; plan PR C), and the `architectural_synthesis` artifact contract with its template and focused validator, to which the reference case conforms (plan PR D), and optional typed consequences in that artifact plus optional links from a strategic analysis's paths to possibilities, options and syntheses (plan PR E and PR F). No claim kind, predicate, knowledge schema version, Skill or runtime is added.
+**Now:** this conceptual model, competency questions CQ-089 to CQ-102, a source-grounded reference case with a vocabulary-fit assessment, reviewed records for that case using existing kinds and predicates (`.sensemaking/knowledge/prospective-reasoning.json`; plan PR C), and the `architectural_synthesis` artifact contract with its template and focused validator, to which the reference case conforms (plan PR D), and optional typed consequences in that artifact plus optional links from a strategic analysis's paths to possibilities, options and syntheses (plan PR E and PR F), with guidance in the Steward's architecture-exploration and reconciliation references and the strategic funnel's section 7 (plan PR G). No claim kind, predicate, knowledge schema version, Skill or runtime is added.
 
 **Where each concept is expected to live** (predictions tested in [`prospective-reasoning-competency-v1.md`](prospective-reasoning-competency-v1.md)):
 
