@@ -1,6 +1,7 @@
 # Idea Library v1: Product Possibility Landscape
 
-**Status:** exploratory / non-authoritative possibility landscape; first curated selection (14 possibilities, plus construction paths and evidence prerequisites kept separate)  
+**Status:** exploratory / non-authoritative possibility landscape; curated selection (17 possibilities, plus construction paths and evidence prerequisites kept separate)  
+**Typed records:** [`../.sensemaking/knowledge/possibilities.json`](../.sensemaking/knowledge/possibilities.json) (plan PR 3)  
 **Assessed:** 2026-10-28 at `main@d0af33beb52e94b375d6a471e9990df11c8c424d`  
 **Authority:** none. A possibility, its dimension labels or its relationships here are not Strategic Frontier membership, priority, implementation authorization, owner decisions or ADR ratification.  
 **Conceptual model:** [`semantic-architecture/product-possibility-ontology.md`](semantic-architecture/product-possibility-ontology.md)  
@@ -28,6 +29,8 @@ Each entry gives a stable `poss:` identifier, the proposed future, its origin, t
 
 Possibilities that originate in a conversation, a plan or a synthesis have their record of origin here.
 
+**Typed records.** Every possibility here is also a reviewed `opportunity` claim with the same `poss:` identifier in `.sensemaking/knowledge/possibilities.json`. Realized capabilities are `capability` claims, mechanically observed implementation evidence is in `observation` claims, and shared premises are `hypothesis` claims. Recover them with existing queries, for example `knowledge-query --operation search --term poss:`, `explain --subject poss:<slug>`, `impact --subject cap:<slug>` and `contradictions` (section 6).
+
 **Coverage.** This is a deliberate selection, not a conversion of the reservoir. Reservoir entries not listed are `NOT_ASSESSED` here, not rejected. `NOT_IMPLEMENTED` is used only with a completeness basis for its stated scope; a search that found nothing is reported as `NOT_ASSESSED` with the bounded observation.
 
 ## 2. Landscape at a glance
@@ -48,8 +51,11 @@ Possibilities that originate in a conversation, a plan or a synthesis have their
 | `poss:automatic-strategic-planner` | Deterministic strategic planner and frontier ranking | CONFLICTS_WITH_CURRENT_STRATEGY | TRANSFORMATIVE | NOT_ASSESSED | NOT_ASSESSED | REJECTED_FOR_NOW |
 | `poss:ranked-possibility-backlog` | The Idea Library as a ranked backlog | CONFLICTS_WITH_CURRENT_STRATEGY | SUBSTANTIAL | FORESEEABLE | NOT_IMPLEMENTED (in this library) | REJECTED_FOR_NOW |
 | `poss:cross-repository-transaction-coordinator` | Cross-repository transaction coordination | CONFLICTS_WITH_CURRENT_STRATEGY | SUBSTANTIAL | LONG_HORIZON | NOT_ASSESSED | DEFERRED (historical label) |
+| `poss:construction-time-possibility-reconciliation` | Reconcile possibilities from construction changes (new) | ALIGNED | INCREMENTAL | FORESEEABLE | PARTIALLY_IMPLEMENTED | EXPLORATORY |
+| `poss:target-repository-discovery-memory` | Discovery memory for target repositories (new) | ALIGNED | SUBSTANTIAL | FORESEEABLE | NOT_ASSESSED | EXPLORATORY |
+| `poss:possibilities-projected-from-analyses` | Derive possibilities from strategic analyses (new counterfactual) | COUNTERFACTUAL | INCREMENTAL | FORESEEABLE | NOT_ASSESSED | REJECTED_FOR_NOW |
 
-Order is grouping (realized, aligned future, deferred, long-horizon, conflicting), not priority. `ranked-possibility-backlog` is `FORESEEABLE` because it would be easy to build: horizon is not desirability.
+Order is grouping (realized, aligned future, deferred, long-horizon, conflicting, then the three recorded from the 2026-10-28 exploration), not priority. `ranked-possibility-backlog` is `FORESEEABLE` because it would be easy to build: horizon is not desirability.
 
 Construction paths and evidence prerequisites that earlier drafts listed as possibilities are in section 4.
 
@@ -86,7 +92,7 @@ Construction paths and evidence prerequisites that earlier drafts listed as poss
 
 - **Proposed future:** reviewed knowledge expresses layers, bounded contexts, lifecycle states, path-scoped architecture rules, data flow and confusable terms, so an agent can ask what applies to a file before editing it.
 - **Origin:** ADR 0033 (PROPOSED 2026-10-23) and its competency check, which found 8 of 15 questions not expressible (`docs/semantic-architecture/architecture-ontology-competency-v1.md`).
-- **Realized by:** the path-scoped architecture context queries (`rules-for`, `term`, `context-for`) over v2 records; components `component:semantic-knowledge-plane` and `component:semantic-cli`.
+- **Realized by:** `cap:path-scoped-architecture-context` (the `rules-for`, `term` and `context-for` queries over v2 records), implemented by `component:semantic-knowledge-plane`.
   - Implementation evidence (OBSERVED): `V2_CLAIM_KINDS` and `V2_PREDICATES` in `knowledge.py:40-46`; `architecture.json` and `domain.json` declare `schema_version: 2`; the three query operations are in `semantic_cli.py`. Built in PR #565 (`STATUS.md` frontier item 41).
   - Realization judgment (INFERRED): `IMPLEMENTED_BASELINE`.
 - **Disposition:** `SELECTED` for construction under the owner's standing request; ADR 0033 owner acceptance pending.
@@ -96,7 +102,7 @@ Construction paths and evidence prerequisites that earlier drafts listed as poss
 
 - **Proposed future:** a genuine Level-3 analysis maps systems and explores breadth, grounded and counterfactual, before converging; an exploration-only request ends with an opportunity landscape.
 - **Origin:** Issue #468 (`STATUS.md` frontier item 35). Not in the reservoir, which it postdates.
-- **Realized by:** the repository element `skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md` (Skill guidance).
+- **Realized by:** `cap:breadth-exploration-guidance`, whose implementation is the repository element `skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md` (Skill guidance).
   - Implementation evidence (OBSERVED): that reference, sections 2 to 4.
   - Realization judgment (INFERRED): `IMPLEMENTED_BASELINE` as guidance. Whether agents follow it is normal-use evidence, not established here.
 - **Gap (OBSERVED):** the breadth landscape receives no stable identity or durable home (section 4, "Breadth output"), and "prior exploratory ideas remain hypotheses" (line 92). `poss:possibility-memory` addresses this.
@@ -105,7 +111,7 @@ Construction paths and evidence prerequisites that earlier drafts listed as poss
 
 - **Proposed future:** strategic analyses carry decision and path assumptions with reassessment triggers, plus read-only projections, so a later session sees what would reopen a decision without the tool reopening it.
 - **Origin:** Issues #416 and #430; reservoir section 9.5.
-- **Realized by:** the `strategy assumptions` and `strategy drift` commands.
+- **Realized by:** `cap:strategic-reassessment-projection`, implemented by the `strategy assumptions` and `strategy drift` commands.
   - Implementation evidence (OBSERVED): `src/sensemaking_skills/strategy_cli.py`, command `assumptions` (projects `assumptions` and `reassessment_triggers`) and command `drift` ("Detect mechanically observable typed currentness drift; do not invalidate strategy"). The 2026-10-23 analysis records assumptions and triggers in section 7A.
   - Realization judgment (INFERRED): `IMPLEMENTED_BASELINE`.
 - **Note:** its assumption-and-trigger shape is the precedent for a possibility's `revisit_when` (conceptual model, section 7.3).
@@ -117,9 +123,9 @@ Construction paths and evidence prerequisites that earlier drafts listed as poss
 - **Objective:** `goal:compounding-product-knowledge`. ADR 0031 decision 2 puts alternatives, decisions and temporal history in the knowledge plane.
 - **Value hypothesis (HYPOTHESIZED):** a later agent recovers an earlier possibility and its reasoning, connects it to current implementation evidence, and makes a better-grounded assessment (plan section 1.3). Not demonstrated.
 - **Assumption:** ASSUMPTION-1 (section 4).
-- **Realized in part by:** this file and the conceptual model.
-  - Implementation evidence (OBSERVED): both documents exist in the change that introduced this entry; no `poss:` records exist in `.sensemaking/knowledge/` at `d0af33b` (exhaustive check of that directory).
-  - Realization judgment (INFERRED): `PARTIALLY_IMPLEMENTED`, documentary only. Typed records (plan PR 3), exploration integration (PR 4) and any retrieval support (PR 5) are absent.
+- **Realized in part by:** `cap:possibility-records`.
+  - Implementation evidence (OBSERVED): this file, the conceptual model and the typed records in `.sensemaking/knowledge/possibilities.json`; the query receipt in section 6 records them being retrieved with existing operations.
+  - Realization judgment (INFERRED): `PARTIALLY_IMPLEMENTED`. Documentary and typed records exist and are retrievable; exploration guidance that consults them (plan PR 4) is absent.
 - **Disposition:** 2026-10-28, owner message, `SELECTED` for the first increment (plan PR 1 and part of PR 2). Later increments are not individually authorized by that selection, and no ADR records it.
 - **Risk (INFERRED):** for this repository most retained possibilities describe the knowledge plane itself, the self-referential pattern FRONTIER-1 of the 2026-10-23 analysis warned about. The library shows value only when it informs a decision beyond its own construction.
 
@@ -139,7 +145,7 @@ Construction paths and evidence prerequisites that earlier drafts listed as poss
 - **Origin:** synthesized by the agent on 2026-10-28 while writing the conceptual model, section 7.3. HYPOTHESIZED.
 - **Alignment basis:** ADR 0031 success conditions: "contradictions and invalidated assumptions are recognized rather than canonized".
 - **Value hypothesis (HYPOTHESIZED):** reconsideration (CQ-084) could reuse two existing surfaces instead of the dedicated `reconsideration_candidates` query proposed in plan PR 5.
-- **Realization:** `NOT_IMPLEMENTED`. Completeness basis: no `poss:` records exist in `.sensemaking/knowledge/` at `d0af33b` (exhaustive check of that directory), so there is nothing for `changes` to surface.
+- **Realization:** `NOT_IMPLEMENTED`. Completeness basis: at `d0af33b` no `poss:` records existed in `.sensemaking/knowledge/`. Since plan PR 3, records exist and `changes` lists changed `poss:` records (section 6), but every `revisit_when` is free text that names no claim identifier (exhaustive check of `possibilities.json`), so no change can yet be matched to a condition.
 - **Assumptions:** the claims a `revisit_when` cites exist as typed records (needs plan PR 3). `changes` reports set differences, not semantic consequences (`docs/semantic-architecture/persistent-knowledge-cli.md`), so the agent still judges whether a condition is met.
 
 #### `poss:capability-learning-analysis`: cross-episode capability learning Skill
@@ -194,6 +200,42 @@ Construction paths and evidence prerequisites that earlier drafts listed as poss
 - **Disposition (historical record, reservoir section 6.2):** `LONG_HORIZON + REQUIRES_EVIDENCE`, read as `DEFERRED`. `revisit_when`: "explicit owner direction plus a concrete responsibility whose correctness genuinely depends on atomic cross-repository activation".
 - **Current commitment:** ADR 0029 lists "general-purpose multi-repository commit/deploy/rollback transaction coordination" outside current product scope (`docs/adr/0029-current-product-boundary.md:48`). The reservoir governs its historical label; ADR 0029 governs the current scope. Acting on this possibility would therefore also need ADR 0029's scope revised.
 
+### 3.5 Recorded from the 2026-10-28 retrieval-grounded exploration
+
+These grew from the typed records and queries described in section 6. Each is a hypothesis or an agent design judgment, not a selection or an authorization.
+
+#### `poss:construction-time-possibility-reconciliation`: reconcile possibilities from construction changes
+
+- **Proposed future:** during a construction increment, the existing `workspace-impact` query lists the possibility records whose cited sources the change touched. The agent re-inspects only those, as plan PR 7 intends, with no new machinery.
+- **Origin:** agent synthesis, 2026-10-28. `impact` on `cap:semantic-queries` reached every possibility that capability realizes or enables, and the `workspace-impact` contract (`docs/semantic-architecture/persistent-knowledge-cli.md`) maps changed paths to records that cite them.
+- **Alignment basis:** ADR 0031 success conditions: invalidated assumptions are recognized rather than canonized. `ALIGNED`, `INCREMENTAL`, `FORESEEABLE`.
+- **Realization:**
+  - Implementation evidence (OBSERVED, query QY-11 in the section 6 receipt): with this change's library edits uncommitted, `workspace-impact` against the indexed records listed 13 records citing the edited file, 5 of them possibilities.
+  - Realization judgment (INFERRED): `PARTIALLY_IMPLEMENTED`. The mechanism works on possibility records; no guidance tells an agent to use it during construction.
+- **Limits observed:** matching is by file path, not meaning. Re-inspection found 3 of the 5 listed possibilities changed by the edit; 2 were listed only because their records cited the library file. Possibilities whose premises change without a cited file changing are missed.
+- **Disposition:** `EXPLORATORY` (agent, 2026-10-28); candidate input to plan PR 7.
+- **Relations:** complements `poss:possibility-reconsideration-from-change` (during construction, versus across indexed revisions); enabled by `cap:semantic-queries`.
+
+#### `poss:target-repository-discovery-memory`: discovery memory for target repositories
+
+- **Proposed future:** when the portable `using-sensemaking` Skill performs repository-only discovery in a target repository and has authority to write knowledge there, it retains the candidate responsibilities it compared (selected and declined, with reasons and `revisit_when`) as possibility records. A later discovery starts from them instead of re-deriving them or anchoring on the last receipt's `next`.
+- **Origin:** agent synthesis, 2026-10-28, combining `poss:possibility-memory` with the realized `cap:repository-only-discovery` and the observed 2026-10-27 discovery miss (`docs/agents/build-loop.md`, "Observed repository-only discovery miss").
+- **Alignment basis:** ADR 0031 decision 1 names repositories, and repository-only discovery is the product's front door, so `ALIGNED`. Writing records in a target repository needs that repository's knowledge authority; discovery alone stays read-only. `SUBSTANTIAL`; `FORESEEABLE`, because the records are plain JSON a target can read without an index or CLI.
+- **Realization:** `NOT_ASSESSED` as a whole. Bounded observation (OBSERVED; the receipt schema is closed, which gives a completeness basis for this part): the session receipt records one `next.warranted_responsibility` and has no field for the compared candidate set (`skills/using-sensemaking/references/session-receipt-v1.md`, section 5). A lexical search of `skills/using-sensemaking/` found no guidance for retaining that set.
+- **Value hypothesis (HYPOTHESIZED):** fewer repeated discoveries and less recency anchoring in target repositories. It would also give possibility memory value outside this repository's own knowledge plane, which is the self-reference risk noted under `poss:possibility-memory`.
+- **Assumptions:** ASSUMPTION-1 also holds in target repositories; their owners grant knowledge-edit authority.
+- **Relations:** extends `poss:possibility-memory`; enabled by `cap:possibility-records` and `cap:repository-only-discovery`. Unlike `poss:cross-product-transfer`, it moves no knowledge between products, so it does not depend on S5 evidence.
+- **Disposition:** `EXPLORATORY` (agent, 2026-10-28). A consequential candidate for a later Level-3 or plan PR 4 decision; not selected or authorized.
+
+#### `poss:possibilities-projected-from-analyses`: derive possibilities from strategic analyses (counterfactual)
+
+- **Proposed future:** instead of authoring possibility records, project them from strategic analyses' frontier candidates, paths and dispositions with the existing `strategy history` and `strategy graph` commands.
+- **Origin:** agent counterfactual, 2026-10-28, challenging this program's premise that possibilities need authored records.
+- **Alignment basis:** `COUNTERFACTUAL`: it alters a design premise of this program, not a product commitment, and exploring it needed no review. `INCREMENTAL`; `FORESEEABLE`.
+- **Realization:** `NOT_ASSESSED`. The commands exist (`src/sensemaking_skills/strategy_cli.py`); whether they could carry possibilities was not assessed.
+- **Disposition:** 2026-10-28, agent (design choice within plan PR 3), `REJECTED_FOR_NOW`, reason `better_alternative`. Analyses cover Level-3 episodes and their paths, and none of the 17 possibilities here originates in one: they come from ADRs, plans, the reservoir, the research agenda and syntheses, which a projection would drop. Citing analyses as records of origin keeps their value. `revisit_when`: authored records drift from or duplicate analyses in real use, or their maintenance cost becomes material.
+- **Relations:** alternative to `poss:possibility-memory`; derived from `poss:strategic-continuity-reassessment`.
+
 ## 4. Construction paths and evidence prerequisites (not possibilities)
 
 These advance or condition possibilities but are not product futures. They keep their identities from the analysis that defined them. Earlier drafts of this page (PR #625 before merge) listed PATH-2 and the "S5 evidence first" option as possibilities; they are corrected here.
@@ -225,23 +267,30 @@ Implementation evidence is listed with each realized entry in section 3. The tab
 | --- | --- | --- | --- | --- |
 | `poss:persistent-semantic-stewardship` | `realizedBy` (in part) | `cap:semantic-queries` (ProductCapability) | INFERRED | Evidence under `poss:git-authored-knowledge-index`; S5 and S6 unrealized |
 | `poss:git-authored-knowledge-index` | `realizedBy` | `cap:semantic-queries` (ProductCapability) | INFERRED | Code cited in 3.1 |
-| `poss:path-scoped-architecture-vocabulary` | `realizedBy` | path-scoped architecture context queries (ProductCapability) | INFERRED | `knowledge.py:40-46`; `semantic_cli.py` |
+| `poss:path-scoped-architecture-vocabulary` | `realizedBy` | `cap:path-scoped-architecture-context` (ProductCapability) | INFERRED | `knowledge.py:40-46`; `semantic_cli.py` |
 | `poss:path-scoped-architecture-vocabulary` | `extends` | `poss:git-authored-knowledge-index` (possibility) | INFERRED | v2 sets are additive to the v1 model (OBSERVED in `knowledge.py`) |
-| `poss:strategic-exploration-funnel` | `realizedBy` | funnel reference (RepositoryElement) | INFERRED | The reference file |
-| `poss:strategic-continuity-reassessment` | `realizedBy` | `strategy assumptions` and `strategy drift` (RepositoryElement) | INFERRED | `strategy_cli.py` |
+| `poss:strategic-exploration-funnel` | `realizedBy` | `cap:breadth-exploration-guidance` (ProductCapability) | INFERRED | The funnel reference |
+| `poss:strategic-continuity-reassessment` | `realizedBy` | `cap:strategic-reassessment-projection` (ProductCapability) | INFERRED | `strategy_cli.py` |
+| `poss:possibility-memory` | `realizedBy` (in part) | `cap:possibility-records` (ProductCapability) | INFERRED | Section 6 |
 | `poss:possibility-memory` | `extends` | `poss:persistent-semantic-stewardship` (possibility) | INFERRED | ADR 0031 decision 2 |
 | `poss:possibility-memory` | `potentiallyEnabledBy` | `cap:semantic-queries` (ProductCapability) | INFERRED | Plan PR 3 reuses existing claim kinds and queries |
-| `poss:possibility-memory` | `potentiallyEnabledBy` | Level-3 breadth exploration guidance (ProductCapability) | INFERRED | It produces the landscape that currently has no home |
+| `poss:possibility-memory` | `potentiallyEnabledBy` | `cap:breadth-exploration-guidance` (ProductCapability) | INFERRED | It produces the landscape memory retains; not a prerequisite |
 | `poss:ranked-possibility-backlog` | `alternativeTo` | `poss:possibility-memory` (possibility) | INFERRED relation; rejection RATIFIED | Owner plan section 11 |
 | `poss:cross-episode-possibility-synthesis` | `derivedFrom` | `poss:git-authored-knowledge-index`, `poss:strategic-exploration-funnel`, `poss:strategic-continuity-reassessment` (possibilities) | HYPOTHESIZED | Owner plan section 4.4 |
-| `poss:cross-episode-possibility-synthesis` | `potentiallyEnabledBy` | `poss:possibility-memory` (possibility) | HYPOTHESIZED | No possibility records yet exist to recall |
+| `poss:cross-episode-possibility-synthesis` | `potentiallyEnabledBy` | `cap:possibility-records` (ProductCapability) | HYPOTHESIZED | It needs retained records to recall |
 | `poss:cross-episode-possibility-synthesis` | `sharesAssumptionWith` | `poss:capability-learning-analysis` (possibility) | HYPOTHESIZED | Both assume cross-episode synthesis is a stable recurring responsibility |
 | `poss:possibility-reconsideration-from-change` | `derivedFrom` | `poss:strategic-continuity-reassessment`, `poss:git-authored-knowledge-index`, `poss:possibility-memory` (possibilities) | HYPOTHESIZED | Synthesis on 2026-10-28 |
-| `poss:possibility-reconsideration-from-change` | `potentiallyEnabledBy` | `cap:semantic-queries` (`changes`) and the `strategy assumptions` projection (ProductCapabilities) | HYPOTHESIZED | Conceptual model, section 7.3 |
+| `poss:possibility-reconsideration-from-change` | `potentiallyEnabledBy` | `cap:semantic-queries` (`changes`) and `cap:strategic-reassessment-projection` (ProductCapabilities) | HYPOTHESIZED | Conceptual model, section 7.3 |
 | `poss:domain-general-sensemaking` | `extends` | `poss:cross-product-transfer` (possibility) | HYPOTHESIZED | Research path 4 |
 | `poss:automatic-strategic-planner` | `conflictsWith` | `ng:deterministic-planner` (RatifiedIntent) | RATIFIED | ADR 0029:45 names it explicitly |
 | `poss:ranked-possibility-backlog` | `conflictsWith` | `ng:automatic-selection` (RatifiedIntent) | INFERRED | ADR 0029:47 names automatic responsibility selection, not possibility ranking |
 | `poss:cross-repository-transaction-coordinator` | `conflictsWith` | ADR 0029 product scope (RatifiedIntent) | RATIFIED | ADR 0029:48 names it explicitly |
+| `poss:construction-time-possibility-reconciliation` | `complements` | `poss:possibility-reconsideration-from-change` (possibility) | HYPOTHESIZED | During construction versus across indexed revisions |
+| `poss:construction-time-possibility-reconciliation` | `potentiallyEnabledBy` | `cap:semantic-queries` (`workspace-impact`) (ProductCapability) | INFERRED | Section 6, demonstrated on possibility records |
+| `poss:target-repository-discovery-memory` | `extends` | `poss:possibility-memory` (possibility) | HYPOTHESIZED | From this repository to target repositories |
+| `poss:target-repository-discovery-memory` | `potentiallyEnabledBy` | `cap:possibility-records`, `cap:repository-only-discovery` (ProductCapabilities) | HYPOTHESIZED | Section 3.5 |
+| `poss:possibilities-projected-from-analyses` | `alternativeTo` | `poss:possibility-memory` (possibility) | INFERRED relation; rejection by agent design choice | Section 3.5 |
+| `poss:possibilities-projected-from-analyses` | `derivedFrom` | `poss:strategic-continuity-reassessment` (possibility) | HYPOTHESIZED | Counterfactual on 2026-10-28 |
 
 Links to construction paths and evidence prerequisites are in section 4; they are not possibility relations.
 
@@ -265,10 +314,27 @@ strategic-continuity-reassessment + git-authored-knowledge-index + possibility-m
 cross-product-transfer (needs S5 evidence) <-- extended by: domain-general-sensemaking
 ```
 
-## 6. Syntheses recorded in this version
+## 6. Typed records and a retrieval-grounded exploration (2026-10-28)
 
-- **`poss:cross-episode-possibility-synthesis`** comes from the owner's plan: persistent knowledge, divergent exploration and strategic continuity combine into synthesis across sessions. It stays `EXPLORATORY` and every connecting relationship is hypothesized.
-- **`poss:possibility-reconsideration-from-change`** emerged while building the conceptual model: strategic analyses already pair assumptions with reassessment triggers, and indexed revisions already report changed claims. Pairing a possibility's `revisit_when` with that shape might make a dedicated reconsideration query (plan PR 5) unnecessary. Plan PR 5 should test this before building a new query.
+**Records.** `.sensemaking/knowledge/possibilities.json` encodes every possibility as an `opportunity` claim with its `poss:` identifier, realized capabilities as `capability` claims, mechanically observed implementation evidence as `observation` claims (status `observed`, authority `code` or `document`), and shared premises as `hypothesis` claims. Each relation keeps the executable `epistemic_status` (`declared` or `hypothetical`) plus `attributes.establishment` (`inferred`, `ratified`, `hypothesized`) and, where the predicate is only an approximation, `attributes.conceptual_relation`. Dimensions and disposition history are claim attributes. Encoding findings are in the conceptual model, section 6.2.
+
+**Retrieval.** The queries are recorded in `.sensemaking/receipts/2026-10-28-possibility-reconciliation-and-knowledge.query.yaml`.
+
+- Before the records existed, a search for `poss:`, "possibility" or "opportunity" at `main@d1dee16` returned 0 claims.
+- After indexing, `search --term poss:` returned every possibility; `explain` on `poss:possibility-memory` returned its goal, capabilities, assumption, extension and the possibilities derived from or alternative to it; `explain` on `hyp:cross-episode-synthesis-recurs` returned both possibilities sharing that premise; `contradictions` returned the three strategy-conflicting possibilities with their establishment; `impact` on `cap:semantic-queries` returned every possibility that capability realizes or enables.
+- After the exploration's records were indexed, `changes` from the first indexed revision listed the 5 added claims and separated the 4 possibility records whose authored fields changed from 16 records changed only in provenance. That is the mechanism `poss:possibility-reconsideration-from-change` needs, minus claim-identified `revisit_when` conditions.
+- Gaps: construction paths are not in knowledge (by design; they live in their analyses and in section 4 here). A possibility's implementation evidence is two hops away (possibility, capability, observation), so `explain` on a possibility reports observations as not assessed; use `explain` on the capability. Dimensions are attributes, so no query can filter by alignment or horizon; at 17 records, reading them is acceptable.
+
+**Exploration.** Starting only from those results, the agent explored grounded and counterfactual futures:
+
+- The `impact` result and the `workspace-impact` contract suggested `poss:construction-time-possibility-reconciliation`, which was then exercised on this change (section 3.5).
+- `poss:possibility-memory` combined with the Skill's repository-only discovery and the observed 2026-10-27 discovery miss suggested `poss:target-repository-discovery-memory`.
+- Challenging the program's own premise gave `poss:possibilities-projected-from-analyses`, retained as a declined alternative with its rationale.
+- The `impact` result also suggested treating the most-connected possibilities as the most leveraged. Retrieval showed that is a restatement of the rejected `poss:ranked-possibility-backlog`, so it was not recorded as new.
+
+**Lesson applied (from QY-11).** Evidence matches by file, so a record that cites this library while its origin lies elsewhere is flagged by every library edit. Records now cite the library only where it is their record of origin or the subject of their realization.
+
+None of these syntheses is selected, prioritized or authorized.
 
 ## 7. Extending and maintaining the library
 
@@ -283,9 +349,10 @@ cross-product-transfer (needs S5 evidence) <-- extended by: domain-general-sense
 
 ## 8. Program continuation (non-authoritative pointer)
 
-This version completes the plan's first increment: PR 1 and the smallest useful part of PR 2. The [plan](superpowers/plans/2026-10-28-product-possibility-idea-library.md) describes PR 2 to PR 7; each still needs selection against current source and authority. Observations made while building this version:
+Plan PR 1, the smallest useful part of PR 2, and PR 3 are built. The [plan](superpowers/plans/2026-10-28-product-possibility-idea-library.md) describes PR 4 to PR 7; each still needs selection against current source and authority. Observations so far:
 
 - **PR 2 remainder:** most reservoir entries are `NOT_ASSESSED` here. Extend only where a decision needs them.
-- **PR 3:** the provisional fit table (conceptual model, section 6.2) predicts that `complements` and `extends` will not be expressible and that `sharesAssumptionWith` fits best as a shared `hypothesis` claim. Encoding records will test this. Reuse `poss:` identifiers as claim IDs.
-- **PR 4:** `strategic-repository-analysis` section 1B already recalls goals, decisions and relationships before path comparison. Extending it is likely smaller than a new integration point.
-- **PR 5:** test `poss:possibility-reconsideration-from-change` against the existing `changes`, `history` and `strategy assumptions` surfaces first.
+- **PR 4:** `strategic-repository-analysis` section 1B already recalls goals, decisions and relationships before path comparison. Extending it to possibility records is likely smaller than a new integration point. `poss:target-repository-discovery-memory` is a related, larger option for the portable Skill.
+- **PR 5:** the questions tried so far were answered by `search`, `explain`, `impact`, `contradictions`, `workspace-impact` and `changes`. Filtering by dimension is the first gap that would justify new retrieval, and only once the set is too large to read.
+- **PR 6:** no schema change is warranted yet. The awkward encodings (`extends`, `complements`, `alternativeTo`, relation establishment, dimensions) lose no answer at the current scale.
+- **PR 7:** `poss:construction-time-possibility-reconciliation` shows the existing `workspace-impact` query already surfaces affected possibility records during construction.

@@ -48,7 +48,7 @@ Two neighbouring things are not possibilities:
 | Initiative | ontology Layer 6 | A coordinated effort that may advance a selected possibility |
 | Construction path | `strategic_repository_analysis` paths (for example PATH-1) | A Level-3 way of advancing toward a possibility; not a possibility |
 | Assumption, Uncertainty | ontology Layer 4 | Evidence prerequisites and unresolved premises a possibility depends on; not possibilities |
-| Opportunity | executable `opportunity` claim kind only; not yet an ontology.md concept | A product or engineering need or opening that motivates the possibility. Not a synonym for possibility |
+| Opportunity | executable `opportunity` claim kind only; not yet an ontology.md concept | The stewardship plan (section 3.1) groups opportunity with hypothesis and uncertainty as a defeasible claim family. Typed ProductPossibility records use this kind with a `poss:` identifier and `attributes.concept: ProductPossibility` (section 6.2). The conceptual need that motivates a possibility stays part of its statement and value hypothesis |
 | Hypothesis | ontology Layer 4 | A defeasible claim about the possibility's value, feasibility or consequences |
 | Alternative | executable `alternative` claim kind | A competing means or direction; between possibilities, see `alternativeTo` |
 | Decision | ontology Layer 4 | Records a selection, deferral, rejection or supersession, with its authority |
@@ -196,25 +196,31 @@ The relationship meanings are canonical in [relations-and-epistemics.md](relatio
 
 Frequent co-mention is not a relationship, and a relationship is not a dependency unless a prerequisite is actually claimed.
 
-### 6.2 Fit with the executable vocabulary (provisional)
+### 6.2 Fit with the executable vocabulary (after encoding)
 
-Read from `knowledge.py` at `d0af33b` (v1 `PREDICATES` at line 50, v2 `V2_PREDICATES` at line 43). Verdicts follow the [architecture competency check](architecture-ontology-competency-v1.md) scale and are provisional until records are actually encoded (plan PR 3).
+Predicted from `knowledge.py` at `d0af33b`, then tested by encoding the Idea Library in `.sensemaking/knowledge/possibilities.json` (plan PR 3, schema version 1, no schema change). Verdicts use the [architecture competency check](architecture-ontology-competency-v1.md) scale: **awkward** means the link is a typed edge that queries return, but its specific meaning lives only in an unchecked attribute.
 
-| Conceptual relation | Closest existing construct | Verdict |
+| Conceptual element | Encoded as | Verdict after encoding |
 | --- | --- | --- |
-| serves a product objective | `serves_goal` | expressible |
+| ProductPossibility | `opportunity` claim, `poss:` id, `attributes.concept` | expressible; `search --term poss:` recovers the set |
+| serves a product objective | `serves_goal` (selected) or `candidate_opportunity_for` (not selected) | expressible |
 | `derivedFrom` | `derived_from` | expressible |
-| `supersedes` | `supersedes` | expressible |
-| `realizedBy` | `implemented_by` to source evidence | expressible for a whole realization; partial scope fits only in unchecked `attributes` (awkward) |
-| `conflictsWith` | `contradicts` (claim to claim) or `constrained_by` (to a constraint or non-goal) | expressible when the conflict is between stated claims |
-| `potentiallyEnabledBy` | `requires_capability` with `hypothetical` status | awkward: "requires" is stronger; use only when a prerequisite is genuinely claimed, never `depends_on` |
-| `sharesAssumptionWith` | both possibilities `references` one shared `hypothesis` claim | expressible indirectly, and arguably better than a predicate, because the assumption becomes a node that evidence can contest |
-| `alternativeTo` | `alternative` kind with `references` to a decision | awkward between two possibilities: no symmetric predicate |
-| `complements` | none | not expressible |
-| `extends` | none (`derived_from` loses "broadens") | not expressible |
-| `motivatesReconsiderationOf` | `references` plus attributes | awkward |
+| `supersedes` | `supersedes` | expressible (not yet exercised) |
+| `realizedBy` | `implemented_by` from the possibility to a `capability` claim, `attributes.realized_part` | expressible for the link; partial scope is awkward |
+| implementation evidence | `observation` claim (`observed`, authority `code` or `document`) referenced from the capability | expressible; two hops from the possibility |
+| `conflictsWith` | `contradicts` to a non-goal or ADR claim | expressible; `contradictions` returns them |
+| `potentiallyEnabledBy` | `requires_capability` when a prerequisite is genuinely claimed; otherwise `references` plus `conceptual_relation` | expressible for prerequisites; awkward for weaker enabling |
+| `sharesAssumptionWith` | both possibilities `references` one shared `hypothesis` claim | expressible; `explain` on the hypothesis returns both |
+| `alternativeTo`, `complements`, `extends` | `references` plus `conceptual_relation` | awkward: the link is retrievable, the meaning is unchecked |
+| `motivatesReconsiderationOf` | not yet needed | not exercised |
+| relation establishment (inferred, ratified, hypothesized) | executable `epistemic_status` (`declared` or `hypothetical`) plus `attributes.establishment` | awkward: the executable statuses have no "inferred" or "ratified" value for relations |
+| dimensions and disposition history | claim attributes | awkward: returned with every claim but not filterable |
 
-Do not substitute the v2 `relates_to` predicate: it requires a `cardinality` attribute (`knowledge.py`, `validate_v2_attributes`) and was introduced for domain-concept cardinality, not product futures. A "not expressible" verdict here is a candidate for plan PR 6 only after real encoding shows that the loss changes an answer to a competency question.
+No awkward encoding lost an answer to CQ-079 to CQ-087 at the current scale (17 possibilities). PR 6 remains unwarranted until one does, for example when the set is too large to read and filtering by alignment or horizon becomes necessary.
+
+Do not substitute the v2 `relates_to` predicate: it requires a `cardinality` attribute (`knowledge.py`, `validate_v2_attributes`) and was introduced for domain-concept cardinality, not product futures.
+
+**Citation granularity (learned during encoding).** Evidence is matched by file, so `workspace-impact` flags every record that cites an edited file. A possibility record should cite its record of origin, and cite the library only when the library is that origin or the subject of its realization.
 
 ### 6.3 Recombination
 
@@ -267,11 +273,11 @@ retained possibility
 
 ## 9. Representation now and next
 
-**Now:** this conceptual model and a curated documentary library (`docs/idea-library.md`). No claim kind, predicate, schema version, Skill, runtime, planner or validator is added. The dimension labels are conceptual vocabulary, not entries in `docs/canonical-vocabulary.yaml`: no artifact producer or consumer reads them.
+**Now:** this conceptual model, a curated documentary library (`docs/idea-library.md`) and typed records using existing kinds and predicates (`.sensemaking/knowledge/possibilities.json`). No claim kind, predicate, schema version, Skill, runtime, planner or validator is added. The dimension labels are conceptual vocabulary, not entries in `docs/canonical-vocabulary.yaml`: no artifact producer or consumer reads them.
 
 **Why no new runtime:** storage (Git-authored knowledge and its rebuildable index), generation (the exploration funnel and architecture exploration) and history/currentness (strategic continuity, knowledge `history` and `changes`) already exist. What was missing is semantic: stable identity, separated dimensions, explicit relationships and preserved rationale. That judgment belongs to the active agent (ADR 0013; `con:agent-owns-semantic-control`).
 
-**Next, per the plan:** encode a useful subset with existing claim kinds (PR 3); connect exploration to possibility memory (PR 4); add retrieval only where existing queries prove insufficient (PR 5); specialize the schema only after a documented failed competency question (PR 6, following ADR 0033's competency-check precedent, which this plan does not ratify).
+**Next, per the plan:** connect exploration to possibility memory (PR 4); add retrieval only where existing queries prove insufficient (PR 5); specialize the schema only after a documented failed competency question (PR 6, following ADR 0033's competency-check precedent, which this plan does not ratify).
 
 ## 10. Competency questions served
 
