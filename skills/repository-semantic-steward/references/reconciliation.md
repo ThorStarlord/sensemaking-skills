@@ -30,6 +30,7 @@ Consequential new evidence about product intent, accepted design, important impl
 - Separate lexical imports and path containment from semantic dependencies.
 - Avoid endless duplicate incident lessons and obsolete active claims.
 - Reuse stable identifiers for the same entity through versions, but use distinct identifiers for genuinely different concepts.
+- When a re-inspection candidate is a `poss:` possibility record, check its realization and `revisit_when` against the change. REVISE by appending to `disposition_history` or updating `realization` with its new basis; never rewrite an earlier disposition. A satisfied `revisit_when` is a question for the agent, not a selection.
 - Distinguish a historical decision that was valid then from an error in the original interpretation.
 - Never infer a successful verification because a test file exists or a PR mentions a green check.
 - Use explicit source-revision identities for third-party issues/PRs when evidence matters.

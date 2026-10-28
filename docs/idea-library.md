@@ -42,8 +42,8 @@ Possibilities that originate in a conversation, a plan or a synthesis have their
 | `poss:path-scoped-architecture-vocabulary` | Architecture and ontology vocabulary v2 | ALIGNED | INCREMENTAL | FORESEEABLE | IMPLEMENTED_BASELINE | SELECTED for construction; ADR 0033 PROPOSED |
 | `poss:strategic-exploration-funnel` | Coverage-before-convergence exploration | ALIGNED | INCREMENTAL | FORESEEABLE | IMPLEMENTED_BASELINE (guidance) | SELECTED (integrated) |
 | `poss:strategic-continuity-reassessment` | Assumptions and reassessment triggers for strategic paths | ALIGNED | INCREMENTAL | FORESEEABLE | IMPLEMENTED_BASELINE | SELECTED (integrated) |
-| `poss:possibility-memory` | Product possibility memory (this library) | ALIGNED | SUBSTANTIAL | FORESEEABLE | PARTIALLY_IMPLEMENTED | SELECTED 2026-10-28, first increment only |
-| `poss:cross-episode-possibility-synthesis` | Cross-episode possibility synthesis | ADJACENT | SUBSTANTIAL | FORESEEABLE | NOT_ASSESSED | EXPLORATORY |
+| `poss:possibility-memory` | Product possibility memory (this library) | ALIGNED | SUBSTANTIAL | FORESEEABLE | IMPLEMENTED_BASELINE | SELECTED 2026-10-28 (plan PR 1 to PR 4) |
+| `poss:cross-episode-possibility-synthesis` | Cross-episode possibility synthesis | ALIGNED (was ADJACENT) | SUBSTANTIAL | FORESEEABLE | PARTIALLY_IMPLEMENTED | SELECTED 2026-10-28 (guidance) |
 | `poss:possibility-reconsideration-from-change` | Reconsideration from indexed change (new synthesis) | ALIGNED | INCREMENTAL | FORESEEABLE | NOT_IMPLEMENTED | EXPLORATORY |
 | `poss:capability-learning-analysis` | Cross-episode capability learning Skill | ADJACENT | SUBSTANTIAL | NOT_ASSESSED | NOT_IMPLEMENTED (as a Skill) | DEFERRED (evidence-gated) |
 | `poss:cross-product-transfer` | Stewardship across products and repositories (S6) | ALIGNED | SUBSTANTIAL | LONG_HORIZON | NOT_ASSESSED | DEFERRED (needs S5 evidence) |
@@ -51,7 +51,7 @@ Possibilities that originate in a conversation, a plan or a synthesis have their
 | `poss:automatic-strategic-planner` | Deterministic strategic planner and frontier ranking | CONFLICTS_WITH_CURRENT_STRATEGY | TRANSFORMATIVE | NOT_ASSESSED | NOT_ASSESSED | REJECTED_FOR_NOW |
 | `poss:ranked-possibility-backlog` | The Idea Library as a ranked backlog | CONFLICTS_WITH_CURRENT_STRATEGY | SUBSTANTIAL | FORESEEABLE | NOT_IMPLEMENTED (in this library) | REJECTED_FOR_NOW |
 | `poss:cross-repository-transaction-coordinator` | Cross-repository transaction coordination | CONFLICTS_WITH_CURRENT_STRATEGY | SUBSTANTIAL | LONG_HORIZON | NOT_ASSESSED | DEFERRED (historical label) |
-| `poss:construction-time-possibility-reconciliation` | Reconcile possibilities from construction changes (new) | ALIGNED | INCREMENTAL | FORESEEABLE | PARTIALLY_IMPLEMENTED | EXPLORATORY |
+| `poss:construction-time-possibility-reconciliation` | Reconcile possibilities from construction changes (new) | ALIGNED | INCREMENTAL | FORESEEABLE | IMPLEMENTED_BASELINE | SELECTED 2026-10-28 (plan PR 7 guidance) |
 | `poss:target-repository-discovery-memory` | Discovery memory for target repositories (new) | ALIGNED | SUBSTANTIAL | FORESEEABLE | NOT_ASSESSED | EXPLORATORY |
 | `poss:possibilities-projected-from-analyses` | Derive possibilities from strategic analyses (new counterfactual) | COUNTERFACTUAL | INCREMENTAL | FORESEEABLE | NOT_ASSESSED | REJECTED_FOR_NOW |
 
@@ -105,7 +105,7 @@ Construction paths and evidence prerequisites that earlier drafts listed as poss
 - **Realized by:** `cap:breadth-exploration-guidance`, whose implementation is the repository element `skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md` (Skill guidance).
   - Implementation evidence (OBSERVED): that reference, sections 2 to 4.
   - Realization judgment (INFERRED): `IMPLEMENTED_BASELINE` as guidance. Whether agents follow it is normal-use evidence, not established here.
-- **Gap (OBSERVED):** the breadth landscape receives no stable identity or durable home (section 4, "Breadth output"), and "prior exploratory ideas remain hypotheses" (line 92). `poss:possibility-memory` addresses this.
+- **Gap observed at `d0af33b`:** the breadth landscape received no stable identity or durable home, and "prior exploratory ideas remain hypotheses" (line 92). Since plan PR 4, section 4 recalls retained possibility records before breadth and retains consequential new or revised ones (`observation:funnel-recalls-retained-possibilities` supersedes `observation:funnel-breadth-guidance`).
 
 #### `poss:strategic-continuity-reassessment`: assumptions and reassessment triggers for strategic paths
 
@@ -124,9 +124,9 @@ Construction paths and evidence prerequisites that earlier drafts listed as poss
 - **Value hypothesis (HYPOTHESIZED):** a later agent recovers an earlier possibility and its reasoning, connects it to current implementation evidence, and makes a better-grounded assessment (plan section 1.3). Not demonstrated.
 - **Assumption:** ASSUMPTION-1 (section 4).
 - **Realized in part by:** `cap:possibility-records`.
-  - Implementation evidence (OBSERVED): this file, the conceptual model and the typed records in `.sensemaking/knowledge/possibilities.json`; the query receipt in section 6 records them being retrieved with existing operations.
-  - Realization judgment (INFERRED): `PARTIALLY_IMPLEMENTED`. Documentary and typed records exist and are retrievable; exploration guidance that consults them (plan PR 4) is absent.
-- **Disposition:** 2026-10-28, owner message, `SELECTED` for the first increment (plan PR 1 and part of PR 2). Later increments are not individually authorized by that selection, and no ADR records it.
+  - Implementation evidence (OBSERVED): this file, the conceptual model, the typed records in `.sensemaking/knowledge/possibilities.json` (retrieved with existing operations, section 6), and since plan PR 4 the exploration guidance in funnel section 4 and the steward knowledge contract ("Product possibility records").
+  - Realization judgment (INFERRED): `IMPLEMENTED_BASELINE`, revised from `PARTIALLY_IMPLEMENTED` at `d1dee16`. Agent adherence and cross-session use are not established.
+- **Disposition history:** 2026-10-28, owner message, `SELECTED` for the first increment (plan PR 1 and part of PR 2); then plan PR 3 and PR 4 under the owner's follow-up message. No ADR records it.
 - **Risk (INFERRED):** for this repository most retained possibilities describe the knowledge plane itself, the self-referential pattern FRONTIER-1 of the 2026-10-23 analysis warned about. The library shows value only when it informs a decision beyond its own construction.
 
 ### 3.2 Aligned and adjacent futures
@@ -135,8 +135,9 @@ Construction paths and evidence prerequisites that earlier drafts listed as poss
 
 - **Proposed future:** across sessions, agents combine retained possibilities, implemented capabilities and strategic history into new, distinct product directions instead of exploring from a blank slate each time.
 - **Origin:** the owner's 2026-10-28 plan, section 4.4 (recombination example).
-- **Alignment basis:** ADR 0031 names exploration and architectural synthesis in the reasoning plane, but not synthesis of product futures from retained possibilities. `ADJACENT` until that scope is clarified.
-- **Realization:** `NOT_ASSESSED`. Bounded observations: a lexical search of `skills/` found no guidance for synthesizing retained possibilities; `strategic-repository-analysis` section 1B recalls goals, decision history and relationships before comparing paths (`skills/strategic-repository-analysis/SKILL.md:74`); the learning policy says cross-episode synthesis "is currently agent-owned reasoning" (`skills/using-sensemaking/references/learning-reconciliation-policy-v0.md:355`).
+- **Alignment:** `ALIGNED` since 2026-10-28: the owner's plan PR 4 and follow-up message direct exploration to recall retained possibilities and record consequential new synthesis. Earlier assessment at `d0af33b`: `ADJACENT`, because ADR 0031 names exploration and synthesis in the reasoning plane but not synthesis of product futures from retained possibilities.
+- **Realization:** `PARTIALLY_IMPLEMENTED` since plan PR 4: funnel section 4 and `strategic-repository-analysis` section 1B tell agents to recall retained possibilities and retain new syntheses, and one same-session exploration is recorded (section 6). Cross-session use is not established. Earlier assessment at `d0af33b`: `NOT_ASSESSED`; a lexical search of `skills/` found no guidance for synthesizing retained possibilities, and the learning policy says cross-episode synthesis "is currently agent-owned reasoning" (`skills/using-sensemaking/references/learning-reconciliation-policy-v0.md:355`).
+- **Disposition history:** `EXPLORATORY` (owner plan example, 2026-10-28); `SELECTED` for its guidance under plan PR 4 (2026-10-28).
 - **Assumptions:** ASSUMPTION-1; and that cross-episode synthesis is a stable, recurring responsibility worth retained structure (not yet recorded as a hypothesis claim).
 
 #### `poss:possibility-reconsideration-from-change`: reconsideration from indexed change
@@ -211,9 +212,9 @@ These grew from the typed records and queries described in section 6. Each is a 
 - **Alignment basis:** ADR 0031 success conditions: invalidated assumptions are recognized rather than canonized. `ALIGNED`, `INCREMENTAL`, `FORESEEABLE`.
 - **Realization:**
   - Implementation evidence (OBSERVED, query QY-11 in the section 6 receipt): with this change's library edits uncommitted, `workspace-impact` against the indexed records listed 13 records citing the edited file, 5 of them possibilities.
-  - Realization judgment (INFERRED): `PARTIALLY_IMPLEMENTED`. The mechanism works on possibility records; no guidance tells an agent to use it during construction.
-- **Limits observed:** matching is by file path, not meaning. Re-inspection found 3 of the 5 listed possibilities changed by the edit; 2 were listed only because their records cited the library file. Possibilities whose premises change without a cited file changing are missed.
-- **Disposition:** `EXPLORATORY` (agent, 2026-10-28); candidate input to plan PR 7.
+  - Realization judgment (INFERRED): `IMPLEMENTED_BASELINE` since plan PR 4 added the guidance to the steward reconciliation reference (`PARTIALLY_IMPLEMENTED` before).
+- **Limits observed:** matching is by file path, not meaning. In QY-11, re-inspection found 3 of the 5 listed possibilities changed by the edit; 2 were listed only because their records cited the library file. On plan PR 4 itself, 6 records were flagged by path, and inspecting the 4 changed files no record cited found 3 more affected possibilities. Read `uncited_changed_paths`, not only the flagged records.
+- **Disposition history:** `EXPLORATORY` (agent, 2026-10-28); `SELECTED` for its guidance under plan PR 7, first used on plan PR 4 (2026-10-28).
 - **Relations:** complements `poss:possibility-reconsideration-from-change` (during construction, versus across indexed revisions); enabled by `cap:semantic-queries`.
 
 #### `poss:target-repository-discovery-memory`: discovery memory for target repositories
@@ -332,6 +333,8 @@ cross-product-transfer (needs S5 evidence) <-- extended by: domain-general-sense
 - Challenging the program's own premise gave `poss:possibilities-projected-from-analyses`, retained as a declined alternative with its rationale.
 - The `impact` result also suggested treating the most-connected possibilities as the most leveraged. Retrieval showed that is a restatement of the rejected `poss:ranked-possibility-backlog`, so it was not recorded as new.
 
+**Plan PR 4 (exploration guidance and first construction-time reconciliation).** Funnel section 4 now recalls retained possibilities before breadth, marks observations restated, revised or new, and retains only consequential ones; `strategic-repository-analysis` section 1B, the steward's architecture-exploration reference, knowledge contract ("Product possibility records") and reconciliation reference carry matching hooks. Building it was itself the first use of construction-time reconciliation: `workspace-impact` against `main@274e585` flagged 6 records citing the funnel, its uncited-path list led to 3 more affected possibilities, and the records were revised with their earlier assessments kept in `history` and a superseded observation.
+
 **Lesson applied (from QY-11).** Evidence matches by file, so a record that cites this library while its origin lies elsewhere is flagged by every library edit. Records now cite the library only where it is their record of origin or the subject of their realization.
 
 None of these syntheses is selected, prioritized or authorized.
@@ -349,10 +352,10 @@ None of these syntheses is selected, prioritized or authorized.
 
 ## 8. Program continuation (non-authoritative pointer)
 
-Plan PR 1, the smallest useful part of PR 2, and PR 3 are built. The [plan](superpowers/plans/2026-10-28-product-possibility-idea-library.md) describes PR 4 to PR 7; each still needs selection against current source and authority. Observations so far:
+Plan PR 1, the smallest useful part of PR 2, PR 3, PR 4 and the guidance part of PR 7 are built. The [plan](superpowers/plans/2026-10-28-product-possibility-idea-library.md) remains the reference for their intent; any further increment still needs selection against current source and authority. Observations so far:
 
 - **PR 2 remainder:** most reservoir entries are `NOT_ASSESSED` here. Extend only where a decision needs them.
-- **PR 4:** `strategic-repository-analysis` section 1B already recalls goals, decisions and relationships before path comparison. Extending it to possibility records is likely smaller than a new integration point. `poss:target-repository-discovery-memory` is a related, larger option for the portable Skill.
 - **PR 5:** the questions tried so far were answered by `search`, `explain`, `impact`, `contradictions`, `workspace-impact` and `changes`. Filtering by dimension is the first gap that would justify new retrieval, and only once the set is too large to read.
 - **PR 6:** no schema change is warranted yet. The awkward encodings (`extends`, `complements`, `alternativeTo`, relation establishment, dimensions) lose no answer at the current scale.
-- **PR 7:** `poss:construction-time-possibility-reconciliation` shows the existing `workspace-impact` query already surfaces affected possibility records during construction.
+- **PR 7:** reconciliation now runs through the existing `workspace-impact` query plus the uncited-path list; its value depends on records citing the files that realize them.
+- **Beyond the plan:** `poss:target-repository-discovery-memory` is the largest recorded opportunity to give possibility memory value outside this repository. It is `EXPLORATORY`; adopting it would change the portable Skill and needs its own selection.

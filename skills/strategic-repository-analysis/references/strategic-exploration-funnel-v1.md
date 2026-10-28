@@ -169,12 +169,38 @@ Distinguish **governing commitments** (accepted owner intent, non-goals, safety 
 
 Explore novel user value, combinations and simplifications alongside known deficiencies. Preserve meaningful alternatives without manufacturing a gap for every subsystem.
 
+### Retained possibilities as prior breadth
+
+When the repository retains product possibilities (`poss:` records in
+`.sensemaking/knowledge/`, often curated in an Idea Library), recall the ones
+relevant to the mapped systems before generating breadth: `knowledge-query
+--operation search --term poss:`, then `explain` on relevant possibilities and
+their realized capabilities, or read the authored records directly when no
+index exists. Read each one's origin, disposition history and `revisit_when`
+before reusing it. Then:
+
+- mark each breadth observation as **restated** (cite the `poss:` id),
+  **revised** (an existing possibility whose premise, realization or relation
+  changed) or **new**;
+- keep grounded and counterfactual divergence open: retained records are a
+  starting point, not the option set, and an empty result is NOT ASSESSED;
+- treat a rejected possibility's rationale as evidence to address, not a veto:
+  re-proposing it means naming which premise changed;
+- a retained possibility, or a satisfied `revisit_when`, is not a frontier
+  candidate until frontier synthesis (section 5) admits it.
+
 ### Breadth output
 
 Produce a compact **opportunity landscape** of material observations. It may
 contain more items than the final Strategic Frontier.
 
 Do not assign numeric opportunity scores.
+
+Retain only consequential new or revised possibilities, through the
+Repository Semantic Steward's RECONCILE and its knowledge contract ("Product
+possibility records"): a hypothetical record with its origin and the
+relationships it was derived from. Retention is memory, not selection; an
+exploration-only request still ends with the landscape.
 
 ### From possibilities to construction: conditional order
 

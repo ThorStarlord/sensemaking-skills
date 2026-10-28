@@ -277,7 +277,9 @@ retained possibility
 
 **Why no new runtime:** storage (Git-authored knowledge and its rebuildable index), generation (the exploration funnel and architecture exploration) and history/currentness (strategic continuity, knowledge `history` and `changes`) already exist. What was missing is semantic: stable identity, separated dimensions, explicit relationships and preserved rationale. That judgment belongs to the active agent (ADR 0013; `con:agent-owns-semantic-control`).
 
-**Next, per the plan:** connect exploration to possibility memory (PR 4); add retrieval only where existing queries prove insufficient (PR 5); specialize the schema only after a documented failed competency question (PR 6, following ADR 0033's competency-check precedent, which this plan does not ratify).
+**Built since:** exploration guidance that recalls and retains possibilities (plan PR 4, funnel section 4 and the steward knowledge contract) and construction-time reconciliation through `workspace-impact` (plan PR 7 guidance, steward reconciliation reference).
+
+**Next, per the plan:** add retrieval only where existing queries prove insufficient (PR 5); specialize the schema only after a documented failed competency question (PR 6, following ADR 0033's competency-check precedent, which this plan does not ratify).
 
 ## 10. Competency questions served
 
