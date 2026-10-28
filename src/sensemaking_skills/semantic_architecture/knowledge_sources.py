@@ -10,7 +10,11 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+import shutil
 import subprocess
+import tempfile
+from collections.abc import Iterator
+from contextlib import contextmanager
 from pathlib import Path
 
 from .knowledge import (
@@ -19,6 +23,7 @@ from .knowledge import (
 )
 from .models import ObservationKind
 from .probes import probe_python_imports
+from .worktree_context import _configured_external_filters
 
 _TAG = re.compile(r"(?:\[(policy|code|test|owner|delegated):\s*([^\]]+)\]|\[(hypothesis)\])\s*$")
 _STATUS = re.compile(r"^\*\*Status:?\*\*:?\s*(.+)$", re.IGNORECASE)
@@ -58,6 +63,69 @@ def verified_tracked_sources(repo_root: str | Path, target_ref: str) -> tuple[Pa
     tracked = set(_git(root, "ls-files", "-z").split("\0"))
     tracked.discard("")
     return root, tracked
+
+
+def _filtered_paths(checkout: Path) -> list[str]:
+    """Tracked paths whose committed attributes name a filter; check-attr runs no filter."""
+    try:
+        listed = subprocess.run(["git", "ls-files", "-z"], cwd=checkout, text=True,
+                                capture_output=True, timeout=60, check=False)
+        proc = subprocess.run(
+            ["git", "check-attr", "-z", "--stdin", "filter"], cwd=checkout, input=listed.stdout,
+            text=True, capture_output=True, timeout=60, check=False,
+        )
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        raise ValueError(f"Git attribute inspection unavailable: {exc}") from exc
+    if listed.returncode or proc.returncode:
+        raise ValueError(f"Git attribute inspection failed: {(listed.stderr or proc.stderr).strip()}")
+    fields = proc.stdout.split("\0")
+    return [fields[i] for i in range(0, len(fields) - 2, 3)
+            if fields[i + 2] not in ("unspecified", "unset")]
+
+
+@contextmanager
+def temporary_commit_checkout(repo_root: str | Path, target_ref: str) -> Iterator[Path]:
+    """Yield a clean detached worktree of target_ref outside repo_root, then remove it.
+
+    The worktree shares the repository's object store, so any local commit can be
+    indexed while the active checkout is dirty or at another revision. Only the
+    committed tree is checked out; the active working tree is never read. Hooks,
+    the filesystem monitor and configured external clean/smudge/process filters
+    are disabled, so no repository-configured command runs. A commit whose
+    attributes assign a filter to a tracked path is refused, because its
+    unfiltered bytes would differ from an ordinary checkout of the same commit.
+    """
+    if not re.fullmatch(r"[0-9a-f]{40}", target_ref):
+        raise ValueError("target_ref must be a full 40-character Git SHA")
+    root = Path(repo_root).resolve()
+    if Path(_git(root, "rev-parse", "--show-toplevel")).resolve() != root:
+        raise ValueError("repo_root must be the exact Git checkout root")
+    disabled = [part for name in _configured_external_filters(root) for part in ("-c", f"{name}=")]
+    try:
+        _git(root, "cat-file", "-e", f"{target_ref}^{{commit}}")
+    except ValueError as exc:
+        raise ValueError("target_ref is not a local commit; a shallow clone may need more history") from exc
+    parent = Path(tempfile.mkdtemp(prefix="sensemaking-index-")).resolve()
+    if parent.is_relative_to(root):
+        shutil.rmtree(parent, ignore_errors=True)
+        raise ValueError("temporary checkout would fall inside the repository checkout")
+    no_hooks = parent / "no-hooks"
+    no_hooks.mkdir()
+    checkout = parent / "checkout"
+    try:
+        _git(root, "-c", f"core.hooksPath={no_hooks}", "-c", "core.fsmonitor=false", *disabled,
+             "worktree", "add", "--quiet", "--detach", str(checkout), target_ref, timeout=300)
+        if _filtered_paths(checkout):
+            raise ValueError("temporary checkout refused: target_ref assigns Git filters to tracked paths")
+        yield checkout
+    finally:
+        # Remove only this worktree; a repository-wide prune could drop other
+        # worktrees' entries. An interrupted run leaves an entry Git lists as prunable.
+        try:
+            _git(root, "worktree", "remove", "--force", str(checkout))
+        except ValueError:
+            pass
+        shutil.rmtree(parent, ignore_errors=True)
 
 
 def _source(root: Path, tracked: set[str], relative: str) -> Path:
