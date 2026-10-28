@@ -10,7 +10,7 @@
       "authority_ref": "docs/adr/0031-persistent-semantic-stewardship.md",
       "evidence_refs": [
         "file:docs/adr/0031-persistent-semantic-stewardship.md:line:32",
-        "file:docs/idea-library.md"
+        "file:docs/adr/0031-persistent-semantic-stewardship.md:line:25"
       ],
       "attributes": {
         "concept": "ProductPossibility",
@@ -325,8 +325,7 @@
       "authority_kind": "hypothesis",
       "authority_ref": "docs/superpowers/plans/2026-10-28-product-possibility-idea-library.md",
       "evidence_refs": [
-        "file:docs/superpowers/plans/2026-10-28-product-possibility-idea-library.md:line:249",
-        "file:docs/idea-library.md"
+        "file:docs/superpowers/plans/2026-10-28-product-possibility-idea-library.md:line:249"
       ],
       "attributes": {
         "concept": "ProductPossibility",
@@ -405,7 +404,7 @@
           "realization": {
             "value": "NOT_IMPLEMENTED",
             "establishment": "inferred",
-            "basis": "At d0af33b no poss: records existed in .sensemaking/knowledge/ (exhaustive check of that directory)."
+            "basis": "Since plan PR 3 changes lists changed poss: records, but every revisit_when is free text naming no claim identifier (exhaustive check of possibilities.json), so no change can yet be matched to a condition."
           }
         },
         "disposition_history": [
@@ -641,8 +640,7 @@
       "authority_ref": "docs/superpowers/plans/2026-10-28-product-possibility-idea-library.md",
       "evidence_refs": [
         "file:docs/superpowers/plans/2026-10-28-product-possibility-idea-library.md:line:777",
-        "file:docs/superpowers/plans/2026-10-28-product-possibility-idea-library.md:line:711",
-        "file:docs/idea-library.md"
+        "file:docs/superpowers/plans/2026-10-28-product-possibility-idea-library.md:line:711"
       ],
       "attributes": {
         "concept": "ProductPossibility",
@@ -738,6 +736,180 @@
       }
     },
     {
+      "id": "poss:construction-time-possibility-reconciliation",
+      "kind": "opportunity",
+      "statement": "During a construction increment, the existing workspace-impact query lists the possibility records whose cited sources the change touched, and the agent re-inspects only those.",
+      "epistemic_status": "hypothetical",
+      "authority_kind": "hypothesis",
+      "authority_ref": "docs/idea-library.md",
+      "evidence_refs": [
+        "file:docs/idea-library.md",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md:line:127"
+      ],
+      "attributes": {
+        "concept": "ProductPossibility",
+        "title": "Reconcile possibilities from construction changes",
+        "library_ref": "docs/idea-library.md",
+        "origin": {
+          "ref": "docs/idea-library.md",
+          "date": "2026-10-28",
+          "author": "agent synthesis from retrieved impact results"
+        },
+        "dimensions": {
+          "alignment": {
+            "value": "ALIGNED",
+            "basis": "ADR 0031: invalidated assumptions are recognized rather than canonized."
+          },
+          "ambition": {
+            "value": "INCREMENTAL",
+            "basis": "Reuses an existing query."
+          },
+          "horizon": {
+            "value": "FORESEEABLE",
+            "basis": "Mechanism exists."
+          },
+          "realization": {
+            "value": "PARTIALLY_IMPLEMENTED",
+            "establishment": "inferred",
+            "basis": "workspace-impact listed 13 records (5 possibilities) citing an edited library file (query receipt QY-9); no guidance tells agents to use it during construction.",
+            "observation_ref": ".sensemaking/receipts/2026-10-28-possibility-reconciliation-and-knowledge.query.yaml#QY-9"
+          }
+        },
+        "disposition_history": [
+          {
+            "value": "EXPLORATORY",
+            "date": "2026-10-28",
+            "authority": "agent",
+            "source": "docs/idea-library.md",
+            "rationale": "Candidate input to plan PR 7."
+          }
+        ],
+        "assessed_ref": "3892c38d2bb782247d17894968b4bca4263554f1",
+        "value_hypothesis": "Keeps the possibility landscape current by re-inspecting a short list instead of periodic global review."
+      }
+    },
+    {
+      "id": "poss:target-repository-discovery-memory",
+      "kind": "opportunity",
+      "statement": "When the portable using-sensemaking Skill performs repository-only discovery in a target repository with authority to write knowledge, it retains the compared candidate responsibilities (selected and declined, with reasons and revisit_when) as possibility records for later discovery.",
+      "epistemic_status": "hypothetical",
+      "authority_kind": "hypothesis",
+      "authority_ref": "docs/idea-library.md",
+      "evidence_refs": [
+        "file:docs/idea-library.md",
+        "file:docs/agents/build-loop.md:line:58",
+        "file:skills/using-sensemaking/references/session-receipt-v1.md:line:218"
+      ],
+      "attributes": {
+        "concept": "ProductPossibility",
+        "title": "Discovery memory for target repositories",
+        "library_ref": "docs/idea-library.md",
+        "origin": {
+          "ref": "docs/idea-library.md",
+          "date": "2026-10-28",
+          "author": "agent synthesis"
+        },
+        "dimensions": {
+          "alignment": {
+            "value": "ALIGNED",
+            "basis": "ADR 0031 decision 1 names repositories; repository-only discovery is the front door. Writing in a target repository needs that repository's knowledge authority."
+          },
+          "ambition": {
+            "value": "SUBSTANTIAL",
+            "basis": "Brings possibility memory to every target repository."
+          },
+          "horizon": {
+            "value": "FORESEEABLE",
+            "basis": "Plain JSON records readable without an index or CLI."
+          },
+          "realization": {
+            "value": "NOT_ASSESSED",
+            "establishment": "inferred",
+            "basis": "Receipt schema is closed and holds a single next (observation:receipt-records-single-next); lexical search of skills/using-sensemaking/ found no guidance for retaining the compared set."
+          }
+        },
+        "disposition_history": [
+          {
+            "value": "EXPLORATORY",
+            "date": "2026-10-28",
+            "authority": "agent",
+            "source": "docs/idea-library.md",
+            "rationale": "Consequential candidate for a later Level-3 or plan PR 4 decision; not selected."
+          }
+        ],
+        "assessed_ref": "d0af33beb52e94b375d6a471e9990df11c8c424d",
+        "value_hypothesis": "Fewer repeated discoveries and less recency anchoring in target repositories; possibility memory gains value outside this repository's own knowledge plane."
+      }
+    },
+    {
+      "id": "poss:possibilities-projected-from-analyses",
+      "kind": "opportunity",
+      "statement": "Possibilities are projected from strategic analyses' frontier candidates, paths and dispositions with the existing strategy history and graph commands instead of being authored as records.",
+      "epistemic_status": "hypothetical",
+      "authority_kind": "hypothesis",
+      "authority_ref": "docs/idea-library.md",
+      "evidence_refs": [
+        "file:docs/idea-library.md",
+        "file:src/sensemaking_skills/strategy_cli.py:line:629"
+      ],
+      "attributes": {
+        "concept": "ProductPossibility",
+        "title": "Derive possibilities from strategic analyses",
+        "library_ref": "docs/idea-library.md",
+        "origin": {
+          "ref": "docs/idea-library.md",
+          "date": "2026-10-28",
+          "author": "agent counterfactual"
+        },
+        "dimensions": {
+          "alignment": {
+            "value": "COUNTERFACTUAL",
+            "basis": "Alters a design premise of this program, not a product commitment; exploring needed no review."
+          },
+          "ambition": {
+            "value": "INCREMENTAL",
+            "basis": "Reuses existing projections."
+          },
+          "horizon": {
+            "value": "FORESEEABLE",
+            "basis": "Commands exist."
+          },
+          "realization": {
+            "value": "NOT_ASSESSED",
+            "establishment": "inferred",
+            "basis": "strategy history and graph exist; whether they could carry possibilities was not assessed."
+          }
+        },
+        "disposition_history": [
+          {
+            "value": "REJECTED_FOR_NOW",
+            "date": "2026-10-28",
+            "authority": "agent (design choice within plan PR 3)",
+            "source": "docs/idea-library.md",
+            "rationale": "None of the 17 recorded possibilities originates in a strategic analysis, so a projection would drop them; citing analyses as records of origin keeps their value.",
+            "reason": "better_alternative"
+          }
+        ],
+        "assessed_ref": "d0af33beb52e94b375d6a471e9990df11c8c424d",
+        "revisit_when": "Authored records drift from or duplicate analyses in real use, or their maintenance cost becomes material."
+      }
+    },
+    {
+      "id": "observation:receipt-records-single-next",
+      "kind": "observation",
+      "statement": "At d1dee16, the session receipt schema records next.warranted_responsibility as a single value and has no field for the candidate responsibilities a discovery compared.",
+      "epistemic_status": "observed",
+      "authority_kind": "document",
+      "authority_ref": "skills/using-sensemaking/references/session-receipt-v1.md",
+      "evidence_refs": [
+        "file:skills/using-sensemaking/references/session-receipt-v1.md:line:218"
+      ],
+      "attributes": {
+        "observed_ref": "d1dee16552e9347bf795a37a59aa12c07291b71d",
+        "role": "limitation_evidence"
+      }
+    },
+    {
       "id": "cap:path-scoped-architecture-context",
       "kind": "capability",
       "statement": "Path-scoped architecture context queries (rules-for, term, context-for) return reviewed ownership, rules, contracts, decisions and terms bearing on a file or term.",
@@ -783,6 +955,22 @@
       "attributes": {
         "concept": "ProductCapability",
         "claim_ceiling": "Projection only; the agent judges whether a trigger is semantically met."
+      }
+    },
+    {
+      "id": "cap:repository-only-discovery",
+      "kind": "capability",
+      "statement": "Given only a target repository, the using-sensemaking Skill discovers a warranted next engineering responsibility from product intent, implementation evidence and credible alternatives without asking the owner to choose a feature.",
+      "epistemic_status": "declared",
+      "authority_kind": "document",
+      "authority_ref": "skills/using-sensemaking/SKILL.md",
+      "evidence_refs": [
+        "file:skills/using-sensemaking/SKILL.md:line:76",
+        "file:skills/using-sensemaking/SKILL.md:line:418"
+      ],
+      "attributes": {
+        "concept": "ProductCapability",
+        "claim_ceiling": "Skill guidance; behavior in independent sessions is normal-use evidence, not established."
       }
     },
     {
@@ -1492,6 +1680,174 @@
       "attributes": {
         "conceptual_relation": "evidence prerequisite (declared in plan section 14)",
         "establishment": "declared in plan"
+      }
+    },
+    {
+      "id": "rel:construction-time-complements-reconsideration",
+      "subject": "poss:construction-time-possibility-reconciliation",
+      "predicate": "references",
+      "object": "poss:possibility-reconsideration-from-change",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:docs/idea-library.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "complements",
+        "establishment": "hypothesized",
+        "representation_gap": "complements has no executable predicate; references plus this attribute"
+      }
+    },
+    {
+      "id": "rel:construction-time-requires-queries",
+      "subject": "poss:construction-time-possibility-reconciliation",
+      "predicate": "requires_capability",
+      "object": "cap:semantic-queries",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md:line:127"
+      ],
+      "attributes": {
+        "conceptual_relation": "potentiallyEnabledBy",
+        "establishment": "inferred",
+        "note": "workspace-impact is a genuine prerequisite; exercised on possibility records in QY-9."
+      }
+    },
+    {
+      "id": "rel:construction-time-derived-from-index",
+      "subject": "poss:construction-time-possibility-reconciliation",
+      "predicate": "derived_from",
+      "object": "poss:git-authored-knowledge-index",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:docs/idea-library.md"
+      ],
+      "attributes": {
+        "establishment": "hypothesized"
+      }
+    },
+    {
+      "id": "rel:construction-time-candidate-for-goal",
+      "subject": "poss:construction-time-possibility-reconciliation",
+      "predicate": "candidate_opportunity_for",
+      "object": "goal:longterm-stewardship",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:docs/idea-library.md"
+      ],
+      "attributes": {
+        "establishment": "hypothesized"
+      }
+    },
+    {
+      "id": "rel:discovery-memory-extends-memory",
+      "subject": "poss:target-repository-discovery-memory",
+      "predicate": "references",
+      "object": "poss:possibility-memory",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:docs/idea-library.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "extends",
+        "establishment": "hypothesized",
+        "representation_gap": "extends has no executable predicate; references plus this attribute"
+      }
+    },
+    {
+      "id": "rel:discovery-memory-requires-records",
+      "subject": "poss:target-repository-discovery-memory",
+      "predicate": "requires_capability",
+      "object": "cap:possibility-records",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:docs/idea-library.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "potentiallyEnabledBy",
+        "establishment": "hypothesized"
+      }
+    },
+    {
+      "id": "rel:discovery-memory-requires-discovery",
+      "subject": "poss:target-repository-discovery-memory",
+      "predicate": "requires_capability",
+      "object": "cap:repository-only-discovery",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:skills/using-sensemaking/SKILL.md:line:76"
+      ],
+      "attributes": {
+        "conceptual_relation": "potentiallyEnabledBy",
+        "establishment": "hypothesized"
+      }
+    },
+    {
+      "id": "rel:discovery-memory-assumes-consultation",
+      "subject": "poss:target-repository-discovery-memory",
+      "predicate": "references",
+      "object": "hyp:later-sessions-consult-knowledge",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-23-strategic-repository-analysis.md:line:201"
+      ],
+      "attributes": {
+        "conceptual_relation": "assumes",
+        "establishment": "inferred"
+      }
+    },
+    {
+      "id": "rel:discovery-memory-candidate-for-goal",
+      "subject": "poss:target-repository-discovery-memory",
+      "predicate": "candidate_opportunity_for",
+      "object": "goal:compounding-product-knowledge",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:docs/idea-library.md"
+      ],
+      "attributes": {
+        "establishment": "hypothesized"
+      }
+    },
+    {
+      "id": "rel:discovery-evidence-single-next",
+      "subject": "cap:repository-only-discovery",
+      "predicate": "references",
+      "object": "observation:receipt-records-single-next",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:skills/using-sensemaking/references/session-receipt-v1.md:line:218"
+      ],
+      "attributes": {
+        "role": "limitation_evidence",
+        "establishment": "pointer to observed claim"
+      }
+    },
+    {
+      "id": "rel:projected-alternative-to-memory",
+      "subject": "poss:possibilities-projected-from-analyses",
+      "predicate": "references",
+      "object": "poss:possibility-memory",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:docs/idea-library.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "alternativeTo",
+        "establishment": "inferred",
+        "representation_gap": "no symmetric alternative predicate; references plus this attribute"
+      }
+    },
+    {
+      "id": "rel:projected-derived-from-continuity",
+      "subject": "poss:possibilities-projected-from-analyses",
+      "predicate": "derived_from",
+      "object": "poss:strategic-continuity-reassessment",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/strategy_cli.py:line:629"
+      ],
+      "attributes": {
+        "establishment": "hypothesized"
       }
     }
   ]
