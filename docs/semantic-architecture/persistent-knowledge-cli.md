@@ -58,9 +58,10 @@ example) or a historical revision is needed as a `changes` base, add
 
 The command checks out the commit in a temporary detached `git worktree`
 outside the repository, indexes it there under the same clean-source checks,
-and removes it; the active working tree is never read. Hooks, the filesystem
-monitor and configured external clean/smudge/process filters are disabled,
-and a commit whose attributes assign a filter to a tracked path is refused,
+and removes it; the active working tree is never read. The checkout step
+disables hooks, the filesystem monitor and configured external
+clean/smudge/process filters (the clean-source checks then run as in an
+ordinary build), and a commit whose attributes assign a filter to a tracked path is refused,
 because its unfiltered bytes would differ from an ordinary checkout. A
 snapshot built this way is identical to one built from a clean checkout of
 the same commit. A shallow clone indexes only commits it has. An interrupted

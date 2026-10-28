@@ -89,11 +89,11 @@ def temporary_commit_checkout(repo_root: str | Path, target_ref: str) -> Iterato
 
     The worktree shares the repository's object store, so any local commit can be
     indexed while the active checkout is dirty or at another revision. Only the
-    committed tree is checked out; the active working tree is never read. Hooks,
-    the filesystem monitor and configured external clean/smudge/process filters
-    are disabled, so no repository-configured command runs. A commit whose
-    attributes assign a filter to a tracked path is refused, because its
-    unfiltered bytes would differ from an ordinary checkout of the same commit.
+    committed tree is checked out; the active working tree is never read. The
+    checkout step disables hooks, the filesystem monitor and configured external
+    clean/smudge/process filters; the clean-source checks that follow run as in an
+    ordinary build. A commit whose attributes assign a filter to a tracked path is
+    refused, because its unfiltered bytes would differ from an ordinary checkout.
     """
     if not re.fullmatch(r"[0-9a-f]{40}", target_ref):
         raise ValueError("target_ref must be a full 40-character Git SHA")
