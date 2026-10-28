@@ -4,6 +4,12 @@ Representation only: the validator does not compare options, prefer or select
 one, authorize implementation, or establish semantic truth. It checks identity,
 links between options, consequences and the preference, the separation of a
 provisional preference from a decision, and the authorization invariants.
+
+References that leave the artifact (knowledge ids such as poss:, hyp:, cap:,
+and file paths) are checked for shape only. --resolve-references reports, for
+each one, whether the artifact defines it, the repository's reviewed knowledge
+records it, or the path exists. The report never changes validity: retained
+records are optional, and presence is not semantic correctness or currentness.
 """
 
 from __future__ import annotations
@@ -24,6 +30,8 @@ SCHEMA_VERSIONS = {1}
 OPTION_ID = re.compile(r"arch:[a-z0-9][a-z0-9._-]*\Z")
 POSSIBILITY_ID = re.compile(r"poss:[a-z0-9][a-z0-9._-]*\Z")
 CONSEQUENCE_ID = re.compile(r"conseq:[a-z0-9][a-z0-9._-]*\Z")
+KNOWLEDGE_ID = re.compile(r"[a-z][a-z_]*:[A-Za-z0-9][A-Za-z0-9._-]*\Z")
+LINE_SUFFIX = re.compile(r":(?:L?\d+(?:-L?\d+)?)\Z")
 
 COMPARISON_OUTCOMES = {
     "PROVISIONALLY_PREFERRED",
@@ -383,13 +391,96 @@ def validate(path: Path) -> list[dict[str, str]]:
     return errors
 
 
+def _cited_references(data: dict[str, Any]) -> tuple[set[str], set[str], set[str]]:
+    """Return (knowledge ids, file paths, ids the artifact itself defines)."""
+    ids: set[str] = set()
+    paths: set[str] = set()
+
+    def add(value: Any) -> None:
+        if not isinstance(value, str) or not value.strip() or value.startswith("new:"):
+            return
+        value = value.strip()
+        (ids if KNOWLEDGE_ID.fullmatch(value) else paths).add(value)
+
+    for field in ("governing_intent_refs", "current_architecture_refs", "target_possibility_refs", "derived_possibility_refs"):
+        for value in data.get(field) or []:
+            add(value)
+    defined: set[str] = set()
+    for option in data.get("architecture_options") or []:
+        if not isinstance(option, dict):
+            continue
+        if isinstance(option.get("option_id"), str):
+            defined.add(option["option_id"])
+        for field in ("reuses_refs", "assumption_refs", "conditional_consequence_refs"):
+            for value in option.get(field) or []:
+                add(value)
+        for transition in option.get("proposed_transitions") or []:
+            if isinstance(transition, dict):
+                add(transition.get("target_ref"))
+    for entry in data.get("conditional_consequences") or []:
+        if not isinstance(entry, dict):
+            continue
+        if isinstance(entry.get("consequence_id"), str):
+            defined.add(entry["consequence_id"])
+        for field in ("assumption_refs", "observed_premise_refs"):
+            for value in entry.get(field) or []:
+                add(value)
+    return ids, paths, defined
+
+
+def _knowledge_ids(repo_root: Path) -> set[str]:
+    """Claim ids the knowledge index would build from this working tree: Git-authored
+    JSON records plus one adr:NNNN claim per docs/adr/NNNN-*.md file."""
+    found: set[str] = set()
+    for adr in (repo_root / "docs" / "adr").glob("[0-9][0-9][0-9]*-*.md"):
+        found.add("adr:" + adr.name.split("-", 1)[0])
+    for pack in sorted((repo_root / ".sensemaking" / "knowledge").glob("*.json")):
+        try:
+            records = json.loads(pack.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        for claim in records.get("claims", []) if isinstance(records, dict) else []:
+            if isinstance(claim, dict) and isinstance(claim.get("id"), str):
+                found.add(claim["id"])
+    return found
+
+
+def resolve_references(path: Path, repo_root: Path) -> dict[str, Any]:
+    try:
+        data = _extract(path.read_text(encoding="utf-8"))
+    except OSError:
+        data = None
+    if data is None:
+        return {"performed": False, "reason": "no machine block"}
+    ids, paths, defined = _cited_references(data)
+    recorded = _knowledge_ids(repo_root)
+    external = ids - defined
+    existing = {p for p in paths if (repo_root / LINE_SUFFIX.sub("", p)).is_file()}
+    return {
+        "performed": True,
+        "repo_root": str(repo_root),
+        "defined_in_artifact": sorted(ids & defined),
+        "recorded_in_knowledge": sorted(external & recorded),
+        "unresolved_ids": sorted(external - recorded),
+        "existing_paths": sorted(existing),
+        "missing_paths": sorted(paths - existing),
+        "semantic_correctness_checked": False,
+    }
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("artifact", type=Path)
-    parser.add_argument("--repo-root", default=".", help="Accepted for validator-runner compatibility; unused")
+    parser.add_argument("--repo-root", default=".", help="Repository whose records and files --resolve-references reads")
+    parser.add_argument("--resolve-references", action="store_true", help="Report where cited ids and paths resolve; never changes validity")
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args()
     errors = validate(args.artifact)
+    resolution = (
+        resolve_references(args.artifact, Path(args.repo_root))
+        if args.resolve_references
+        else {"performed": False}
+    )
     result = {
         "valid": not errors,
         "artifact_id": ARTIFACT_ID,
@@ -398,6 +489,7 @@ def main() -> int:
         "option_selected_by_validator": False,
         "implementation_authorized_by_validator": False,
         "semantic_truth_established": False,
+        "reference_resolution": resolution,
     }
     if args.json:
         print(json.dumps(result, indent=2, sort_keys=True))
@@ -408,6 +500,11 @@ def main() -> int:
     else:
         print("PASS")
         print("mechanical representation valid; option quality, preference and authorization remain semantic/external")
+    if resolution.get("performed") and not args.json:
+        for ref in resolution["unresolved_ids"]:
+            print(f"UNRESOLVED_ID: {ref} (not defined in the artifact or recorded in reviewed knowledge)")
+        for ref in resolution["missing_paths"]:
+            print(f"MISSING_PATH: {ref}")
     return 1 if errors else 0
 
 

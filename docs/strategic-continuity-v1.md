@@ -165,8 +165,9 @@ It does not decide which analysis is better.
 May mechanically compare:
 
 - the recorded source identity with current Git HEAD when the identity is mechanically comparable;
-- relative repository evidence references with their recorded Git version when
-  the source identity is a resolvable commit;
+- relative repository evidence references (capability and assumption evidence,
+  and any `architecture_synthesis_refs` a path rests on) with their recorded
+  Git version when the source identity is a resolvable commit;
 - explicitly declared `governing_authority_refs` with their recorded Git version;
 - current filesystem presence for addressable local references.
 

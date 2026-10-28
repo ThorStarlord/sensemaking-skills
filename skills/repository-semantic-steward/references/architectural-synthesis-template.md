@@ -86,6 +86,13 @@ decisive knowledge-index result.
 `provisional_preference` may be `null`; then state `no_preference_reason` and
 mark no option `PROVISIONALLY_PREFERRED`.
 
+The validator checks references outside the artifact for shape only. Before
+the artifact becomes final, run it with `--resolve-references`: every cited id
+should be defined here or recorded in reviewed knowledge, and a transition
+`target_ref` should be an existing path, a claim id or `new:<name>`. An id
+defined nowhere (an assumption name with no statement) cannot be reconstructed
+later.
+
 ```yaml
 artifact_id: architectural_synthesis
 schema_version: 1

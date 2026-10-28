@@ -104,6 +104,11 @@ def _evidence_paths(data: dict[str, Any]) -> list[str]:
         for ref in assumption.get("evidence_refs", []) or []:
             if isinstance(ref, str):
                 refs.append(ref)
+    # Architectural syntheses a path rests on are evidence for its basis: a
+    # missing or changed (normally immutable) synthesis is a currentness fact.
+    for ref in data.get("architecture_synthesis_refs", []) or []:
+        if isinstance(ref, str):
+            refs.append(ref)
     return refs
 
 
