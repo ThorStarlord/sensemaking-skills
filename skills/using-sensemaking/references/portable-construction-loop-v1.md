@@ -22,6 +22,15 @@ worthwhile, and an honest continuation or stopping disposition. When action
 is blocked, output the narrow unresolved source/authority gap, not an invented
 implementation.
 
+**Activation (ADR 0034):** this loop is the optional downstream construction
+capability of `using-sensemaking`, not its default outcome. Load it when a
+warranted direction is authorized for realization, when the request is an
+explicit engineering task, or when earlier artifacts must be reused (section
+1a). A repository-level request enters through `ontology-first-entry-v1.md`;
+the discovery guidance below then chooses a construction responsibility inside
+an understood repository and a warranted direction. It does not replace that
+understanding.
+
 ## 1. Portable entry: discover evidence without assuming repository scaffolding
 
 1. Identify the **target** (repository and revision/working-tree state),
@@ -52,7 +61,7 @@ implementation.
    coding rather than pretending a tool ran. The portable loop is an
    **instruction capability**, not an executable service.
 
-### Repository-only entry: discover what to build without a feature prompt
+### Choosing a construction responsibility without a feature prompt
 
 **Method and target are different roles.** "Use `using-sensemaking` to diagnose
 `repo X`" invokes that Skill as the method and names the entire repository as
@@ -65,7 +74,10 @@ feature* the owner wants built.
 
 **The target repository is the only required task-specific input** when
 this Skill is deliberately invoked for discovery. The missing feature is the
-*output to discover*, not context the owner must supply. Start with authorized
+*output to discover*, not context the owner must supply. For a
+repository-level request, this selection comes after the semantic foundation
+and possibility breadth described in `ontology-first-entry-v1.md`, and only
+when construction is the warranted next responsibility. Start with authorized
 read-only investigation, proportionate to what could change the choice:
 
 - Reconstruct what the product is for and its current direction from applicable

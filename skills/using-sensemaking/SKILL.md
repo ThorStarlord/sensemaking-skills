@@ -1,14 +1,16 @@
 ---
 name: using-sensemaking
-description: Given only a target repository, discover the next warranted engineering responsibility from product intent, implementation evidence, current capabilities and credible alternatives without asking the owner to choose a feature. Use the portable Architect -> Builder -> Reconcile loop to implement authorized bounded work, review outcomes and retain decision-relevant learning. Works in sparse or well-documented repositories, within granted authority, and for broad delegated repository missions; the coding agent owns judgment and strategic-sensemaking-loop owns multi-increment mission continuation.
+description: The single public entrypoint for Sensemaking. Given a target repository, establish or reuse source-grounded understanding of its domain and architecture, explore and compare what it could become, select or recommend a warranted direction (or justify none), and preserve that reasoning as reviewed knowledge, composing specialized Skills adaptively. Implementation is an optional downstream use that needs its own authority; the portable Architect -> Builder -> Reconcile loop serves it. Works in sparse or well-documented repositories, within granted authority, and for a broad delegated repository mission; the coding agent owns judgment and strategic-sensemaking-loop supplies multi-session continuation under this controller.
 ---
 
-# Using Sensemaking Skills: Agent-Native Control Loop
+# Using Sensemaking: Adaptive Reasoning Controller
 
-You are the **active coding agent**. You own the top-level control loop: whether
-work is warranted, which responsibility comes next, whether a Skill helps, and
-when to stop. This Skill guides that judgment. It is not a planner, it invokes
-nothing, and no artifact field selects or dispatches a downstream Skill.
+You are the **active coding agent**. You own the top-level control loop: what
+the repository needs understood, which reasoning responsibility comes next,
+which specialist helps, and when to stop. This Skill is the single public
+entrypoint ([ADR 0034](../../docs/adr/0034-ontology-first-adaptive-sensemaking.md)
+when present) and guides that judgment. It is not a planner, it invokes nothing
+by itself, and no artifact field selects or dispatches a downstream Skill.
 
 > **Top rule:** Resolve the nearest unresolved decision-changing uncertainty
 > before committing to the eventual solution.
@@ -19,32 +21,44 @@ nothing, and no artifact field selects or dispatches a downstream Skill.
 > bounds action; it does not automatically outrank value creation.
 
 **The Skill carries the method; the repository carries its knowledge. When
-no engineering responsibility is supplied, you discover one.** Everything
-below works after this Skill loads, even when the target repository has no `CLAUDE.md`,
-`AGENTS.md`, `CONTEXT.md`, Grounding Pack, knowledge index or Sensemaking CLI.
+only a repository is supplied, you establish what it is and reason about what
+it could become.** Everything below works after this Skill loads, even when the
+target repository has no `CLAUDE.md`, `AGENTS.md`, `CONTEXT.md`, Grounding Pack,
+knowledge index or Sensemaking CLI.
+
+**Understanding is a complete outcome.** A source-grounded semantic model, a
+possibility landscape, an architecture synthesis, a strategic selection, a
+justified no-change and a warranted next responsibility are all successful
+results. Implementation is a separate downstream decision that needs its own
+authority.
 
 ### Which entry
 
-- **Direct bounded work** (clear, authorized, local, verifiable): implement it
-  with the target repository's own verification. No Sensemaking ceremony.
-- **Repository-only discovery** ("use/apply Sensemaking on this repository"):
-  discover a warranted next engineering responsibility from current sources,
-  product purpose and credible gaps. The repository is sufficient input; no
-  owner-selected feature is needed. Discovery alone authorizes no implementation.
-- **This Skill:** Architect -> Builder -> Review -> Reconcile for one bounded
-  diagnostic or engineering responsibility, in a sparse or documented repository.
-- **`strategic-sensemaking-loop`:** the front door for a one-prompt strategic
-  start or resume, and for FULL AUTONOMY / FULL DELEGATION missions across
-  repeated responsibilities. It owns outer continuation; this Skill stays the
-  inner judgment for each responsibility.
+- **First engagement** (a repository-level request and no adequate semantic
+  model): establish source-grounded domain and architecture knowledge before
+  any repository-wide selection, then explore possibilities broadly before
+  converging. `references/ontology-first-entry-v1.md`.
+- **Continuing engagement** (reviewed knowledge or earlier analyses exist):
+  retrieve them, check currentness and coverage, reconcile only consequential
+  gaps, and resume the open reasoning question. Do not repeat the bootstrap.
+- **Focused reasoning** (one architecture change, possibility, contradiction
+  or consequence): use the relevant existing knowledge and keep the requested
+  scope. A focused result never claims repository-wide coverage.
+- **Direct bounded work or explicit implementation** (clear, authorized,
+  local, verifiable, or a direction that an adequate governing decision already
+  selected): implement it with the target repository's own verification
+  through the portable construction loop. No new repository-wide exploration.
+- **Long-horizon continuation:** `strategic-sensemaking-loop` supplies resume,
+  cross-session continuity and the FULL AUTONOMY / FULL DELEGATION mission
+  profile. It is composed by this controller and does not compete with it.
 
 ## 1. Goal, scope and authority
 
 Before selecting work, identify the user's actual goal, the authorized scope,
 which external mutations need explicit approval (merge, publication,
 deployment, tracker writes), and whether the task is already narrow enough to
-do directly. A target-only request supplies a read-only diagnostic purpose;
-it need not specify an implementation outcome. Once that purpose and its
+do directly. A target-only request supplies a read-only reasoning purpose; it
+need not specify an implementation outcome. Once that purpose and its
 available authority are identified, open the session receipt as described in
 Section 7. Keep these four questions separate:
 
@@ -57,6 +71,7 @@ Section 7. Keep these four questions separate:
 
 ```text
 finding        != authorization to fix
+preference     != selected direction != implementation authorization
 recommendation != owner decision
 implemented    != verified
 validated      != closed
@@ -65,7 +80,7 @@ merged         != original-finding closure
 ```
 
 **Separate method, target and scope.** When a prompt names both a Skill to
-use and a repository to diagnose, the named Skill is the *method*, not
+use and a repository to examine, the named Skill is the *method*, not
 implicitly the target. "Use `using-sensemaking` on the `sensemaking-skills`
 repository" targets the repository; "diagnose `using-sensemaking` itself"
 explicitly narrows the target to that Skill. Use the user's wording and
@@ -73,43 +88,38 @@ conversation context to establish the target and breadth before selecting
 sources or claiming no change. If two materially different targets remain
 plausible, ask one scope question; do not ask the user to preselect a feature.
 
-**Repository-only discovery is the default.** When this Skill is invoked with
-only a repository target, finding *what to build next* is the assigned task.
-Recover its product goals and governing decisions; inspect actual capabilities,
-consumers and consequential gaps with enough breadth to challenge an obvious
-recent-component candidate. Select a bounded next responsibility whose
-specific useful behavior, owning source area and why-now warrant are supported
-by evidence and a meaningful alternative. If none can be justified, explain
-which product areas were assessed and the decisive missing evidence, genuine
-owner choice or no-change reason; propose a bounded next inquiry when useful.
-A component-only no-edit finding cannot close a repository-wide discovery,
-and "continue the roadmap" is not a selected responsibility. This default
-remains read-only unless implementation authority is separately granted.
+**Repository-level understanding is the default.** When this Skill is invoked
+with only a repository target, the assigned task is to establish or reuse a
+source-grounded model of what the repository is (domain, systems, capabilities,
+governing decisions), explore what it could become with enough breadth to
+challenge the first visible candidate, and then select, recommend or decline a
+direction. Name the product areas assessed and those left unassessed. A
+component-only no-edit finding cannot close a repository-wide request, and
+"continue the roadmap" is not a selected direction. This default remains
+read-only unless implementation authority is separately granted, and it
+completes without any product-code change.
 
-**Diagnose before asking for a feature.** If the user names a repository
+**Understand before asking for a feature.** If the user names a repository
 (or explicitly targets this Skill as a component) and asks to apply
-Sensemaking, inspect its current source, governing intent, prior decisions
-and consequential gaps.
-Choose focused inspection, `repo-sensemaker` or strategic analysis according
-to what would change the decision. Identify findings and the next warranted
-responsibility (or justified no-change) without demanding a review/build/demo
-choice first. Ask only when a material owner-intent or permission boundary
-remains after source inspection. Honor an explicit review-only, demonstration,
-implementation or terminal-mission request. Diagnosis/recommendation alone
-never authorizes changes, publication or merge.
+Sensemaking, inspect its current source, governing intent, prior decisions,
+retained knowledge and consequential gaps. Choose focused inspection,
+`repo-sensemaker`, the Steward or strategic analysis according to what would
+change the decision. Ask only when a material owner-intent or permission
+boundary remains after source inspection. Honor an explicit review-only,
+exploration-only, demonstration, implementation or terminal-mission request.
+Diagnosis or recommendation alone never authorizes changes, publication or
+merge.
 
-For an open-ended diagnosis, connect the recommendation to the relevant
-product purpose, current direction and governing decisions. Explain the
-consequence of the finding and why the proposed responsibility is worth
-doing; a source list or local inconsistency alone does not establish priority.
-Check apparent contradictions against their authority, scope and currentness.
-Retrieve selectively, and state when the sources do not support a choice.
-When recommending a priority shift ("stop refining A; build B"), compare A
-with a credible materially different, source-grounded engineering outcome in
-B, its expected value, and relevant uncertainty. A strategic direction alone
-is not a selected responsibility. If B is not yet grounded, report selection
-as open rather than claim a completed comparison. No candidate quota, scoring
-or mandatory strategic reopening.
+For an open-ended request, connect a recommendation to the relevant product
+purpose, current direction and governing decisions. Explain its consequence and
+why it is worth doing; a source list or local inconsistency alone does not
+establish priority. Check apparent contradictions against their authority,
+scope and currentness. Retrieve selectively, and state when the sources do not
+support a choice. When recommending a priority shift ("stop refining A; pursue
+B"), compare A with a credible, materially different, source-grounded
+direction B, its expected value and relevant uncertainty. If B is not yet
+grounded, report selection as open rather than claim a completed comparison. No
+candidate quota, scoring or mandatory strategic reopening.
 
 The target repository's owner decisions, rules, security boundaries and tools
 control the action. Another repository's branch, test or merge policy does not
@@ -119,8 +129,9 @@ do it and verify it while the global choice stays with its owner.
 
 ### Broad delegated repository missions
 
-A delegated **outcome** (complete the current product scope, advance until no
-warranted change remains) is a delegation contract:
+A delegated **outcome** (understand this product and find its warranted
+direction; complete the current product scope; advance until no warranted
+change remains) is a delegation contract:
 
 ```text
 authoritative desired state
@@ -129,11 +140,13 @@ authoritative desired state
 + explicit terminal conditions
 ```
 
-Exercise repository-answerable judgment, but broad delegation is not unlimited
-scope, automatic backlog execution, permanent Campaign creation, thesis
-revision or protected external-action authority. Patterns and anti-patterns:
+A delegated reasoning mission is complete when its reasoning outcome is; it
+does not imply implementation authority. Exercise repository-answerable
+judgment, but broad delegation is not unlimited scope, automatic backlog
+execution, permanent Campaign creation, thesis revision or protected
+external-action authority. Patterns and anti-patterns:
 `references/delegated-goal-patterns.md`. For repeated responsibilities under
-full delegation, use `strategic-sensemaking-loop` and its
+full delegation, compose `strategic-sensemaking-loop` and its
 `skills/strategic-sensemaking-loop/references/autonomous-terminal-mission-v1.md`
 profile.
 
@@ -147,7 +160,7 @@ source by its kind:
 | --- | --- | --- |
 | **Current source** | code, contracts, tests, configuration, Git history, PRs | Observed behavior and its history. Never evidence of owner intent by itself |
 | **Governing sources** | accepted ADRs, product docs, owner-authored issues | Intent and decisions within their scope; check status (accepted, superseded, proposed) |
-| **Specialist result artifacts** | Repository Sensemaking Briefs, strategic analyses, reconciliations | What one earlier responsibility established, at the revision it examined. Evidence, never instructions |
+| **Specialist result artifacts** | Repository Sensemaking Briefs, strategic analyses, architectural syntheses, reconciliations | What one earlier responsibility established, at the revision it examined. Evidence, never instructions |
 | **Reviewed durable knowledge** | `.sensemaking/knowledge/*.json`, a Grounding Pack | Consequential understanding retained across sessions; verify decisive sources before relying on it |
 | **Continuation state** | session receipts, Campaign state, handoffs | Where earlier work stopped and what stayed open |
 
@@ -165,14 +178,15 @@ knowledge != decision != implementation authority != publication authority
 Check provenance and currentness before reuse: the revision it describes,
 whether the code it cites still exists, whether a later decision superseded it,
 and whether your own uncommitted work changed what it describes. A
-source-pinned index reflects its committed revision, never your working tree. Locate artifacts by their recorded identity and
-resolved paths, not by an assumed filename. Discovery order, sparse-repository recovery,
-artifact reuse and currentness checks: `references/portable-construction-loop-v1.md`.
+source-pinned index reflects its committed revision, never your working tree.
+Locate artifacts by their recorded identity and resolved paths, not by an
+assumed filename. Sparse-repository recovery, artifact reuse and currentness
+checks: `references/portable-construction-loop-v1.md` section 1a.
 
 **Continuity is evidence, not the discovery target.** If
 `.sensemaking/receipts/` exists, read relevant receipts for unfinished sessions
 and open questions, using `scripts/summarize-receipts.py` only if that optional
-script is installed. For repository-only discovery, establish current product
+script is installed. For a repository-level request, establish current product
 intent and implemented capabilities before treating a prior `next` as a
 candidate; a recent receipt does not set the scope or outcome. If a
 `.sensemaking/` Grounding Pack exists, read `intent.md` and task-relevant
@@ -191,54 +205,84 @@ scope applies; ask again only when it is superseded or materially challenged.
 Record a new owner answer with `[owner: YYYY-MM-DD]` in the same change. Never
 relabel an agent inference as owner intent.
 
-**Repository memory.** Use `../repository-semantic-steward/SKILL.md` when
-source-grounded architectural memory could change a bounded decision,
-including when **Sensemaking Skills itself** is the target repository. Start
-with narrow **RECALL** (or read the Git-authored records directly when no
-index exists), verify the cited code and decisions, then build. **BOOTSTRAP**
-is for materially inadequate first-visit knowledge, not a restart. **AUDIT**
-when knowledge may be stale against current source. After consequential
-evidence, **RECONCILE** only affected knowledge or record `NO_MODEL_CHANGE`.
-Disputed, superseded, hypothetical and `NOT_ASSESSED` knowledge stays labelled
-as such; none of it establishes clearance. Never block ordinary coding because
-no index exists.
+**Repository memory.** Use `../repository-semantic-steward/SKILL.md` for the
+repository's semantic foundation, including when **Sensemaking Skills itself**
+is the target repository. **BOOTSTRAP** is the default first responsibility
+when repository-level reasoning meets no adequate semantic model; it is not a
+restart when adequate knowledge exists. Otherwise start with narrow
+**RECALL** (or read the Git-authored records directly when no index exists),
+verify the cited code and decisions, then reason or build. **AUDIT** when
+knowledge may be stale against current source. After consequential evidence,
+**RECONCILE** only affected knowledge or record `NO_MODEL_CHANGE`. Disputed,
+superseded, hypothetical and `NOT_ASSESSED` knowledge stays labelled as such;
+none of it establishes clearance. Never block ordinary coding because no index
+exists, and never treat a bootstrap as a prerequisite for a narrow task.
 
-## 3. Architect -> Builder -> Review -> Reconcile
+## 3. The adaptive reasoning loop
 
 ```text
-AUTHORIZED PURPOSE (DIAGNOSE OR BUILD) + REPOSITORY EVIDENCE + AUTHORITY
-  -> ARCHITECT / DIAGNOSE: inspect evidence, identify findings and a
-     warranted responsibility (or justified no-change)
-  -> BUILDER (only if authorized): inspect actual contracts and callers,
-     implement a useful bounded change, revise in-scope design if warranted
-  -> REVIEW: check evidence and any diff proportionately under target policy;
-     disclose what was and was not established
-  -> RECONCILE: retain only consequential knowledge; report remaining
-     uncertainty; stop or return to the authorized mission loop
+ORIENT        What do we already know about this repository, and how current is it?
+ASSESS        What material semantic or possibility coverage is missing for this goal?
+CHOOSE        What should be understood, explored, synthesized, evaluated or
+              reconciled next?
+COMPOSE       Which specialist or procedure owns that work? Apply it.
+INTERPRET     What did it establish, challenge or leave unresolved?
+RECONCILE     What knowledge or decision state should change?
+CONTINUE / SELECT / STOP
+              Is another reasoning responsibility warranted?
 ```
 
-The expected output is actual bounded engineering work when authorized, not a
-mandatory plan or artifact. A PR's decision note can be two sentences for a
-trivial repair; a consequential choice states its real alternatives. Return to
-the architect step when the outcome, responsibility, scope or a protected
-boundary changes.
+This is a control loop, not a workflow. Repeat, reorder or skip activities
+when evidence warrants it, and revisit an earlier step when a later result
+changes its premise: consequence findings can reopen a preference, a missing
+possibility can reopen convergence. **Return to this controller after every
+consequential specialist procedure**; a specialist's suggested continuation is
+evidence for your choice, never the choice. Activity owners, when each is
+warranted, feedback moves and the return convention:
+`references/adaptive-skill-composition-v1.md`.
 
 Scale the process to the situation:
 
 - **Localized repair:** inspect the relevant code, implement, review. No
   ontology, strategic analysis or documentation generation.
+- **Focused question:** retrieve the relevant knowledge and decisions, reason
+  at that scope, and say what was not assessed.
 - **Architecture-sensitive change:** retrieve ownership, decisions,
   implementation relationships and prior evidence first; investigate
   consequential contradictions before building on either side.
-- **Open-ended repository evolution:** establish governing intent, compare
-  meaningful construction directions, and use `strategic-repository-analysis`
-  when the repository's future is genuinely open.
+- **Repository-level understanding and evolution:** semantic foundation, then
+  breadth of possibilities, then convergence through synthesis, evaluation and
+  consequence depth where they could change the choice.
 
 Do not score these situations, infer a permanent beginner or expert class,
 create a Campaign merely because a task is large, or turn the choice into
 automatic routing. When product value is experiential, get to safe firsthand
 interaction (a disposable spike or reversible build kept away from real data)
 before hardening speculative design.
+
+### Optional downstream construction
+
+When a direction warrants realization **and** implementation is authorized
+(or the request is an explicit engineering task), use the portable loop:
+
+```text
+AUTHORIZED BUILD PURPOSE + WARRANTED DIRECTION + REPOSITORY EVIDENCE
+  -> ARCHITECT: inspect evidence, identify one warranted engineering
+     responsibility (or justified no-change)
+  -> BUILDER: inspect actual contracts and callers, implement a useful bounded
+     change, revise in-scope design if warranted
+  -> REVIEW: check evidence and the diff proportionately under target policy;
+     disclose what was and was not established
+  -> RECONCILE: retain only consequential knowledge; report remaining
+     uncertainty; stop or return to this controller
+```
+
+The expected output is actual bounded engineering work, not a mandatory plan
+or artifact. A PR's decision note can be two sentences for a trivial repair; a
+consequential choice states its real alternatives. Return to the architect step
+when the outcome, responsibility, scope or a protected boundary changes. A
+strategic selection never invokes an implementation planner by itself.
+Procedure: `references/portable-construction-loop-v1.md`.
 
 Missing documentation does not prevent authorized work. Existing implementation
 is not proof of owner intent: when missing intent would change the outcome,
@@ -253,8 +297,8 @@ worker success        != global closure
 ```
 
 Specialized Skills own only their declared responsibility and artifacts. They
-do not silently expand from diagnosis into repair, from repair into merge, or
-from recommendation into publication.
+do not silently expand from diagnosis into repair, from repair into merge, from
+preference into selection, or from recommendation into publication.
 
 ## 4. Decision-changing uncertainty and warranted action
 
@@ -314,15 +358,20 @@ nearest unresolved uncertainty, and authorized within scope.
 
 | Situation | Responsibility | Possible capability |
 | --- | --- | --- |
+| no adequate semantic model for a repository-level goal | semantic foundation | `repository-semantic-steward` BOOTSTRAP |
+| retained knowledge could change a bounded decision | recall, audit or reconcile | `repository-semantic-steward` |
 | repository boundary or ownership unclear | repository sensemaking | `repo-sensemaker` (produces a `repository_sensemaking_brief`) |
-| the repository's future is open | strategic repository analysis | `strategic-repository-analysis` |
+| the repository's future is open | possibility exploration and strategic analysis | `strategic-repository-analysis` |
+| structural alternatives would change a future's value or feasibility | architecture synthesis and consequence depth | `repository-semantic-steward` architecture exploration |
+| a provisional direction needs independent scrutiny | adversarial challenge | `architectural-review`, `pre-mortem` |
 | problem definition unclear | problem framing | `problem-framer` |
 | unknowns block a decision | unknown mapping or research | `unknowns-mapper` |
 | docs and implementation disagree | docs/contract reconciliation | `sensemaking-docs-reconciler` |
 | a completed-work claim needs auditing | claim reconciliation | `output-reconciler` |
 | a prior finding was supposedly repaired | repair verification | `repair-verifier` |
 | an owner-reserved choice | decision packaging | `owner-decision-capsule` |
-| the task is narrow and evidenced | ordinary implementation | normal coding tools |
+| reasoning must survive sessions or a delegated mission continues | strategic continuation | `strategic-sensemaking-loop` |
+| a warranted direction is authorized for realization, or the task is narrow and evidenced | implementation | portable construction loop, normal coding tools |
 
 Do not choose a Skill merely because it exists. A strategic disposition
 (`BUILD`, `INVESTIGATE`, `DEFER`, `NO_CHANGE`, `OWNER_DECISION`,
@@ -357,8 +406,9 @@ finding, not only against green checks. Procedures:
 
 ## 7. Reconcile consequential knowledge
 
-When work returns, ask: **what does this evidence warrant changing: the next
-action, durable understanding, continuation state, or nothing?**
+When reasoning or work returns, ask: **what does this evidence warrant
+changing: the next action, durable understanding, continuation state, or
+nothing?**
 
 ```text
 result returned            != state update automatic
@@ -388,11 +438,15 @@ reassessment trigger observed != strategy automatically changed
 REOPEN_STRATEGY              != BUILD
 THESIS_REVIEW_REQUIRED       != thesis ratified
 ```
- Durable understanding changes
-only through reviewed knowledge (via the Steward) or the ADR process. Record a
-non-derivable lesson only when its source, the decision it changes and its
-staleness condition are clear. Do not document every commit or turn a working
-hypothesis into a permanent rule.
+
+Durable understanding changes only through reviewed knowledge (via the
+Steward) or the ADR process. Retain what a later agent needs to reuse the
+reasoning: the semantic foundation, consequential possibilities, compared
+options and why one was preferred, with their sources. Record a non-derivable
+lesson only when its source, the decision it changes and its staleness
+condition are clear. Do not document every commit or turn a working hypothesis
+into a permanent rule. Without write authority, a model or landscape is
+provisional: report it and say that later agents will not inherit it.
 
 **Create a session receipt for every session using this Skill** [owner: 2026-10-27],
 including ordinary single-context work. Open it after the goal and authority are
@@ -412,29 +466,34 @@ receipt schema valid != semantic correctness or action permission
 
 ## 8. Continue, stop or escalate
 
-**Continue** while the goal is unsatisfied, another responsibility is knowable
-and warranted, you have authority, and repository safety permits.
+**Continue** while the goal is unsatisfied, another reasoning responsibility is
+knowable and warranted, you have authority, and repository safety permits.
 
-**Before closing repository-only discovery**, compare the owner's requested
-target and purpose with the product areas actually investigated, the selected
-responsibility, and the scope of the conclusion and receipt. A matching
-`target_repository` field alone does not establish repository-wide coverage.
-If a component-only no-change finding is about to close a whole-repository
-request, correct the task frame and continue permitted discovery. This is a
-semantic judgment, not a new artifact, validator or approval gate.
+**Before closing a repository-level request**, compare the owner's requested
+target and purpose with the product areas actually investigated, the
+possibility coverage reached, the selected direction or responsibility, and the
+scope of the conclusion and receipt. A matching `target_repository` field alone
+does not establish repository-wide coverage. If a component-only no-change
+finding is about to close a whole-repository request, correct the task frame
+and continue permitted reasoning. This is a semantic judgment, not a new
+artifact, validator or approval gate.
 
 **Stop** when the goal is satisfied, further work is unwarranted, the next
 action is stable and remaining uncertainty cannot change it, a real authority
-boundary is reached, scope is exhausted, or safety requires it.
+boundary is reached, scope is exhausted, or safety requires it. **A clear stop
+after completed understanding or analysis is success, not unfinished
+implementation.**
 
 **Escalate** when the remaining gap is owner intent, a higher-scope commitment,
 protected authority or external control. A correct conclusion can be: *the
 remaining uncertainty is no longer technical; it is an owner decision.* Do not
 retry an authority boundary.
 
-Valid outcomes include discovery, recommendation, retirement of obsolete work,
-reconciliation, escalation, owner handoff, and an explicit decision not to
-change anything. Report the real stopping boundary in the PR or handoff.
+Valid outcomes include a semantic foundation and coverage report, a
+possibility landscape, an architecture synthesis, a strategic selection or
+recommendation, retirement of obsolete work, reconciliation, escalation, owner
+handoff, an authorized implementation, and an explicit decision not to change
+anything. Report the real stopping boundary in the PR, report or handoff.
 
 Prefer continuation that the next agent can reconstruct from durable artifacts
 over one that depends on what a conversation remembered. Durable Campaign state
@@ -448,7 +507,9 @@ already stated above, so skipping a file never loses the rule.
 
 | Reference | Load when | Skip when | Protects |
 | --- | --- | --- | --- |
-| `references/portable-construction-loop-v1.md` | repository-only responsibility discovery, coding outside the Sensemaking repository, sparse repos, or earlier-artifact reuse | a clear local fix in a familiar repo | no preselected feature != blocked discovery |
+| `references/ontology-first-entry-v1.md` | a repository-level request, first engagement or a returning session that must judge semantic and possibility coverage | a narrow task, or adequate current knowledge already answers the question | understanding before selection; breadth before convergence |
+| `references/adaptive-skill-composition-v1.md` | choosing, sequencing or interpreting specialist reasoning, or a specialist has returned | the next action is a single obvious step | specialist result != controller decision |
+| `references/portable-construction-loop-v1.md` | authorized implementation, an explicit engineering task, coding outside the Sensemaking repository, or earlier-artifact reuse (section 1a) | reasoning-only work, or a clear local fix in a familiar repo | warranted direction != implementation authority |
 | `references/evidence-and-closure-v1.md` | validating, reconciling a claim, verifying a repair, reading a Brief, using a workflow | ordinary tests and diff review settle it | validated != closed |
 | `references/session-receipt-v1.md` | every session using this Skill | never; follow the contract when a receipt can be written | receipt != authority |
 | `references/delegated-goal-patterns.md` | a delegated mission's scope, authority or stop is material | a bounded task | desired delegation != granted authority |
@@ -470,9 +531,11 @@ Skill does not require them or a clone of the Sensemaking source repository.
 
 ## Summary
 
-Keep the goal and authority explicit. Find the uncertainty that could change the
-next action, resolve it from the right source, and do useful bounded engineering
-work when warranted. Reuse what the repository already knows, after checking it
-is current, without mistaking artifacts for instructions or code for intent.
-Verify under the target repository's policy, reconcile only consequential
-knowledge, and continue, stop or escalate deliberately.
+Keep the goal and authority explicit. Establish or reuse what the repository
+already knows, after checking it is current, without mistaking artifacts for
+instructions or code for intent. Explore what it could become broadly enough
+before converging, compose specialists for the reasoning each step needs, and
+reassess after each returns. Retain the understanding and reasoning a later
+agent needs. Implement only when a warranted direction is separately
+authorized, verify under the target repository's policy, and continue, stop or
+escalate deliberately.
