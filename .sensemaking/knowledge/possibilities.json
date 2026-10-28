@@ -852,7 +852,8 @@
       "evidence_refs": [
         "file:docs/idea-library.md",
         "file:docs/agents/build-loop.md:line:58",
-        "file:skills/using-sensemaking/references/session-receipt-v1.md:line:218"
+        "file:skills/using-sensemaking/references/session-receipt-v1.md:line:218",
+        "file:skills/using-sensemaking/references/portable-construction-loop-v1.md"
       ],
       "attributes": {
         "concept": "ProductPossibility",
@@ -877,14 +878,27 @@
             "basis": "Plain JSON records readable without an index or CLI."
           },
           "realization": {
-            "value": "NOT_ASSESSED",
+            "value": "IMPLEMENTED_BASELINE",
             "establishment": "inferred",
-            "basis": "The documented receipt schema holds a single next and no compared-set field (observation:receipt-records-single-next); the validator does not reject unknown fields; lexical search of skills/using-sensemaking/ found no guidance for retaining the compared set.",
+            "basis": "Since plan PR H the portable loop's repository-only discovery entry tells a session holding knowledge-edit and commit authority to retain each reconsiderable declined candidate as a hypothetical poss: record, and every discovery to read retained ones before comparing. The selected candidate is recorded by the work itself. Guidance only: no target-repository session has used it, so it is not evidence that agents follow it.",
+            "observation_ref": "skills/using-sensemaking/references/portable-construction-loop-v1.md",
+            "history": [
+              {
+                "value": "NOT_ASSESSED",
+                "assessed_ref": "d0af33beb52e94b375d6a471e9990df11c8c424d",
+                "basis": "The documented receipt schema holds a single next and no compared-set field (observation:receipt-records-single-next); the validator does not reject unknown fields; lexical search of skills/using-sensemaking/ found no guidance for retaining the compared set."
+              }
+            ],
             "assessments": [
               {
                 "date": "2026-10-28",
                 "analysis_ref": "artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
                 "result": "Four architecture options compared; provisional preference for arch:git-reviewed-local-memory, narrowed by REVISE_PREFERENCE to sessions holding knowledge-edit and commit authority. Candidate responsibility for plan PR H; not authorized."
+              },
+              {
+                "date": "2026-10-28",
+                "analysis_ref": "artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+                "result": "REAFFIRM at construction: both observed premises still hold, ADR 0032 is still PROPOSED, and no reconsideration condition has fired. Built as guidance in plan PR H."
               }
             ]
           }
@@ -896,10 +910,18 @@
             "authority": "agent",
             "source": "docs/idea-library.md",
             "rationale": "Consequential candidate for a later Level-3 or plan PR 4 decision; not selected."
+          },
+          {
+            "value": "SELECTED",
+            "date": "2026-10-28",
+            "authority": "owner plan PR H, delegated construction",
+            "source": "docs/superpowers/plans/2026-10-28-prospective-reasoning-ontology-and-synthesis.md",
+            "rationale": "Narrowed preference built as portable-loop guidance; use in a target repository not yet observed."
           }
         ],
-        "assessed_ref": "d0af33beb52e94b375d6a471e9990df11c8c424d",
-        "value_hypothesis": "Fewer repeated discoveries and less recency anchoring in target repositories; possibility memory gains value outside this repository's own knowledge plane."
+        "assessed_ref": "7858c9eb847cee68449a4153c98f35f016025db7",
+        "value_hypothesis": "Fewer repeated discoveries and less recency anchoring in target repositories; possibility memory gains value outside this repository's own knowledge plane.",
+        "revisit_when": "An independent discovery session in a target repository holds knowledge-edit authority (first real use), or ADR 0032 is accepted with a candidate field."
       }
     },
     {
