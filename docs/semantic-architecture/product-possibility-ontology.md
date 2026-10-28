@@ -272,6 +272,7 @@ retained possibility
 
 - The library is an input to Level 3, never a replacement for it, and it does not reopen settled analysis by existing.
 - An exploration-only request ends with a landscape, not a selected task (funnel section 2, "Exploration-only requests").
+- Before a repository-wide direction is selected, a qualitative possibility coverage assessment (funnel section 4) asks whether retained possibilities, cross-system compositions and counterfactuals were considered and records what was left unexamined (ADR 0034, decision D). It is not a score, and it never claims every future was explored.
 - Ordinary bounded engineering does not need to consult the library.
 - Counterfactual and thesis-conflicting possibilities can be explored and retained without review. The Level-4 process in [`product-thesis-revision.md`](../product-thesis-revision.md) applies only when a product-thesis commitment becomes decision-changing, typically when a real decision would act on such a possibility.
 

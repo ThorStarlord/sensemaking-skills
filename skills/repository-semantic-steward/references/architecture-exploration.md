@@ -12,6 +12,8 @@ Use this procedure when a meaningful architecture decision has alternatives, a p
 - **Bounded architecture choice:** the active agent already has a warranted responsibility and may compare candidates inside it. This reference does not select that responsibility.
 - **Open Level 3:** use the separate Strategic Exploration Funnel in `skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md` for system map → breadth → frontier candidates → depth → construction paths → selection. Architectural options are not automatically frontier candidates.
 
+When `using-sensemaking` composes this procedure (its [composition reference](../../using-sensemaking/references/adaptive-skill-composition-v1.md)), synthesis follows a possibility or frontier that turns on structure, and its result returns to that controller. Consequence findings can revise the preference here, reopen alternatives, or send the controller back to breadth when a missing possibility appears.
+
 This procedure operates under the Steward's existing `RECALL` and `RECONCILE` modes. Do not add a fifth Steward mode, a planning engine or a workflow-registry entry. Its only artifact is the optional `architectural_synthesis` (section 6).
 
 ## 2. Ground before divergent generation
@@ -79,7 +81,7 @@ Use `contradictions` and original source review only as needed. Challenge return
 
 ## 6. Handoff, authority and memory
 
-Return the smallest decision packet: user outcome, genuinely different options, source-pinned evidence, material tradeoffs/risks, uncertainty, disconfirming evidence, and a recommendation **only when selection was requested and authorized**. Exploration-only ends at possibilities and questions. An architectural option does not silently become a Strategic Frontier or construction path.
+Return the smallest decision packet to the controller: user outcome, genuinely different options, source-pinned evidence, material tradeoffs/risks, uncertainty, disconfirming evidence, and a recommendation **only when selection was requested and authorized**. Exploration-only ends at possibilities and questions. An architectural option does not silently become a Strategic Frontier or construction path.
 
 When a later session, another agent or the owner will need to know why one structure was preferred, record the comparison as an `architectural_synthesis` artifact from [the template](architectural-synthesis-template.md) and check it with `python scripts/validate-output.py architectural_synthesis <path>`, then `python scripts/validate-architectural-synthesis.py <path> --resolve-references` for ids or paths that resolve nowhere. It holds two or more options with proposed transitions, assumptions and conditional consequences, an attributed qualitative comparison, and either a `PROVISIONAL` preference or none with a reason. A preference there is not a selection or decision. Otherwise the task report is enough.
 

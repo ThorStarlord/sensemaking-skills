@@ -9,7 +9,7 @@
 1. Purpose
 2. When the funnel applies
 3. System map
-4. Breadth exploration
+4. Breadth exploration (and the possibility coverage assessment)
 5. Frontier candidate synthesis
 6. Depth drill
 7. Construction path synthesis
@@ -32,6 +32,8 @@ FULL REPOSITORY / GOVERNING INTENT
 SYSTEM MAP
         ↓
 BREADTH EXPLORATION
+        ↓
+POSSIBILITY COVERAGE ASSESSMENT
         ↓
 FRONTIER CANDIDATE SYNTHESIS
         ↓
@@ -84,6 +86,10 @@ RESPONSIBILITY / EXECUTE / VERIFY / RECONCILE
 ```
 
 This prevents breadth search from becoming recurring ceremony.
+
+Through `using-sensemaking`, a repository-level first engagement reaches this
+funnel after the Steward's semantic foundation (BOOTSTRAP, ADR 0034). The system
+map (section 3) starts from that foundation and does not rebuild it.
 
 ### Exploration-only requests
 
@@ -201,6 +207,28 @@ Repository Semantic Steward's RECONCILE and its knowledge contract ("Product
 possibility records"): a hypothetical record with its origin and the
 relationships it was derived from. Retention is memory, not selection; an
 exploration-only request still ends with the landscape.
+
+### Possibility coverage assessment
+
+Before frontier synthesis, and before any repository-wide direction is
+selected, judge whether the landscape is broad enough:
+
+- Were the major product systems and intended user outcomes considered?
+- Were cross-system and compositional opportunities examined?
+- Were retained possibilities and earlier rejected alternatives recalled?
+- Were meaningful counterfactuals considered without treating them as
+  authorized?
+- Is the analysis converging because evidence supports it, or because the
+  first visible candidate was easiest?
+- Which material areas remain unexamined, and could an excluded direction
+  plausibly overturn the emerging preference?
+
+This is a qualitative sufficiency judgment, not a score or candidate quota, and
+it never claims every future was explored. If it finds a material gap, return to
+breadth (or to the Steward when a system is unmodelled) before converging.
+Record the unexamined areas with the result (section 9 and the artifact's
+Strategic Frontier section). One isolated defect never justifies a
+repository-wide selection by itself.
 
 ### From possibilities to construction: conditional order
 
@@ -372,6 +400,10 @@ Major systems examined:
 Breadth observations:
 <compact count / grouped themes, not every trivial idea>
 
+Possibility coverage:
+<retained possibilities recalled; counterfactuals considered;
+ areas not examined; whether an excluded direction could overturn the result>
+
 Frontier candidates:
 A — <candidate>
     Value if pursued:
@@ -407,6 +439,8 @@ Do not:
 
 - treat the first visible defect as the Strategic Frontier without sufficient
   breadth exploration;
+- select a repository-wide direction without a possibility coverage
+  assessment, or hide the areas it left unexamined;
 - equate GitHub issue order with strategic priority;
 - let CI/qualification visibility crowd out less legible product opportunities;
 - map directories/files and call that a system map;

@@ -183,7 +183,9 @@ inventory or the easiest visible defect as the opportunity map.
 - qualification/release posture where relevant;
 - major constraints and claim ceilings.
 
-Do not reduce the repository to a file inventory.
+Do not reduce the repository to a file inventory. When a semantic foundation
+already exists (the Steward's BOOTSTRAP or reviewed records), start from it and
+verify what matters rather than rebuilding it.
 
 ### 3B. Run the Strategic Exploration Funnel before frontier convergence
 
@@ -195,6 +197,7 @@ Run the **Strategic Exploration Funnel**:
 ```text
 SYSTEM MAP
 -> BREADTH EXPLORATION
+-> POSSIBILITY COVERAGE ASSESSMENT
 -> FRONTIER CANDIDATE SYNTHESIS
 -> DEPTH DRILL
 -> CONSTRUCTION PATH SYNTHESIS
@@ -209,7 +212,8 @@ and new product value.
 Breadth exploration is divergent. Do not select the Strategic Frontier until
 the breadth landscape is sufficient to make omission of a more important
 repository-wide opportunity unlikely merely because another problem was easier
-to see.
+to see. Make that judgment explicit as the **possibility coverage assessment**
+(funnel section 4) and record the areas it left unexamined in the artifact.
 
 Then compress material observations into grounded **frontier candidates**.
 Advance only the strongest/material candidates to a proportional depth drill.
@@ -703,3 +707,10 @@ effect itself must become a durable artifact.
 
 Do not automatically create a Campaign, issue, PR, execution handoff, or code
 change from this Skill.
+
+When composed by `using-sensemaking`, return the artifact to that controller:
+the disposition and suggested continuation are evidence for its next choice,
+not an instruction to implement (return convention:
+`../using-sensemaking/references/adaptive-skill-composition-v1.md`, section 5).
+An architectural synthesis may revise or reopen a path here, and consequence
+findings may send the controller back to breadth.

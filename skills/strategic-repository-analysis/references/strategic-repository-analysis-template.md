@@ -35,6 +35,11 @@ Strategicity Gate. For new `schema_version: 2` artifacts, each frontier entry
 must identify its evidence references, affected capability identifiers, and a
 short semantic explanation of the strategic consequence.
 
+When the Strategic Exploration Funnel ran, state the possibility coverage
+first: systems and user outcomes considered, retained possibilities recalled,
+counterfactuals considered, areas left unexamined, and whether an excluded
+direction could overturn this frontier.
+
 ```text
 repository-relevant finding != strategic frontier
 bounded repair != construction path
