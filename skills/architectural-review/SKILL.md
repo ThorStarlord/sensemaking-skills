@@ -1,3 +1,8 @@
+---
+name: architectural-review
+description: evaluate one concrete proposed architectural direction against a current repository_sensemaking_brief and return pursue, pursue_narrowed, investigate_first, defer or reject, with risks and the evidence that could change the verdict. use when the active agent has selected an architectural-review responsibility, for example to challenge a provisional preference from an architectural synthesis; it does not re-diagnose the repository or authorize implementation.
+---
+
 # Architectural Review Skill
 
 Evaluates proposed architectural responses against principal-engineer judgment: capability abstraction vs. features, bottleneck detection, user experience inversion, architectural risk mapping, and quantifiable success validation.

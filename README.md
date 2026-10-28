@@ -281,7 +281,7 @@ python -m pip install sensemaking-skills
 sensemaking-skills --version
 ```
 
-Current source is `1.0.0rc5.dev0`, targeting the reduced-scope `1.0.0rc5` development line. For source/candidate inspection:
+The latest published distribution (`0.2.1`) contains no Skills and no `setup-skills` command; to use the Skills, install from source. Current source is `1.0.0rc5.dev0`, targeting the reduced-scope `1.0.0rc5` development line. For source/candidate inspection and Skill installation:
 
 ```bash
 git clone https://github.com/ThorStarlord/sensemaking-skills.git

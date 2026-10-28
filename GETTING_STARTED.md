@@ -35,6 +35,14 @@ python -m pip install sensemaking-skills
 sensemaking-skills --version
 ```
 
+**To use the Skills, install from source (below).** The latest published
+distribution (`0.2.1`, checked 2026-10-28) contains no Skill trees and no
+`setup-skills` or `semantic` commands, so the Skill installation step below
+cannot run from it. A repository that receives the Skills also needs a CLI from
+the same source revision for the Steward's `semantic` commands; a pinned
+`uv tool install` from a commit works too (`skills/repository-semantic-steward/SKILL.md`,
+"Verify and pin the CLI").
+
 The repository source is `1.0.0rc5.dev0`, developing toward the reduced-scope `1.0.0rc5` candidate target on integrated RC4 `main`. RC4 integrated as `9ab42ee1248358bc9bf04d9f68fb49bbf1b2d776` with the exact frozen candidate tree; no RC4 qualification transfers to these changed development bytes. Install from source:
 
 ```bash

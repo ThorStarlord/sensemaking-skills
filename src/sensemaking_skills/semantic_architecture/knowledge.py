@@ -263,6 +263,9 @@ def read_authored_claim(data: dict[str, Any], *, source_ref: str, schema_version
     allowed = {"id", "kind", "statement", "epistemic_status", "authority_kind", "authority_ref", "evidence_refs", "attributes"}
     if set(data) - allowed:
         raise ValueError(f"unknown authored-claim fields: {sorted(set(data) - allowed)}")
+    missing = {"id", "kind", "statement", "authority_kind", "authority_ref"} - set(data)
+    if missing:
+        raise ValueError(f"authored claim missing required fields: {sorted(missing)}")
     refs = data.get("evidence_refs")
     if not isinstance(refs, list) or any(not isinstance(ref, str) for ref in refs):
         raise ValueError("authored claim evidence_refs must be a list of strings")
@@ -292,6 +295,9 @@ def read_authored_relation(data: dict[str, Any], *, source_ref: str, schema_vers
     allowed = {"id", "subject", "predicate", "object", "epistemic_status", "derivation", "evidence_refs", "attributes"}
     if set(data) - allowed:
         raise ValueError(f"unknown authored-relation fields: {sorted(set(data) - allowed)}")
+    missing = {"id", "subject", "predicate", "object"} - set(data)
+    if missing:
+        raise ValueError(f"authored relation missing required fields: {sorted(missing)}")
     refs = data.get("evidence_refs")
     if not isinstance(refs, list) or any(not isinstance(ref, str) for ref in refs):
         raise ValueError("authored relation evidence_refs must be a list of strings")

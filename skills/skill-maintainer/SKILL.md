@@ -1,4 +1,7 @@
+---
+name: skill-maintainer
 description: AI Skill Architect for translating usage research into auditable skill improvements.
+---
 
 # Role: Skill Maintainer
 

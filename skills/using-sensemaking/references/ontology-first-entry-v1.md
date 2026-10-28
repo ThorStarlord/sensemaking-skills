@@ -64,7 +64,8 @@ sources:
 
 If the answers exist and are current, reuse them and go to exploration. If they
 are missing or materially stale for the area the goal turns on, bootstrap or
-deepen that area through the Steward (`../../repository-semantic-steward/references/bootstrap.md`).
+deepen that area by invoking the `repository-semantic-steward` Skill in
+BOOTSTRAP mode (its procedure: `../../repository-semantic-steward/references/bootstrap.md`).
 Bootstrapping does not require running product code or an exhaustive
 inventory.
 
@@ -79,8 +80,10 @@ persisted and that later agents will not inherit it. Do not claim retention.
 A well-supported local finding can still be strategically inferior to an
 opportunity elsewhere in the product. After a foundation exists, the expected
 next responsibility for a repository-level goal is broad possibility
-exploration through the Strategic Exploration Funnel
+exploration through the `strategic-repository-analysis` Skill's Strategic
+Exploration Funnel
 (`../../strategic-repository-analysis/references/strategic-exploration-funnel-v1.md`).
+Its analysis artifact follows that Skill's template and validator.
 Explore the major systems and cross-system relationships, and consider
 capability expansion, new user experiences, compositions, simplifications,
 alternative boundaries and relevant counterfactual futures. Recall retained

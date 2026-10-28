@@ -1,3 +1,8 @@
+---
+name: coding-agent-native-campaign
+description: run an approved coding_agent_native campaign in which the human approves in the conversation, the coding agent performs every repository operation and records the decision in approval.md, and no external model provider API is involved. use only after such a campaign has been presented and approved; it selects no campaign and grants no authority beyond the approved envelope.
+---
+
 # coding-agent-native-campaign — run an approved agent-native campaign
 
 Run an approved `coding_agent_native` campaign: the human approves in the
