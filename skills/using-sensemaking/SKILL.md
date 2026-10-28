@@ -1,6 +1,6 @@
 ---
 name: using-sensemaking
-description: Given only a target repository, discover the next warranted engineering responsibility from product intent, implementation evidence, current capabilities and credible alternatives without asking the owner to choose a feature. Use the portable Architect -> Builder -> Reconcile loop to implement authorized bounded work, review outcomes and retain decision-relevant learning. Works in sparse or well-documented repositories and for broader delegated missions; the coding agent owns judgment and strategic-sensemaking-loop owns multi-increment mission continuation.
+description: Given only a target repository, discover the next warranted engineering responsibility from product intent, implementation evidence, current capabilities and credible alternatives without asking the owner to choose a feature. Use the portable Architect -> Builder -> Reconcile loop to implement authorized bounded work, review outcomes and retain decision-relevant learning. Works in sparse or well-documented repositories, within granted authority, and for broad delegated repository missions; the coding agent owns judgment and strategic-sensemaking-loop owns multi-increment mission continuation.
 ---
 
 # Using Sensemaking Skills: Agent-Native Control Loop
