@@ -133,7 +133,7 @@ A remains preferred over B for the reasons in section 6. B is retained as the li
 - **Proposed future:** a target repository's authorized knowledge surface retains not only discovery candidates but also architecture options, consequence hypotheses and preferences from its own reasoning, so later sessions there reconstruct why one structure or path was preferred.
 - **Derived from:** `conseq:prospective-decision-memory-reuse`.
 - **Status:** hypothetical. It is broader than `poss:target-repository-discovery-memory`, and it coincides with the outcome plan PR J intends, so it is recorded as the possibility that PR J would advance, not as an independent proposal.
-- **Retention:** recorded in the Idea Library and reviewed knowledge with plan PR C.
+- **Retention:** recorded in the Idea Library and `.sensemaking/knowledge/possibilities.json` with plan PR C; this case's options, consequences, premises and assumptions are in `.sensemaking/knowledge/prospective-reasoning.json`.
 
 ## 10. Smallest warranted responsibility (candidate, not authorized)
 

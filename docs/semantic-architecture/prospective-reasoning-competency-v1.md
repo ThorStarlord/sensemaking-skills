@@ -48,6 +48,25 @@ A **masquerade risk** is flagged where the nearest existing construct asserts so
 
 **Not warranted now:** a standalone consequence artifact. Consequence Depth v0 section 6 warns against one without independent reuse, and the reference case's consequences fit inside its synthesis.
 
+## Results after encoding (plan PR C)
+
+The reference case is encoded in `.sensemaking/knowledge/prospective-reasoning.json` (schema version 1; 15 claims, 29 relations), plus `poss:repository-local-prospective-decision-memory` in `possibilities.json`. It was indexed at `2ecf261`. Queries are recorded in `.sensemaking/receipts/2026-10-28-prospective-reasoning-ontology.query.yaml`.
+
+| CQ | What retrieval returned | Verdict after encoding |
+| --- | --- | --- |
+| CQ-090 | `explain` on the possibility returns all four options, each by a `references` edge with `conceptual_relation: proposesToRealize` | awkward, as predicted; retrievable, meaning in an attribute |
+| CQ-091 | `explain contract:receipt-schema` returns option B's proposed change as a `hypothetical` `references` edge, never `affected_by_change` | awkward, **no masquerade** when the convention is followed; no new predicate warranted |
+| CQ-092 | `explain` on option A returns its reused capabilities (`requires_capability`) and three alternatives; target structure is an attribute | awkward, as predicted |
+| CQ-094 | `explain` on option A returns its six consequences | awkward (`mayProduce` as an attribute); complete |
+| CQ-095 | `explain` on the write-authority consequence separates two `observed` premises from the `hypothetical` assumption it challenges | expressible, confirmed |
+| CQ-096 | `explain` on the derived possibility returns `derived_from` its consequence | expressible, confirmed |
+| CQ-097 | The consequence carries `decision_changing` and `feedback_outcome: REVISE_PREFERENCE` as attributes | awkward, as predicted |
+| CQ-098 | `why` on an option is refused ("requires a decision claim"); the preference, its scope and history come back through `explain` attributes | awkward; the refusal is correct, because a preference must not read as a decision |
+| CQ-099 | `history` traces the possibility across 6 indexed revisions; `changes` separates the 16 added records from the 1 re-authored possibility | expressible with records and the analysis record together |
+| CQ-100 | Option C is linked `derived_from` the earlier declined possibility, recording that it restates that premise | expressible, confirmed |
+
+**Conclusion:** no competency question lost an answer, and neither masquerade risk materialized under the encoding convention. Plan PR I (new kinds or predicates) stays unwarranted. The remaining gaps (CQ-092, CQ-097, CQ-098 structure) belong in an analysis artifact, which plan PR D provides.
+
 ## Encoding predictions for plan PR C
 
 | Concept | Predicted encoding | Reason |

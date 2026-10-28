@@ -155,7 +155,7 @@ recall prior possibilities, options and decisions (when they could change the an
 
 ## 9. Representation now and next
 
-**Now:** this conceptual model, competency questions CQ-089 to CQ-102, and a source-grounded reference case with a vocabulary-fit assessment. No claim kind, predicate, artifact contract, schema version, Skill, runtime or validator is added.
+**Now:** this conceptual model, competency questions CQ-089 to CQ-102, a source-grounded reference case with a vocabulary-fit assessment, and reviewed records for that case using existing kinds and predicates (`.sensemaking/knowledge/prospective-reasoning.json`; plan PR C). No claim kind, predicate, schema version, Skill, runtime or validator is added.
 
 **Where each concept is expected to live** (predictions tested in [`prospective-reasoning-competency-v1.md`](prospective-reasoning-competency-v1.md)):
 

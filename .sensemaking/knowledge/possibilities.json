@@ -879,7 +879,7 @@
           "realization": {
             "value": "NOT_ASSESSED",
             "establishment": "inferred",
-            "basis": "Receipt schema is closed and holds a single next (observation:receipt-records-single-next); lexical search of skills/using-sensemaking/ found no guidance for retaining the compared set.",
+            "basis": "The documented receipt schema holds a single next and no compared-set field (observation:receipt-records-single-next); the validator does not reject unknown fields; lexical search of skills/using-sensemaking/ found no guidance for retaining the compared set.",
             "assessments": [
               {
                 "date": "2026-10-28",

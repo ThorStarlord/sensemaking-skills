@@ -50,6 +50,18 @@ A retained product possibility (a potential future of the product; conceptual mo
 
 A possibility record is memory, not a backlog item or authorization.
 
+## Prospective reasoning records
+
+Retained architecture options and consequences (conceptual model in `docs/semantic-architecture/prospective-reasoning-ontology.md` of the Sensemaking Skills repository) also use existing kinds:
+
+- an architecture option is an `alternative` claim with an `arch:` id, `hypothetical`, with its target structure, reused capabilities, requirements, comparison and any provisional preference in attributes. A preference is never a `decision` claim;
+- a consequence is a `hypothesis` claim with a `conseq:` id, its category, assumptions, mechanism and what would change the decision in attributes; observed premises are `observation` claims it `references`;
+- an option `requires_capability` an existing capability it reuses; a proposed change to an existing contract or component is `references` with `conceptual_relation: proposesChangeTo`, never `affected_by_change`;
+- `proposesToRealize`, `mayProduce`, `mayEnable`, `alternativeTo` and `challenges` use `references` with `attributes.conceptual_relation`; a possibility produced by a consequence is `derived_from` it;
+- construction paths stay in their analyses; cite them as `<analysis path>#PATH-n` in attributes.
+
+Retain only options and consequences that would change a later decision.
+
 ## Existing CLI
 
 ```bash
