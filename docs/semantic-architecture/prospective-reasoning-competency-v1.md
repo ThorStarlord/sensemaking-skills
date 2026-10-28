@@ -81,6 +81,15 @@ The reference case conforms to the `architectural_synthesis` contract and passes
 
 The checks are structural. They cannot tell whether options are materially different, a comparison is sound or a preference is warranted; that stays agent judgment, open to review.
 
+**Plan PR E and PR F.** Two optional additions close the rest at the artifact level:
+
+- **CQ-093 and CQ-090 across Level 3.** A strategic path can cite `possibility_refs` and `architecture_option_refs`, and the analysis can cite its syntheses (`architecture_synthesis_refs`). Citing an option on a path does not select it.
+- **CQ-094, CQ-095 and CQ-101.** A synthesis can type its consequences in `conditional_consequences`: category, `assumption_refs` apart from `observed_premise_refs`, and `would_change_decision_if`. It can also record `consequence_stop_reason`.
+
+The reference case predates these fields and is immutable, so they are first exercised by the next real synthesis.
+
+A standalone `prospective_consequence_assessment` is not warranted. The reference case's consequences have no authorship, reuse, currentness or consumer apart from their synthesis, and a strategic path's downstream effects stay in its `unlocks` and `risks` under Consequence Depth v0.
+
 ## Encoding predictions for plan PR C
 
 | Concept | Predicted encoding | Reason |

@@ -55,6 +55,12 @@ For each path include:
 - **Path transitions (optional):** stable conceptual transition references such as
   `PATH-1/T1` when later work would otherwise be difficult to reconstruct. A
   transition is strategic provenance, not a roadmap task.
+- **Architecture basis (optional):** `possibility_refs` (`poss:` possibilities the
+  path would advance) and `architecture_option_refs` (`arch:` options it would
+  use), with the comparing `architectural_synthesis` in top-level
+  `architecture_synthesis_refs`. Use them only when such records exist and a later
+  reader would need the basis. Citing an option on a path neither selects nor
+  authorizes it; only the strategic disposition selects a path.
 - **Dependencies:**
 - **Unlocks:**
 - **Risks / tradeoffs:**
@@ -145,6 +151,8 @@ target_source_identity: "<commit/tree/ref or documented-unverified>"
 governing_intent: "<owner/repository strategy statement>"
 governing_authority_refs:
   - docs/product-strategy.md
+architecture_synthesis_refs:  # optional
+  - artifacts/architectural_synthesis.md
 capability_states:
   - capability_id: example-capability
     state: ESTABLISHED
@@ -178,6 +186,10 @@ construction_paths:
     path_transitions:
       - transition_ref: PATH-1/T1
         transition: "<conceptual capability-state transition>"
+    possibility_refs:  # optional
+      - poss:example-possibility
+    architecture_option_refs:  # optional
+      - arch:example-option
     dependencies:
       - "<dependency>"
     unlocks:
