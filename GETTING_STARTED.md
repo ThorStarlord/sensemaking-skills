@@ -7,8 +7,8 @@ Sensemaking Skills combines agent-native Skills with an optional local Campaign 
 Use the adjacent references by audience:
 
 - **Workflow composition / canonical Campaign golden paths:** `docs/agent-workflow-golden-path-v1.md`.
-- **Coding agent instructions:** `skills/using-sensemaking/SKILL.md`.
-- **One-prompt strategic start/resume:** `skills/strategic-sensemaking-loop/SKILL.md` — front door that reconstructs the current strategic episode and invokes only the warranted stages.
+- **Single entrypoint for coding agents:** `skills/using-sensemaking/SKILL.md` — understands the repository, explores what it could become, composes the specialized Skills, and implements only when separately authorized ([ADR 0034](docs/adr/0034-ontology-first-adaptive-sensemaking.md)).
+- **Long-horizon continuation:** `skills/strategic-sensemaking-loop/SKILL.md` — composed by `using-sensemaking` to resume a strategic episode or full-autonomy mission from one prompt; maintainers may invoke it directly.
 - **Control architecture crosswalk:** `docs/adaptive-semantic-control-architecture-v0.md` — how existing control scopes, policy layers, authority, execution/evidence, and strategic reassessment compose; optional reference, not a required workflow.
 - **Deeper Level-2 responsibility/authority model:** `docs/agent-native-operating-workflow.md`.
 - **Maintainer/operator validation and qualification:** `docs/operations-runbook.md`.
@@ -62,23 +62,30 @@ sensemaking-skills setup-skills --target claude --scope project --project-root /
 
 Use `--dry-run` to preview. Divergent installed Skill trees are preserved unless `--force` is explicit.
 
+Installing the Skills is the only setup the entrypoint needs. Repository
+configuration through `setup-sensemaking-skills` is optional and never a
+prerequisite for `using-sensemaking`.
+
 ## Choose how much Sensemaking you need
 
 You do not need to create a Campaign for every task. The coding agent should use the lightest process that preserves the required engineering invariants.
 
 **Give the Skill a repository, not a feature request.** Once
 `using-sensemaking` is invoked, "Use `using-sensemaking` on this repository"
-is sufficient to discover **what to build next**. The agent retrieves current
-product intent and authority, inspects implemented capabilities and meaningful
-gaps, considers credible alternatives and recommends a concrete, bounded next
-engineering responsibility: useful outcome, relevant code/consumers, source
-evidence, why it matters and remaining uncertainty. A list of files read, a
-review of just the Skill itself or "return to the roadmap" is not that output.
-If nothing is warranted, the agent explains the scope checked and decisive
-missing evidence, owner choice or justified no-change; it does not invent work.
+is sufficient to discover **what the repository is, what it could become, and
+which direction is warranted**. On a first visit the agent establishes a
+source-grounded model of the product's domain and architecture (reusing one
+that already exists), explores possible futures broadly enough to challenge the
+first visible candidate, and then selects or recommends a direction, with its
+evidence, alternatives and remaining uncertainty. A semantic foundation with a
+coverage report, a possibility landscape, an architecture synthesis, a
+strategic disposition, a concrete next responsibility and a justified
+no-change are all complete outcomes; none requires a code change. A list of
+files read, a review of just the Skill itself or "return to the roadmap" is not
+that output, and the agent does not invent work.
 
-This repository-only entry authorizes discovery, **not automatically code
-changes, push or merge**. Explicit requests for bounded implementation or
+This repository-only entry authorizes understanding and reasoning, **not
+automatically code changes, push or merge**. Explicit requests for bounded implementation or
 an ongoing delegated construction mission take precedence and retain the
 target repository's authority and verification boundaries.
 
@@ -101,7 +108,7 @@ for non-derivable intent, domain distinctions, traps, and decisions that
 another session would otherwise lose. Never duplicate the repository's class
 or module inventory.
 
-For a delegated product goal, the agent should identify the highest-value
+When implementation of a product goal is delegated, the agent should identify the highest-value
 remaining difference between intended user experience and current behavior;
 select, implement, and verify a bounded improvement; update only affected
 durable knowledge; and continue without repeated owner routing until the
@@ -176,11 +183,11 @@ You normally need only three entry surfaces:
 human first use
 -> GETTING_STARTED.md
 
-coding agent deciding warranted repository work
+any repository request (understand, explore, decide, or implement when authorized)
 -> using-sensemaking
 
-whole strategic episode from one prompt
--> strategic-sensemaking-loop
+long-horizon or full-autonomy continuation
+-> composed by using-sensemaking (strategic-sensemaking-loop)
 ```
 
 Use a specialized Skill directly when its bounded responsibility is explicitly
@@ -201,18 +208,19 @@ Exploratory creative/UI design with unresolved experiential value
 -> observe genuine interaction before hardening speculative layout behavior
 -> keep no-data-loss, persistence, security and author-authority safeguards
 
-Correct repository responsibility is uncertain
--> use the Sensemaking control loop; repo-sensemaker may be useful
+You want to understand a repository or what it could become
+-> use using-sensemaking; it builds or reuses the semantic foundation first
+   and can finish with no code change
 
 Repository/product future itself is open and you want plausible construction paths
--> use strategic-repository-analysis for Level-3 strategic repository analysis
+-> using-sensemaking composes strategic-repository-analysis for Level-3 analysis
 
-You want the whole strategic episode to start or resume from one prompt
--> use strategic-sensemaking-loop
+You want a long-horizon episode to resume from one prompt
+-> using-sensemaking composes strategic-sensemaking-loop
 -> it reuses current artifacts and skips stages that are already complete
 
 You want FULL AUTONOMY / FULL DELEGATION toward a terminal repository outcome
--> use strategic-sensemaking-loop with an autonomous terminal mission
+-> using-sensemaking with strategic-sensemaking-loop's autonomous terminal mission
 -> it continues across bounded responsibilities until the terminal goal or a genuine stop boundary
 
 Material completed-work or repair claim
