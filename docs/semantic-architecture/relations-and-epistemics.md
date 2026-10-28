@@ -324,6 +324,59 @@ Links ProductChange to a descriptive ValueMechanism.
 
 None of these relations imply priority.
 
+### Possibility relations (proposed, conceptual)
+
+These relate a ProductPossibility ([`product-possibility-ontology.md`](product-possibility-ontology.md)) to other possibilities, capabilities, commitments, and evidence. They are **not** executable predicates; the provisional fit with `knowledge.py` predicates is in that document, section 6.2. Unless stated, each is agent-inferred or hypothesized; none implies priority, selection, or authorization.
+
+#### `potentiallyEnabledBy`
+
+**Meaning:** another capability or possibility may supply a necessary prerequisite.  
+**Endpoints:** a ProductCapability or ProductPossibility. An evidence prerequisite is an Assumption or Uncertainty recorded in the possibility's assumptions or `revisit_when`, not an endpoint of this relation; a construction path is not one either.  
+**Prohibited inference:** a plausible prerequisite is not a sourced `dependsOn`; the enabled possibility is not thereby feasible.
+
+#### `complements`
+
+**Meaning:** two possibilities could produce more value together than apart (complementary or multiplicative value in the product-change taxonomy, Axis 4).  
+**Prohibited inference:** complementarity does not mean either should be built.
+
+#### `alternativeTo`
+
+**Meaning:** two possibilities offer competing approaches to a related outcome.  
+**Prohibited inference:** recording an alternative does not reject it or endorse the other.
+
+#### `conflictsWith`
+
+**Meaning:** two directions, or a direction and an accepted commitment, appear incompatible. Name the conflicting premise.  
+**Prohibited inference:** conflict with current strategy does not forbid exploring the possibility and does not by itself require Level-4 review; acting on it needs the governing authority, and Level 4 applies when a product-thesis commitment becomes decision-changing.
+
+#### `extends`
+
+**Meaning:** one possibility broadens an existing capability or earlier possibility.
+
+#### `derivedFrom`
+
+**Meaning:** a possibility originated from another idea, a synthesis, or a source. Same meaning as the evidence relation above, applied to possibilities.
+
+#### `realizedBy`
+
+**Meaning:** a capability, change, or repository element realizes some or all of the proposed future. State which part.  
+**Endpoints:** subject a ProductPossibility; object a ProductCapability, ProductChange, or RepositoryElement, never another possibility.  
+**Evidence:** code, contracts, Skill text, or observed behavior at a named revision. The evidence is OBSERVED; the realization relationship drawn from it is INFERRED unless an authority ratifies it.  
+**Prohibited inference:** documentation alone does not establish realization; realization does not establish owner ratification.
+
+#### `supersedes` (possibilities)
+
+**Meaning:** a later possibility or decision replaces an earlier one for current reasoning. The earlier one and its rationale stay recorded.
+
+#### `sharesAssumptionWith`
+
+**Meaning:** several possibilities depend on a common unresolved premise. Prefer naming the premise as its own Hypothesis so evidence can contest it once.
+
+#### `motivatesReconsiderationOf`
+
+**Meaning:** new evidence may change a premise behind an earlier disposition.  
+**Prohibited inference:** a reason to reconsider is not a changed disposition, and a satisfied reconsideration condition is not selection.
+
 ## Temporal and scope rules
 
 A material repository relation should be interpreted as:
@@ -404,6 +457,9 @@ capability available -> action authorized
 human intent -> implementation currently conforms
 no search result -> entity absent
 high confidence prose -> stronger evidence
+possibility retained -> possibility endorsed or authorized
+possibilities often mentioned together -> dependency
+reconsideration condition met -> possibility selected
 ```
 
 Skills should surface these boundaries when they materially affect a decision.
