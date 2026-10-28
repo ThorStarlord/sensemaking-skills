@@ -879,7 +879,14 @@
           "realization": {
             "value": "NOT_ASSESSED",
             "establishment": "inferred",
-            "basis": "Receipt schema is closed and holds a single next (observation:receipt-records-single-next); lexical search of skills/using-sensemaking/ found no guidance for retaining the compared set."
+            "basis": "The documented receipt schema holds a single next and no compared-set field (observation:receipt-records-single-next); the validator does not reject unknown fields; lexical search of skills/using-sensemaking/ found no guidance for retaining the compared set.",
+            "assessments": [
+              {
+                "date": "2026-10-28",
+                "analysis_ref": "artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+                "result": "Four architecture options compared; provisional preference for arch:git-reviewed-local-memory, narrowed by REVISE_PREFERENCE to sessions holding knowledge-edit and commit authority. Candidate responsibility for plan PR H; not authorized."
+              }
+            ]
           }
         },
         "disposition_history": [
@@ -893,6 +900,57 @@
         ],
         "assessed_ref": "d0af33beb52e94b375d6a471e9990df11c8c424d",
         "value_hypothesis": "Fewer repeated discoveries and less recency anchoring in target repositories; possibility memory gains value outside this repository's own knowledge plane."
+      }
+    },
+    {
+      "id": "poss:repository-local-prospective-decision-memory",
+      "kind": "opportunity",
+      "statement": "A target repository's authorized knowledge surface retains architecture options, consequence hypotheses and preferences from its own reasoning, not only discovery candidates, so later sessions there reconstruct why one structure or path was preferred.",
+      "epistemic_status": "hypothetical",
+      "authority_kind": "hypothesis",
+      "authority_ref": "artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md"
+      ],
+      "attributes": {
+        "concept": "ProductPossibility",
+        "title": "Repository-local prospective decision memory",
+        "library_ref": "docs/idea-library.md",
+        "origin": {
+          "ref": "artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+          "date": "2026-10-28",
+          "author": "agent, from conseq:prospective-decision-memory-reuse"
+        },
+        "dimensions": {
+          "alignment": {
+            "value": "ALIGNED",
+            "basis": "ADR 0031 decision 1 names repositories; the owner's prospective reasoning plan (PR J) intends this outcome."
+          },
+          "ambition": {
+            "value": "SUBSTANTIAL",
+            "basis": "Broadens possibility memory to the reasoning behind decisions in target repositories."
+          },
+          "horizon": {
+            "value": "FORESEEABLE",
+            "basis": "Encodings use existing kinds; needs one explicitly authorized target repository."
+          },
+          "realization": {
+            "value": "NOT_ASSESSED",
+            "establishment": "inferred",
+            "basis": "No target repository was inspected; this repository's prospective-reasoning.json is the in-repository precedent."
+          }
+        },
+        "disposition_history": [
+          {
+            "value": "EXPLORATORY",
+            "date": "2026-10-28",
+            "authority": "agent",
+            "source": "artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+            "rationale": "Coincides with plan PR J's intended outcome; recorded as the possibility PR J would advance, not an independent proposal."
+          }
+        ],
+        "assessed_ref": "2a8c6f867c8f4b1fb50caec0a095a690ccef2d92",
+        "value_hypothesis": "Later sessions in a target repository reuse earlier architectural and strategic reasoning instead of regenerating it."
       }
     },
     {

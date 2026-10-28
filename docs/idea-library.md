@@ -1,6 +1,6 @@
 # Idea Library v1: Product Possibility Landscape
 
-**Status:** exploratory / non-authoritative possibility landscape; curated selection (17 possibilities, plus construction paths and evidence prerequisites kept separate)  
+**Status:** exploratory / non-authoritative possibility landscape; curated selection (18 possibilities, plus construction paths and evidence prerequisites kept separate)  
 **Typed records:** [`../.sensemaking/knowledge/possibilities.json`](../.sensemaking/knowledge/possibilities.json) (plan PR 3)  
 **Assessed:** 2026-10-28 at `main@d0af33beb52e94b375d6a471e9990df11c8c424d`  
 **Authority:** none. A possibility, its dimension labels or its relationships here are not Strategic Frontier membership, priority, implementation authorization, owner decisions or ADR ratification.  
@@ -54,6 +54,7 @@ Possibilities that originate in a conversation, a plan or a synthesis have their
 | `poss:construction-time-possibility-reconciliation` | Reconcile possibilities from construction changes (new) | ALIGNED | INCREMENTAL | FORESEEABLE | IMPLEMENTED_BASELINE | SELECTED 2026-10-28 (plan PR 7 guidance) |
 | `poss:target-repository-discovery-memory` | Discovery memory for target repositories (new) | ALIGNED | SUBSTANTIAL | FORESEEABLE | NOT_ASSESSED | EXPLORATORY |
 | `poss:possibilities-projected-from-analyses` | Derive possibilities from strategic analyses (new counterfactual) | COUNTERFACTUAL | INCREMENTAL | FORESEEABLE | NOT_ASSESSED | REJECTED_FOR_NOW |
+| `poss:repository-local-prospective-decision-memory` | Prospective decision memory in target repositories (from a consequence) | ALIGNED | SUBSTANTIAL | FORESEEABLE | NOT_ASSESSED | EXPLORATORY |
 
 Order is grouping (realized, aligned future, deferred, long-horizon, conflicting, then the three recorded from the 2026-10-28 exploration), not priority. `ranked-possibility-backlog` is `FORESEEABLE` because it would be easy to build: horizon is not desirability.
 
@@ -222,11 +223,21 @@ These grew from the typed records and queries described in section 6. Each is a 
 - **Proposed future:** when the portable `using-sensemaking` Skill performs repository-only discovery in a target repository and has authority to write knowledge there, it retains the candidate responsibilities it compared (selected and declined, with reasons and `revisit_when`) as possibility records. A later discovery starts from them instead of re-deriving them or anchoring on the last receipt's `next`.
 - **Origin:** agent synthesis, 2026-10-28, combining `poss:possibility-memory` with the realized `cap:repository-only-discovery` and the observed 2026-10-27 discovery miss (`docs/agents/build-loop.md`, "Observed repository-only discovery miss").
 - **Alignment basis:** ADR 0031 decision 1 names repositories, and repository-only discovery is the product's front door, so `ALIGNED`. Writing records in a target repository needs that repository's knowledge authority; discovery alone stays read-only. `SUBSTANTIAL`; `FORESEEABLE`, because the records are plain JSON a target can read without an index or CLI.
-- **Realization:** `NOT_ASSESSED` as a whole. Bounded observation (OBSERVED; the receipt schema is closed, which gives a completeness basis for this part): the session receipt records one `next.warranted_responsibility` and has no field for the compared candidate set (`skills/using-sensemaking/references/session-receipt-v1.md`, section 5). A lexical search of `skills/using-sensemaking/` found no guidance for retaining that set.
+- **Realization:** `NOT_ASSESSED` as a whole. Bounded observation (OBSERVED; the documented schema lists every receipt field, which gives a completeness basis for this part): the session receipt records one `next.warranted_responsibility` and has no field for the compared candidate set (`skills/using-sensemaking/references/session-receipt-v1.md`, section 5). The receipt validator does not reject unknown fields, so an added field would be neither enforced nor read. A lexical search of `skills/using-sensemaking/` found no guidance for retaining that set.
 - **Value hypothesis (HYPOTHESIZED):** fewer repeated discoveries and less recency anchoring in target repositories. It would also give possibility memory value outside this repository's own knowledge plane, which is the self-reference risk noted under `poss:possibility-memory`.
 - **Assumptions:** ASSUMPTION-1 also holds in target repositories; their owners grant knowledge-edit authority.
 - **Relations:** extends `poss:possibility-memory`; enabled by `cap:possibility-records` and `cap:repository-only-discovery`. Unlike `poss:cross-product-transfer`, it moves no knowledge between products, so it does not depend on S5 evidence.
 - **Disposition:** `EXPLORATORY` (agent, 2026-10-28). A consequential candidate for a later Level-3 or plan PR 4 decision; not selected or authorized.
+- **Assessed 2026-10-28** in the prospective reasoning reference case (`artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md`; records in `.sensemaking/knowledge/prospective-reasoning.json`). Four architecture options were compared. The provisional preference, `arch:git-reviewed-local-memory`, was narrowed by `REVISE_PREFERENCE` to sessions that hold knowledge-edit and commit authority in the target, because discovery is read-only by default and uncommitted receipts are lost. That yields a candidate responsibility for plan PR H; it is not authorized and the disposition is unchanged.
+
+#### `poss:repository-local-prospective-decision-memory`: prospective decision memory in target repositories
+
+- **Proposed future:** a target repository's authorized knowledge surface retains architecture options, consequence hypotheses and preferences from its own reasoning, not only discovery candidates, so later sessions there reconstruct why one structure or path was preferred.
+- **Origin:** derived on 2026-10-28 from `conseq:prospective-decision-memory-reuse` in the prospective reasoning reference case.
+- **Alignment basis:** ADR 0031 decision 1 names repositories, and the owner's prospective reasoning plan (PR J) intends this outcome. `ALIGNED`, `SUBSTANTIAL`, `FORESEEABLE` (existing kinds suffice; it needs one explicitly authorized target repository).
+- **Realization:** `NOT_ASSESSED`; no target repository was inspected. This repository's `.sensemaking/knowledge/prospective-reasoning.json` is the in-repository precedent.
+- **Disposition:** `EXPLORATORY` (agent, 2026-10-28). It coincides with plan PR J's intended outcome, so it is recorded as the possibility PR J would advance, not as an independent proposal.
+- **Relations:** derived from `conseq:prospective-decision-memory-reuse`; extends `poss:target-repository-discovery-memory`.
 
 #### `poss:possibilities-projected-from-analyses`: derive possibilities from strategic analyses (counterfactual)
 
@@ -234,7 +245,7 @@ These grew from the typed records and queries described in section 6. Each is a 
 - **Origin:** agent counterfactual, 2026-10-28, challenging this program's premise that possibilities need authored records.
 - **Alignment basis:** `COUNTERFACTUAL`: it alters a design premise of this program, not a product commitment, and exploring it needed no review. `INCREMENTAL`; `FORESEEABLE`.
 - **Realization:** `NOT_ASSESSED`. The commands exist (`src/sensemaking_skills/strategy_cli.py`); whether they could carry possibilities was not assessed.
-- **Disposition:** 2026-10-28, agent (design choice within plan PR 3), `REJECTED_FOR_NOW`, reason `better_alternative`. Analyses cover Level-3 episodes and their paths, and none of the 17 possibilities here originates in one: they come from ADRs, plans, the reservoir, the research agenda and syntheses, which a projection would drop. Citing analyses as records of origin keeps their value. `revisit_when`: authored records drift from or duplicate analyses in real use, or their maintenance cost becomes material.
+- **Disposition:** 2026-10-28, agent (design choice within plan PR 3), `REJECTED_FOR_NOW`, reason `better_alternative`. Analyses cover Level-3 episodes and their paths, and none of the 17 possibilities recorded with it originates in one: they come from ADRs, plans, the reservoir, the research agenda and syntheses, which a projection would drop. Citing analyses as records of origin keeps their value. `revisit_when`: authored records drift from or duplicate analyses in real use, or their maintenance cost becomes material.
 - **Relations:** alternative to `poss:possibility-memory`; derived from `poss:strategic-continuity-reassessment`.
 
 ## 4. Construction paths and evidence prerequisites (not possibilities)
@@ -292,6 +303,8 @@ Implementation evidence is listed with each realized entry in section 3. The tab
 | `poss:target-repository-discovery-memory` | `potentiallyEnabledBy` | `cap:possibility-records`, `cap:repository-only-discovery` (ProductCapabilities) | HYPOTHESIZED | Section 3.5 |
 | `poss:possibilities-projected-from-analyses` | `alternativeTo` | `poss:possibility-memory` (possibility) | INFERRED relation; rejection by agent design choice | Section 3.5 |
 | `poss:possibilities-projected-from-analyses` | `derivedFrom` | `poss:strategic-continuity-reassessment` (possibility) | HYPOTHESIZED | Counterfactual on 2026-10-28 |
+| `poss:repository-local-prospective-decision-memory` | `derivedFrom` | `conseq:prospective-decision-memory-reuse` (ConsequenceHypothesis) | HYPOTHESIZED | Prospective reasoning reference case |
+| `poss:repository-local-prospective-decision-memory` | `extends` | `poss:target-repository-discovery-memory` (possibility) | HYPOTHESIZED | Prospective reasoning reference case |
 
 Links to construction paths and evidence prerequisites are in section 4; they are not possibility relations.
 
@@ -338,6 +351,8 @@ cross-product-transfer (needs S5 evidence) <-- extended by: domain-general-sense
 **Lesson applied (from QY-11).** Evidence matches by file, so a record that cites this library while its origin lies elsewhere is flagged by every library edit. Records now cite the library only where it is their record of origin or the subject of their realization.
 
 None of these syntheses is selected, prioritized or authorized.
+
+**Prospective reasoning (2026-10-28).** The reference case on `poss:target-repository-discovery-memory` is encoded in `.sensemaking/knowledge/prospective-reasoning.json`: four `arch:` options, six `conseq:` consequences, two observed premises and three assumptions. `explain` on the possibility returns its options; on an option, its consequences, reused capabilities and alternatives. The derived `poss:repository-local-prospective-decision-memory` is linked back to its consequence. Vocabulary findings are in `docs/semantic-architecture/prospective-reasoning-competency-v1.md`.
 
 ## 7. Extending and maintaining the library
 
