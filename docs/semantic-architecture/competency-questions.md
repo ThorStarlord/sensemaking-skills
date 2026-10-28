@@ -213,6 +213,38 @@ Introduced with [`product-possibility-ontology.md`](product-possibility-ontology
 
 **CQ-088** — Does the current construction responsibility advance the selected long-term direction, or is a materially different retained possibility being overlooked?
 
+## N. Prospective reasoning
+
+Introduced with [`prospective-reasoning-ontology.md`](prospective-reasoning-ontology.md) (2026-10-28). Vocabulary fit, losses and resolution candidates for each question are in [`prospective-reasoning-competency-v1.md`](prospective-reasoning-competency-v1.md).
+
+**CQ-089** — Can the system distinguish an exploration, synthesis or evaluation activity from the entity it produced?
+
+**CQ-090** — Which ProductPossibility motivated a particular ArchitectureOption?
+
+**CQ-091** — Which existing components, contracts and boundaries would an option change, as distinct from those a change has actually affected?
+
+**CQ-092** — How do two architecture options differ structurally, and which existing capabilities does each reuse?
+
+**CQ-093** — Which future capability state does a construction path target, and which transitions does it propose?
+
+**CQ-094** — Which consequences are predicted to follow from a provisionally preferred option?
+
+**CQ-095** — Which predicted consequences depend on unresolved assumptions rather than observed effects?
+
+**CQ-096** — Which consequence generated a genuinely distinct new ProductPossibility?
+
+**CQ-097** — Which discovered consequence could change the comparison or the provisional preference?
+
+**CQ-098** — Why was a direction preferred, selected, deferred or rejected, and under which authority?
+
+**CQ-099** — Can a later agent reconstruct the architectural and strategic reasoning without the original conversation?
+
+**CQ-100** — Can the system distinguish a restated idea, a revised idea, a new synthesis and an already rejected alternative?
+
+**CQ-101** — Can the agent stop deeper exploration when further consequences would not change the decision?
+
+**CQ-102** — Can ordinary bounded work proceed without a mandatory full pre-implementation analysis?
+
 ## Initial priority set
 
 The first implementation experiments should prioritize questions that already recur across existing Skills and Campaigns:

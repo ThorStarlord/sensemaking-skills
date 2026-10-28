@@ -377,6 +377,62 @@ These relate a ProductPossibility ([`product-possibility-ontology.md`](product-p
 **Meaning:** new evidence may change a premise behind an earlier disposition.  
 **Prohibited inference:** a reason to reconsider is not a changed disposition, and a satisfied reconsideration condition is not selection.
 
+### Prospective reasoning relations (proposed, conceptual)
+
+These connect proposed structures, paths and consequences ([`prospective-reasoning-ontology.md`](prospective-reasoning-ontology.md)). None is an executable predicate. `alternativeTo`, `derivedFrom` and `selects` keep their existing meanings with the endpoints listed in `ontology.md`. Every relation below is hypothesized or agent-inferred unless an authority ratifies it.
+
+#### `proposesToRealize`
+
+**Meaning:** an architecture option is offered as a way to realize a product possibility.  
+**Prohibited inference:** a proposal is not `realizedBy`; nothing is implemented by being proposed.
+
+#### `proposesChangeTo`
+
+**Meaning:** an option would change an existing component, boundary or contract, named by its observed identity.  
+**Prohibited inference:** a proposed change is not an observed change (`affected_by_change`), and it grants no authority to make the change.
+
+#### `mayProduce`
+
+**Meaning:** an option or path might produce a consequence under stated conditions.  
+**Prohibited inference:** not observed causation; if A may produce B and B may enable C, A is not shown to enable C.
+
+#### `targets`
+
+**Meaning:** a construction path aims at a future capability state.
+
+#### `advances`
+
+**Meaning:** a construction path would move the product toward a possibility.  
+**Prohibited inference:** advancing is not realizing; a path is not a possibility.
+
+#### `proposesUseOf`
+
+**Meaning:** a construction path would use an architecture option.
+
+#### `mayEnable`
+
+**Meaning:** a consequence, if it occurs, might make a product possibility feasible or attractive.  
+**Prohibited inference:** not an established dependency or prerequisite.
+
+#### `mayConstrain`
+
+**Meaning:** a consequence, if it occurs, might limit a future capability state or an existing capability.
+
+#### `challenges`
+
+**Meaning:** a consequence, if it occurs, would weaken an assumption or hypothesis that a comparison relies on.  
+**Prohibited inference:** a challenge is not a contradiction established by evidence.
+
+#### `evaluates`
+
+**Meaning:** an attributed qualitative judgment compares options or paths.  
+**Prohibited inference:** no numeric ranking; an evaluation is not a selection.
+
+#### `prefers`
+
+**Meaning:** a provisional preference, attributed to whoever formed it, favors an option or path.  
+**Prohibited inference:** `prefers` is not `selects`, and `selects` is not authorization to execute, merge or release.
+
 ## Temporal and scope rules
 
 A material repository relation should be interpreted as:
@@ -460,6 +516,10 @@ high confidence prose -> stronger evidence
 possibility retained -> possibility endorsed or authorized
 possibilities often mentioned together -> dependency
 reconsideration condition met -> possibility selected
+option proposed -> component or contract exists
+consequence predicted -> consequence observed
+A may produce B and B may enable C -> A enables C
+provisional preference -> decision
 ```
 
 Skills should surface these boundaries when they materially affect a decision.

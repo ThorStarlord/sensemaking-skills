@@ -403,6 +403,10 @@ A quality dimension such as reliability, usability, portability, observability, 
 
 A retained representation of a potential future product state, capability, product change, or strategic direction, together with its value hypothesis, assumptions, relationships, and historical disposition. It implies no feasibility, endorsement, implementation, or authorization, and it is not a Strategic Frontier item or backlog entry. It is distinct from the ProductCapability that may realize it, from a construction path that may advance it, and from an evidence prerequisite (an Assumption or Uncertainty) it may depend on. Its statements are Layer-4 claims (its value is usually a Hypothesis). Dimensions, identity, history, and reconsideration are defined in [`product-possibility-ontology.md`](product-possibility-ontology.md).
 
+### Prospective reasoning entities
+
+Proposed, not observed, structures and effects that connect possibilities to architecture, strategy and consequences: **ArchitectureOption** (a proposed coherent structural realization), **TargetArchitectureState** and **ArchitecturalTransition** (embedded in an option), **FutureCapabilityState** (a construction path's `future_state`), **ConsequenceHypothesis** (a conditional predicted effect; a Layer-4 Hypothesis), **ComparativeJudgment** and **ProvisionalPreference** (attributed, never a Decision). A proposed component or contract is never an observed one. Defined in [`prospective-reasoning-ontology.md`](prospective-reasoning-ontology.md).
+
 ### Product relations
 
 ```text
@@ -425,9 +429,22 @@ ProductPossibility derivedFrom ProductPossibility | EvidenceSource
 ProductPossibility supersedes ProductPossibility
 Evidence motivatesReconsiderationOf ProductPossibility
 Decision selects | defers | rejects ProductPossibility
+ArchitectureOption proposesToRealize ProductPossibility
+ArchitectureOption proposesChangeTo Component | Boundary | Contract
+ArchitectureOption alternativeTo ArchitectureOption
+ArchitectureOption | ConstructionPath mayProduce ConsequenceHypothesis
+ConstructionPath targets FutureCapabilityState
+ConstructionPath advances ProductPossibility
+ConstructionPath proposesUseOf ArchitectureOption
+ConsequenceHypothesis mayEnable ProductPossibility
+ConsequenceHypothesis mayConstrain FutureCapabilityState | ProductCapability
+ConsequenceHypothesis challenges Assumption | Hypothesis
+ComparativeJudgment evaluates ArchitectureOption | ConstructionPath
+ProvisionalPreference prefers ArchitectureOption | ConstructionPath
+Decision selects ArchitectureOption | ConstructionPath
 ```
 
-The detailed taxonomy is defined in `product-change-taxonomy.md`. Possibility relations are proposed and conceptual; their meanings are in `relations-and-epistemics.md`.
+The detailed taxonomy is defined in `product-change-taxonomy.md`. Possibility and prospective reasoning relations are proposed and conceptual; their meanings are in `relations-and-epistemics.md`.
 
 ## Cross-layer relations
 
