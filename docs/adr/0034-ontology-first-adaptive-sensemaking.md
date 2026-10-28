@@ -84,6 +84,10 @@ Per `docs/product-thesis-revision.md` section 12, Level 3 reassesses before thes
 | `STATUS.md` current next step (PATH-1 accretion through genuine responsibilities) | SUSPECT | REASSESS: PATH-1 continues only as it serves this identity; this program comes first |
 | `CLAUDE.md` description of the general capability | STALE | REVISE wording; keep local construction rules |
 
+## Implementation (2026-10-28)
+
+Implemented in guidance through #640 (identity), #641 (controller), #643 (bootstrap), #644 (coverage and composition), #645 (continuation) and #646 (onboarding), with #642 repairing fixtures. The first assessment is `docs/normal-use/ontology-first-entry-atlas-001.md`. The evidence ceiling above still holds: no independent or cross-session use has been observed.
+
 ## Owner ratification
 
 The owner supplied the governing decisions A–G on 2026-10-28 and asked for them to be recorded as "the owner's newly selected product identity". Implementation proceeds through ordinary reviewed PRs under the repository's construction policy.

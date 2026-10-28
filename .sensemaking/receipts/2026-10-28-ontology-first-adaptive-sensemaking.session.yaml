@@ -1,0 +1,132 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-10-28-ontology-first-adaptive-sensemaking
+state: final
+created_at: "2026-10-28T21:40:00Z"
+updated_at: "2026-10-29T01:30:00Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: f805124dfab2cdbdfc3498c2f3630eefa3032661
+  end_ref: ef88bdb2ad864b2d80dca12cde87bd45142ce60e
+  worktree_clean_at_end: false
+skill_identity:
+  load_mode: manual_explicit_load
+  sensemaking_source_ref: f805124dfab2cdbdfc3498c2f3630eefa3032661
+goal:
+  statement: "Implement the owner's Ontology-First Adaptive Sensemaking plan (ADR 0034, PRs 1-8): product identity, single adaptive controller, ontology-first bootstrap, possibility coverage, prospective composition, internal continuation, onboarding, and an authentic-use assessment."
+  source: owner_message
+  source_ref: null
+delegation:
+  granted: [read, local_write, run_local_commands, commit, push, open_pr, merge, knowledge_edit]
+  withheld: [release, deploy, external_publication, tracker_write]
+continuity:
+  resumes: 2026-10-28-prospective-reasoning-integration
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: Record the owner-selected product identity (plan PR 1)
+    capability: ordinary_coding
+    status: completed
+    reason: "ADR 0034 with supersession and reconciliation tables; product strategy, CONTEXT, README, STATUS and CLAUDE.md revised. PR 640."
+    artifact_refs: [docs/adr/0034-ontology-first-adaptive-sensemaking.md, docs/product-strategy.md]
+    validation:
+      - command: skill hygiene, validate-repo, docs-currentness, probe gate
+        result: PASS
+  - id: R-2
+    responsibility: Make using-sensemaking the single adaptive controller (plan PR 2)
+    capability: using-sensemaking
+    status: completed
+    reason: "Entry modes, adaptive loop with return-to-controller, construction as optional downstream, two new references. PR 641."
+    artifact_refs: [skills/using-sensemaking/SKILL.md, skills/using-sensemaking/references/ontology-first-entry-v1.md, skills/using-sensemaking/references/adaptive-skill-composition-v1.md]
+    validation:
+      - command: skill hygiene, validate-repo, docs-currentness, probe gate
+        result: PASS
+      - command: local unit and synthetic evidence tests
+        result: NOT_RUN
+  - id: R-3
+    responsibility: Repair post-merge CI failure from the README tagline change
+    capability: ordinary_coding
+    status: completed
+    reason: "Three brief fixtures quoted README L6-L8 verbatim; updated quotes, validate-brief passes; main Product Validation green after PR 642."
+    artifact_refs: [tests/fixtures/brief-valid.md]
+    validation:
+      - command: validate-brief.py on the three fixtures
+        result: PASS
+  - id: R-4
+    responsibility: Steward bootstrap, possibility coverage, prospective composition, continuation and onboarding (plan PRs 3-7)
+    capability: ordinary_coding
+    status: completed
+    reason: "PRs 643, 644, 645 and 646; no schema, validator or artifact contract change."
+    artifact_refs: [skills/repository-semantic-steward/references/bootstrap.md, skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md, skills/strategic-sensemaking-loop/SKILL.md, GETTING_STARTED.md]
+    validation:
+      - command: skill hygiene, validate-repo, docs-currentness, probe gate, validate-output architectural_synthesis
+        result: PASS
+  - id: R-5
+    responsibility: Authentic-use assessment in Atlas Midgard, read-only (plan PR 8)
+    capability: using-sensemaking
+    status: completed
+    reason: "Adequacy check found the Atlas model covers 1 of about 13 systems; provisional bootstrap, breadth and coverage assessment; disposition OWNER_DECISION on the open scale reconciliation; nothing written in Atlas."
+    artifact_refs: [docs/normal-use/ontology-first-entry-atlas-001.md]
+    validation:
+      - command: source inspection of Atlas at d3cd47d
+        result: PASS
+  - id: R-6
+    responsibility: Reconcile reviewed knowledge with ADR 0034
+    capability: repository-semantic-steward
+    status: completed
+    reason: "cap:repository-only-discovery revised with history; decision:ontology-first-adaptive-sensemaking added with decided_by and constrained_by links."
+    artifact_refs: [.sensemaking/knowledge/possibilities.json, .sensemaking/knowledge/product.json]
+    validation:
+      - command: knowledge-proposal-check
+        result: PASS
+findings:
+  - id: F-1
+    statement: "Changing README line 6 broke three brief fixtures that cite it verbatim; six full-suite tests failed on main until PR 642."
+    epistemic_status: OBSERVED
+    evidence_refs: [tests/fixtures/brief-valid.md]
+    disposition: resolved
+  - id: F-2
+    statement: "Endgame Atlas corruptions reload the Causeway and Archive scenes, whose world consequence sites hide only during Chronos; the earlier Atlas synthesis never mapped Endgame Atlas."
+    epistemic_status: OBSERVED
+    evidence_refs: [docs/normal-use/ontology-first-entry-atlas-001.md]
+    disposition: open
+  - id: F-3
+    statement: "The retained Atlas possibility of companion remarks can compose the existing Shared Chronicle rather than add a new remarks system."
+    epistemic_status: INFERRED
+    evidence_refs: [docs/normal-use/ontology-first-entry-atlas-001.md]
+    disposition: open
+  - id: F-4
+    statement: "A read-only target session cannot write its own session receipt; the controller's receipt rule reports the limitation rather than inventing one."
+    epistemic_status: OBSERVED
+    evidence_refs: [skills/using-sensemaking/SKILL.md]
+    disposition: no_action
+open_questions:
+  - id: Q-1
+    question: "Does an independent fresh session with the installed Skill follow ontology-first entry on a repository with no .sensemaking records?"
+    source: empirical
+    blocking: false
+    options:
+      - option: Fresh session, installed Skill, a repository without records
+        consequence: "Tests plan Scenario 1 and host discoverability for the first time."
+    durable_ref: docs/normal-use/ontology-first-entry-atlas-001.md
+  - id: Q-2
+    question: "Should Atlas's remembered-place sites appear inside Endgame Atlas corruptions?"
+    source: owner_intent
+    blocking: false
+    options:
+      - option: Keep them visible
+        consequence: "Corruptions read as transformed present places, as the Endgame grammar describes."
+      - option: Hide them during corruptions
+        consequence: "Corruptions stay visually distinct from restored present places; the site gates on Endgame as well as Chronos."
+    durable_ref: docs/normal-use/ontology-first-entry-atlas-001.md
+stop:
+  disposition: GOAL_SATISFIED
+  reason: "Plan PRs 1-8 merged or ready; one same-agent read-only assessment recorded. Remaining evidence (Scenarios 1 and 4, discoverability, independent reuse) needs a fresh session."
+next:
+  warranted_responsibility: "A fresh session with the installed using-sensemaking Skill on a repository without .sensemaking records; then an independent later session on Atlas that must use retained reasoning."
+  blocked_on: []
+persistence: committed
+claim_ceiling: "Guidance implemented and validator-clean; one same-agent, read-only application; no independent, cross-session or host-native evidence."
+action_authorized_by_receipt: false
+immutable: true

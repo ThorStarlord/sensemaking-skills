@@ -1129,17 +1129,25 @@
     {
       "id": "cap:repository-only-discovery",
       "kind": "capability",
-      "statement": "Given only a target repository, the using-sensemaking Skill discovers a warranted next engineering responsibility from product intent, implementation evidence and credible alternatives without asking the owner to choose a feature.",
+      "statement": "Given only a target repository, the using-sensemaking Skill establishes or reuses source-grounded understanding of its domain and architecture, explores what it could become with a possibility coverage assessment, and selects or recommends a warranted direction (or justifies none) without asking the owner to choose a feature; implementation is optional and separately authorized.",
       "epistemic_status": "declared",
       "authority_kind": "document",
       "authority_ref": "skills/using-sensemaking/SKILL.md",
       "evidence_refs": [
-        "file:skills/using-sensemaking/SKILL.md:line:76",
-        "file:skills/using-sensemaking/SKILL.md:line:418"
+        "file:skills/using-sensemaking/SKILL.md:line:91",
+        "file:skills/using-sensemaking/SKILL.md:line:472",
+        "file:skills/using-sensemaking/references/ontology-first-entry-v1.md:line:91"
       ],
       "attributes": {
         "concept": "ProductCapability",
-        "claim_ceiling": "Skill guidance; behavior in independent sessions is normal-use evidence, not established."
+        "claim_ceiling": "Skill guidance; one same-agent read-only application observed (docs/normal-use/ontology-first-entry-atlas-001.md); independent-session behavior not established.",
+        "statement_history": [
+          {
+            "statement": "Given only a target repository, the using-sensemaking Skill discovers a warranted next engineering responsibility from product intent, implementation evidence and credible alternatives without asking the owner to choose a feature.",
+            "until": "2026-10-28",
+            "reason": "REVISE: ADR 0034 made repository-level understanding and prospective reasoning the default outcome; a warranted next engineering responsibility is one valid result, not the default."
+          }
+        ]
       }
     },
     {
@@ -2048,6 +2056,19 @@
       ],
       "attributes": {
         "establishment": "observed change between revisions"
+      }
+    },
+    {
+      "id": "rel:repository-discovery-decided-by-ontology-first",
+      "subject": "cap:repository-only-discovery",
+      "predicate": "decided_by",
+      "object": "decision:ontology-first-adaptive-sensemaking",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:docs/adr/0034-ontology-first-adaptive-sensemaking.md"
+      ],
+      "attributes": {
+        "establishment": "ratified"
       }
     }
   ]
