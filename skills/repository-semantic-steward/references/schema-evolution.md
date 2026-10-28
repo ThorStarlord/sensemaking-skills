@@ -1,6 +1,6 @@
 # Schema evolution — domain-specific richness without uncontrolled types
 
-Start with the stable common vocabulary. Domain terms such as Auteur's StoryIdentity, Working proposal, Book Workspace, accepted Expression and Layer-4 Expression may first be `domain_concept`, `capability`, `contract` or `component` with sourced, scoped attributes.
+Start with the stable common vocabulary. A target's domain ontology is a set of knowledge instances in that vocabulary (knowledge contract, "Target domain ontology"); an unfamiliar domain is not a schema gap. Domain terms such as Auteur's StoryIdentity, Working proposal, Book Workspace, accepted Expression and Layer-4 Expression may first be `domain_concept`, `capability`, `contract` or `component` with sourced, scoped attributes.
 
 Escalate to a reusable schema/domain pack only when concrete engineering questions cannot faithfully distinguish necessary meanings with supported types and relationships.
 

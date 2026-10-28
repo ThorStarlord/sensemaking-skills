@@ -11,19 +11,19 @@ Own the **knowledge-continuity responsibility**, not engineering responsibility 
 
 ## Select the operating mode
 
-- **BOOTSTRAP:** Sustained engagement with inadequate repository-level semantic knowledge. Construct an initial, adequately broad, reviewable model. Use [bootstrap](references/bootstrap.md).
+- **BOOTSTRAP:** Sustained engagement with inadequate repository-level semantic knowledge, and the default first responsibility when `using-sensemaking` takes a repository-level request without an adequate model. Construct an initial, adequately broad, reviewable domain and architecture model, report its coverage, and return to the controller. Use [bootstrap](references/bootstrap.md).
 - **RECALL:** A specific new engineering task needs previously learned context. Query narrowly, check original sources and revision. Use [recall](references/recall.md).
 - **RECONCILE:** Consequential code, tests, product intent, design or incident evidence may invalidate or enrich persisted knowledge. Use [reconciliation](references/reconciliation.md).
 - **AUDIT:** Inspect source drift and evidence integrity without proposing semantic mutation until the evidence warrants it. Use [reconciliation](references/reconciliation.md).
 
-Do not use BOOTSTRAP on every edit; do not demand a complete ontology before useful authorized development. A messy, sparsely documented or contradictory repository is a normal input, not a refusal condition.
+Do not use BOOTSTRAP on every edit or repeat it when adequate knowledge exists; do not demand a complete ontology before useful authorized development or a narrow task. A messy, sparsely documented or contradictory repository is a normal input, not a refusal condition.
 
 ## One knowledge system, two persistence forms
 
 - **Reviewed meaning:** Git-tracked `.sensemaking/knowledge/*.json` records: domain concepts, goals, capabilities, components, invariants, decisions, rationale, evidence, incidents, lessons, contradictions and explicit uncertainty.
 - **Reconstructible observations:** source-pinned file/document/syntax inventory and the existing SQLite knowledge index **outside** the target checkout. The index can be deleted and rebuilt; it is not authority.
 
-Use [knowledge contract](references/knowledge-contract.md) for types, provenance, status and safe proposal validation. Consider domain-specific schema only when the existing vocabulary loses consequential distinctions: [schema evolution](references/schema-evolution.md).
+Use [knowledge contract](references/knowledge-contract.md) for types, provenance, status, safe proposal validation and how a target's domain ontology maps to the shared vocabulary. Consider domain-specific schema only when the existing vocabulary loses consequential distinctions: [schema evolution](references/schema-evolution.md).
 
 ## Source-first operating contract
 
