@@ -61,7 +61,9 @@ Either a provisional preference (option, attribution, rationale, scope) or no
 preference with its reason. Record each consequence that changed or confirmed
 the comparison and its feedback outcome: `REAFFIRM`, `REVISE_PREFERENCE`,
 `REOPEN_ALTERNATIVES`, `INVESTIGATE`, `DEFER`, `NO_CHANGE`,
-`OWNER_DECISION_REQUIRED` or `THESIS_REVIEW_REQUIRED`.
+`OWNER_DECISION_REQUIRED` or `THESIS_REVIEW_REQUIRED`. The outcome returns to
+the controller (`using-sensemaking`), which may revisit breadth or synthesis;
+it selects nothing by itself.
 
 ## 8. Unresolved Questions
 
