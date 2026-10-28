@@ -46,7 +46,8 @@ A retained product possibility (a potential future of the product; conceptual mo
 - `requires_capability` only for a genuine prerequisite; `contradicts` for a conflict with a non-goal or decision; `derived_from` for origin; a shared premise is one `hypothesis` claim that each possibility `references`;
 - relations without a matching predicate (`extends`, `complements`, `alternativeTo`, weaker enabling) use `references` with `attributes.conceptual_relation`, and every relation records `attributes.establishment` (`inferred`, `ratified`, `hypothesized`);
 - cite the record of origin as evidence; cite a curated library only where it is that origin. Evidence matches by file, so extra citations add re-inspection noise;
-- construction paths and evidence prerequisites are not possibilities: keep paths in their analyses and prerequisites as `hypothesis` claims.
+- construction paths and evidence prerequisites are not possibilities: keep paths in their analyses and prerequisites as `hypothesis` claims;
+- classify before retaining: an engineering alternative (implementation approach, repair, refactor or declined responsibility) is not a possibility. It stays in the report or decision history, or becomes an `alternative` claim linked to the reviewed `decision` that declined it. An architecture option is an `arch:` record (next section). A declined responsibility yields a `poss:` record only when the product future it points to is stated apart from the task.
 
 A possibility record is memory, not a backlog item or authorization.
 

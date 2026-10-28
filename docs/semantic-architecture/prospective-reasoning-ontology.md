@@ -58,6 +58,8 @@ Reuse existing concepts: Claim, Hypothesis, Assumption, Decision, Evidence, Obse
 
 Retained without change: `ProductPossibility`, `ConstructionPath` (a coherent trajectory toward a future capability state, defined in `strategic_repository_analysis`), Decision (including strategic dispositions), Observation. Do not introduce a "strategic idea" concept that duplicates ProductPossibility.
 
+**Engineering alternatives are not prospective entities.** A candidate implementation approach, local repair, refactoring or responsibility weighed during work is an operand of SELECT, recorded in the task report, PR decision note or decision history. Classify any candidate before retaining it: a product future is a ProductPossibility (`poss:`), a structural alternative is an ArchitectureOption (`arch:`), a trajectory is a ConstructionPath in its analysis, and everything else stays an engineering alternative ([product possibility ontology](product-possibility-ontology.md), section 2, "Classify before retaining").
+
 ### 3.1 Prospective versus observed identity
 
 - A proposed component, contract or dependency is never given an identifier in the namespace of observed things (`component:`, `contract:`). It lives inside its option until it exists.
