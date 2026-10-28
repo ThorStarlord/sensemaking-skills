@@ -285,6 +285,36 @@
         "decision_changed": "Whether a host's installed Sensemaking Skill can be reported as current after a merge.",
         "claim_ceiling": "Observed on one scratch setup-skills install; hosted or remote Skill surfaces are not covered by the file probe."
       }
+    },
+    {
+      "id": "decision:index-from-temporary-worktree",
+      "kind": "decision",
+      "statement": "knowledge-build --temporary-checkout indexes target-ref from a temporary detached git worktree outside the checkout, then removes it, so a dirty active checkout (for example an untracked session receipt) or a historical base revision needs no hand-made clean clone. The clean-source check is unchanged rather than exempting untracked files or reading dirty bytes. Hooks and configured external filters are disabled, and a commit that assigns a filter to a tracked path is refused.",
+      "authority_kind": "delegated",
+      "authority_ref": "docs/semantic-architecture/persistent-knowledge-cli.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_sources.py",
+        "file:src/sensemaking_skills/semantic_cli.py"
+      ],
+      "attributes": {
+        "scope": "Delegated construction choice within ADR 0031; not an owner mandate",
+        "claim_ceiling": "Manual CLI probes on one shallow cloud checkout and disposable repositories; unit tests NOT_RUN; independent-agent use NOT TESTED"
+      }
+    },
+    {
+      "id": "alternative:shared-clone-checkout",
+      "kind": "alternative",
+      "statement": "Rejected alternative: materialize target-ref with git clone --shared. For a shallow source Git ignored --shared and copied objects without an alternates file, and a local clone carries only the source's local refs, so a commit reachable only through remote-tracking refs was absent.",
+      "authority_kind": "delegated",
+      "authority_ref": "docs/semantic-architecture/persistent-knowledge-cli.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ],
+      "attributes": {
+        "disposition": "rejected",
+        "scope": "Observed on this repository's shallow cloud checkout on 2026-10-28; revisit only if shallow sources need not be supported"
+      }
     }
   ],
   "relations": [
@@ -519,6 +549,61 @@
       "object": "bounded_context:knowledge-stewardship",
       "evidence_refs": [
         "file:docs/adr/0031-persistent-semantic-stewardship.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:temporary-worktree-decision",
+      "subject": "component:semantic-knowledge-plane",
+      "predicate": "decided_by",
+      "object": "decision:index-from-temporary-worktree",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_sources.py"
+      ],
+      "attributes": {
+        "scope": "Index-build source materialization only"
+      }
+    },
+    {
+      "id": "rel:temporary-worktree-overlay-boundary",
+      "subject": "decision:index-from-temporary-worktree",
+      "predicate": "constrained_by",
+      "object": "inv:index-snapshot-vs-working-overlay",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ]
+    },
+    {
+      "id": "rel:temporary-worktree-not-dirty-bytes",
+      "subject": "decision:index-from-temporary-worktree",
+      "predicate": "references",
+      "object": "alternative:dirty-tree-byte-audit",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ],
+      "attributes": {
+        "disposition": "rejected alternative"
+      }
+    },
+    {
+      "id": "rel:temporary-worktree-not-shared-clone",
+      "subject": "decision:index-from-temporary-worktree",
+      "predicate": "references",
+      "object": "alternative:shared-clone-checkout",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ],
+      "attributes": {
+        "disposition": "rejected alternative"
+      }
+    },
+    {
+      "id": "rel:knowledge-plane-clean-index-tested",
+      "subject": "component:semantic-knowledge-plane",
+      "predicate": "tested_by",
+      "object": "verification:clean-index-tests",
+      "evidence_refs": [
+        "file:tests/test_semantic_knowledge_self_repo.py"
       ],
       "epistemic_status": "declared"
     }

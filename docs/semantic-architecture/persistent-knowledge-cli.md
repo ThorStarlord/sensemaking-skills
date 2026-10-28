@@ -47,6 +47,28 @@ From a CLEAN target Git checkout, store the SQLite index outside the checkout:
       --target-ref "$REF" --operation impact \
       --subject "cap:semantic-queries" --depth 2 --json
 
+When the active checkout is dirty (an open session receipt is untracked, for
+example) or a historical revision is needed as a `changes` base, add
+`--temporary-checkout` and pass any local commit as `--target-ref`:
+
+    sensemaking-skills semantic knowledge-build --repo . \
+      --repository "ThorStarlord/sensemaking-skills" \
+      --target-ref "$(git rev-parse HEAD)" --temporary-checkout \
+      --db /tmp/semantic-knowledge.sqlite --json
+
+The command checks out the commit in a temporary detached `git worktree`
+outside the repository, indexes it there under the same clean-source checks,
+and removes it; the active working tree is never read. The checkout step
+disables hooks, the filesystem monitor and configured external
+clean/smudge/process filters (the clean-source checks then run as in an
+ordinary build), and a commit whose attributes assign a filter to a tracked path is refused,
+because its unfiltered bytes would differ from an ordinary checkout. A
+snapshot built this way is identical to one built from a clean checkout of
+the same commit. A shallow clone indexes only commits it has. An interrupted
+run can leave a worktree entry that `git worktree list` marks prunable.
+`git clone --shared` was not used, because Git ignores `--shared` for a
+shallow source and copies objects instead.
+
 Other operations: snapshot, search, contradictions, history, changes and
 workspace-impact (see active-workspace recall below).
 Changes also requires --base-ref with a *previously indexed* revision.
@@ -64,7 +86,8 @@ The command does not update SQLite or mutate the checkout.
 
 ## Construction: active-workspace recall (no clean-room development gate)
 
-Build an index once at a normal clean committed HEAD, outside the checkout.
+Build an index once at a normal clean committed HEAD, outside the checkout,
+or from a dirty checkout with `knowledge-build --temporary-checkout`.
 While source files are dirty, continue querying the previously indexed SHA;
 the result is still a **committed-source snapshot**, not the working overlay.
 
@@ -273,7 +296,7 @@ Authored records may declare owner/policy references but cannot assert that auth
 
 Build checks exact 40-character Git HEAD, clean target worktree, tracked non-symlink input paths, and in-root cited local files. Evidence files are SHA-256 hashed, making an underlying source change visible in a later revision even when the claim statement remains identical.
 
-A query may examine the current **dirty active checkout** with `knowledge-query --repo .`, which adds `workspace_context` including current HEAD, indexed revision, modified/untracked counts and a clear flag that uncommitted edits were **not indexed**. This never relaxes the clean HEAD requirement for `knowledge-build` and `knowledge-audit`.
+A query may examine the current **dirty active checkout** with `knowledge-query --repo .`, which adds `workspace_context` including current HEAD, indexed revision, modified/untracked counts and a clear flag that uncommitted edits were **not indexed**. This never relaxes the clean HEAD requirement for `knowledge-build` and `knowledge-audit`; `knowledge-build --temporary-checkout` satisfies it in a separate temporary worktree instead.
 
 The SQLite index retains multiple repository/SHA snapshots. Indexing identical inputs is idempotent, and conflicting data under the same source revision is rejected. Authored semantic conclusions remain Git-reviewed; do not commit or manually mutate the generated SQLite file.
 

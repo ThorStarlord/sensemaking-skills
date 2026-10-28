@@ -25,7 +25,9 @@ from .semantic_architecture import (
     validate_conformance,
 )
 from .semantic_architecture.impact import build_impact_preview
-from .semantic_architecture.knowledge_sources import build_knowledge_snapshot, verified_tracked_sources
+from .semantic_architecture.knowledge_sources import (
+    build_knowledge_snapshot, temporary_commit_checkout, verified_tracked_sources,
+)
 from .semantic_architecture.repository_bootstrap import orient_repository
 from .semantic_architecture.worktree_context import changed_paths_since_indexed_ref, inspect_worktree_context
 from .semantic_architecture.stewardship_validation import inspect_knowledge_proposal
@@ -86,30 +88,39 @@ def register_semantic_commands(root_cli: click.Group) -> None:
     @semantic_group.command(name="knowledge-build")
     @click.option("--repo", "repo_root", required=True, type=click.Path(exists=True, file_okay=False, path_type=Path))
     @click.option("--repository", "repository_id", required=True, help="Explicit stable repository identity")
-    @click.option("--target-ref", required=True, help="Exact 40-character Git HEAD of a CLEAN target checkout")
+    @click.option("--target-ref", required=True, help="Exact 40-character Git HEAD of a CLEAN target checkout (any local commit with --temporary-checkout)")
     @click.option("--db", "db_path", required=True, type=click.Path(path_type=Path), help="Local index outside the repository checkout")
+    @click.option("--temporary-checkout", is_flag=True, help="Index --target-ref from a temporary detached worktree outside --repo, so the active checkout may be dirty or at another commit; only committed bytes are read")
     @click.option("--include-repository-structure", is_flag=True, help="Index bounded Git path containment; not architectural dependencies")
     @click.option("--max-structural-files", type=click.IntRange(1, 2000), default=600)
     @click.option("--include-python-imports", is_flag=True, help="Index syntactic Python imports as mechanical observations")
     @click.option("--max-imports", type=click.IntRange(0, 10000), default=1000)
     @click.option("--json", "output_json", is_flag=True)
     def semantic_knowledge_build(
-        repo_root: Path, repository_id: str, target_ref: str, db_path: Path,
+        repo_root: Path, repository_id: str, target_ref: str, db_path: Path, temporary_checkout: bool,
         include_repository_structure: bool, max_structural_files: int,
         include_python_imports: bool, max_imports: int, output_json: bool,
     ) -> None:
         """Index source-pinned knowledge while retaining historical revisions."""
-        try:
-            snapshot = build_knowledge_snapshot(
-                repo_root, repository=repository_id, target_ref=target_ref,
+        def build(source_root: Path) -> Any:
+            return build_knowledge_snapshot(
+                source_root, repository=repository_id, target_ref=target_ref,
                 include_python_imports=include_python_imports, max_imports=max_imports,
                 include_repository_structure=include_repository_structure,
                 max_structural_files=max_structural_files,
             )
+
+        try:
+            if temporary_checkout:
+                with temporary_commit_checkout(repo_root, target_ref) as checkout:
+                    snapshot = build(checkout)
+            else:
+                snapshot = build(repo_root)
             payload = store_snapshot(db_path, snapshot, source_root=repo_root)
         except (ValueError, OSError, UnicodeError, KeyError, TypeError) as exc:
             raise click.ClickException(str(exc)) from exc
         payload["code"] = "SEMANTIC_KNOWLEDGE_INDEXED"
+        payload["source_checkout"] = "temporary_worktree" if temporary_checkout else "active_checkout"
         payload["source_scope"] = list(snapshot.source_scope)
         payload["limits"] = list(snapshot.limits)
         _emit(payload, output_json=output_json)
