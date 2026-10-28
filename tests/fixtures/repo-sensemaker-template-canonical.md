@@ -20,7 +20,7 @@ Example repository goal text.
 evidence_excerpts:
   - file: README.md
     lines: L6-L8
-    quote: "An agent-native engineering sensemaking and control layer for software-engineering agents."
+    quote: "An ontology-grounded repository understanding and prospective reasoning system for software-engineering agents."
     supports_claim: "Feature requirements are vague"
 ```
 
