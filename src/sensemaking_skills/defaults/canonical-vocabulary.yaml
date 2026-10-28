@@ -527,6 +527,12 @@ artifact_ids:
     consumed_by: [repository-semantic-steward, using-sensemaking, user]
     artifact_type: evidence
 
+  - id: architectural_synthesis
+    description: "Source-grounded comparison of at least two architecture options with proposed transitions, conditional consequences, an attributed qualitative comparison, and an optional provisional preference that is never a decision"
+    produced_by: repository-semantic-steward
+    consumed_by: [user, repository-semantic-steward, strategic-repository-analysis]
+    artifact_type: decision_support
+
   - id: discovery_findings
     description: "User research and discovery findings"
     produced_by: discovery
