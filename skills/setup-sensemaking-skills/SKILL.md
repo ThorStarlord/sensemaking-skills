@@ -1,11 +1,11 @@
 ---
 name: setup-sensemaking-skills
-description: configure a repository for sensemaking-skills by adding agent instructions, artifact contract references, workflow mode defaults, downstream skill mappings, and run-log conventions. use before first running repo-sensemaker, workflow-planner, or the full sensemaking-to-workflow pipeline in a repository.
+description: optionally configure a repository for sensemaking-skills by adding agent instructions, artifact contract references, workflow mode defaults, downstream skill mappings, and run-log conventions. use only when the owner explicitly wants this repository configuration; it is never a prerequisite for using-sensemaking, which works on an unconfigured repository.
 ---
 
 # setup-sensemaking-skills
 
-Bootstrap skill that configures a repository to safely operate the sensemaking pipeline. It creates the necessary agent context and configuration artifacts.
+Optional legacy configuration Skill. It adds agent context and configuration artifacts for the older sensemaking-to-workflow pipeline. `using-sensemaking` needs none of them: it starts from the repository itself (ADR 0034), and this Skill's output is never a prerequisite for understanding, exploration or implementation.
 
 ## Workflow
 1. **Explore**: Analyze the repository for existing agent instructions (`AGENTS.md`, `CLAUDE.md`, `.cursorrules`) and documentation structures.

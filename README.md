@@ -27,24 +27,30 @@ catalog.
 | Need | Start here |
 | --- | --- |
 | Human installation / first use | [`GETTING_STARTED.md`](GETTING_STARTED.md) |
-| Coding-agent repository work, including real implementation in repos without Sensemaking docs | [`skills/using-sensemaking/SKILL.md`](skills/using-sensemaking/SKILL.md) and its [portable construction reference](skills/using-sensemaking/references/portable-construction-loop-v1.md) |
-| One-prompt strategic start/resume or full-autonomy terminal mission | [`skills/strategic-sensemaking-loop/SKILL.md`](skills/strategic-sensemaking-loop/SKILL.md) |
-| Deciding how a repository/product could evolve from here | [`skills/strategic-repository-analysis/SKILL.md`](skills/strategic-repository-analysis/SKILL.md) |
+| **Any repository request**: understand it, explore what it could become, choose a direction, or (when authorized) implement | [`skills/using-sensemaking/SKILL.md`](skills/using-sensemaking/SKILL.md), the single entrypoint |
+| Optional downstream implementation in any repository, including ones without Sensemaking docs | the [portable construction reference](skills/using-sensemaking/references/portable-construction-loop-v1.md), loaded by `using-sensemaking` |
+| Maintainers: resume a long-horizon or full-autonomy terminal mission directly | [`skills/strategic-sensemaking-loop/SKILL.md`](skills/strategic-sensemaking-loop/SKILL.md) (normally composed by `using-sensemaking`) |
+| Maintainers: run Level-3 strategic analysis directly | [`skills/strategic-repository-analysis/SKILL.md`](skills/strategic-repository-analysis/SKILL.md) (normally composed by `using-sensemaking`) |
 | CLI lookup | [`docs/cli-reference.md`](docs/cli-reference.md) |
 | Maintenance / qualification | [`docs/operations-runbook.md`](docs/operations-runbook.md) |
 | Advanced/current/historical references | [`docs/README.md`](docs/README.md) |
 
 ```text
 normal path
-= one front door
-+ direct bounded work
+= one entrypoint (using-sensemaking)
++ understanding before repository-wide selection
++ direct bounded work when the task is narrow
 + only the extra surface the decision actually needs
 
 capability exists
 != capability belongs in the default cognitive path
+
+complete Sensemaking outcome
+!= code change
 ```
 
-**Portable construction:** once the host loads `using-sensemaking`, its
+**Portable construction (optional, downstream):** when a warranted direction
+is authorized for implementation, `using-sensemaking`'s
 Architect -> Builder -> Reconcile instructions can guide an agent making
 real changes in an unfamiliar repository with no `CLAUDE.md`, `AGENTS.md`,
 `CONTEXT.md`, `.sensemaking/` pack or Sensemaking CLI. The active coding
@@ -53,8 +59,8 @@ editing/verification tools. Discovery is host-dependent; optional local
 agent-file pointers improve discoverability but are not execution gates.
 The separate `docs/agents/build-loop.md` is this **repository's local
 construction profile** and does not export its merge/test policy to
-other projects. Longer strategic multi-increment work uses
-`strategic-sensemaking-loop` as the outer front door.
+other projects. Long-horizon, multi-session work is continued by
+`strategic-sensemaking-loop`, which `using-sensemaking` composes.
 
 Specialized Skills remain directly invokable when their bounded responsibility
 is explicitly the task. The full Skill catalogue, system atlas, policy
@@ -71,19 +77,20 @@ Sensemaking is the control discipline; a Campaign is the central **durable** Lev
 clear + locally evidenced + one context
 -> direct bounded work + relevant tests
 
-correct repository responsibility is uncertain
--> apply using-sensemaking; repo-sensemaker may be useful
+understand a repository, or decide what it could become
+-> apply using-sensemaking: semantic foundation first when none exists,
+   possibility breadth before convergence; it can finish with no code change
 
 repository/product future itself is open
--> use strategic-repository-analysis to model coherent construction paths
-   before selecting a bounded responsibility
+-> using-sensemaking composes strategic-repository-analysis to model coherent
+   construction paths before selecting a bounded responsibility
 
-user wants the whole strategic episode to start/resume from one prompt
--> use strategic-sensemaking-loop
--> it reconstructs the current durable boundary and invokes only the warranted stages
+user wants a long-horizon episode to resume from one prompt
+-> using-sensemaking composes strategic-sensemaking-loop
+-> it reconstructs the current durable boundary and applies only the warranted stages
 
 user delegates FULL AUTONOMY / FULL DELEGATION toward a terminal repository outcome
--> use strategic-sensemaking-loop with the autonomous terminal-mission profile
+-> using-sensemaking with strategic-sensemaking-loop's autonomous terminal-mission profile
 -> after each responsibility: verify/reconcile -> identify remaining difference -> continue when warranted
 
 a prior strategic analysis exists and the repository has evolved
