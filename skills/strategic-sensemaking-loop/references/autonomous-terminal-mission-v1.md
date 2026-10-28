@@ -464,8 +464,8 @@ The owner may add narrower constraints or explicit protected-transition grants.
 
 Do not:
 
-- create a new autonomous-mission Skill when the existing front door can compose
-  the work;
+- create a new autonomous-mission Skill when the existing continuation Skill can
+  compose the work;
 - force exactly three strategic alternatives;
 - reopen Level 3 after every responsibility;
 - expand the mission into every open issue or possible improvement;

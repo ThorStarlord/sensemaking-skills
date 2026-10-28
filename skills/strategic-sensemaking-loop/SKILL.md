@@ -1,15 +1,22 @@
 ---
 name: strategic-sensemaking-loop
-description: orchestrate and resume end-to-end strategic repository Sensemaking from one prompt, including FULL AUTONOMY / FULL DELEGATION terminal missions and AUTONOMOUS_HIGHEST_LEVERAGE_BOTTLENECK requests. Use when a user wants to start, continue, or resume strategic repository work without manually sequencing component Skills. Reconstruct durable state, invoke only warranted stages, execute and continue across bounded responsibilities within authority, reconcile returned evidence, and stop only at genuine terminal, owner, Level-4, external, or authority boundaries.
+description: internal long-horizon continuation for the using-sensemaking controller. Resume strategic repository Sensemaking from one prompt across sessions, including FULL AUTONOMY / FULL DELEGATION terminal missions and AUTONOMOUS_HIGHEST_LEVERAGE_BOTTLENECK requests. Use when a reasoning or construction mission must continue across sessions or bounded responsibilities, or when a maintainer explicitly resumes one; ordinary users start with using-sensemaking. Reconstruct durable state, identify unfinished reasoning objectives, apply only warranted stages, continue within authority, reconcile returned evidence, and stop when the delegated outcome is complete or at a genuine terminal, owner, Level-4, external, or authority boundary.
 ---
 
 # Strategic Sensemaking Loop
 
-Provide a **single front door** for strategic repository Sensemaking while
-preserving the specialized Skills as separate semantic responsibilities.
+Provide **long-horizon continuation** for strategic repository Sensemaking
+under the `using-sensemaking` controller (ADR 0034), while preserving the
+specialized Skills as separate semantic responsibilities.
 
-This Skill is a composition/control surface. It does not replace the component
-Skills, create a new strategic policy, or introduce a second truth system.
+`using-sensemaking` is the public entrypoint and keeps responsibility-selection
+judgment. This Skill reconstructs earlier episodes, identifies unfinished
+reasoning objectives, resumes after a specialist returns, keeps authority and
+continuity across sessions, and judges when the delegated outcome is complete.
+It does not compete for public entry, redefine responsibility selection,
+replace the component Skills, create a new strategic policy, or introduce a
+second truth system. A delegated reasoning mission can complete without any
+execution.
 
 ## Responsibility
 
@@ -39,7 +46,7 @@ when the existing control model warrants them.
 ## Core laws
 
 ```text
-one front door != one semantic responsibility
+continuation surface != second semantic controller
 orchestration != deterministic planning
 resume marker != durable state
 existing artifact != unquestionable truth
@@ -101,7 +108,10 @@ Do not rerun an earlier stage merely because it is part of the canonical loop.
 ## 2. Select the current control boundary
 
 Use these semantic resume states only as reasoning labels; do not persist them as
-a new runtime state machine:
+a new runtime state machine. They locate where a resumed episode stands; which
+responsibility is warranted inside that boundary is still the controller's
+judgment (`using-sensemaking` sections 4-5), and an episode with no adequate
+semantic foundation resumes at the controller's ontology-first entry:
 
 ```text
 ANALYZE

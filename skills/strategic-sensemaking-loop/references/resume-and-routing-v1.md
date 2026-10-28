@@ -20,7 +20,7 @@
 
 ## 1. Purpose
 
-This reference lets the front-door Skill resume a strategic Sensemaking episode
+This reference lets the continuation Skill, composed by `using-sensemaking`, resume a strategic Sensemaking episode
 from durable repository state without forcing the user to manually replay every
 upstream prompt.
 
@@ -348,7 +348,7 @@ strategic_reconciliation
 
 ## 11. Final summary is not a source of truth
 
-The front-door Skill may report:
+The continuation Skill may report:
 
 - resume point;
 - Skills invoked;
