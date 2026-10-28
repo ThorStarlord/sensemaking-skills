@@ -93,7 +93,7 @@ analysis_ref: "<stable reference to this artifact>"
 target_repository: owner/repository
 target_source_identity: "main@<sha>"
 governing_intent_refs:
-  - docs/adr/0000-example.md
+  - docs/product-strategy.md
 target_possibility_refs:
   - poss:example-possibility
 current_architecture_refs:
