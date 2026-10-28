@@ -1,19 +1,19 @@
 artifact_id: semantic_query_receipt
 schema_version: 1
 session_ref: 2026-10-28-prospective-reasoning-ontology
-state: in_progress
+state: final
 created_at: "2026-10-28T16:30:00Z"
-updated_at: "2026-10-28T16:38:33Z"
+updated_at: "2026-10-28T17:20:00Z"
 target_repository: ThorStarlord/sensemaking-skills
 modes: [RECALL, RECONCILE]
-decision: "Plan PR C: whether existing claim kinds, predicates and queries can retain and recover the discovery-memory reference case's options, consequences, premises and preference without masquerading as observed or decided."
+decision: "Plan PR C to H: whether existing kinds, predicates and queries retain and recover the discovery-memory case without masquerade, and whether recalled context still supports building its candidate responsibility at construction time."
 cli_identity:
-  sensemaking_source_ref: 2a8c6f867c8f4b1fb50caec0a095a690ccef2d92
+  sensemaking_source_ref: 7858c9eb847cee68449a4153c98f35f016025db7
   invocation_prefix: "python3 -c sensemaking_skills.cli.main with PYTHONPATH=src (checkout, not installed)"
   version_output: "sensemaking-skills, version 0+unknown"
 index:
-  indexed_ref: 2ecf261219c062bfc0027a67b4488e9248a026e6
-  current_head: 2ecf261219c062bfc0027a67b4488e9248a026e6
+  indexed_ref: 7858c9eb847cee68449a4153c98f35f016025db7
+  current_head: 7858c9eb847cee68449a4153c98f35f016025db7
   worktree_clean: false
   uncommitted_changes_not_indexed: true
 queries:
@@ -31,6 +31,13 @@ queries:
   - {id: QY-12, operation: changes, terms: [], subject: null, expect_kinds: [], target_ref: 2ecf261219c062bfc0027a67b4488e9248a026e6, result: {hit_count: 16, claim_ids: [arch:git-reviewed-local-memory, arch:grounding-pack-decision-log, arch:receipt-based-memory, arch:strategic-artifact-projection, conseq:candidate-recall-in-later-discovery, conseq:citation-noise, conseq:knowledge-surface-bootstrap, conseq:persistence-requires-write-authority, conseq:prospective-decision-memory-reuse, conseq:target-maintenance-burden, hyp:discovery-sessions-can-persist-candidates, hyp:target-owners-accept-knowledge-surface, hyp:target-sessions-consult-retained-candidates, observation:discovery-read-only-by-default, observation:uncommitted-receipts-lost, poss:repository-local-prospective-decision-memory], truncated: false, not_assessed_kinds: []}, outcome: HIT, decision_relevant: true}
   - {id: QY-13, operation: explain, terms: [], subject: "poss:repository-local-prospective-decision-memory", expect_kinds: [], target_ref: 2ecf261219c062bfc0027a67b4488e9248a026e6, result: {hit_count: 4, claim_ids: [poss:repository-local-prospective-decision-memory, conseq:prospective-decision-memory-reuse, goal:longterm-stewardship, poss:target-repository-discovery-memory], truncated: false, not_assessed_kinds: []}, outcome: HIT, decision_relevant: true}
   - {id: QY-14, operation: why, terms: [], subject: "arch:git-reviewed-local-memory", expect_kinds: [], target_ref: 2ecf261219c062bfc0027a67b4488e9248a026e6, result: {hit_count: 0, claim_ids: [], truncated: false, not_assessed_kinds: []}, outcome: NOT_APPLICABLE, decision_relevant: true}
+  - {id: QY-15, operation: build, terms: [], subject: null, expect_kinds: [], target_ref: a8f400aea29d64d5ae2bb6903e0b707b3d23174d, result: {hit_count: 0, claim_ids: [], truncated: false, not_assessed_kinds: []}, outcome: NOT_APPLICABLE, decision_relevant: false}
+  - {id: QY-16, operation: explain, terms: [], subject: "contract:architectural-synthesis", expect_kinds: [], target_ref: a8f400aea29d64d5ae2bb6903e0b707b3d23174d, result: {hit_count: 2, claim_ids: [contract:architectural-synthesis, component:repository-semantic-steward-skill], truncated: false, not_assessed_kinds: []}, outcome: HIT, decision_relevant: false}
+  - {id: QY-17, operation: build, terms: [], subject: null, expect_kinds: [], target_ref: 7858c9eb847cee68449a4153c98f35f016025db7, result: {hit_count: 0, claim_ids: [], truncated: false, not_assessed_kinds: []}, outcome: NOT_APPLICABLE, decision_relevant: false}
+  - {id: QY-18, operation: explain, terms: [], subject: "poss:target-repository-discovery-memory", expect_kinds: [], target_ref: 7858c9eb847cee68449a4153c98f35f016025db7, result: {hit_count: 11, claim_ids: [poss:target-repository-discovery-memory, arch:git-reviewed-local-memory, arch:grounding-pack-decision-log, arch:receipt-based-memory, arch:strategic-artifact-projection, cap:possibility-records, cap:repository-only-discovery, goal:compounding-product-knowledge, hyp:later-sessions-consult-knowledge, poss:possibility-memory, poss:repository-local-prospective-decision-memory], truncated: false, not_assessed_kinds: []}, outcome: HIT, decision_relevant: true}
+  - {id: QY-19, operation: explain, terms: [], subject: "arch:git-reviewed-local-memory", expect_kinds: [], target_ref: 7858c9eb847cee68449a4153c98f35f016025db7, result: {hit_count: 13, claim_ids: [arch:git-reviewed-local-memory, arch:grounding-pack-decision-log, arch:receipt-based-memory, arch:strategic-artifact-projection, cap:possibility-records, cap:repository-only-discovery, conseq:candidate-recall-in-later-discovery, conseq:citation-noise, conseq:knowledge-surface-bootstrap, conseq:persistence-requires-write-authority, conseq:prospective-decision-memory-reuse, conseq:target-maintenance-burden, poss:target-repository-discovery-memory], truncated: false, not_assessed_kinds: []}, outcome: HIT, decision_relevant: true}
+  - {id: QY-20, operation: search, terms: [discovery], subject: null, expect_kinds: [], target_ref: 7858c9eb847cee68449a4153c98f35f016025db7, result: {hit_count: 12, claim_ids: [arch:git-reviewed-local-memory, arch:grounding-pack-decision-log, arch:strategic-artifact-projection, cap:repository-only-discovery, conseq:candidate-recall-in-later-discovery, conseq:persistence-requires-write-authority, hyp:discovery-sessions-can-persist-candidates, hyp:target-sessions-consult-retained-candidates, observation:discovery-read-only-by-default, observation:receipt-records-single-next, poss:repository-local-prospective-decision-memory, poss:target-repository-discovery-memory], truncated: false, not_assessed_kinds: []}, outcome: HIT, decision_relevant: true}
+  - {id: QY-21, operation: workspace-impact, terms: [], subject: null, expect_kinds: [], target_ref: 7858c9eb847cee68449a4153c98f35f016025db7, result: {hit_count: 132, claim_ids: [poss:target-repository-discovery-memory, arch:git-reviewed-local-memory, conseq:candidate-recall-in-later-discovery, conseq:knowledge-surface-bootstrap, hyp:target-owners-accept-knowledge-surface], truncated: true, not_assessed_kinds: []}, outcome: HIT, decision_relevant: true}
 source_checks:
   - claim_id: observation:discovery-read-only-by-default
     sources: [skills/using-sensemaking/SKILL.md:87]
@@ -40,6 +47,15 @@ source_checks:
     result: SUPPORTED
   - claim_id: contract:receipt-schema
     sources: [skills/using-sensemaking/references/session-receipt-v1.md:218]
+    result: SUPPORTED
+  - claim_id: observation:discovery-read-only-by-default
+    sources: [skills/using-sensemaking/SKILL.md:85-87]
+    result: SUPPORTED
+  - claim_id: observation:uncommitted-receipts-lost
+    sources: [skills/using-sensemaking/references/session-receipt-v1.md:101-104]
+    result: SUPPORTED
+  - claim_id: arch:receipt-based-memory
+    sources: [docs/adr/0032-session-and-query-receipts.md:3]
     result: SUPPORTED
 misses:
   - id: M-1
@@ -74,7 +90,14 @@ reconcile:
   - {claim_id: hyp:target-owners-accept-knowledge-surface, disposition: ADD, applied: true, proposal_ref: .sensemaking/knowledge/prospective-reasoning.json, proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
   - {claim_id: poss:repository-local-prospective-decision-memory, disposition: ADD, applied: true, proposal_ref: .sensemaking/knowledge/possibilities.json, proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
   - {claim_id: poss:target-repository-discovery-memory, disposition: REVISE, applied: true, proposal_ref: .sensemaking/knowledge/possibilities.json, proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+  - {claim_id: contract:architectural-synthesis, disposition: ADD, applied: true, proposal_ref: .sensemaking/knowledge/architecture.json, proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+  - {claim_id: poss:target-repository-discovery-memory, disposition: REVISE, applied: true, proposal_ref: .sensemaking/knowledge/possibilities.json, proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+  - {claim_id: arch:git-reviewed-local-memory, disposition: REVISE, applied: true, proposal_ref: .sensemaking/knowledge/prospective-reasoning.json, proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+  - {claim_id: conseq:candidate-recall-in-later-discovery, disposition: REVISE, applied: true, proposal_ref: .sensemaking/knowledge/prospective-reasoning.json, proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+  - {claim_id: conseq:persistence-requires-write-authority, disposition: REVISE, applied: true, proposal_ref: .sensemaking/knowledge/prospective-reasoning.json, proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+  - {claim_id: conseq:knowledge-surface-bootstrap, disposition: NO_MODEL_CHANGE, applied: true, proposal_ref: null, proposal_check: NOT_RUN}
+  - {claim_id: hyp:target-owners-accept-knowledge-surface, disposition: NO_MODEL_CHANGE, applied: true, proposal_ref: null, proposal_check: NOT_RUN}
 persistence: committed
 action_authorized: false
 semantic_truth_established: false
-immutable: false
+immutable: true
