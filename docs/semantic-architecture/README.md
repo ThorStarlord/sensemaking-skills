@@ -99,6 +99,7 @@ The Strategic Outer Loop is not a semantic router or deterministic planner. It u
 | [`concept-inventory.md`](concept-inventory.md) | Existing canonical vocabulary and authority sources. |
 | [`ontology.md`](ontology.md) | Layered Level-2 ontology. |
 | [`product-change-taxonomy.md`](product-change-taxonomy.md) | Product-change taxonomy. |
+| [`prospective-reasoning-ontology.md`](prospective-reasoning-ontology.md) | Conceptual model for proposed architectures, paths, consequences and preferences; reasoning activities versus their products. Vocabulary fit: [`prospective-reasoning-competency-v1.md`](prospective-reasoning-competency-v1.md). |
 | [`product-possibility-ontology.md`](product-possibility-ontology.md) | Conceptual ProductPossibility model: dimensions, identity, relations, reconsideration. Curated instance: [`../idea-library.md`](../idea-library.md). |
 | [`relations-and-epistemics.md`](relations-and-epistemics.md) | Relationship/evidence/epistemic semantics. |
 | [`reasoning-model.md`](reasoning-model.md) | Evidence-governed reasoning lifecycle. |
