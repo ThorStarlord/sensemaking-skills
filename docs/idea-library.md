@@ -210,7 +210,7 @@ These grew from the typed records and queries described in section 6. Each is a 
 - **Origin:** agent synthesis, 2026-10-28. `impact` on `cap:semantic-queries` reached every possibility that capability realizes or enables, and the `workspace-impact` contract (`docs/semantic-architecture/persistent-knowledge-cli.md`) maps changed paths to records that cite them.
 - **Alignment basis:** ADR 0031 success conditions: invalidated assumptions are recognized rather than canonized. `ALIGNED`, `INCREMENTAL`, `FORESEEABLE`.
 - **Realization:**
-  - Implementation evidence (OBSERVED, query QY-9 in the section 6 receipt): with this change's library edits uncommitted, `workspace-impact` against the indexed records listed 13 records citing the edited file, 5 of them possibilities.
+  - Implementation evidence (OBSERVED, query QY-11 in the section 6 receipt): with this change's library edits uncommitted, `workspace-impact` against the indexed records listed 13 records citing the edited file, 5 of them possibilities.
   - Realization judgment (INFERRED): `PARTIALLY_IMPLEMENTED`. The mechanism works on possibility records; no guidance tells an agent to use it during construction.
 - **Limits observed:** matching is by file path, not meaning. Re-inspection found 3 of the 5 listed possibilities changed by the edit; 2 were listed only because their records cited the library file. Possibilities whose premises change without a cited file changing are missed.
 - **Disposition:** `EXPLORATORY` (agent, 2026-10-28); candidate input to plan PR 7.
@@ -322,6 +322,7 @@ cross-product-transfer (needs S5 evidence) <-- extended by: domain-general-sense
 
 - Before the records existed, a search for `poss:`, "possibility" or "opportunity" at `main@d1dee16` returned 0 claims.
 - After indexing, `search --term poss:` returned every possibility; `explain` on `poss:possibility-memory` returned its goal, capabilities, assumption, extension and the possibilities derived from or alternative to it; `explain` on `hyp:cross-episode-synthesis-recurs` returned both possibilities sharing that premise; `contradictions` returned the three strategy-conflicting possibilities with their establishment; `impact` on `cap:semantic-queries` returned every possibility that capability realizes or enables.
+- After the exploration's records were indexed, `changes` from the first indexed revision listed the 5 added claims and separated the 4 possibility records whose authored fields changed from 16 records changed only in provenance. That is the mechanism `poss:possibility-reconsideration-from-change` needs, minus claim-identified `revisit_when` conditions.
 - Gaps: construction paths are not in knowledge (by design; they live in their analyses and in section 4 here). A possibility's implementation evidence is two hops away (possibility, capability, observation), so `explain` on a possibility reports observations as not assessed; use `explain` on the capability. Dimensions are attributes, so no query can filter by alignment or horizon; at 17 records, reading them is acceptable.
 
 **Exploration.** Starting only from those results, the agent explored grounded and counterfactual futures:
@@ -331,7 +332,7 @@ cross-product-transfer (needs S5 evidence) <-- extended by: domain-general-sense
 - Challenging the program's own premise gave `poss:possibilities-projected-from-analyses`, retained as a declined alternative with its rationale.
 - The `impact` result also suggested treating the most-connected possibilities as the most leveraged. Retrieval showed that is a restatement of the rejected `poss:ranked-possibility-backlog`, so it was not recorded as new.
 
-**Lesson applied (from QY-9).** Evidence matches by file, so a record that cites this library while its origin lies elsewhere is flagged by every library edit. Records now cite the library only where it is their record of origin or the subject of their realization.
+**Lesson applied (from QY-11).** Evidence matches by file, so a record that cites this library while its origin lies elsewhere is flagged by every library edit. Records now cite the library only where it is their record of origin or the subject of their realization.
 
 None of these syntheses is selected, prioritized or authorized.
 

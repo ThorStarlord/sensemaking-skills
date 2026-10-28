@@ -771,8 +771,8 @@
           "realization": {
             "value": "PARTIALLY_IMPLEMENTED",
             "establishment": "inferred",
-            "basis": "workspace-impact listed 13 records (5 possibilities) citing an edited library file (query receipt QY-9); no guidance tells agents to use it during construction.",
-            "observation_ref": ".sensemaking/receipts/2026-10-28-possibility-reconciliation-and-knowledge.query.yaml#QY-9"
+            "basis": "workspace-impact listed 13 records (5 possibilities) citing an edited library file (query receipt QY-11); no guidance tells agents to use it during construction.",
+            "observation_ref": ".sensemaking/receipts/2026-10-28-possibility-reconciliation-and-knowledge.query.yaml#QY-11"
           }
         },
         "disposition_history": [
@@ -1709,7 +1709,7 @@
       "attributes": {
         "conceptual_relation": "potentiallyEnabledBy",
         "establishment": "inferred",
-        "note": "workspace-impact is a genuine prerequisite; exercised on possibility records in QY-9."
+        "note": "workspace-impact is a genuine prerequisite; exercised on possibility records in QY-11."
       }
     },
     {

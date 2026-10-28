@@ -1,0 +1,109 @@
+artifact_id: semantic_query_receipt
+schema_version: 1
+session_ref: 2026-10-28-possibility-reconciliation-and-knowledge
+state: final
+created_at: "2026-10-28T12:24:00Z"
+updated_at: "2026-10-28T12:35:18Z"
+target_repository: ThorStarlord/sensemaking-skills
+modes: [RECALL, RECONCILE]
+decision: "Plan PR 3: whether existing claim kinds, predicates and queries let a fresh agent recover a coherent set of product possibilities and relationships, and use them in a divergent exploration, before any new query or schema."
+cli_identity:
+  sensemaking_source_ref: d1dee16552e9347bf795a37a59aa12c07291b71d
+  invocation_prefix: "python3 -c sensemaking_skills.cli.main with PYTHONPATH=src (checkout, not installed)"
+  version_output: "sensemaking-skills, version 0+unknown"
+index:
+  indexed_ref: ef621bc933d308607092e99e878a80d1759be570
+  current_head: ef621bc933d308607092e99e878a80d1759be570
+  worktree_clean: false
+  uncommitted_changes_not_indexed: true
+queries:
+  - {id: QY-1, operation: build, terms: [], subject: null, expect_kinds: [], target_ref: d1dee16552e9347bf795a37a59aa12c07291b71d, result: {hit_count: 0, claim_ids: [], truncated: false, not_assessed_kinds: []}, outcome: NOT_APPLICABLE, decision_relevant: false}
+  - {id: QY-2, operation: search, terms: ["poss:", "possibility", "opportunity"], subject: null, expect_kinds: [], target_ref: d1dee16552e9347bf795a37a59aa12c07291b71d, result: {hit_count: 0, claim_ids: [], truncated: false, not_assessed_kinds: []}, outcome: MISS, decision_relevant: true}
+  - {id: QY-3, operation: build, terms: [], subject: null, expect_kinds: [], target_ref: 3892c38d2bb782247d17894968b4bca4263554f1, result: {hit_count: 0, claim_ids: [], truncated: false, not_assessed_kinds: []}, outcome: NOT_APPLICABLE, decision_relevant: false}
+  - {id: QY-4, operation: search, terms: ["poss:"], subject: null, expect_kinds: [], target_ref: 3892c38d2bb782247d17894968b4bca4263554f1, result: {hit_count: 15, claim_ids: [cap:possibility-records, poss:automatic-strategic-planner, poss:capability-learning-analysis, poss:cross-episode-possibility-synthesis, poss:cross-product-transfer, poss:cross-repository-transaction-coordinator, poss:domain-general-sensemaking, poss:git-authored-knowledge-index, poss:path-scoped-architecture-vocabulary, poss:persistent-semantic-stewardship, poss:possibility-memory, poss:possibility-reconsideration-from-change, poss:ranked-possibility-backlog, poss:strategic-continuity-reassessment, poss:strategic-exploration-funnel], truncated: false, not_assessed_kinds: []}, outcome: HIT, decision_relevant: true}
+  - {id: QY-5, operation: explain, terms: [], subject: "poss:possibility-memory", expect_kinds: [], target_ref: 3892c38d2bb782247d17894968b4bca4263554f1, result: {hit_count: 9, claim_ids: [poss:possibility-memory, cap:breadth-exploration-guidance, cap:possibility-records, cap:semantic-queries, goal:compounding-product-knowledge, hyp:later-sessions-consult-knowledge, poss:persistent-semantic-stewardship, poss:possibility-reconsideration-from-change, poss:ranked-possibility-backlog], truncated: false, not_assessed_kinds: []}, outcome: HIT, decision_relevant: true}
+  - {id: QY-6, operation: impact, terms: [], subject: "cap:semantic-queries", expect_kinds: [], target_ref: 3892c38d2bb782247d17894968b4bca4263554f1, result: {hit_count: 16, claim_ids: [adr:0031, cap:semantic-queries, component:knowledge-store, decision:granular-indexed-delta-classification, decision:workspace-impact-path-overlap, goal:longterm-stewardship, inv:bounded-query-disclosure, inv:index-snapshot-vs-working-overlay, inv:source-boundary, observation:knowledge-query-closed-operations, poss:git-authored-knowledge-index, poss:persistent-semantic-stewardship, poss:possibility-memory, poss:possibility-reconsideration-from-change, verification:granular-delta-classification-tests, verification:knowledge-tests], truncated: false, not_assessed_kinds: []}, outcome: HIT, decision_relevant: true}
+  - {id: QY-7, operation: contradictions, terms: [], subject: null, expect_kinds: [], target_ref: 3892c38d2bb782247d17894968b4bca4263554f1, result: {hit_count: 9, claim_ids: [adr:0029, ng:automatic-selection, ng:deterministic-planner, observation:legacy-brief-producer-bypasses-runtime-paths, observation:legacy-plan-producer-overwrites-tracked-plan, poss:automatic-strategic-planner, poss:cross-repository-transaction-coordinator, poss:ranked-possibility-backlog, rule:runtime-owns-artifact-paths], truncated: false, not_assessed_kinds: []}, outcome: HIT, decision_relevant: true}
+  - {id: QY-8, operation: explain, terms: [], subject: "hyp:cross-episode-synthesis-recurs", expect_kinds: [], target_ref: 3892c38d2bb782247d17894968b4bca4263554f1, result: {hit_count: 3, claim_ids: [hyp:cross-episode-synthesis-recurs, poss:capability-learning-analysis, poss:cross-episode-possibility-synthesis], truncated: false, not_assessed_kinds: []}, outcome: HIT, decision_relevant: true}
+  - {id: QY-9, operation: search, terms: ["PATH-2", "bootstrap"], subject: null, expect_kinds: [], target_ref: 3892c38d2bb782247d17894968b4bca4263554f1, result: {hit_count: 3, claim_ids: [component:repository-bootstrap, decision:incremental-bootstrap, verification:repository-bootstrap-tests], truncated: false, not_assessed_kinds: []}, outcome: MISS, decision_relevant: true}
+  - {id: QY-10, operation: explain, terms: [], subject: "poss:git-authored-knowledge-index", expect_kinds: [observation, capability], target_ref: 3892c38d2bb782247d17894968b4bca4263554f1, result: {hit_count: 5, claim_ids: [poss:git-authored-knowledge-index, cap:semantic-queries, poss:cross-episode-possibility-synthesis, poss:path-scoped-architecture-vocabulary, poss:possibility-reconsideration-from-change], truncated: false, not_assessed_kinds: [observation]}, outcome: PARTIAL, decision_relevant: true}
+  - {id: QY-11, operation: workspace-impact, terms: [], subject: null, expect_kinds: [], target_ref: 3892c38d2bb782247d17894968b4bca4263554f1, result: {hit_count: 13, claim_ids: [cap:possibility-records, poss:cross-episode-possibility-synthesis, poss:persistent-semantic-stewardship, poss:possibility-memory, poss:possibility-reconsideration-from-change, poss:ranked-possibility-backlog], truncated: false, not_assessed_kinds: []}, outcome: HIT, decision_relevant: true}
+  - {id: QY-12, operation: build, terms: [], subject: null, expect_kinds: [], target_ref: ef621bc933d308607092e99e878a80d1759be570, result: {hit_count: 0, claim_ids: [], truncated: false, not_assessed_kinds: []}, outcome: NOT_APPLICABLE, decision_relevant: false}
+  - {id: QY-13, operation: search, terms: ["poss:"], subject: null, expect_kinds: [], target_ref: ef621bc933d308607092e99e878a80d1759be570, result: {hit_count: 18, claim_ids: [cap:possibility-records, poss:automatic-strategic-planner, poss:capability-learning-analysis, poss:construction-time-possibility-reconciliation, poss:cross-episode-possibility-synthesis, poss:cross-product-transfer, poss:cross-repository-transaction-coordinator, poss:domain-general-sensemaking, poss:git-authored-knowledge-index, poss:path-scoped-architecture-vocabulary, poss:persistent-semantic-stewardship, poss:possibilities-projected-from-analyses, poss:possibility-memory, poss:possibility-reconsideration-from-change, poss:ranked-possibility-backlog, poss:strategic-continuity-reassessment, poss:strategic-exploration-funnel, poss:target-repository-discovery-memory], truncated: false, not_assessed_kinds: []}, outcome: HIT, decision_relevant: true}
+  - {id: QY-14, operation: changes, terms: [], subject: null, expect_kinds: [], target_ref: ef621bc933d308607092e99e878a80d1759be570, result: {hit_count: 5, claim_ids: [cap:repository-only-discovery, observation:receipt-records-single-next, poss:construction-time-possibility-reconciliation, poss:possibilities-projected-from-analyses, poss:target-repository-discovery-memory], truncated: false, not_assessed_kinds: []}, outcome: HIT, decision_relevant: true}
+  - {id: QY-15, operation: explain, terms: [], subject: "poss:target-repository-discovery-memory", expect_kinds: [], target_ref: ef621bc933d308607092e99e878a80d1759be570, result: {hit_count: 6, claim_ids: [poss:target-repository-discovery-memory, cap:possibility-records, cap:repository-only-discovery, goal:compounding-product-knowledge, hyp:later-sessions-consult-knowledge, poss:possibility-memory], truncated: false, not_assessed_kinds: []}, outcome: HIT, decision_relevant: false}
+  - {id: QY-16, operation: explain, terms: [], subject: "cap:semantic-queries", expect_kinds: [], target_ref: ef621bc933d308607092e99e878a80d1759be570, result: {hit_count: 17, claim_ids: [cap:semantic-queries, adr:0031, component:knowledge-store, decision:granular-indexed-delta-classification, decision:workspace-impact-path-overlap, goal:longterm-stewardship, inv:bounded-query-disclosure, inv:index-snapshot-vs-working-overlay, inv:source-boundary, observation:knowledge-query-closed-operations, poss:construction-time-possibility-reconciliation, poss:git-authored-knowledge-index, poss:persistent-semantic-stewardship, poss:possibility-memory, poss:possibility-reconsideration-from-change, verification:granular-delta-classification-tests, verification:knowledge-tests], truncated: false, not_assessed_kinds: []}, outcome: HIT, decision_relevant: true}
+source_checks:
+  - claim_id: observation:knowledge-query-closed-operations
+    sources: [src/sensemaking_skills/semantic_cli.py:210-211]
+    result: SUPPORTED
+  - claim_id: observation:strategy-assumptions-drift-commands
+    sources: [src/sensemaking_skills/strategy_cli.py:344, src/sensemaking_skills/strategy_cli.py:457]
+    result: SUPPORTED
+  - claim_id: observation:receipt-records-single-next
+    sources: [skills/using-sensemaking/references/session-receipt-v1.md:218-219]
+    result: SUPPORTED
+  - claim_id: poss:automatic-strategic-planner
+    sources: [docs/adr/0029-current-product-boundary.md:45]
+    result: SUPPORTED
+misses:
+  - id: M-1
+    query_ref: QY-2
+    needed_for: "Retained product possibilities and their relationships for a divergent exploration (CQ-079, CQ-082)."
+    kind: NO_MATCH_IN_SCOPE
+    resolved_by: "source inspection: docs/idea-library.md (merged in PR 625)"
+    follow_up: ADDED
+    proposal_ref: .sensemaking/knowledge/possibilities.json
+  - id: M-2
+    query_ref: QY-9
+    needed_for: "Construction path PATH-2 and its reassessment trigger, to judge a reconsideration."
+    kind: NO_MATCH_IN_SCOPE
+    resolved_by: "source inspection: artifacts/history/2026-10-23-strategic-repository-analysis.md:136-159 and docs/idea-library.md section 4"
+    follow_up: NO_MODEL_CHANGE
+    proposal_ref: null
+  - id: M-3
+    query_ref: QY-10
+    needed_for: "Implementation evidence of a realized possibility in its one-hop neighborhood."
+    kind: NOT_ASSESSED
+    resolved_by: "explain on cap:semantic-queries returns observation:knowledge-query-closed-operations (QY-16)"
+    follow_up: NO_MODEL_CHANGE
+    proposal_ref: null
+reconcile:
+  - {claim_id: poss:persistent-semantic-stewardship, disposition: ADD, applied: true, proposal_ref: .sensemaking/knowledge/possibilities.json, proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+  - {claim_id: poss:git-authored-knowledge-index, disposition: ADD, applied: true, proposal_ref: .sensemaking/knowledge/possibilities.json, proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+  - {claim_id: poss:path-scoped-architecture-vocabulary, disposition: ADD, applied: true, proposal_ref: .sensemaking/knowledge/possibilities.json, proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+  - {claim_id: poss:strategic-exploration-funnel, disposition: ADD, applied: true, proposal_ref: .sensemaking/knowledge/possibilities.json, proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+  - {claim_id: poss:strategic-continuity-reassessment, disposition: ADD, applied: true, proposal_ref: .sensemaking/knowledge/possibilities.json, proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+  - {claim_id: poss:possibility-memory, disposition: ADD, applied: true, proposal_ref: .sensemaking/knowledge/possibilities.json, proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+  - {claim_id: poss:cross-episode-possibility-synthesis, disposition: ADD, applied: true, proposal_ref: .sensemaking/knowledge/possibilities.json, proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+  - {claim_id: poss:possibility-reconsideration-from-change, disposition: ADD, applied: true, proposal_ref: .sensemaking/knowledge/possibilities.json, proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+  - {claim_id: poss:capability-learning-analysis, disposition: ADD, applied: true, proposal_ref: .sensemaking/knowledge/possibilities.json, proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+  - {claim_id: poss:cross-product-transfer, disposition: ADD, applied: true, proposal_ref: .sensemaking/knowledge/possibilities.json, proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+  - {claim_id: poss:domain-general-sensemaking, disposition: ADD, applied: true, proposal_ref: .sensemaking/knowledge/possibilities.json, proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+  - {claim_id: poss:automatic-strategic-planner, disposition: ADD, applied: true, proposal_ref: .sensemaking/knowledge/possibilities.json, proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+  - {claim_id: poss:ranked-possibility-backlog, disposition: ADD, applied: true, proposal_ref: .sensemaking/knowledge/possibilities.json, proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+  - {claim_id: poss:cross-repository-transaction-coordinator, disposition: ADD, applied: true, proposal_ref: .sensemaking/knowledge/possibilities.json, proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+  - {claim_id: cap:path-scoped-architecture-context, disposition: ADD, applied: true, proposal_ref: .sensemaking/knowledge/possibilities.json, proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+  - {claim_id: cap:breadth-exploration-guidance, disposition: ADD, applied: true, proposal_ref: .sensemaking/knowledge/possibilities.json, proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+  - {claim_id: cap:strategic-reassessment-projection, disposition: ADD, applied: true, proposal_ref: .sensemaking/knowledge/possibilities.json, proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+  - {claim_id: cap:possibility-records, disposition: ADD, applied: true, proposal_ref: .sensemaking/knowledge/possibilities.json, proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+  - {claim_id: observation:knowledge-query-closed-operations, disposition: ADD, applied: true, proposal_ref: .sensemaking/knowledge/possibilities.json, proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+  - {claim_id: observation:v2-vocabulary-sets, disposition: ADD, applied: true, proposal_ref: .sensemaking/knowledge/possibilities.json, proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+  - {claim_id: observation:strategy-assumptions-drift-commands, disposition: ADD, applied: true, proposal_ref: .sensemaking/knowledge/possibilities.json, proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+  - {claim_id: observation:funnel-breadth-guidance, disposition: ADD, applied: true, proposal_ref: .sensemaking/knowledge/possibilities.json, proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+  - {claim_id: hyp:later-sessions-consult-knowledge, disposition: ADD, applied: true, proposal_ref: .sensemaking/knowledge/possibilities.json, proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+  - {claim_id: hyp:s5-independent-session-value, disposition: ADD, applied: true, proposal_ref: .sensemaking/knowledge/possibilities.json, proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+  - {claim_id: hyp:cross-episode-synthesis-recurs, disposition: ADD, applied: true, proposal_ref: .sensemaking/knowledge/possibilities.json, proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+  - {claim_id: cap:repository-only-discovery, disposition: ADD, applied: true, proposal_ref: .sensemaking/knowledge/possibilities.json, proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+  - {claim_id: observation:receipt-records-single-next, disposition: ADD, applied: true, proposal_ref: .sensemaking/knowledge/possibilities.json, proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+  - {claim_id: poss:construction-time-possibility-reconciliation, disposition: ADD, applied: true, proposal_ref: .sensemaking/knowledge/possibilities.json, proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+  - {claim_id: poss:possibilities-projected-from-analyses, disposition: ADD, applied: true, proposal_ref: .sensemaking/knowledge/possibilities.json, proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+  - {claim_id: poss:target-repository-discovery-memory, disposition: ADD, applied: true, proposal_ref: .sensemaking/knowledge/possibilities.json, proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+  - {claim_id: poss:cross-episode-possibility-synthesis, disposition: REVISE, applied: true, proposal_ref: .sensemaking/knowledge/possibilities.json, proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+  - {claim_id: poss:persistent-semantic-stewardship, disposition: REVISE, applied: true, proposal_ref: .sensemaking/knowledge/possibilities.json, proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+  - {claim_id: poss:possibility-reconsideration-from-change, disposition: REVISE, applied: true, proposal_ref: .sensemaking/knowledge/possibilities.json, proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+  - {claim_id: poss:ranked-possibility-backlog, disposition: REVISE, applied: true, proposal_ref: .sensemaking/knowledge/possibilities.json, proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+persistence: committed
+action_authorized: false
+semantic_truth_established: false
+immutable: true
