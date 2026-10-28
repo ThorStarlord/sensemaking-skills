@@ -244,6 +244,15 @@ def validate(path: Path) -> list[dict[str, str]]:
             )
         )
 
+    architecture_synthesis_refs = data.get("architecture_synthesis_refs")
+    if architecture_synthesis_refs is not None and not _string_list(architecture_synthesis_refs):
+        errors.append(
+            _error(
+                "STRATEGIC_ANALYSIS_SYNTHESIS_REFS_INVALID",
+                "architecture_synthesis_refs must be a list of non-empty strings when present",
+            )
+        )
+
     capabilities = data.get("capability_states")
     if not isinstance(capabilities, list):
         errors.append(
@@ -611,6 +620,17 @@ def validate(path: Path) -> list[dict[str, str]]:
                     _error(
                         "STRATEGIC_ANALYSIS_PATH_TEXT_INVALID",
                         f"construction_paths[{index}].{field} must be non-empty",
+                    )
+                )
+        for field, prefix in (("possibility_refs", "poss:"), ("architecture_option_refs", "arch:")):
+            refs = item.get(field)
+            if refs is not None and not (
+                _string_list(refs) and all(ref.startswith(prefix) for ref in refs)
+            ):
+                errors.append(
+                    _error(
+                        "STRATEGIC_ANALYSIS_PATH_PROSPECTIVE_REFS_INVALID",
+                        f"construction_paths[{index}].{field} must be a list of {prefix}<id> strings when present",
                     )
                 )
 

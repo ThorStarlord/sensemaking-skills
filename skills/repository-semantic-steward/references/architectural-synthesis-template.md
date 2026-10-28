@@ -43,9 +43,17 @@ reason.
 ## 6. Consequence Exploration
 
 Optional depth on a provisional preference: conditional effects with `conseq:`
-ids, category, assumptions, mechanism, counterevidence, and what would change
-the decision. Separate observed premises from assumptions. State the stop
-reason. Write "Not performed" with the reason when no preference warrants it.
+ids, category (`benefit`, `risk`, `constraint`, `opportunity`, `mixed`),
+mechanism, counterevidence, and what would change the decision. Keep observed
+premises apart from assumptions. Stop when the next layer cannot change the
+decision, and say so. Write "Not performed" with the reason when no preference
+warrants it.
+
+Typed `conditional_consequences` are optional; when present, every
+`conditional_consequence_refs` entry must resolve to one and each one must be
+cited by an option. A consequence stays a prediction: observed effects of a
+built change go to RECONCILE or a `change_impact_analysis`, not back into this
+artifact.
 
 ## 7. Provisional Preference and Feedback
 
@@ -130,6 +138,17 @@ preference_feedback:
   - consequence_ref: conseq:example-benefit
     outcome: REAFFIRM
     effect: "<what the consequence did to the comparison>"
+conditional_consequences:
+  - consequence_id: conseq:example-benefit
+    effect: "<predicted effect, conditional>"
+    category: benefit
+    mechanism: "<how it would follow>"
+    assumption_refs:
+      - hyp:example-assumption
+    observed_premise_refs: []
+    counterevidence: "<what argues against it, or what is unknown>"
+    would_change_decision_if: "<observation that would change the comparison>"
+consequence_stop_reason: "<why a further layer would not change the decision>"
 derived_possibility_refs: []
 candidate_responsibility: null
 reconsideration_conditions:

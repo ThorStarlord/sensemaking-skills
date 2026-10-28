@@ -155,15 +155,15 @@ recall prior possibilities, options and decisions (when they could change the an
 
 ## 9. Representation now and next
 
-**Now:** this conceptual model, competency questions CQ-089 to CQ-102, a source-grounded reference case with a vocabulary-fit assessment, reviewed records for that case using existing kinds and predicates (`.sensemaking/knowledge/prospective-reasoning.json`; plan PR C), and the `architectural_synthesis` artifact contract with its template and focused validator, to which the reference case conforms (plan PR D). No claim kind, predicate, knowledge schema version, Skill or runtime is added.
+**Now:** this conceptual model, competency questions CQ-089 to CQ-102, a source-grounded reference case with a vocabulary-fit assessment, reviewed records for that case using existing kinds and predicates (`.sensemaking/knowledge/prospective-reasoning.json`; plan PR C), and the `architectural_synthesis` artifact contract with its template and focused validator, to which the reference case conforms (plan PR D), and optional typed consequences in that artifact plus optional links from a strategic analysis's paths to possibilities, options and syntheses (plan PR E and PR F). No claim kind, predicate, knowledge schema version, Skill or runtime is added.
 
 **Where each concept is expected to live** (predictions tested in [`prospective-reasoning-competency-v1.md`](prospective-reasoning-competency-v1.md)):
 
 | Concept | Analysis artifact | Reviewed knowledge (existing vocabulary first) |
 | --- | --- | --- |
 | ArchitectureOption | `architectural_synthesis` `architecture_options`, with `proposed_transitions` | `alternative` claim with `arch:` id and `attributes.concept` |
-| FutureCapabilityState | strategic path `future_state` | artifact reference, not an observed `capability` |
-| ConsequenceHypothesis | the synthesis's consequence section, cited by `conditional_consequence_refs` (plan PR F decides any further structure) | `hypothesis` claim with `conseq:` id |
+| FutureCapabilityState | strategic path `future_state`; the path cites its basis with `possibility_refs`, `architecture_option_refs` and top-level `architecture_synthesis_refs` | artifact reference, not an observed `capability` |
+| ConsequenceHypothesis | synthesis `conditional_consequences` (category, assumptions apart from observed premises, what would change the decision), cited by `conditional_consequence_refs`; no standalone consequence artifact | `hypothesis` claim with `conseq:` id |
 | ComparativeJudgment, ProvisionalPreference | synthesis `option_comparison`, `provisional_preference` | attributes on the analysis reference; never a `decision` claim |
 | derived new possibility | synthesis `derived_possibility_refs` | `opportunity` claim `derived_from` the consequence |
 

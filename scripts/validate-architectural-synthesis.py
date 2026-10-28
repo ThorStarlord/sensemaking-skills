@@ -31,6 +31,7 @@ COMPARISON_OUTCOMES = {
     "DECLINED",
     "UNRESOLVED",
 }
+CONSEQUENCE_CATEGORIES = {"benefit", "risk", "constraint", "opportunity", "mixed"}
 PREFERENCE_STATUSES = {"PROVISIONAL"}
 FEEDBACK_OUTCOMES = {
     "REAFFIRM",
@@ -42,7 +43,18 @@ FEEDBACK_OUTCOMES = {
     "OWNER_DECISION_REQUIRED",
     "THESIS_REVIEW_REQUIRED",
 }
-FORBIDDEN_KEYS = {"score", "scores", "weight", "weights", "rank", "ranking", "risk_score"}
+FORBIDDEN_KEYS = {
+    "score",
+    "scores",
+    "weight",
+    "weights",
+    "rank",
+    "ranking",
+    "risk_score",
+    "impact_score",
+    "probability",
+    "likelihood",
+}
 
 REQUIRED = {
     "artifact_id",
@@ -145,6 +157,66 @@ def _validate_options(data: dict[str, Any], errors: list[dict[str, str]]) -> dic
             ):
                 errors.append(_error("SYNTHESIS_TRANSITION_INVALID", f"{t_where} needs target_ref and change"))
     return by_id
+
+
+def _validate_consequences(
+    data: dict[str, Any],
+    options: dict[str, dict[str, Any]],
+    errors: list[dict[str, str]],
+) -> None:
+    if "consequence_stop_reason" in data and not _text(data["consequence_stop_reason"]):
+        errors.append(_error("SYNTHESIS_TEXT_INVALID", "consequence_stop_reason"))
+    if "conditional_consequences" not in data:
+        return
+    entries = data["conditional_consequences"]
+    if not isinstance(entries, list):
+        errors.append(_error("SYNTHESIS_CONSEQUENCES_INVALID", "conditional_consequences must be a list"))
+        return
+    ids: set[str] = set()
+    for index, entry in enumerate(entries):
+        where = f"conditional_consequences[{index}]"
+        if not isinstance(entry, dict):
+            errors.append(_error("SYNTHESIS_CONSEQUENCE_INVALID", f"{where} must be a mapping"))
+            continue
+        consequence_id = entry.get("consequence_id")
+        if not isinstance(consequence_id, str) or not CONSEQUENCE_ID.fullmatch(consequence_id):
+            errors.append(_error("SYNTHESIS_CONSEQUENCE_ID_INVALID", f"{where}.consequence_id must match conseq:<slug>"))
+        elif consequence_id in ids:
+            errors.append(_error("SYNTHESIS_CONSEQUENCE_ID_DUPLICATE", f"{where}.consequence_id {consequence_id}"))
+        else:
+            ids.add(consequence_id)
+        if entry.get("category") not in CONSEQUENCE_CATEGORIES:
+            errors.append(_error(
+                "SYNTHESIS_CONSEQUENCE_CATEGORY_INVALID",
+                f"{where}.category must be one of {sorted(CONSEQUENCE_CATEGORIES)}",
+            ))
+        for field in ("effect", "would_change_decision_if"):
+            if not _text(entry.get(field)):
+                errors.append(_error("SYNTHESIS_CONSEQUENCE_TEXT_INVALID", f"{where}.{field}"))
+        for field in ("mechanism", "counterevidence"):
+            if field in entry and not _text(entry[field]):
+                errors.append(_error("SYNTHESIS_CONSEQUENCE_TEXT_INVALID", f"{where}.{field}"))
+        for field in ("assumption_refs", "observed_premise_refs"):
+            if not _string_list(entry.get(field), allow_empty=True):
+                errors.append(_error("SYNTHESIS_CONSEQUENCE_REFS_INVALID", f"{where}.{field} must be a list of strings"))
+    cited = {
+        ref
+        for option in options.values()
+        for ref in option.get("conditional_consequence_refs") or []
+        if isinstance(ref, str)
+    }
+    unresolved = sorted(cited - ids)
+    if unresolved:
+        errors.append(_error(
+            "SYNTHESIS_CONSEQUENCE_UNRESOLVED",
+            f"options cite consequences missing from conditional_consequences: {unresolved}",
+        ))
+    orphans = sorted(ids - cited)
+    if orphans:
+        errors.append(_error(
+            "SYNTHESIS_CONSEQUENCE_ORPHAN",
+            f"conditional_consequences not cited by any option: {orphans}",
+        ))
 
 
 def _validate_preference(
@@ -297,6 +369,7 @@ def validate(path: Path) -> list[dict[str, str]]:
             if not _text(comparison.get(field)):
                 errors.append(_error("SYNTHESIS_COMPARISON_INVALID", f"option_comparison.{field}"))
 
+    _validate_consequences(data, options, errors)
     _validate_preference(data, options, errors)
     _validate_feedback(data, options, errors)
 
