@@ -208,6 +208,10 @@ Need / outcome
 
 The exact order can vary during discovery, but the concepts should not collapse into one label.
 
+### Product possibility (not a level)
+
+A [ProductPossibility](product-possibility-ontology.md) is a retained future at any of these levels: a need, a capability, a feature, a change or a strategic direction. It is not another level. The axes above may describe a possibility's proposed change (for example, a net-new capability with multiplicative value), and they still do not prioritize it. ProductChanges realize a possibility in whole or in part; one change does not exhaust the possibility or erase its original proposal.
+
 ## Classification examples
 
 | Change | Structural type | Value mechanism | Target | Value relation |

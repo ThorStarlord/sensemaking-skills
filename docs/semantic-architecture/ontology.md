@@ -399,6 +399,10 @@ A sequence of user actions/outcomes through which product value is obtained.
 
 A quality dimension such as reliability, usability, portability, observability, performance, security, or maintainability.
 
+### ProductPossibility
+
+A retained representation of a potential future product state, capability, product change, or strategic direction, together with its value hypothesis, assumptions, relationships, and historical disposition. It implies no feasibility, endorsement, implementation, or authorization, and it is not a Strategic Frontier item or backlog entry. Its statements are Layer-4 claims (its value is usually a Hypothesis). Dimensions, identity, history, and reconsideration are defined in [`product-possibility-ontology.md`](product-possibility-ontology.md).
+
 ### Product relations
 
 ```text
@@ -412,9 +416,18 @@ ProductChange reinforces ProductCapability
 ProductChange extends ProductCapability
 ProductChange enables ProductChange | ProductCapability
 ProductChange improves QualityAttribute
+ProductPossibility servesGoal Goal
+ProductPossibility realizedBy ProductCapability | ProductChange | RepositoryElement
+ProductPossibility potentiallyEnabledBy ProductCapability | ProductPossibility
+ProductPossibility complements | alternativeTo | extends | sharesAssumptionWith ProductPossibility
+ProductPossibility conflictsWith ProductPossibility | Constraint | RatifiedIntent
+ProductPossibility derivedFrom ProductPossibility | EvidenceSource
+ProductPossibility supersedes ProductPossibility
+Evidence motivatesReconsiderationOf ProductPossibility
+Decision selects | defers | rejects ProductPossibility
 ```
 
-The detailed taxonomy is defined in `product-change-taxonomy.md`.
+The detailed taxonomy is defined in `product-change-taxonomy.md`. Possibility relations are proposed and conceptual; their meanings are in `relations-and-epistemics.md`.
 
 ## Cross-layer relations
 

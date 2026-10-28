@@ -189,6 +189,30 @@ A proposed ontology concept should identify the competency question(s) it enable
 
 **CQ-078** — Can the complete decision path be reconstructed from durable state without making historical decisions appear more certain than they were at the time?
 
+## M. Product possibilities
+
+Introduced with [`product-possibility-ontology.md`](product-possibility-ontology.md) (2026-10-28). These replace the plan's illustrative PQ-01 to PQ-10 identifiers in the same order. They are scope tests for the conceptual model, not yet questions any query answers mechanically.
+
+**CQ-079** — Which future directions have been considered for a product goal, including speculative and counterfactual ones?
+
+**CQ-080** — Which possibilities align with accepted intent, and which would require changing an assumption, non-goal or product boundary?
+
+**CQ-081** — Which parts of a possibility are implemented, partially implemented or absent in the inspected evidence, and at which revision?
+
+**CQ-082** — Which dependencies, alternatives, complementary capabilities and conflicts between possibilities are explicitly represented, and how is each established?
+
+**CQ-083** — Why was a possibility selected, deferred, rejected or superseded, by which authority, and when?
+
+**CQ-084** — Which recorded assumptions or reconsideration conditions may have changed since a possibility was last assessed?
+
+**CQ-085** — Which existing capabilities and possibilities could combine into a distinct future capability, and which of the connecting relationships remain hypothetical?
+
+**CQ-086** — Can a fresh agent reconstruct the important possibilities and their relationships without the conversation that produced them?
+
+**CQ-087** — Can an agent explore a thesis-conflicting possibility without mistaking its existence, alignment label or realization for authorization to pursue it?
+
+**CQ-088** — Does the current construction responsibility advance the selected long-term direction, or is a materially different retained possibility being overlooked?
+
 ## Initial priority set
 
 The first implementation experiments should prioritize questions that already recur across existing Skills and Campaigns:
