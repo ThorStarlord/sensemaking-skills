@@ -213,6 +213,7 @@ def validate(path: Path) -> list[dict[str, str]]:
 def main() -> int:
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument("artifact",type=Path)
+    parser.add_argument("--repo-root",default=".",help="Accepted for validate-output.py compatibility; unused")
     parser.add_argument("--json",action="store_true")
     args=parser.parse_args()
     errors=validate(args.artifact)
