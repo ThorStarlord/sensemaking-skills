@@ -11,7 +11,7 @@
       "evidence_refs": [
         "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
         "file:skills/repository-semantic-steward/references/knowledge-contract.md:line:40",
-        "file:skills/using-sensemaking/references/portable-construction-loop-v1.md:line:310"
+        "file:skills/using-sensemaking/references/portable-construction-loop-v1.md:line:320"
       ],
       "attributes": {
         "concept": "ArchitectureOption",
@@ -42,6 +42,11 @@
             {
               "scope": "all discovery sessions",
               "outcome": "narrowed by REVISE_PREFERENCE after conseq:persistence-requires-write-authority"
+            },
+            {
+              "scope": "sessions holding knowledge-edit and commit authority",
+              "outcome": "REAFFIRMED at construction and built as portable-loop guidance (plan PR H)",
+              "assessed_ref": "7858c9eb847cee68449a4153c98f35f016025db7"
             }
           ]
         },
@@ -177,7 +182,8 @@
       "evidence_refs": [
         "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
         "file:skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md:line:172",
-        "file:skills/using-sensemaking/SKILL.md:line:151"
+        "file:skills/using-sensemaking/SKILL.md:line:151",
+        "file:skills/using-sensemaking/references/portable-construction-loop-v1.md"
       ],
       "attributes": {
         "concept": "ConsequenceHypothesis",
@@ -190,7 +196,14 @@
         ],
         "mechanism": "Funnel section 4 recall; using-sensemaking lists reviewed knowledge as a source.",
         "counterevidence": "Not tested in any independent session.",
-        "would_change_decision_if": "Sessions ignore the records."
+        "would_change_decision_if": "Sessions ignore the records.",
+        "assessments": [
+          {
+            "date": "2026-10-28",
+            "assessed_ref": "7858c9eb847cee68449a4153c98f35f016025db7",
+            "result": "Mechanism now also in discovery: the portable loop tells every discovery to read retained poss: records before comparing (plan PR H). The predicted effect is not yet observed in any later session."
+          }
+        ]
       }
     },
     {
@@ -219,7 +232,14 @@
         "would_change_decision_if": "Already changed it: REVISE_PREFERENCE narrowed option A to authorized sessions.",
         "premise_status": "observed",
         "decision_changing": true,
-        "feedback_outcome": "REVISE_PREFERENCE"
+        "feedback_outcome": "REVISE_PREFERENCE",
+        "assessments": [
+          {
+            "date": "2026-10-28",
+            "assessed_ref": "7858c9eb847cee68449a4153c98f35f016025db7",
+            "result": "Built into the guidance: retention is conditioned on knowledge-edit and commit authority (plan PR H). This records how the prediction shaped construction, not an observed effect."
+          }
+        ]
       }
     },
     {
@@ -282,7 +302,7 @@
       "authority_ref": "artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
       "evidence_refs": [
         "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
-        "file:skills/using-sensemaking/references/portable-construction-loop-v1.md:line:310"
+        "file:skills/using-sensemaking/references/portable-construction-loop-v1.md:line:320"
       ],
       "attributes": {
         "concept": "ConsequenceHypothesis",
@@ -394,7 +414,7 @@
       "authority_ref": "artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
       "evidence_refs": [
         "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
-        "file:skills/using-sensemaking/references/portable-construction-loop-v1.md:line:310"
+        "file:skills/using-sensemaking/references/portable-construction-loop-v1.md:line:320"
       ],
       "attributes": {
         "concept": "Assumption",
