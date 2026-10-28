@@ -20,24 +20,34 @@ Sensemaking can already explore possible futures and retain reviewed knowledge, 
 
 **ProductPossibility:** a retained representation of a potential future product state, capability, product change or strategic direction, together with its value hypothesis, assumptions, relevant relationships and historical disposition. It does not imply feasibility, endorsement, implementation or authorization.
 
-It is a Layer-6 concept whose statements are Layer-4 claims. Its value hypothesis is normally a Hypothesis; statements about its realization are Observations or inferred claims with source evidence; its dispositions are Decisions with their own authority.
+It is a Layer-6 concept whose statements are Layer-4 claims. Its value hypothesis is normally a Hypothesis; implementation evidence about it is an Observation; the judgment that something realizes it is an inferred claim; its dispositions are Decisions with their own authority.
 
 ```text
 ProductPossibility != Feature, backlog item or implementation task
 ProductPossibility != Strategic Frontier item
-ProductPossibility != ProductChange   (zero or more ProductChanges may realize it, in whole or in part)
+ProductPossibility != ProductChange      (zero or more ProductChanges may realize it, in whole or in part)
+ProductPossibility != ProductCapability  (a realized capability is what exists; the possibility is what was proposed)
+ProductPossibility != construction path  (a way of advancing toward a possibility)
+ProductPossibility != evidence prerequisite (an Assumption or Uncertainty)
 retained != feasible != endorsed != implemented != authorized
 ```
 
-A possibility may sit at any product level of the [product-change taxonomy](product-change-taxonomy.md) (need, capability, feature, change, strategic direction). Implemented baselines are legitimate possibilities: recording what an earlier intention became is how a later agent separates the original idea from its partial realization (CQ-081).
+A possibility may sit at any product level of the [product-change taxonomy](product-change-taxonomy.md) (need, capability, feature, change, strategic direction). Implemented baselines stay legitimate possibilities, but the possibility and what realizes it are different entities: the possibility preserves the original proposal and its history, and the realized ProductCapability, ProductChange or RepositoryElement is what exists. Link them with `realizedBy`; never let one identifier stand for both (CQ-081).
+
+Two neighbouring things are not possibilities:
+
+- A **construction path** (for example PATH-1 or PATH-2 of a strategic analysis) is a way of advancing toward a possibility. It keeps its identity, comparison and disposition in the analysis that defined it. The library may point to it from the possibility it would advance.
+- An **evidence prerequisite** (for example evidence that separate sessions reuse retained knowledge) is an Assumption or Uncertainty. A possibility records it as an assumption or in `revisit_when`; it is never the object of `potentiallyEnabledBy`, which takes a capability or another possibility.
 
 ## 3. Relationship to existing concepts
 
 | Existing concept | Where defined | Relationship to ProductPossibility |
 | --- | --- | --- |
-| ProductCapability | [ontology](ontology.md) Layer 6 | A possible future capability, or a realized prerequisite that may enable one |
+| ProductCapability | [ontology](ontology.md) Layer 6 | The realized ability a possibility may become (`realizedBy`), or a realized prerequisite that may enable one (`potentiallyEnabledBy`). Distinct from the possibility itself |
 | ProductChange | ontology Layer 6 | A proposed or implemented modification that may realize a possibility |
 | Initiative | ontology Layer 6 | A coordinated effort that may advance a selected possibility |
+| Construction path | `strategic_repository_analysis` paths (for example PATH-1) | A Level-3 way of advancing toward a possibility; not a possibility |
+| Assumption, Uncertainty | ontology Layer 4 | Evidence prerequisites and unresolved premises a possibility depends on; not possibilities |
 | Opportunity | executable `opportunity` claim kind only; not yet an ontology.md concept | A product or engineering need or opening that motivates the possibility. Not a synonym for possibility |
 | Hypothesis | ontology Layer 4 | A defeasible claim about the possibility's value, feasibility or consequences |
 | Alternative | executable `alternative` claim kind | A competing means or direction; between possibilities, see `alternativeTo` |
@@ -48,7 +58,7 @@ A possibility may sit at any product level of the [product-change taxonomy](prod
 
 ## 4. Independent descriptive dimensions
 
-Five dimensions describe a possibility. Each is assessed separately, records its basis and assessed revision, and may be `NOT_ASSESSED`. No dimension implies another, and no combination implies priority. A change in one dimension does not update another: a possibility becoming implemented does not retroactively make its old deferral wrong.
+Six dimensions describe a possibility. Each is assessed separately, records its basis and assessed revision, and may be `NOT_ASSESSED`. No dimension implies another, and no combination implies priority. A change in one dimension does not update another: a possibility becoming implemented does not retroactively make its old deferral wrong.
 
 ### 4.1 A. Strategic alignment
 
@@ -56,41 +66,55 @@ Five dimensions describe a possibility. Each is assessed separately, records its
 | --- | --- |
 | `ALIGNED` | Compatible with currently accepted intent (product strategy, accepted ADRs, ratified owner decisions) |
 | `ADJACENT` | Plausible extension that needs scope clarification before it could be called aligned |
-| `COUNTERFACTUAL` | Explores an explicitly altered premise that no accepted non-goal forbids; acting on it needs Level-4 review |
+| `COUNTERFACTUAL` | Explores an explicitly altered premise that no accepted commitment or non-goal forbids |
 | `CONFLICTS_WITH_CURRENT_STRATEGY` | Contradicts a named accepted commitment or non-goal; cite it |
 | `NOT_ASSESSED` | No adequate alignment judgment exists |
 
-Use `CONFLICTS_WITH_CURRENT_STRATEGY` rather than `COUNTERFACTUAL` whenever a specific accepted commitment or non-goal is contradicted. Either label leaves exploration legitimate.
+Use `CONFLICTS_WITH_CURRENT_STRATEGY` rather than `COUNTERFACTUAL` whenever a specific accepted commitment or non-goal is contradicted. Either label leaves exploration legitimate. Neither label by itself requires Level-4 review: under [`product-thesis-revision.md`](../product-thesis-revision.md) section 4, Level 4 activates only when a material product-thesis commitment becomes decision-changing, for example when a real decision would act on a conflicting possibility.
 
-### 4.2 B. Ambition and horizon
+### 4.2 B. Ambition
 
 | Value | Meaning |
 | --- | --- |
 | `INCREMENTAL` | Extends or improves within the current product shape |
 | `SUBSTANTIAL` | Adds a materially new capability or capability combination |
 | `TRANSFORMATIVE` | Would change what the product is or how it is used |
-| `LONG_HORIZON` | Prerequisites, evidence or scope put it beyond foreseeable construction, whatever its ambition |
 | `NOT_ASSESSED` | Not judged |
 
-These describe scope or aspiration, not quality or priority.
+Ambition describes scope or aspiration, not quality or priority.
 
-### 4.3 C. Realization state
+### 4.3 C. Horizon
 
 | Value | Meaning |
 | --- | --- |
-| `NOT_IMPLEMENTED` | Inspected sources show no realization within the stated scope |
+| `FORESEEABLE` | Its prerequisites exist or could be built within currently foreseeable construction |
+| `LONG_HORIZON` | Prerequisites, evidence or scope put it beyond foreseeable construction |
+| `NOT_ASSESSED` | Not judged |
+
+Horizon is temporal and independent of ambition: a possibility can be `TRANSFORMATIVE` and `LONG_HORIZON`, or `INCREMENTAL` and `LONG_HORIZON` when its prerequisite evidence is far off. It is not desirability.
+
+### 4.4 D. Realization state
+
+| Value | Meaning |
+| --- | --- |
+| `NOT_IMPLEMENTED` | A completeness basis for the stated scope shows no realization |
 | `PARTIALLY_IMPLEMENTED` | Part of the proposed future exists; state which part |
 | `IMPLEMENTED_BASELINE` | The core of the proposed future exists as product or support machinery |
 | `SUPERSEDED_BY_IMPLEMENTATION` | Implementation overtook the original proposal in a different form |
-| `NOT_ASSESSED` | No adequate inspection |
+| `NOT_ASSESSED` | No adequate inspection, or an inspection without a completeness basis |
 
-A realization claim cites inspected code, contracts, Skill text or observed behavior and the revision inspected. Documentation alone does not establish operational completeness, and an absence claim needs the completeness basis required by [relations-and-epistemics.md](relations-and-epistemics.md) ("Absence claims"). Skill guidance is a real realization of guidance-shaped possibilities, but it is not behavioral evidence that agents follow it.
+Keep two claims apart and preserve each status:
 
-### 4.4 D. Epistemic status
+- **Implementation evidence** is `OBSERVED`: a file, symbol, command, Skill text or behavior exists at a named revision.
+- **The realization judgment** (this evidence realizes that part of the possibility, so the state is X) is `INFERRED`.
 
-No new status vocabulary. Documentary claims about a possibility use the Level-2 statuses in [relations-and-epistemics.md](relations-and-epistemics.md) (`OBSERVED`, `INFERRED`, `HYPOTHESIZED`, `RATIFIED`, ...). Typed records use the executable `epistemic_status` values in `knowledge.py:29` (`declared`, `observed`, `hypothetical`, `contested`, `superseded`, `invalidated`), and an authored normative claim still cannot be `observed` (`knowledge.py:275`). Status attaches to each claim, not to the possibility as a whole: one possibility can have an `OBSERVED` partial realization and a `HYPOTHESIZED` value. Owner ratification and action authorization stay separately recorded.
+Use `NOT_IMPLEMENTED` only with a completeness basis for its stated scope, such as a closed enumeration in code or an exhaustive check of a named location ([relations-and-epistemics.md](relations-and-epistemics.md), "Absence claims"). A lexical search that found nothing gives `NOT_ASSESSED` plus the bounded observation "none found in <scope>". A statement that something is "not qualified" is about evidence, not implementation. Documentation alone does not establish operational completeness, and Skill guidance realizes a guidance-shaped possibility without being evidence that agents follow it.
 
-### 4.5 E. Strategic disposition
+### 4.5 E. Epistemic status
+
+No new status vocabulary. Documentary claims about a possibility use the Level-2 statuses in [relations-and-epistemics.md](relations-and-epistemics.md) (`OBSERVED`, `INFERRED`, `HYPOTHESIZED`, `RATIFIED`, ...). Typed records use the executable `epistemic_status` values in `knowledge.py:29` (`declared`, `observed`, `hypothetical`, `contested`, `superseded`, `invalidated`), and an authored normative claim still cannot be `observed` (`knowledge.py:275`). Status attaches to each claim and each relationship, not to the possibility as a whole: one possibility can have `OBSERVED` implementation evidence, an `INFERRED` realization judgment and a `HYPOTHESIZED` value. Owner ratification and action authorization stay separately recorded.
+
+### 4.6 F. Strategic disposition
 
 | Value | Meaning |
 | --- | --- |
@@ -103,19 +127,22 @@ No new status vocabulary. Documentary claims about a possibility use the Level-2
 
 Dispositions form an append-only history (section 7). Each entry records date, authority (owner, ADR, Level-3 analysis, agent), rationale, reason class where applicable and `revisit_when` where consequential.
 
-### 4.6 Prohibited inferences
+### 4.7 Prohibited inferences
 
 ```text
 TRANSFORMATIVE          -> high priority                (invalid)
+LONG_HORIZON            -> low value                    (invalid)
 ALIGNED                 -> selected                     (invalid)
-IMPLEMENTED_BASELINE    -> owner-ratified                (invalid: ADR 0033 vocabulary is implemented but PROPOSED)
-REJECTED_FOR_NOW        -> permanently prohibited        (invalid)
-FRONTIER_CANDIDATE      -> Strategic Frontier member     (invalid)
-COUNTERFACTUAL          -> forbidden to explore          (invalid)
-revisit_when satisfied  -> possibility selected          (invalid)
+IMPLEMENTED_BASELINE    -> owner-ratified               (invalid: ADR 0033 vocabulary is implemented but PROPOSED)
+REJECTED_FOR_NOW        -> permanently prohibited       (invalid)
+FRONTIER_CANDIDATE      -> Strategic Frontier member    (invalid)
+COUNTERFACTUAL          -> forbidden to explore         (invalid)
+COUNTERFACTUAL          -> Level-4 review required      (invalid unless a thesis commitment is decision-changing)
+no search result        -> NOT_IMPLEMENTED              (invalid without a completeness basis)
+revisit_when satisfied  -> possibility selected         (invalid)
 ```
 
-### 4.7 Reading the reservoir's lifecycle labels
+### 4.8 Reading the reservoir's lifecycle labels
 
 The reservoir keeps its labels. This table only reads them into the dimensions above; it does not rewrite them.
 
@@ -127,13 +154,13 @@ The reservoir keeps its labels. This table only reads them into the dimensions a
 | `CANDIDATE_EXTENSION` | Disposition `EXPLORATORY`; assess alignment separately |
 | `REQUIRES_EVIDENCE` | A reconsideration condition (`revisit_when`), not a value of any dimension |
 | `DEFERRED_BY_OWNER_DIRECTION` | Disposition `DEFERRED`, reason `owner_direction` |
-| `LONG_HORIZON` | Ambition `LONG_HORIZON` |
-| `REQUIRES_LEVEL_4_REVIEW` | Alignment `COUNTERFACTUAL` or `CONFLICTS_WITH_CURRENT_STRATEGY` (assess which); reconsideration only through Level 4 |
+| `LONG_HORIZON` | Horizon `LONG_HORIZON`; assess ambition separately |
+| `REQUIRES_LEVEL_4_REVIEW` | Alignment `COUNTERFACTUAL` or `CONFLICTS_WITH_CURRENT_STRATEGY` (assess which). Exploring needs no review; Level 4 applies when acting on it would make a thesis commitment decision-changing |
 | `REJECTED_FOR_NOW` | Disposition `REJECTED_FOR_NOW` |
 
 A combined label such as `IMPLEMENTED_BASELINE + CANDIDATE_EXTENSION` usually describes two possibilities: a realized baseline and a further extension that `extends` it. Record them separately when the distinction matters.
 
-## 5. Identity and provenance
+## 5. Identity, provenance and governing authority
 
 Each retained possibility has:
 
@@ -143,11 +170,16 @@ Each retained possibility has:
 - the product objective it serves (for example `goal:compounding-product-knowledge`);
 - a value hypothesis and its material assumptions;
 - referenced capabilities and evidence, with the assessed revision;
-- the five dimensions with their bases;
+- the six dimensions with their bases;
 - its disposition history and any `revisit_when`;
 - its relationships.
 
 Never derive identity from current wording, reuse an identifier for a different future, or silently merge two possibilities. Replace with `supersedes` and keep both.
+
+**Two kinds of authority apply, with different scopes:**
+
+- The **originating document governs its own historical record**: what was proposed, when, by whom, and what disposition it recorded at the time. The library cites that record and must not rewrite it.
+- The **latest applicable accepted authority governs current product commitments**: accepted ADRs, `docs/product-strategy.md` and ratified owner decisions within their scope. When an origin's historical disposition and a later accepted authority differ about what the product currently commits to, the later authority governs the present and the origin still governs its history. For example, the reservoir's `LONG_HORIZON` label for cross-repository transaction coordination remains its historical record, while ADR 0029 governs the current scope.
 
 ## 6. Relationships
 
@@ -156,8 +188,8 @@ The relationship meanings are canonical in [relations-and-epistemics.md](relatio
 ### 6.1 Evidence each material relationship preserves
 
 1. Its meaning, using one of the relations above.
-2. The possibilities or claims it connects.
-3. Whether it is observed, inferred or hypothesized.
+2. The entities it connects, with endpoint types that match the relation's declared endpoints in [`ontology.md`](ontology.md) (Layer 6, "Product relations"). For example, `realizedBy` targets a capability, change or repository element, never another possibility; `potentiallyEnabledBy` targets a capability or possibility, never a construction path or an evidence prerequisite.
+3. Its own epistemic status (observed, inferred or hypothesized), kept separate from the status of the evidence it rests on. A mechanically observed file or command does not make a semantic relationship drawn from it observed.
 4. Its source or reasoning artifact.
 5. Relevant assumptions and the revision at which it was assessed.
 6. The conditions under which it would stop applying.
@@ -231,7 +263,7 @@ retained possibility
 - The library is an input to Level 3, never a replacement for it, and it does not reopen settled analysis by existing.
 - An exploration-only request ends with a landscape, not a selected task (funnel section 2, "Exploration-only requests").
 - Ordinary bounded engineering does not need to consult the library.
-- Thesis-conflicting possibilities can be explored and retained; acting on one needs the Level-4 process in [`product-thesis-revision.md`](../product-thesis-revision.md).
+- Counterfactual and thesis-conflicting possibilities can be explored and retained without review. The Level-4 process in [`product-thesis-revision.md`](../product-thesis-revision.md) applies only when a product-thesis commitment becomes decision-changing, typically when a real decision would act on such a possibility.
 
 ## 9. Representation now and next
 
@@ -245,12 +277,13 @@ retained possibility
 
 | Element | Competency questions |
 | --- | --- |
-| ProductPossibility definition and boundary | CQ-079, CQ-087 |
+| ProductPossibility definition and boundary, including paths and prerequisites | CQ-079, CQ-082, CQ-087 |
 | Alignment (A) | CQ-080, CQ-087 |
-| Ambition and horizon (B) | CQ-079 |
-| Realization (C) | CQ-081 |
-| Epistemic status (D) | CQ-081, CQ-085 |
-| Disposition, reason classes, history (E, section 7) | CQ-083, CQ-084 |
+| Ambition (B) and horizon (C) | CQ-079 |
+| Realization (D), evidence versus judgment | CQ-081 |
+| Epistemic status (E) | CQ-081, CQ-082, CQ-085 |
+| Disposition, reason classes, history (F, section 7) | CQ-083, CQ-084 |
+| Governing authority (section 5) | CQ-080, CQ-083 |
 | Relationships (section 6) | CQ-082, CQ-085 |
 | Recombination (6.3) | CQ-085 |
 | Identity and provenance (section 5) | CQ-086 |

@@ -19,11 +19,13 @@ implemented or comparatively proven.
 
 **Idea Library (2026-10-28):** [`idea-library.md`](idea-library.md) gives a
 curated selection of these and newer possibilities stable `poss:` identifiers,
-separate alignment/ambition/realization/disposition dimensions and explicit
-relationships, using the conceptual model in
+separate alignment/ambition/horizon/realization/disposition dimensions and
+explicit relationships, using the conceptual model in
 [`semantic-architecture/product-possibility-ontology.md`](semantic-architecture/product-possibility-ontology.md).
-For an entry that originates here, this file stays the record of origin; the
-library cites it and does not replace it. Neither file sets priority.
+For an entry that originates here, this file governs its own historical record;
+the library cites it and does not replace it. Current product commitments are
+governed by the latest applicable accepted authority (accepted ADRs, product
+strategy, ratified owner decisions). Neither file sets priority.
 
 ## 1. Purpose
 

@@ -401,7 +401,7 @@ A quality dimension such as reliability, usability, portability, observability, 
 
 ### ProductPossibility
 
-A retained representation of a potential future product state, capability, product change, or strategic direction, together with its value hypothesis, assumptions, relationships, and historical disposition. It implies no feasibility, endorsement, implementation, or authorization, and it is not a Strategic Frontier item or backlog entry. Its statements are Layer-4 claims (its value is usually a Hypothesis). Dimensions, identity, history, and reconsideration are defined in [`product-possibility-ontology.md`](product-possibility-ontology.md).
+A retained representation of a potential future product state, capability, product change, or strategic direction, together with its value hypothesis, assumptions, relationships, and historical disposition. It implies no feasibility, endorsement, implementation, or authorization, and it is not a Strategic Frontier item or backlog entry. It is distinct from the ProductCapability that may realize it, from a construction path that may advance it, and from an evidence prerequisite (an Assumption or Uncertainty) it may depend on. Its statements are Layer-4 claims (its value is usually a Hypothesis). Dimensions, identity, history, and reconsideration are defined in [`product-possibility-ontology.md`](product-possibility-ontology.md).
 
 ### Product relations
 

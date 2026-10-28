@@ -9,7 +9,8 @@
 > - Relation names: the conceptual dictionary uses camelCase (`potentiallyEnabledBy`, `alternativeTo`, ...), like the existing Level-2 relations. The plan's snake_case names denote the same relations; snake_case stays reserved for predicates `knowledge.py` accepts.
 > - Epistemic status: documentary claims use the Level-2 statuses in `relations-and-epistemics.md`; typed records use the executable statuses, as section 3.2.D intends.
 > - "Opportunity" exists as an executable claim kind, not as an `ontology.md` concept; the conceptual model says so rather than adding it.
-> - The reservoir's lifecycle labels in `docs/strategic-candidate-directions.md` are read into the five dimensions (conceptual model, section 4.7), not replaced.
+> - The reservoir's lifecycle labels in `docs/strategic-candidate-directions.md` are read into the dimensions (conceptual model, section 4.8), not replaced.
+> - Owner reconciliation before merge (2026-10-28): ambition and horizon are separate dimensions (six in total); relation endpoints follow `ontology.md`, so a possibility is distinct from its realized capability and construction paths and evidence prerequisites are not possibilities; observed implementation evidence is kept apart from inferred realization judgments; an originating document governs its own historical record while the latest applicable accepted authority governs current commitments; counterfactual exploration needs no Level-4 review unless a thesis commitment becomes decision-changing; `NOT_IMPLEMENTED` needs a completeness basis.
 > - For PR 4, `skills/strategic-repository-analysis/SKILL.md` section 1B already recalls goals, decisions and relationships before path comparison.
 
 # Product Possibility Ontology & Idea Library v1
