@@ -323,6 +323,15 @@ Use the existing `construction-path-synthesis-v1.md` rules for path
 distinctness, hypothesis admission, orthogonality challenge, comparison, and
 anti-backlog discipline.
 
+**Architectural basis (optional).** When paths differ mainly by an architectural
+choice with genuine alternatives, and that choice could change the path
+comparison, reuse an existing `architectural_synthesis` for it or produce one
+through the Steward's architecture-exploration procedure. Cite it with
+`architecture_synthesis_refs`, and each path's `architecture_option_refs` and
+`possibility_refs`. A synthesis's provisional preference is an input to path
+comparison, not a selected path, and an architecture option is not a frontier
+candidate. Skip this when the paths do not turn on such a choice.
+
 Breadth does not require generating construction paths for every candidate.
 
 ## 8. Comparative selection

@@ -22,6 +22,7 @@ Identify governing user/product intent, non-goals, current engineering scope and
 - `why --subject DECISION_ID` or `explain --subject CLAIM_ID` for known rationale. When `context-for` returns `context.alternatives`, inspect the cited historical options and their original decisions before inventing new variants. No linked alternative means NOT ASSESSED, **not** that the architecture has no alternatives.
 - `contradictions` for competing records, `term` for disputed vocabulary, and `impact` only for candidate declared-edge effects, not proved consequences.
 - `search --term poss:` and `explain --subject poss:...` for retained product possibilities whose proposed future touches this decision; their disposition history and `revisit_when` say why each was selected, declined or deferred.
+- `search --term arch:` and `explain` on matching options for an earlier comparison of the same choice; follow their `analysis_ref` to the `architectural_synthesis`. Its declined options and reconsideration conditions are where to start, not a verdict.
 - `orientation-summary` if the system boundary itself is unclear; do not treat it as a complete architecture inventory.
 
 Example with existing commands (paths are illustrative):
@@ -60,6 +61,8 @@ Compare material finalists qualitatively against goal fitness, constraints, owne
 
 Ask which original source or normal-use feedback could **change** the preferred choice. Inspect that smallest missing source where worth the cost. A valid graph edge, test-file existence, validator pass or CI check alone cannot establish design correctness or product benefit. Prefer a useful reversible build over a redundant experiment where evidence and authority allow it; do not prescribe experiments merely because alternatives exist.
 
+**Consequences of a provisional preference (optional).** Follow its downstream effects (what changes directly, dependent consumers, later capabilities, new constraints, futures made harder, new possibilities) only while the next layer could change the choice; then stop and say why. Keep each effect conditional, with its assumptions apart from observed premises. "A may cause B" and "B may enable C" do not prove that A enables C. Feed the result back: reaffirm, revise or reopen the comparison. An observed premise that changes where an option has value is the usual reason to revise.
+
 ## 5. Adversarial challenge
 
 For a consequential preferred option, search for:
@@ -80,7 +83,7 @@ Return the smallest decision packet: user outcome, genuinely different options, 
 
 When a later session, another agent or the owner will need to know why one structure was preferred, record the comparison as an `architectural_synthesis` artifact from [the template](architectural-synthesis-template.md) and check it with `python scripts/validate-output.py architectural_synthesis <path>`. It holds two or more options with proposed transitions, assumptions and conditional consequences, an attributed qualitative comparison, and either a `PROVISIONAL` preference or none with a reason. A preference there is not a selection or decision. Otherwise the task report is enough.
 
-If using the existing `architectural-review` Skill downstream, honor its **separate** input contract: a current `repository_sensemaking_brief` and a concrete `proposed_direction`. That Skill evaluates the inherited proposal and does not independently re-diagnose the brief.
+If using the existing `architectural-review` Skill downstream, honor its **separate** input contract: a current `repository_sensemaking_brief` and a concrete `proposed_direction`. That Skill evaluates the inherited proposal and does not independently re-diagnose the brief. To have a provisional preference reviewed, restate it as the `proposed_direction` and cite its synthesis, so the review can see which alternatives were already compared.
 
 Report original source checks, decision-relevant gaps affecting the current result, and remaining uncertainty in the task output. When a query receipt is used, also log actual queries, source checks and qualifying misses there under `RECALL`. On consequential subsequent evidence, apply `RECONCILE` with CONFIRM / REVISE / SUPERSEDE / ADD / CONTEST / NO_MODEL_CHANGE. Persist a chosen decision and useful rejected alternatives only when source-reviewed decision authority exists; proposed alternatives remain attributed hypotheses. A materially new or revised product possibility, distinguished from restatements of stored ones, may be retained as a hypothetical `poss:` record (knowledge contract, "Product possibility records"). Do not make a new database, duplicate full query payloads, or pretend that an agent's generated options were accepted by the owner.
 
