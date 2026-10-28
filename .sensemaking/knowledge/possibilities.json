@@ -845,7 +845,7 @@
     {
       "id": "poss:target-repository-discovery-memory",
       "kind": "opportunity",
-      "statement": "When the portable using-sensemaking Skill performs repository-only discovery in a target repository with authority to write knowledge, it retains the compared candidate responsibilities (selected and declined, with reasons and revisit_when) as possibility records for later discovery.",
+      "statement": "Later repository-only discovery in a target repository recovers what earlier discovery there compared and why, because sessions holding knowledge-edit authority retained consequential candidates by kind: product possibilities as poss: records, architecture options as arch: records, and engineering alternatives in decision history or reports.",
       "epistemic_status": "hypothetical",
       "authority_kind": "hypothesis",
       "authority_ref": "docs/idea-library.md",
@@ -880,7 +880,7 @@
           "realization": {
             "value": "IMPLEMENTED_BASELINE",
             "establishment": "inferred",
-            "basis": "Since plan PR H the portable loop's repository-only discovery entry tells a session holding knowledge-edit and commit authority to retain each reconsiderable declined candidate as a hypothetical poss: record, and every discovery to read retained ones before comparing. The selected candidate is recorded by the work itself. Guidance only: no target-repository session has used it, so it is not evidence that agents follow it.",
+            "basis": "The portable loop's repository-only discovery entry tells every discovery to read retained poss: and arch: records before comparing, and a session holding knowledge-edit and commit authority to classify declined candidates before retaining them (engineering alternatives stay in reports or decision history; architecture options as arch:; product futures as poss:). Engineering alternatives persist only where the report or a PR decision note persists. Guidance only until a target-repository session uses it.",
             "observation_ref": "skills/using-sensemaking/references/portable-construction-loop-v1.md",
             "history": [
               {
@@ -899,6 +899,11 @@
                 "date": "2026-10-28",
                 "analysis_ref": "artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
                 "result": "REAFFIRM at construction: both observed premises still hold, ADR 0032 is still PROPOSED, and no reconsideration condition has fired. Built as guidance in plan PR H."
+              },
+              {
+                "date": "2026-10-28",
+                "assessed_ref": "d9ad4c8d182ff612addbd6e08bcb2cddc3697385",
+                "result": "REVISE (taxonomy): plan PR H's guidance turned declined engineering candidates into poss: records; corrected to classify before retention. No poss: record had been created under the old wording."
               }
             ]
           }
@@ -921,7 +926,14 @@
         ],
         "assessed_ref": "7858c9eb847cee68449a4153c98f35f016025db7",
         "value_hypothesis": "Fewer repeated discoveries and less recency anchoring in target repositories; possibility memory gains value outside this repository's own knowledge plane.",
-        "revisit_when": "An independent discovery session in a target repository holds knowledge-edit authority (first real use), or ADR 0032 is accepted with a candidate field."
+        "revisit_when": "An independent discovery session in a target repository holds knowledge-edit authority (first real use), or ADR 0032 is accepted with a candidate field.",
+        "statement_history": [
+          {
+            "statement": "When the portable using-sensemaking Skill performs repository-only discovery in a target repository with authority to write knowledge, it retains the compared candidate responsibilities (selected and declined, with reasons and revisit_when) as possibility records for later discovery.",
+            "until": "2026-10-28",
+            "reason": "REVISE: the original statement made every compared candidate responsibility a possibility record. Declined engineering responsibilities are engineering alternatives, not product futures; candidates are now classified before retention."
+          }
+        ]
       }
     },
     {

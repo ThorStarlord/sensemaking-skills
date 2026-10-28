@@ -78,21 +78,27 @@ read-only investigation, proportionate to what could change the choice:
 - Compare credible, materially distinct responses (including defer/no change
   when supported) by useful retained outcome, evidence, opportunity cost and
   authority. No fixed candidate count or mandatory strategic reopening. If the
-  repository keeps `poss:` records in `.sensemaking/knowledge/`, read the ones
-  that touch this area first: say which candidates restate a retained one, and
-  whether a declined one's `revisit_when` now holds.
+  repository keeps `poss:` or `arch:` records in `.sensemaking/knowledge/`,
+  read the ones that touch this area first: say which candidates restate a
+  retained one, and whether a declined one's `revisit_when` now holds.
 - Select one **concrete next responsibility**: the behavior to add or correct,
   affected source area, first useful outcome, reason to prefer it and material
   uncertainty. If evidence does not warrant a build, name the specific missing
   evidence or owner choice, a worthwhile next inquiry if available, and the
   scope actually checked. Do not imply that an unexamined repository is done.
-- Keep the comparison. The report names the declined candidates and why. When
-  the session also holds knowledge-edit and commit authority in this
-  repository, retain each declined candidate that a later session could
-  plausibly reconsider as a hypothetical `poss:` record (Repository Semantic
-  Steward knowledge contract, "Product possibility records"), with its reason,
-  `revisit_when` and the sources that decided it. Without that authority the
-  report is the record; do not write knowledge just to preserve candidates.
+- Keep the comparison. The report names the declined candidates and why.
+  Classify a candidate before retaining it anywhere else. Most are
+  **engineering alternatives** (an implementation approach, repair, refactor or
+  responsibility): they stay in the report, PR decision note or decision
+  history. A coherent structural alternative is an **architecture option**
+  (`arch:` record, when material). A trajectory is a **construction path** and
+  stays in its strategic analysis. Only a **product possibility**, a potential
+  future product state, capability, change or direction, becomes a `poss:`
+  record; a declined responsibility qualifies only when you can state the
+  product future it points to apart from the task. Write records (Repository
+  Semantic Steward knowledge contract) only when the session also holds
+  knowledge-edit and commit authority in this repository, with the reason,
+  `revisit_when` and deciding sources; otherwise the report is the record.
 
 Use focused inspection, `repo-sensemaker` or strategic analysis only if it
 could change the choice. A full Brief, ontology or owner-selected feature is

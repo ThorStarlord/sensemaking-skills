@@ -34,10 +34,14 @@ retained != feasible != endorsed != implemented != authorized
 
 A possibility may sit at any product level of the [product-change taxonomy](product-change-taxonomy.md) (need, capability, feature, change, strategic direction). Implemented baselines stay legitimate possibilities, but the possibility and what realizes it are different entities: the possibility preserves the original proposal and its history, and the realized ProductCapability, ProductChange or RepositoryElement is what exists. Link them with `realizedBy`; never let one identifier stand for both (CQ-081).
 
-Two neighbouring things are not possibilities:
+Neighbouring things that are not possibilities:
 
+- An **engineering alternative** (a candidate implementation approach, local repair, refactoring, or responsibility weighed during engineering work, including the ones discovery declines) is a way of doing work, not a product future. It stays in the task report, the PR decision note or the decision history; when a reviewed `decision` records the choice, a useful rejected alternative may be an `alternative` claim linked to it.
+- An **architecture option** (a coherent proposed software structure) is an ArchitectureOption ([prospective reasoning ontology](prospective-reasoning-ontology.md), section 3), retained as an `arch:` record when material, and compared in an `architectural_synthesis`. It may propose to realize a possibility; it is not one.
 - A **construction path** (for example PATH-1 or PATH-2 of a strategic analysis) is a way of advancing toward a possibility. It keeps its identity, comparison and disposition in the analysis that defined it. The library may point to it from the possibility it would advance.
 - An **evidence prerequisite** (for example evidence that separate sessions reuse retained knowledge) is an Assumption or Uncertainty. A possibility records it as an assumption or in `revisit_when`; it is never the object of `potentiallyEnabledBy`, which takes a capability or another possibility.
+
+**Classify before retaining.** When work produces candidates worth keeping, decide what each one is before choosing where it goes; the kind decides the home, not the wish to keep it. A declined engineering responsibility becomes a ProductPossibility only through explicit reasoning: state the product future it points to (a state, capability, change or direction users or the product would have) separately from the task, check it against stored possibilities as restated, revised or new, and record the episode as its origin. Most declined responsibilities point to no new product future and stay engineering alternatives.
 
 ## 3. Relationship to existing concepts
 
