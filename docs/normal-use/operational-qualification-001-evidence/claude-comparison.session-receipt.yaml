@@ -1,0 +1,88 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-10-29-multi-student-coach
+state: final
+created_at: "2026-10-29T09:05:00Z"
+updated_at: "2026-10-29T09:26:00Z"
+target_repository: thorstarlord/chess-mentor-engine
+source_identity:
+  start_ref: 45d0cae3b8cafbea9517e2c6da99c53a59e85851
+  end_ref: 45d0cae3b8cafbea9517e2c6da99c53a59e85851
+  worktree_clean_at_end: true
+skill_identity:
+  load_mode: harness_discovered
+  sensemaking_source_ref: null
+goal:
+  statement: Should CME support a coach reviewing several students' learner hypotheses and progress and assigning targeted practice; what it requires of architecture and authority; which decisions bear on it; warranted next step. No product implementation changes.
+  source: owner_message
+  source_ref: null
+delegation:
+  granted: [read, local_write, run_local_commands]
+  withheld: [commit, push, open_pr, merge, release, knowledge_edit, tracker_write]
+continuity:
+  resumes: null
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: focused reasoning on one proposed product direction (coach-mediated multi-student use)
+    capability: using-sensemaking (inline; no specialist dispatched)
+    status: completed
+    reason: Repository answered the architecture/authority questions by inspection; no bootstrap warranted for a focused question.
+    artifact_refs: [STATUS.md, docs/product/product-discovery.md, docs/decisions/0008-training-intervention-registry-contract.md]
+    validation: []
+findings:
+  - id: F-1
+    statement: Storage already partitions every artifact by participant_id with scope-checked reads; one local operator can already hold several students. No cross-participant read model or roster view exists.
+    epistemic_status: OBSERVED
+    evidence_refs: [src/chess_mentor_engine/storage/store.py, docs/architecture/batch-mentor-queue.md]
+    disposition: open
+  - id: F-2
+    statement: Coach-assigned practice has no authority home. M9 selection is a deterministic rule that fails closed; free-form/model selection was rejected. Human actors exist only for content authoring and mapping, not selection.
+    epistemic_status: OBSERVED
+    evidence_refs: [docs/decisions/0008-training-intervention-registry-contract.md, src/chess_mentor_engine/training/model.py]
+    disposition: open
+  - id: F-3
+    statement: Coach judgment on a hypothesis is a fourth evidence kind (expert assessment), distinct from chess truth, participant evidence and M7C inference. It must not mutate M7C; M36/M44 are read-only.
+    epistemic_status: DERIVED
+    evidence_refs: [CONTEXT.md, docs/product/chess-mentor-engine-repository-build-plan.md]
+    disposition: open
+  - id: F-4
+    statement: Design customer is the individual 1400-1800 player; the human coach is listed as a competing category. A coach-as-customer shifts segment and buyer and is an owner/thesis decision.
+    epistemic_status: OBSERVED
+    evidence_refs: [docs/product/product-discovery.md, docs/product/product-definition.md]
+    disposition: open
+  - id: F-5
+    statement: Phase gate requires demonstrated need from real local use; no post-PR-98 use observations are recorded; FPV pilots 001/002 Mixed, 003/004 designed but not executed. Multi-tenancy, hosted auth and privacy are listed as external authority.
+    epistemic_status: OBSERVED
+    evidence_refs: [STATUS.md, docs/product/repository-build-status.md, docs/research/first-product-validation/pilots/FPV-PILOT-001/result.md]
+    disposition: open
+open_questions:
+  - id: Q-1
+    question: Is a coach managing several students an intended customer or channel for CME, or only an observation instrument for the single-player thesis?
+    source: owner_intent
+    blocking: true
+    options:
+      - option: Coach as observation operator only
+        consequence: No new authority layer; coach runs existing per-student local flows; record friction as post-V1 observation evidence.
+      - option: Coach as product segment or channel
+        consequence: Reopens product thesis and segment; requires coach-assessment and coach-assignment authority layers, consent model, and an ADR before any build.
+      - option: Decline for now
+        consequence: Keep the single-player thesis; record the request as external evidence only.
+    durable_ref: null
+  - id: Q-2
+    question: Does a coach operating the existing CLI for 2-3 students hit a demonstrated bottleneck (roster view, assignment, consent), or does per-participant use suffice?
+    source: empirical
+    blocking: false
+    options: []
+    durable_ref: null
+stop:
+  disposition: OWNER_DECISION_REQUIRED
+  reason: Architecture and authority implications are established from source; whether to pursue is a segment/thesis choice reserved to the owner, and the phase gate requires real-use evidence first.
+next:
+  warranted_responsibility: Owner answers Q-1; if not declined, run a coach-operated local observation round over 2-3 students with existing tooling, then reconcile the bottleneck before any ADR or build.
+  blocked_on: [Q-1]
+persistence: working_tree_only
+claim_ceiling: Does not establish coach demand, usefulness, learning effect, privacy/consent adequacy, or any authorization to build a coach role, roster view or assignment authority.
+action_authorized_by_receipt: false
+immutable: true

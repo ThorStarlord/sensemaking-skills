@@ -1,0 +1,37 @@
+{
+  "record": "Claude Code cloud pre-registered pair, recovered after interruption",
+  "launch": {
+    "created_utc": "2026-10-29T00:11:56Z",
+    "prompt": "Apply `using-sensemaking` to this repository. (exact pre-registered question)",
+    "model": "claude-opus-5-5",
+    "permission_mode": "auto"
+  },
+  "returning": {
+    "session_id": "session_01TzBLEGbGdJZpbi5FKDzwJ8",
+    "source": "ThorStarlord/Chess-Mentor-Engine @ agent-skills-a (0c439aa + project skills 055f96f)",
+    "retained_knowledge": "present (.sensemaking/ from CME 0c439aa)",
+    "interruption": "api_error usage_limit_reached at 2026-10-29T00:12:57Z (5-hour limit)",
+    "continuation": "2026-10-29T09:24:05Z neutral message: previous turn cut off by usage limit; continue same task",
+    "completed": "2026-10-29T09:25:43Z",
+    "outward_actions": [
+      "receipt committed (3edf26e) and pushed to agent-skills-a",
+      "CME PR #105 opened by the session (bundles skill commit 055f96f); not merged"
+    ],
+    "evidence": ["claude-returning.events.jsonl.gz", "claude-returning.final.md", "claude-returning.session-receipt.yaml"]
+  },
+  "comparison": {
+    "session_id": "session_01TzBLEKZWnxKPdNBhFXxcYY",
+    "source": "ThorStarlord/Chess-Mentor-Engine @ agent-skills-b (86866634 + project skills 45d0cae); no .sensemaking/",
+    "interruption": "api_error usage_limit_reached at 2026-10-29T00:12:54Z (5-hour limit)",
+    "continuation": "2026-10-29T09:24:05Z identical neutral message",
+    "completed": "2026-10-29T09:25:12Z",
+    "outward_actions": ["receipt written to the working tree only; not committed, pushed or opened as PR"],
+    "evidence": ["claude-comparison.events.jsonl.gz", "claude-comparison.final.md", "claude-comparison.session-receipt.yaml"]
+  },
+  "matched_conditions_verified": {
+    "product_source_identical_outside_sensemaking": "git diff 86866634..0c439aa -- ':!.sensemaking' is empty",
+    "project_skill_tree_identical": "git rev-parse 055f96f:.claude == 45d0cae:.claude (6372188965292d848e36c5e3e7b30fb13f1d83fd)",
+    "entrypoint_sha256_prefix": "78dab856311d4c1c (using-sensemaking/SKILL.md)"
+  },
+  "transcript_capture": "Assembled from list_events pages (kinds user, assistant, result). system, progress and stream events were not captured."
+}
