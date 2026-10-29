@@ -1,0 +1,50 @@
+artifact_id: semantic_query_receipt
+schema_version: 1
+session_ref: 2026-10-28-qualification-continuation
+state: final
+created_at: "2026-10-29T00:42:17Z"
+updated_at: "2026-10-29T09:25:00Z"
+target_repository: ThorStarlord/Chess-Mentor-Engine
+modes: [RECALL]
+decision: Verify that the reviewed first-use knowledge is valid and reachable by an independent future session; assess the actual limits of path recall.
+cli_identity:
+  sensemaking_source_ref: 99da2ba18b6f6fc5af84a5d353bbe612f89694b5
+  invocation_prefix: python -m sensemaking_skills.cli (PYTHONPATH points to pinned source)
+  version_output: 1.0.0rc5.dev0
+index:
+  indexed_ref: 0c439aab8d098a2184d92d0e1e25b71b72482b3c
+  current_head: 0c439aab8d098a2184d92d0e1e25b71b72482b3c
+  worktree_clean: true
+  uncommitted_changes_not_indexed: false
+queries:
+  - {id: QY-1, operation: proposal-check, terms: [], subject: .sensemaking/knowledge/domain.json, expect_kinds: [], target_ref: 0c439aab8d098a2184d92d0e1e25b71b72482b3c, result: {hit_count: 0, claim_ids: [], truncated: false, not_assessed_kinds: []}, outcome: NOT_APPLICABLE, decision_relevant: true}
+  - {id: QY-2, operation: proposal-check, terms: [], subject: .sensemaking/knowledge/architecture.json, expect_kinds: [], target_ref: 0c439aab8d098a2184d92d0e1e25b71b72482b3c, result: {hit_count: 0, claim_ids: [], truncated: false, not_assessed_kinds: []}, outcome: NOT_APPLICABLE, decision_relevant: true}
+  - {id: QY-3, operation: proposal-check, terms: [], subject: .sensemaking/knowledge/observations-and-possibilities.json, expect_kinds: [], target_ref: 0c439aab8d098a2184d92d0e1e25b71b72482b3c, result: {hit_count: 0, claim_ids: [], truncated: false, not_assessed_kinds: []}, outcome: NOT_APPLICABLE, decision_relevant: true}
+  - {id: QY-4, operation: build, terms: [], subject: null, expect_kinds: [], target_ref: 0c439aab8d098a2184d92d0e1e25b71b72482b3c, result: {hit_count: 0, claim_ids: [], truncated: false, not_assessed_kinds: []}, outcome: NOT_APPLICABLE, decision_relevant: true}
+  - {id: QY-5, operation: context-for, terms: [], subject: src/chess_mentor_engine/local_tutor_cli.py, expect_kinds: [], target_ref: 0c439aab8d098a2184d92d0e1e25b71b72482b3c, result: {hit_count: 4, claim_ids: [comp:local-tutor, rule:proposal-layers-no-mutation, rule:stdlib-only-runtime, layer:composition-observation], truncated: false, not_assessed_kinds: []}, outcome: PARTIAL, decision_relevant: true}
+  - {id: QY-6, operation: context-for, terms: [], subject: src/chess_mentor_engine/learner_intelligence/next_session.py, expect_kinds: [], target_ref: 0c439aab8d098a2184d92d0e1e25b71b72482b3c, result: {hit_count: 4, claim_ids: [comp:learner-intelligence, rule:proposal-layers-no-mutation, rule:stdlib-only-runtime, layer:learner-intelligence], truncated: false, not_assessed_kinds: []}, outcome: PARTIAL, decision_relevant: true}
+  - {id: QY-7, operation: context-for, terms: [], subject: src/chess_mentor_engine/coaching/model.py, expect_kinds: [], target_ref: 0c439aab8d098a2184d92d0e1e25b71b72482b3c, result: {hit_count: 4, claim_ids: [comp:coaching-review, rule:model-language-only, rule:stdlib-only-runtime, layer:feedback-review], truncated: false, not_assessed_kinds: []}, outcome: PARTIAL, decision_relevant: true}
+  - {id: QY-8, operation: explain, terms: [], subject: 'poss:coach-mediated-product', expect_kinds: [], target_ref: 0c439aab8d098a2184d92d0e1e25b71b72482b3c, result: {hit_count: 1, claim_ids: ['poss:coach-mediated-product'], truncated: false, not_assessed_kinds: []}, outcome: PARTIAL, decision_relevant: true}
+source_checks:
+  - claim_id: obs:cold-start-wall
+    sources: [src/chess_mentor_engine/learner_intelligence/next_session.py:539-543]
+    result: SUPPORTED
+  - claim_id: rule:proposal-layers-no-mutation
+    sources: [src/chess_mentor_engine/learner_intelligence/next_session.py:594-595]
+    result: SUPPORTED
+  - claim_id: obs:learner-state-not-persisted
+    sources: [docs/runbooks/m11-longitudinal-learner-state.md:5, src/chess_mentor_engine/storage/store.py:195-245]
+    result: NOT_CHECKED
+  - claim_id: poss:coach-mediated-product
+    sources: [docs/product/product-discovery.md:264]
+    result: SUPPORTED
+misses:
+  - {id: M-1, query_ref: QY-5, needed_for: Path-based decision and alternative context is not linked; ownership and rules are reachable., kind: NOT_ASSESSED, resolved_by: Original product decisions and code inspected separately; partial context is disclosed., follow_up: NO_MODEL_CHANGE, proposal_ref: null}
+  - {id: M-2, query_ref: QY-6, needed_for: Path-based decision and alternative context is not linked; ownership and rules are reachable., kind: NOT_ASSESSED, resolved_by: Original product decisions and code inspected separately; partial context is disclosed., follow_up: NO_MODEL_CHANGE, proposal_ref: null}
+  - {id: M-3, query_ref: QY-7, needed_for: Path-based decision and alternative context is not linked; ownership and rules are reachable., kind: NOT_ASSESSED, resolved_by: Original product decisions and code inspected separately; partial context is disclosed., follow_up: NO_MODEL_CHANGE, proposal_ref: null}
+  - {id: M-4, query_ref: QY-8, needed_for: The retained coach possibility has no explicit graph relationships., kind: NOT_ASSESSED, resolved_by: Inspect its authored provenance and original discovery document; do not claim a complete possibility neighborhood., follow_up: NO_MODEL_CHANGE, proposal_ref: null}
+reconcile: []
+persistence: committed
+action_authorized: false
+semantic_truth_established: false
+immutable: true
