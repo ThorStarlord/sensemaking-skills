@@ -527,6 +527,19 @@ no unit or synthetic evidence tests were run.
 
 ## Current next step
 
+**2026-10-29 opt-in decision observability:** PRs #652-#654 add a
+maximum-transparency contract, controller trigger, receipt guidance and an
+illustrative audit. Ordinary use remains proportional; the agent owns selection,
+and self-reported rationale is not proof of execution or causation. Authentic
+qualification is **NOT RUN**: the current host has ambient GitHub write
+credentials and has not demonstrated participant credential isolation; its
+WSL2/container route could not start. The preflight and open design are in
+[Decision Observability Qualification 001](docs/normal-use/decision-observability-qualification-001.md).
+Establish an appropriately isolated, observable environment and freeze the
+actual missions and comparison before evidence-bearing sessions. Behavioral
+refinement remains NOT ASSESSED, not NO_CHANGE. No new router or receipt schema
+is introduced; no independent use or comparative benefit is claimed.
+
 **ACTIVE CONSTRUCTION — ONTOLOGY-FIRST ADAPTIVE SENSEMAKING (ADR 0034), THEN PATH-1 AS IT SERVES THAT IDENTITY.**
 
 **2026-10-28 Level-4 revision (ADR 0034):** the owner selected ontology-first adaptive Sensemaking and supplied an eight-PR implementation plan: product identity, the `using-sensemaking` controller, ontology-first steward bootstrap, possibility coverage before convergence, prospective composition, the loop as internal continuation, implementation decoupling and onboarding, and an authentic-use assessment. Under `docs/product-thesis-revision.md` section 12, the PATH-1 next step is **SUSPECT**: it continues only where it serves the revised identity, and this program comes first. Downstream reconciliation classifications are in the ADR.
