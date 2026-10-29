@@ -1,0 +1,47 @@
+artifact_id: semantic_query_receipt
+schema_version: 1
+session_ref: 2026-10-29-artifact-local-assumptions
+state: final
+created_at: "2026-10-29T20:04:18Z"
+updated_at: "2026-10-29T20:04:18Z"
+target_repository: ThorStarlord/sensemaking-skills
+modes: [RECONCILE]
+decision: Preserve the synthesis contract's local-assumption boundary in reviewed architectural knowledge.
+cli_identity:
+  sensemaking_source_ref: 2de60ea72a28ee43c682a2e40cedf29496fee7d3
+  invocation_prefix: "PYTHONPATH=src python -m sensemaking_skills.cli"
+  version_output: null
+index:
+  indexed_ref: null
+  current_head: 2de60ea72a28ee43c682a2e40cedf29496fee7d3
+  worktree_clean: false
+  uncommitted_changes_not_indexed: true
+queries:
+  - id: QY-1
+    operation: proposal-check
+    terms: []
+    subject: .sensemaking/knowledge/architecture.json
+    expect_kinds: []
+    target_ref: null
+    result:
+      hit_count: 0
+      claim_ids: []
+      truncated: false
+      not_assessed_kinds: []
+    outcome: NOT_APPLICABLE
+    decision_relevant: true
+source_checks:
+  - claim_id: contract:architectural-synthesis
+    sources: [scripts/validate-architectural-synthesis.py, skills/repository-semantic-steward/references/architectural-synthesis-template.md, skills/workflow-planner/references/artifact-contracts.yaml]
+    result: SUPPORTED
+misses: []
+reconcile:
+  - claim_id: contract:architectural-synthesis
+    disposition: REVISE
+    applied: true
+    proposal_ref: .sensemaking/knowledge/architecture.json
+    proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID
+persistence: committed
+action_authorized: false
+semantic_truth_established: false
+immutable: true

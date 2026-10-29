@@ -496,7 +496,8 @@
       ],
       "epistemic_status": "declared",
       "attributes": {
-        "artifact_id": "architectural_synthesis"
+        "artifact_id": "architectural_synthesis",
+        "local_assumptions": "Optional artifact-local hyp: definitions require a statement and hypothetical status; target-knowledge collisions and incomplete scans are disclosed by reference resolution, not treated as semantic truth or authority."
       }
     },
     {

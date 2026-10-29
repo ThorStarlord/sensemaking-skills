@@ -10,6 +10,8 @@ and file paths) are checked for shape only. --resolve-references reports, for
 each one, whether the artifact defines it, the repository's reviewed knowledge
 records it, or the path exists. The report never changes validity: retained
 records are optional, and presence is not semantic correctness or currentness.
+Artifact-local assumptions are hypothetical; collisions with scanned knowledge
+and incomplete scans are reported rather than resolved to either meaning.
 """
 
 from __future__ import annotations
@@ -30,6 +32,7 @@ SCHEMA_VERSIONS = {1}
 OPTION_ID = re.compile(r"arch:[a-z0-9][a-z0-9._-]*\Z")
 POSSIBILITY_ID = re.compile(r"poss:[a-z0-9][a-z0-9._-]*\Z")
 CONSEQUENCE_ID = re.compile(r"conseq:[a-z0-9][a-z0-9._-]*\Z")
+ASSUMPTION_ID = re.compile(r"hyp:[a-z0-9][a-z0-9._-]*\Z")
 KNOWLEDGE_ID = re.compile(r"[a-z][a-z_]*:[A-Za-z0-9][A-Za-z0-9._-]*\Z")
 LINE_SUFFIX = re.compile(r":(?:L?\d+(?:-L?\d+)?)\Z")
 
@@ -112,6 +115,37 @@ def _extract(content: str) -> dict[str, Any] | None:
         if isinstance(value, dict) and value.get("artifact_id") == ARTIFACT_ID:
             return value
     return None
+
+
+def _validate_local_assumptions(data: dict[str, Any], errors: list[dict[str, str]]) -> set[str]:
+    """Validate artifact-local hypotheses without asserting their truth."""
+    if "local_assumptions" not in data:
+        return set()
+    entries = data["local_assumptions"]
+    if not isinstance(entries, list):
+        errors.append(_error("SYNTHESIS_LOCAL_ASSUMPTIONS_INVALID", "local_assumptions must be a list"))
+        return set()
+    ids: set[str] = set()
+    seen: set[str] = set()
+    for index, entry in enumerate(entries):
+        where = f"local_assumptions[{index}]"
+        if not isinstance(entry, dict):
+            errors.append(_error("SYNTHESIS_LOCAL_ASSUMPTION_INVALID", f"{where} must be a mapping"))
+            continue
+        assumption_id = entry.get("assumption_id")
+        if isinstance(assumption_id, str) and KNOWLEDGE_ID.fullmatch(assumption_id):
+            ids.add(assumption_id)
+        if isinstance(assumption_id, str) and assumption_id in seen:
+            errors.append(_error("SYNTHESIS_LOCAL_ASSUMPTION_ID_DUPLICATE", f"{where}.assumption_id {assumption_id}"))
+        if isinstance(assumption_id, str):
+            seen.add(assumption_id)
+        if not isinstance(assumption_id, str) or not ASSUMPTION_ID.fullmatch(assumption_id):
+            errors.append(_error("SYNTHESIS_LOCAL_ASSUMPTION_ID_INVALID", f"{where}.assumption_id must match hyp:<slug>"))
+        if not _text(entry.get("statement")):
+            errors.append(_error("SYNTHESIS_LOCAL_ASSUMPTION_TEXT_INVALID", f"{where}.statement"))
+        if entry.get("epistemic_status") != "hypothetical":
+            errors.append(_error("SYNTHESIS_LOCAL_ASSUMPTION_STATUS_INVALID", f"{where}.epistemic_status must be hypothetical"))
+    return ids
 
 
 def _validate_options(data: dict[str, Any], errors: list[dict[str, str]]) -> dict[str, dict[str, Any]]:
@@ -365,6 +399,17 @@ def validate(path: Path) -> list[dict[str, str]]:
     if "candidate_responsibility" in data and data["candidate_responsibility"] is not None and not _text(data["candidate_responsibility"]):
         errors.append(_error("SYNTHESIS_TEXT_INVALID", "candidate_responsibility"))
 
+    local_ids = _validate_local_assumptions(data, errors)
+    consequences = data.get("conditional_consequences")
+    if isinstance(consequences, list):
+        for index, consequence in enumerate(consequences):
+            if isinstance(consequence, dict) and isinstance(consequence.get("observed_premise_refs"), list):
+                for ref in consequence["observed_premise_refs"]:
+                    if isinstance(ref, str) and ref in local_ids:
+                        errors.append(_error(
+                            "SYNTHESIS_LOCAL_ASSUMPTION_AS_OBSERVED",
+                            f"conditional_consequences[{index}].observed_premise_refs contains {ref}",
+                        ))
     options = _validate_options(data, errors)
 
     comparison = data.get("option_comparison")
@@ -428,21 +473,38 @@ def _cited_references(data: dict[str, Any]) -> tuple[set[str], set[str], set[str
     return ids, paths, defined
 
 
-def _knowledge_ids(repo_root: Path) -> set[str]:
+def _knowledge_ids(repo_root: Path) -> tuple[set[str], list[str]]:
     """Claim ids the knowledge index would build from this working tree: Git-authored
     JSON records plus one adr:NNNN claim per docs/adr/NNNN-*.md file."""
     found: set[str] = set()
+    errors: list[str] = []
+    if not repo_root.is_dir():
+        return found, [f"repository directory unavailable: {repo_root}"]
     for adr in (repo_root / "docs" / "adr").glob("[0-9][0-9][0-9]*-*.md"):
         found.add("adr:" + adr.name.split("-", 1)[0])
-    for pack in sorted((repo_root / ".sensemaking" / "knowledge").glob("*.json")):
+    knowledge_dir = repo_root / ".sensemaking" / "knowledge"
+    try:
+        packs = sorted(p for p in knowledge_dir.iterdir() if p.name.endswith(".json"))
+    except FileNotFoundError:
+        packs = []
+    except OSError:
+        packs = []
+        errors.append(str(knowledge_dir))
+    for pack in packs:
         try:
             records = json.loads(pack.read_text(encoding="utf-8"))
-        except (OSError, ValueError):
+        except (OSError, ValueError, UnicodeError):
+            errors.append(str(pack))
             continue
-        for claim in records.get("claims", []) if isinstance(records, dict) else []:
+        if not isinstance(records, dict) or not isinstance(records.get("claims"), list):
+            errors.append(str(pack))
+            continue
+        for claim in records["claims"]:
             if isinstance(claim, dict) and isinstance(claim.get("id"), str):
                 found.add(claim["id"])
-    return found
+            else:
+                errors.append(str(pack))
+    return found, sorted(set(errors))
 
 
 def resolve_references(path: Path, repo_root: Path) -> dict[str, Any]:
@@ -453,15 +515,27 @@ def resolve_references(path: Path, repo_root: Path) -> dict[str, Any]:
     if data is None:
         return {"performed": False, "reason": "no machine block"}
     ids, paths, defined = _cited_references(data)
-    recorded = _knowledge_ids(repo_root)
+    recorded, scan_errors = _knowledge_ids(repo_root)
+    local_errors: list[dict[str, str]] = []
+    local_ids = _validate_local_assumptions(data, local_errors)
+    conflicts = local_ids & recorded
+    # Incomplete knowledge or malformed local definitions cannot establish a
+    # unique local identity. Never silently choose between competing meanings.
+    unassessed = local_ids - conflicts if scan_errors or local_errors else set()
+    safe_local_ids = local_ids - conflicts - unassessed
+    defined = (defined - local_ids) | safe_local_ids
     external = ids - defined
     existing = {p for p in paths if (repo_root / LINE_SUFFIX.sub("", p)).is_file()}
     return {
         "performed": True,
         "repo_root": str(repo_root),
         "defined_in_artifact": sorted(ids & defined),
-        "recorded_in_knowledge": sorted(external & recorded),
-        "unresolved_ids": sorted(external - recorded),
+        "recorded_in_knowledge": sorted((external & recorded) - conflicts - unassessed),
+        "unresolved_ids": sorted((external - recorded) | (ids & (conflicts | unassessed))),
+        "conflicting_local_assumption_ids": sorted(conflicts),
+        "unassessed_local_assumption_ids": sorted(unassessed),
+        "local_assumption_errors": local_errors,
+        "knowledge_scan_errors": scan_errors,
         "existing_paths": sorted(existing),
         "missing_paths": sorted(paths - existing),
         "semantic_correctness_checked": False,
@@ -501,8 +575,14 @@ def main() -> int:
         print("PASS")
         print("mechanical representation valid; option quality, preference and authorization remain semantic/external")
     if resolution.get("performed") and not args.json:
+        for ref in resolution["conflicting_local_assumption_ids"]:
+            print(f"CONFLICTING_LOCAL_ASSUMPTION_ID: {ref} (also recorded in reviewed knowledge)")
+        for ref in resolution["unassessed_local_assumption_ids"]:
+            print(f"UNASSESSED_LOCAL_ASSUMPTION_ID: {ref} (local definitions or knowledge scan incomplete)")
+        for item in resolution["knowledge_scan_errors"]:
+            print(f"KNOWLEDGE_SCAN_ERROR: {item}")
         for ref in resolution["unresolved_ids"]:
-            print(f"UNRESOLVED_ID: {ref} (not defined in the artifact or recorded in reviewed knowledge)")
+            print(f"UNRESOLVED_ID: {ref} (missing, conflicting, or not assessed)")
         for ref in resolution["missing_paths"]:
             print(f"MISSING_PATH: {ref}")
     return 1 if errors else 0

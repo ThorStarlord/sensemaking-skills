@@ -588,9 +588,10 @@ artifacts:
       - "provisional_preference is null (state no_preference_reason) or status PROVISIONAL with attribution; it is never a selection or decision, and exactly the preferred option carries comparison_outcome PROVISIONALLY_PREFERRED."
       - "preference_feedback links a conditional consequence (conseq: id cited by an option) to a feedback outcome; outcomes are analysis results, not dispositions."
       - "Optional conditional_consequences type each cited consequence (category benefit/risk/constraint/opportunity/mixed, effect, assumption_refs kept apart from observed_premise_refs, would_change_decision_if); when present, option refs and entries must match one to one. Optional consequence_stop_reason records why depth stopped."
+      - "Optional local_assumptions define unique hyp:<slug> ids with non-empty statements and epistemic_status hypothetical; option and consequence assumption_refs may cite them. They are not observed premises or reviewed knowledge."
       - "Consequences are predictions. Observed effects of a built change belong to steward RECONCILE or change_impact_analysis, never back in the synthesis. No standalone consequence artifact exists: consequences have no authorship, reuse or consumer apart from their synthesis."
       - "Numeric score/weight/rank fields are forbidden; comparison is qualitative and attributed."
-      - "Ids and paths that leave the artifact are shape-checked only; --resolve-references reports which are defined in the artifact, recorded in reviewed knowledge (JSON records and ADR files), existing paths, or unresolved, and never changes validity."
+      - "Ids and paths that leave the artifact are shape-checked only; --resolve-references reports definitions, reviewed knowledge, existing paths, unresolved references and local-assumption identity conflicts or unassessed scans. Collisions are not resolved to either meaning; resolution never changes structural validity or establishes truth."
       - "Reviewed knowledge records for options and consequences remain optional and follow the knowledge contract's prospective reasoning convention."
       - "implementation_authority_established_by_artifact and semantic_truth_established must remain false."
     verification:
