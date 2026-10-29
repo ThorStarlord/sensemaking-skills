@@ -74,6 +74,20 @@ Installing the Skills is the only setup the entrypoint needs. Repository
 configuration through `setup-sensemaking-skills` is optional and never a
 prerequisite for `using-sensemaking`.
 
+## Optional decision transparency
+
+For a detailed audit, ask: "Use `using-sensemaking` on this repository with
+maximum decision transparency; explain consequential Skill selections and
+skips before acting, and distinguish the observed host events from your
+rationale." The agent will explain its choices and reassess specialist results,
+then produce a decision audit with the available evidence and its limitations.
+This is opt-in; ordinary use remains concise and adaptive. Neither an audit nor
+a Skill invocation grants authority to modify or publish repository content.
+See `skills/using-sensemaking/references/decision-observability-v1.md` for the
+contract and `examples/decision-observability-example.md` for an illustrative
+report. Host telemetry varies and self-reported explanations are not proof of
+hidden reasoning or causation.
+
 ## Choose how much Sensemaking you need
 
 You do not need to create a Campaign for every task. The coding agent should use the lightest process that preserves the required engineering invariants.

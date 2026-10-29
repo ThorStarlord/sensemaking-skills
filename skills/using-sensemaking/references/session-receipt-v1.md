@@ -282,6 +282,19 @@ The session receipt is the smallest typed continuation record. Other specialized
 artifacts remain triggered by need. Creating a receipt does not grant authority
 to persist it beyond the checkout.
 
+### Optional decision audit
+
+A maximum-transparency decision audit is a separate human-readable narrative,
+not a new receipt field or ontology record. When a report has legitimately
+been saved in the target repository, reference its existing repository-relative
+path from the relevant responsibility's `artifact_refs`. The pointer must obey
+the same existence, confidentiality and persistence rules as other artifact
+references. Do not cite a session-only output or inaccessible host log as a
+repository file. If an audit or its supporting events exist only in an ephemeral
+workspace or host session, state that limit in the session report. No audit
+pointer changes the receipt schema or grants write, commit or publication
+authority. See `decision-observability-v1.md` for the evidence distinctions.
+
 ## 8. Minimal example (a narrow task)
 
 ```yaml
