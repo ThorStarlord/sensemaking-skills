@@ -81,11 +81,12 @@
       "statement": "Owner decision (2026-10-28, ADR 0034): Sensemaking is an ontology-grounded repository understanding and prospective reasoning system. using-sensemaking is the single public entrypoint and semantic controller; first repository-level engagement establishes domain and architecture knowledge before repository-wide selection; possibility coverage precedes convergence; composition is adaptive; implementation is optional and separately authorized; strategic continuation supports the controller.",
       "authority_kind": "policy",
       "authority_ref": "docs/adr/0034-ontology-first-adaptive-sensemaking.md",
-      "evidence_refs": ["file:docs/adr/0034-ontology-first-adaptive-sensemaking.md", "file:docs/product-strategy.md"],
+      "evidence_refs": ["file:docs/adr/0034-ontology-first-adaptive-sensemaking.md", "file:docs/product-strategy.md", "file:docs/normal-use/operational-qualification-001.md"],
       "epistemic_status": "declared",
       "attributes": {
         "decision_changed": "What a Sensemaking session is for: understanding, exploration, synthesis and a warranted direction are complete outcomes; construction is a downstream choice.",
-        "claim_ceiling": "Owner-selected identity; benefits of ontology-first entry and single-entrypoint composition unproven."
+        "claim_ceiling": "Owner-selected identity; benefits of ontology-first entry and single-entrypoint composition unproven.",
+        "qualification_status": "A fresh returning agent read retained CME records, but both comparison sessions stopped for lack of workspace credits before final answers; consequential reuse remains inconclusive."
       }
     }
   ],
