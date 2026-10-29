@@ -60,7 +60,11 @@ retained observation about missing integrated learner-artifact writers; it
 does not say the generic store cannot persist arbitrary supplied payloads.
 
 An evaluator-only index at the clean local installation commit `7bd62b8`
-contains the same 75 claims and 48 relations. Path queries return:
+contains the same 75 claims and 48 relations. The same three proposal checks,
+index build and four retrieval queries were repeated successfully against the
+durable CME merge `0c439aab8d098a2184d92d0e1e25b71b72482b3c`; the query receipt
+records that reproducible repeat rather than duplicating its identical earlier
+entries. Path queries return:
 
 | Starting file | Reached knowledge |
 | --- | --- |

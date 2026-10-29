@@ -2,8 +2,10 @@
 
 **Source version:** 1.0.0rc5.dev0
 **Release target:** 1.0.0rc5 (development; post-RC4 reduced-scope candidate target)
-**Last updated:** 2026-10-28  
+**Last updated:** 2026-10-29
 **Current phase:** **CONSTRUCTION** during RC5 development. Persistent semantic stewardship S1–S4, PR #558's active-workspace recall/coverage slice and PRs #559–#568 are integrated on `main`. The legacy brief producer (PR #568) and the legacy workflow planner (PATH-1/T2) fail closed. The governing Level-3 analysis, [`SRA-2026-10-23-observation-aa13f40`](artifacts/history/2026-10-23-strategic-repository-analysis.md), selects PATH-1: accrete reviewed product knowledge through genuine engineering responsibilities. The [2026-10-24 reconciliation](artifacts/history/2026-10-24-strategic-reconciliation.md) reaffirmed it without reopening Level 3. Independent S5/S6 qualification remains open for release-stage verification.
+
+- **Ontology-first operational qualification, 2026-10-29:** CME's reviewed knowledge was merged in its PR #104 and validates with Sensemaking #649. A fresh local returning agent independently read retained records, but it and the matched source-only session both stopped when workspace credits ran out, before final answers. Consequential reuse and comparative benefit remain inconclusive; original cloud session transcripts remain unavailable. See the [qualification report](docs/normal-use/operational-qualification-001.md) and its recorded evidence for the actual observation and next step.
 
 - **2026-10-28 owner-selected LEVEL-4 REVISION — ontology-first adaptive Sensemaking:** [ADR 0034](docs/adr/0034-ontology-first-adaptive-sensemaking.md) records the owner's governing decisions. Sensemaking is an ontology-grounded repository understanding and prospective reasoning system; `using-sensemaking` is the single public entrypoint and adaptive controller; first engagement establishes domain and architecture knowledge before repository-wide selection; possibility coverage precedes convergence; implementation is optional and separately authorized; `strategic-sensemaking-loop` becomes internal continuation. ADR 0031's destination and ADR 0029's boundary are unchanged. The owner's eight-PR plan implements it; benefits are unproven.
 
