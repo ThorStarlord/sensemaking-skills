@@ -1,0 +1,69 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-10-29-decision-observability-build
+state: final
+created_at: "2026-10-29T15:52:26Z"
+updated_at: "2026-10-29T15:57:12Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: dad843b24b3d1fc6f734b09ceaa699436f8dd8ff
+  end_ref: 5c5c7d6b83eb2b1a3e063ed68064d4ce95380cbd
+  worktree_clean_at_end: true
+skill_identity:
+  load_mode: manual_explicit_load
+  sensemaking_source_ref: dad843b24b3d1fc6f734b09ceaa699436f8dd8ff
+goal:
+  statement: Implement all requested maximum-transparency decision-auditing tasks, proceed without input, and choose necessary owner decisions.
+  source: owner_message
+  source_ref: null
+delegation:
+  granted: [read, local_write, run_local_commands, commit, push, open_pr, merge, knowledge_edit]
+  withheld: [release, deploy, tracker_write, external_publication]
+continuity:
+  resumes: null
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: Implement opt-in decision observability contract, controller and reporting
+    capability: using-sensemaking
+    status: completed
+    reason: Contract and integration were merged in PRs 652, 653 and 654.
+    artifact_refs: [skills/using-sensemaking/references/decision-observability-v1.md, examples/decision-observability-example.md]
+    validation:
+      - command: python scripts/validate-skill-hygiene.py
+        result: PASS
+  - id: R-2
+    responsibility: Qualify authentic agent-native use and refine from evidence
+    capability: ordinary_coding
+    status: blocked
+    reason: Participant access to ambient GitHub write credentials was not excluded; WSL2 virtualization could not start. No evidence-bearing session was dispatched.
+    artifact_refs: [docs/normal-use/decision-observability-qualification-001.md]
+    validation: []
+findings:
+  - id: F-1
+    statement: The opt-in contract, entrypoint trigger, example and receipt guidance are integrated; their behavioral effectiveness has not been qualified.
+    epistemic_status: OBSERVED
+    evidence_refs: [skills/using-sensemaking/SKILL.md, skills/using-sensemaking/references/decision-observability-v1.md]
+    disposition: no_action
+  - id: F-2
+    statement: Read-only filesystem sandbox availability does not establish that participant access to ambient GitHub write credentials and external mutation is excluded.
+    epistemic_status: DERIVED
+    evidence_refs: [docs/normal-use/decision-observability-qualification-001.md]
+    disposition: handed_off
+open_questions:
+  - id: Q-1
+    question: Can a credential-free, read-only and observable independent agent environment be established for the broad and focused missions and matched baseline?
+    source: external_environment
+    blocking: true
+    durable_ref: docs/normal-use/decision-observability-qualification-001.md
+stop:
+  disposition: EXTERNAL_BLOCKER
+  reason: Authentic qualification requires verified isolation and telemetry; no evidence-bearing run or evidence-guided refinement was performed.
+next:
+  warranted_responsibility: Establish and calibrate the isolated environment, freeze concrete tasks and comparison before evidence, run the broad and focused missions, then refine only from observed deficiencies.
+  blocked_on: [Q-1]
+persistence: committed
+claim_ceiling: Static review and hygiene only; no authentic-use, causal, comparative or long-term benefit claim.
+action_authorized_by_receipt: false
+immutable: true
