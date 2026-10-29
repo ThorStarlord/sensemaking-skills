@@ -193,6 +193,9 @@ def validate_v2_attributes(kind: str | None, predicate: str | None, attrs: Mappi
         paths = attrs["owned_paths"]
         if not isinstance(paths, list) or not paths or any(not _valid_repo_path(x, glob=False) for x in paths) or len(set(paths)) != len(paths):
             raise ValueError(f"component owned_paths must be distinct repository-relative paths: {reference}")
+        directories = [x for x in paths if x.endswith("/")]
+        if directories:
+            raise ValueError(f"component owned_paths lists files, not directories {directories}; list the tracked files: {reference}")
     if kind == "architecture_rule":
         if attrs.get("rule_type") not in RULE_TYPES:
             raise ValueError(f"architecture_rule needs rule_type in {sorted(RULE_TYPES)}: {reference}")
@@ -204,6 +207,8 @@ def validate_v2_attributes(kind: str | None, predicate: str | None, attrs: Mappi
         for item in scope:
             if not is_path_scope(item) or not _valid_repo_path(item, glob=True):
                 raise ValueError(f"applies_to path must be repository-relative: {reference}")
+            if item.endswith("/"):
+                raise ValueError(f"applies_to scope {item!r} matches no file; scope a directory as {item}**: {reference}")
         rule_type = attrs["rule_type"]
         for key in ("allowed_targets", "forbidden_targets"):
             if key in attrs and attrs[key] is not None and (

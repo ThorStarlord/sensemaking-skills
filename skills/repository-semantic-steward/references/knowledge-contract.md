@@ -62,9 +62,20 @@ A target repository's domain ontology (its concepts, states, rules and boundarie
 
 - a domain noun or distinction is a `domain_concept`; confusable terms use `distinct_from` or `synonym_of` (schema_version 2);
 - a user-visible behavior is a `capability` linked to its `component` (with `owned_paths` in v2) by `implemented_by`;
-- a product rule is an `invariant` or `constraint`; a placement, naming or dependency rule is an `architecture_rule` with `rule_type`, `severity` and `applies_to`;
-- states and their transitions are `lifecycle_state` claims linked by `transitions_to`; data movement is `flows_to`; meaningful partitions are `layer` and `bounded_context` with `belongs_to`;
+- a product rule is an `invariant` or `constraint`; a placement, naming, dependency or other path-scoped code rule is an `architecture_rule` with `rule_type`, `severity` and `applies_to`;
+- states and their transitions are `lifecycle_state` claims linked by `transitions_to`; data passed between components is `flows_to`; meaningful partitions are `layer` and `bounded_context` with `belongs_to`;
 - intent is `goal` and `non_goal`; governing choices are `decision` claims cited by `decided_by`.
+
+The version-2 constructs have exact constraints (checked by `knowledge-proposal-check`; source of truth: `semantic_architecture/knowledge.py`):
+
+| Construct | Constraint |
+| --- | --- |
+| any claim or relation | `epistemic_status` is one of `declared`, `observed`, `hypothetical`, `contested`, `superseded`, `invalidated`. An inference across sources is `hypothetical`, not `derived` |
+| `component.owned_paths` | Exact, distinct, tracked repository files; no directories and no globs (list the files). File-level `context-for` matches these paths exactly |
+| `architecture_rule` | `rule_type` is one of `convention`, `dependency_direction`, `forbidden_term`, `naming`, `placement`; `severity` is `warning` or `error`; `applies_to` lists repository paths or globs (scope a directory as `dir/**`; a bare `dir/` matches no file) or is empty with an `applies_to` relation. `dependency_direction` needs `allowed_targets` or `forbidden_targets`; `naming` and `placement` need `pattern`; `forbidden_term` needs `terms`. A path-scoped authority boundary is a `convention`; one without a path scope is an `invariant` or `constraint` |
+| `flows_to` | component -> component, with `attributes.carries` naming a `contract` claim. A progression between domain concepts uses `derived_from` or `references` with `attributes.conceptual_relation` |
+| `belongs_to`, `transitions_to`, `exposes`, `applies_to` | target `layer` or `bounded_context`; `lifecycle_state` -> `lifecycle_state`; `component` -> `contract`; `architecture_rule` -> `component`, `layer` or `bounded_context` |
+| `synonym_of`, `distinct_from`, `relates_to` | two `domain_concept` claims; `relates_to` needs `cardinality` (`1:1`, `1:N`, `N:M`) |
 
 Areas not yet assessed go in the bootstrap coverage report, not in claims. A new type is justified only through [schema evolution](schema-evolution.md).
 
