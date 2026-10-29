@@ -424,26 +424,37 @@ DEPLOY_AUTHORITY = NO
 
 Repository policy still controls whether the transition is actually available.
 
-### Verify the loaded Skill before attribution-sensitive trials
+### Verify Skill identity before attribution-sensitive trials
 
-If you are testing behavior added by a newly integrated Skill revision, verify
-the **actual harness-loaded Skill**, not only the repository source.
+Record three separate identities: the reviewed source revision, the installed
+Skill tree in the intended discovery root, and the instructions actually loaded
+by the host. A matching installation does not prove which Skill the host loaded,
+especially when multiple discovery roots or cached sessions exist.
 
-For file-based harness installations:
-
-```bash
-python scripts/probe_skill_distribution.py --no-write
-```
-
-When explicit replacement is intended:
+For a file-based installation, run the existing drift probe from a reviewed
+source checkout, selecting the actual root and Skill explicitly:
 
 ```bash
-python scripts/probe_skill_distribution.py --sync --no-write
-# or use setup-skills with the correct target/scope and --force
+git rev-parse HEAD
+python scripts/probe_skill_distribution.py --repo-root . \
+  --installed-dir /path/to/actual/skills --skill using-sensemaking --no-write
 ```
 
-Hosted/non-filesystem Skill surfaces may have a separate installation/update
-mechanism. Use the platform's actual loaded Skill identity when available.
+Without `--installed-dir` the probe uses `~/.agents/skills`, which may not be
+the Codex, Claude, or other host's selected root. It compares the entrypoint
+and references; inspect the complete tree separately when extra files or local
+customizations matter. Without `--sync`, the probe does not modify installed
+Skills. **`--no-write`
+only suppresses the report file: `--sync --no-write` still changes installed
+Skills.** Without `--skill`, sync can affect multiple Skills. Before an explicit
+replacement, identify the intended root, inspect and preserve divergent files,
+and limit the operation to the authorized Skill.
+
+For the loaded identity, use the host's actual invocation and content or version
+evidence when available. A catalog entry or a file comparison alone does not
+establish it. If the host does not expose that evidence, record the loaded
+identity as unknown; a running session need not reload an updated file. Hosted
+or non-filesystem Skill surfaces may have a separate update mechanism.
 
 ```text
 repository Skill current
