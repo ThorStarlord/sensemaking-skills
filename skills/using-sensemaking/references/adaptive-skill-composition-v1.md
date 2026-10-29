@@ -114,3 +114,12 @@ continuing.
 - Treating a strategic selection as a request to implement.
 - A second controller: continuation procedures resume and preserve reasoning;
   they do not redefine responsibility selection.
+
+## 7. Optional decision observability
+
+When the user requests maximum decision transparency, apply
+`decision-observability-v1.md` at consequential selection and return boundaries.
+Record the rationale before acting, separate actual host events from self-report,
+and classify skips, failures and undocumented omissions accurately. This does
+not change the activity owners, introduce a fixed sequence or require an audit
+in ordinary use.
