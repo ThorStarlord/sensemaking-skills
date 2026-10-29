@@ -12,11 +12,13 @@ Skill-selection audit, or equivalent scrutiny of reasoning-control choices.
 
 ## Evidence and activation
 
-Normal use retains proportionate explanations and the existing compact receipt;
-no detailed audit is required. In maximum transparency, record a contemporaneous,
-user-visible rationale *before* each consequential selection, reconsideration,
-or stop, and reassess after consequential results. Do not narrate every routine
-file read, force a choice among irrelevant Skills, or invoke all specialists.
+Ordinary consequential repository-level use includes the substantive final
+justification in `ontology-first-entry-v1.md` section 6 and the existing compact
+receipt; no detailed execution audit is required. In maximum transparency,
+record a contemporaneous, user-visible rationale *before* each consequential
+selection, reconsideration, or stop, and reassess after consequential results.
+Do not narrate every routine file read, force a choice among irrelevant Skills,
+or invoke all specialists.
 Depth is determined by what a reader needs to challenge the decision, not an
 arbitrary word limit.
 
@@ -81,7 +83,14 @@ A retrospective missed opportunity is a later interpretation, not a
 
 ## Final audit and coverage
 
-Produce a reviewable chronology of the documented decisions; a specialist
+Provide the same substantive repository-level decision justification as ordinary
+use: explain how the evidence, credible alternatives and consequences support
+the recommendation, what could overturn it and where its authority ends. Do not
+replace that synthesis with a chronology or longer procedural narration. A
+focused task still explains only its actual scope; it does not require a new
+repository-wide exploration.
+
+Also produce a reviewable chronology of the documented decisions; a specialist
 selection audit using the classifications above; expected versus observed
 contributions and controller reassessments; retrospective missed opportunities;
 and a stop rationale. Identify source and event references, known gaps and the

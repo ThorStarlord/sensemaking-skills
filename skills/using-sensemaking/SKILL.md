@@ -121,6 +121,12 @@ direction B, its expected value and relevant uncertainty. If B is not yet
 grounded, report selection as open rather than claim a completed comparison. No
 candidate quota, scoring or mandatory strategic reopening.
 
+For consequential repository-level recommendations, give a substantive final
+justification that connects the user's product outcome, source evidence and
+comparative consequences to the choice, its limits and what would change it:
+`references/ontology-first-entry-v1.md` section 6. This applies in ordinary
+use as well as maximum transparency; narrow tasks remain proportionate.
+
 The target repository's owner decisions, rules, security boundaries and tools
 control the action. Another repository's branch, test or merge policy does not
 carry over. Missing authority for a repository-wide priority does not block a
@@ -254,8 +260,9 @@ actually happened and reassess the next action. Explain materially relevant
 skips only when they were considered; mark undocumented omissions and failed or
 manual invocations honestly. Finish with a decision and execution audit that
 separates contemporaneous self-report, observed events and retrospective
-assessment. Never claim access to private internal reasoning or fabricate host
-events. Ordinary use remains proportional and needs no detailed audit.
+assessment, alongside the substantive final justification. Never claim access
+to private internal reasoning or fabricate host events. Ordinary use needs no
+detailed execution audit.
 
 Scale the process to the situation:
 
@@ -523,7 +530,7 @@ already stated above, so skipping a file never loses the rule.
 
 | Reference | Load when | Skip when | Protects |
 | --- | --- | --- | --- |
-| `references/ontology-first-entry-v1.md` | a repository-level request, first engagement or a returning session that must judge semantic and possibility coverage | a narrow task, or adequate current knowledge already answers the question | understanding before selection; breadth before convergence |
+| `references/ontology-first-entry-v1.md` | repository-level understanding, possibility coverage or a consequential final recommendation | a narrow task | understanding before selection; substantive justification |
 | `references/decision-observability-v1.md` | maximum decision transparency or detailed Skill-selection audit requested | ordinary proportional explanation | self-reported rationale != observed execution or causal proof |
 | `references/adaptive-skill-composition-v1.md` | choosing, sequencing or interpreting specialist reasoning, or a specialist has returned | the next action is a single obvious step | specialist result != controller decision |
 | `references/portable-construction-loop-v1.md` | authorized implementation, an explicit engineering task, coding outside the Sensemaking repository, or earlier-artifact reuse (section 1a) | reasoning-only work, or a clear local fix in a familiar repo | warranted direction != implementation authority |

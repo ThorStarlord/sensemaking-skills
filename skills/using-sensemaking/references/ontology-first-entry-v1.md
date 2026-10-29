@@ -11,8 +11,9 @@ a checklist to complete, or a grant of authority.
 repository", "what could this product become", a broad delegated mission), or
 a returning session must judge whether existing semantic and possibility
 coverage is adequate for its goal.
-**Skip when:** the request is narrow (section 5), or adequate, current
-knowledge already answers the question.
+**Skip when:** the request is narrow (section 5). Even when adequate, current
+knowledge answers a repository-level question, use section 6 for any
+consequential final recommendation.
 
 ## 1. Three layers, kept distinct
 
@@ -141,6 +142,44 @@ selection, deferral, investigation or justified no-change; reconciled
 knowledge. An implementation handoff needs an independently warranted
 direction and its own authority; a selected direction does not invoke an
 implementation planner by itself.
+
+### Explain a consequential repository-level recommendation
+
+Give the reader enough substance to challenge the judgment, proportionate to
+its scope and consequences. Connect the argument rather than merely listing
+sources, candidate names or labels. In the final report:
+
+- State the user's actual request and the product outcome and governing
+  decisions that apply; distinguish those decisions from observations and
+  agent hypotheses. Cite the decisive sources and their relevant revision.
+- Explain what the evidence shows, why each material observation changes the
+  choice, and the consequences for the product or its users. A source citation
+  alone does not establish priority.
+- Compare credible directions actually evaluated: their expected value,
+  limitations, dependencies and material consequences. Explain why the selected
+  direction is more warranted now, or why the evidence cannot support a
+  selection. Do not substitute enumeration, a fixed candidate count or an
+  invented tradeoff for a real comparison.
+- State the evidence or changed conditions that would overturn the preference;
+  distinguish a bounded, independently useful enabling step from a choice of
+  repository-wide strategic priority. Do not present a local defect as proof
+  that every alternative is less valuable.
+- Identify the specialist capabilities that actually contributed and how they
+  were used, with observable invocation or source evidence when available.
+  Distinguish native invocation from manual loading, and disclose unknowns;
+  neither fabricate a prior decision nor force a specialist call for a report.
+- State the decision-relevant uncertainties, unexamined areas, evidence ceiling,
+  next warranted responsibility and its authorization boundary. A bounded
+  comparison is not exhaustive coverage, and a recommendation is not permission
+  to implement it.
+
+Use this same substantive standard in ordinary repository-level use and in
+maximum transparency. The latter additionally records contemporaneous
+selection rationales and observed execution under `decision-observability-v1.md`;
+more procedural narration alone does not improve the decision synthesis. No
+fixed headings or receipt fields are required. Focused and narrow tasks use
+only the explanation their actual scope needs. An illustrative worked comparison
+appears in `../../../examples/decision-observability-example.md` when present.
 
 ## 7. Evidence ceiling
 
