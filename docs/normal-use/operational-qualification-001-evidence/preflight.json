@@ -1,0 +1,25 @@
+{
+  "skill_ref": "99da2ba18b6f6fc5af84a5d353bbe612f89694b5",
+  "cells": {
+    "r1": {
+      "baseline": "0c439aab8d098a2184d92d0e1e25b71b72482b3c",
+      "head": "7bd62b8a4d69772313fc4b3fce1c5384cb7d6072",
+      "product_tree_sha256": "bf65643c715f4ad90486ccf5336fcfbb2e0c2ff8cb105d0cef884ab7b028af49",
+      "installed_files": 182,
+      "installed_manifest_sha256": "c5c2ec132b4876a0ef4d32df743a71c46d6fe642820c26130dc58a9edefbc645",
+      "entrypoint_sha256": "78dab856311d4c1cf5097177e86de23dbddfb1f4e19101c80df82ef9bb9ce290",
+      "knowledge_present": true,
+      "remotes": ""
+    },
+    "r2": {
+      "baseline": "86866634d92254b91896cff3a6f65b889eb338e6",
+      "head": "7fd9cff04aedd53da1ce1522defbc4c3e5667199",
+      "product_tree_sha256": "bf65643c715f4ad90486ccf5336fcfbb2e0c2ff8cb105d0cef884ab7b028af49",
+      "installed_files": 182,
+      "installed_manifest_sha256": "c5c2ec132b4876a0ef4d32df743a71c46d6fe642820c26130dc58a9edefbc645",
+      "entrypoint_sha256": "78dab856311d4c1cf5097177e86de23dbddfb1f4e19101c80df82ef9bb9ce290",
+      "knowledge_present": false,
+      "remotes": ""
+    }
+  }
+}

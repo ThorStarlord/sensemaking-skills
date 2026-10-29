@@ -1,0 +1,33 @@
+{
+  "label": "r2",
+  "exit_code": 1,
+  "elapsed_seconds": 286.36,
+  "argv": [
+    "C:\\Program Files\\nodejs\\node.exe",
+    "C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\@openai\\codex\\bin\\codex.js",
+    "exec",
+    "--ignore-user-config",
+    "--ignore-rules",
+    "--cd",
+    "C:\\Users\\Admin\\AppData\\Local\\Temp\\oq001-20261029-0042\\r2\\workspace",
+    "--skip-git-repo-check",
+    "--sandbox",
+    "read-only",
+    "--model",
+    "gpt-5.6-sol",
+    "--config",
+    "windows.sandbox=\"elevated\"",
+    "--disable",
+    "plugins",
+    "--disable",
+    "apps",
+    "--config",
+    "model_reasoning_effort=\"max\"",
+    "--config",
+    "service_tier=\"fast\"",
+    "--json",
+    "--output-last-message",
+    "C:\\Users\\Admin\\AppData\\Local\\Temp\\oq001-20261029-0042\\r2\\final.md",
+    "-"
+  ]
+}
