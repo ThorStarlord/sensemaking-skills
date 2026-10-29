@@ -33,6 +33,9 @@ absence from an incomplete search.
 At least two materially different structures, each with an `arch:` id: target
 structure, what it reuses, proposed transitions (what would change, never what
 has changed), what it requires, and assumptions. Mark counterfactual options.
+An assumption may reference reviewed target knowledge or be defined in this
+artifact's optional `local_assumptions` list. Local definitions are hypothetical
+and do not become reviewed target knowledge.
 
 ## 5. Option Comparison
 
@@ -95,6 +98,24 @@ should be defined here or recorded in reviewed knowledge, and a transition
 defined nowhere (an assumption name with no statement) cannot be reconstructed
 later.
 
+For a self-contained synthesis, `local_assumptions` may define a unique
+`hyp:<slug>` id, a non-empty `statement` and `epistemic_status: hypothetical`.
+Options and conditional consequences can cite that id in `assumption_refs`.
+Do not cite a local assumption as an observed premise. Omit the list when it
+is not needed; existing external assumption references work as before.
+
+Structural validation catches duplicate local ids and malformed definitions,
+but cannot check target knowledge. Run the validator with `--resolve-references`
+and `--repo-root <target-repository>` to check the actual target's knowledge:
+local ids already recorded there are reported as conflicts and are not resolved
+to either meaning.
+An unreadable knowledge pack or malformed local definition makes other local
+identities unassessed, not collision-free. Review conflict, unassessed and
+unresolved output even if structural validation passes. The resolver checks
+presence, not truth, authority, source currentness or completeness outside the
+knowledge files it can inspect. A local definition never grants implementation
+or publication authority.
+
 ```yaml
 artifact_id: architectural_synthesis
 schema_version: 1
@@ -107,6 +128,10 @@ target_possibility_refs:
   - poss:example-possibility
 current_architecture_refs:
   - "src/module.py:10"
+local_assumptions:  # Optional; keep external knowledge references when appropriate.
+  - assumption_id: hyp:example-assumption
+    statement: "<the uncertain premise, in enough detail to reconstruct it>"
+    epistemic_status: hypothetical
 architecture_options:
   - option_id: arch:example-local-change
     title: "<short name>"
