@@ -244,6 +244,19 @@ its reference files directly skips that contract. Activity owners, when each is
 warranted, feedback moves and the return convention:
 `references/adaptive-skill-composition-v1.md`.
 
+**Optional maximum decision transparency.** When the user requests detailed
+Skill-selection explanations or maximum transparency, load
+`references/decision-observability-v1.md`. Before each consequential
+selection or stop, provide a user-visible, evidence-linked rationale covering
+the responsibility, uncertainty, actually considered alternatives, expected
+contribution and scope. After a consequential specialist result, report what
+actually happened and reassess the next action. Explain materially relevant
+skips only when they were considered; mark undocumented omissions and failed or
+manual invocations honestly. Finish with a decision and execution audit that
+separates contemporaneous self-report, observed events and retrospective
+assessment. Never claim access to private internal reasoning or fabricate host
+events. Ordinary use remains proportional and needs no detailed audit.
+
 Scale the process to the situation:
 
 - **Localized repair:** inspect the relevant code, implement, review. No
@@ -511,6 +524,7 @@ already stated above, so skipping a file never loses the rule.
 | Reference | Load when | Skip when | Protects |
 | --- | --- | --- | --- |
 | `references/ontology-first-entry-v1.md` | a repository-level request, first engagement or a returning session that must judge semantic and possibility coverage | a narrow task, or adequate current knowledge already answers the question | understanding before selection; breadth before convergence |
+| `references/decision-observability-v1.md` | maximum decision transparency or detailed Skill-selection audit requested | ordinary proportional explanation | self-reported rationale != observed execution or causal proof |
 | `references/adaptive-skill-composition-v1.md` | choosing, sequencing or interpreting specialist reasoning, or a specialist has returned | the next action is a single obvious step | specialist result != controller decision |
 | `references/portable-construction-loop-v1.md` | authorized implementation, an explicit engineering task, coding outside the Sensemaking repository, or earlier-artifact reuse (section 1a) | reasoning-only work, or a clear local fix in a familiar repo | warranted direction != implementation authority |
 | `references/evidence-and-closure-v1.md` | validating, reconciling a claim, verifying a repair, reading a Brief, using a workflow | ordinary tests and diff review settle it | validated != closed |
