@@ -1,0 +1,178 @@
+artifact_id: semantic_query_receipt
+schema_version: 1
+session_ref: 2026-10-30-using-sensemaking-relational-reconciliation
+state: final
+created_at: "2026-10-30T16:26:00Z"
+updated_at: "2026-10-30T16:29:39Z"
+target_repository: ThorStarlord/sensemaking-skills
+modes: [RECALL, RECONCILE]
+decision: "Whether the receipt-to-Campaign relation and the native-harness claim were product gaps or knowledge gaps, and which reviewed records should change."
+cli_identity:
+  sensemaking_source_ref: d1a5f923c75dd7cc54866e6430fe5c5fdb770726
+  invocation_prefix: "PYTHONPATH=src python -c 'from sensemaking_skills.cli import main; main()' semantic (worktree src; global PATH CLI resolved to the main checkout)"
+  version_output: null
+index:
+  indexed_ref: 1a71df887e994219f1002ddbcd601b34d39104be
+  current_head: 49d0c1503309392b17b6703160c34139a142c49a
+  worktree_clean: true
+  uncommitted_changes_not_indexed: false
+queries:
+  - id: QY-1
+    operation: build
+    terms: []
+    subject: null
+    expect_kinds: []
+    target_ref: d1a5f923c75dd7cc54866e6430fe5c5fdb770726
+    result:
+      hit_count: 0
+      claim_ids: []
+      truncated: false
+      not_assessed_kinds: []
+    outcome: NOT_APPLICABLE
+    decision_relevant: false
+  - id: QY-2
+    operation: explain
+    terms: []
+    subject: contract:receipt-schema
+    expect_kinds: []
+    target_ref: d1a5f923c75dd7cc54866e6430fe5c5fdb770726
+    result:
+      hit_count: 3
+      claim_ids: [contract:receipt-schema, arch:receipt-based-memory, component:campaign-core]
+      truncated: false
+      not_assessed_kinds: []
+    outcome: HIT
+    decision_relevant: true
+  - id: QY-3
+    operation: build
+    terms: []
+    subject: null
+    expect_kinds: []
+    target_ref: db821c25d0201441ecdd89d490e49a4bcc1a173c
+    result:
+      hit_count: 0
+      claim_ids: []
+      truncated: false
+      not_assessed_kinds: []
+    outcome: NOT_APPLICABLE
+    decision_relevant: false
+  - id: QY-4
+    operation: explain
+    terms: []
+    subject: contract:receipt-schema
+    expect_kinds: []
+    target_ref: db821c25d0201441ecdd89d490e49a4bcc1a173c
+    result:
+      hit_count: 2
+      claim_ids: [contract:receipt-schema, arch:receipt-based-memory]
+      truncated: false
+      not_assessed_kinds: []
+    outcome: HIT
+    decision_relevant: true
+  - id: QY-5
+    operation: search
+    terms: [campaign_ref]
+    subject: null
+    expect_kinds: []
+    target_ref: db821c25d0201441ecdd89d490e49a4bcc1a173c
+    result:
+      hit_count: 0
+      claim_ids: []
+      truncated: false
+      not_assessed_kinds: []
+    outcome: MISS
+    decision_relevant: true
+  - id: QY-6
+    operation: proposal-check
+    terms: []
+    subject: null
+    expect_kinds: []
+    target_ref: null
+    result:
+      hit_count: 0
+      claim_ids: []
+      truncated: false
+      not_assessed_kinds: []
+    outcome: NOT_APPLICABLE
+    decision_relevant: false
+  - id: QY-7
+    operation: explain
+    terms: []
+    subject: observation:release-declares-no-native-harness
+    expect_kinds: []
+    target_ref: 1a71df887e994219f1002ddbcd601b34d39104be
+    result:
+      hit_count: 2
+      claim_ids: [observation:release-declares-no-native-harness, component:distribution-setup]
+      truncated: false
+      not_assessed_kinds: []
+    outcome: HIT
+    decision_relevant: true
+  - id: QY-8
+    operation: explain
+    terms: []
+    subject: component:distribution-setup
+    expect_kinds: []
+    target_ref: 1a71df887e994219f1002ddbcd601b34d39104be
+    result:
+      hit_count: 3
+      claim_ids: [component:distribution-setup, layer:package-core, observation:release-declares-no-native-harness]
+      truncated: false
+      not_assessed_kinds: []
+    outcome: HIT
+    decision_relevant: true
+  - id: QY-9
+    operation: search
+    terms: ["native harness", "harness adapter"]
+    subject: null
+    expect_kinds: []
+    target_ref: 1a71df887e994219f1002ddbcd601b34d39104be
+    result:
+      hit_count: 0
+      claim_ids: []
+      truncated: false
+      not_assessed_kinds: []
+    outcome: MISS
+    decision_relevant: true
+source_checks:
+  - claim_id: contract:receipt-schema
+    sources: ["skills/using-sensemaking/references/session-receipt-v1.md:196", "skills/using-sensemaking/references/session-receipt-v1.md:283"]
+    result: SUPPORTED
+  - claim_id: observation:release-declares-no-native-harness
+    sources: ["release-v1.0.yaml:113", "docs/adr/0028-agent-agnostic-product-management-domain.md:36"]
+    result: SUPPORTED
+misses:
+  - id: M-1
+    query_ref: QY-5
+    needed_for: "Whether any reviewed record or source names the receipt-to-Campaign pointer field, at the revision the completion receipt examined."
+    kind: NO_MATCH_IN_SCOPE
+    resolved_by: "Source inspection: session-receipt-v1.md lines 196 and 283; ADR 0029 lines 26-27; ADR 0032 line 81; validate-receipt.py lines 331-332."
+    follow_up: ADDED
+    proposal_ref: .sensemaking/knowledge/architecture.json
+  - id: M-2
+    query_ref: QY-9
+    needed_for: "Whether a literal search for the native-harness question finds the reviewed record of the 1.0 exclusion (the one-hop explain queries QY-7 and QY-8 do find it)."
+    kind: NO_MATCH_IN_SCOPE
+    resolved_by: "Explain QY-7 and QY-8 at the same revision returned the constrained_by link. Source inspection: release-v1.0.yaml line 113; src/sensemaking_skills/harness_adapters.py; ADR 0028 line 36. Literal search missed the identifier native_harnesses."
+    follow_up: ADD_PROPOSED
+    proposal_ref: .sensemaking/knowledge/architecture.json
+reconcile:
+  - claim_id: contract:receipt-schema
+    disposition: REVISE
+    applied: true
+    proposal_ref: .sensemaking/knowledge/architecture.json
+    proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID
+  - claim_id: observation:release-declares-no-native-harness
+    disposition: REVISE
+    applied: true
+    proposal_ref: .sensemaking/knowledge/architecture.json
+    proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID
+  - claim_id: component:distribution-setup
+    disposition: ADD
+    applied: true
+    proposal_ref: .sensemaking/knowledge/architecture.json
+    proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID
+persistence: committed
+action_authorized: false
+semantic_truth_established: false
+immutable: true

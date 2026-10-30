@@ -1,0 +1,148 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-10-30-using-sensemaking-relational-reconciliation
+state: final
+created_at: "2026-10-30T16:26:00Z"
+updated_at: "2026-10-30T16:29:39Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: d1a5f923c75dd7cc54866e6430fe5c5fdb770726
+  end_ref: 49d0c1503309392b17b6703160c34139a142c49a
+  worktree_clean_at_end: true
+skill_identity:
+  load_mode: manual_explicit_load
+  sensemaking_source_ref: 49d0c1503309392b17b6703160c34139a142c49a
+goal:
+  statement: "Strengthen using-sensemaking and repository-semantic-steward so consequential architectural conclusions rest on the reviewed graph and authoritative sources; apply the change to the receipt-to-Campaign case and reapply to sensemaking-skills."
+  source: owner_message
+  source_ref: null
+delegation:
+  granted: [read, local_write, run_local_commands, commit, push, open_pr, merge, knowledge_edit]
+  withheld: [release, deploy, tracker_write, external_publication]
+continuity:
+  resumes: 2026-10-30-using-sensemaking-continuity-reconciliation
+  campaign_ref: null
+  resolves_questions: ["2026-10-30-using-sensemaking-repository-completion#Q-1"]
+responsibilities:
+  - id: R-1
+    responsibility: Diagnose the receipt-to-Campaign escalation from source and graph replay
+    capability: using-sensemaking
+    status: completed
+    reason: "Replayed the defect-time index (db821c25). The one-hop miss was real, but the session-receipt contract and ADRs 0029 and 0032 already defined the optional pointer."
+    artifact_refs: [.sensemaking/receipts/2026-10-30-using-sensemaking-repository-completion.session.yaml, skills/using-sensemaking/references/session-receipt-v1.md, scripts/validate-receipt.py, docs/adr/0029-current-product-boundary.md, docs/adr/0032-session-and-query-receipts.md]
+    validation:
+      - command: "semantic knowledge-build --temporary-checkout --target-ref db821c25 (replay index)"
+        result: PASS
+      - command: "semantic knowledge-query explain and search at db821c25"
+        result: PASS
+  - id: R-2
+    responsibility: Test the procedure on a second, distinct relation (native-harness support)
+    capability: using-sensemaking
+    status: completed
+    reason: "A declared exclusion over implemented install roots. The graph held both sides but no link between them."
+    artifact_refs: [release-v1.0.yaml, src/sensemaking_skills/harness_adapters.py, docs/adr/0028-agent-agnostic-product-management-domain.md, .sensemaking/knowledge/architecture.json]
+    validation:
+      - command: "semantic knowledge-query explain at 1a71df88 (observation and component)"
+        result: PASS
+  - id: R-3
+    responsibility: Write the RELATE procedure, the controller trigger and composition wiring
+    capability: repository-semantic-steward RELATE; using-sensemaking
+    status: completed
+    reason: "New reference, mode and trigger. No script or validator change: retrieval already existed, and the defect was in reasoning and in the escalation gate."
+    artifact_refs: [skills/repository-semantic-steward/references/relational-reconciliation.md, skills/repository-semantic-steward/SKILL.md, skills/using-sensemaking/SKILL.md, skills/using-sensemaking/references/adaptive-skill-composition-v1.md]
+    validation:
+      - command: "source and diff inspection"
+        result: PASS
+      - command: "unit tests (owner construction-phase policy)"
+        result: NOT_RUN
+  - id: R-4
+    responsibility: Reconcile reviewed knowledge for the pointer relation and the native exclusion
+    capability: repository-semantic-steward
+    status: completed
+    reason: "The pointer relation gains its field, runtime status and evidence. The exclusion gains its condition, and the installer component is linked to it. No lesson record: the rule now lives in the Skill."
+    artifact_refs: [.sensemaking/knowledge/architecture.json]
+    validation:
+      - command: "semantic knowledge-proposal-check --repo . --proposal .sensemaking/knowledge/architecture.json"
+        result: PASS
+  - id: R-5
+    responsibility: Align the knowledge contract's relates_to rule with ADR 0033 and the validator
+    capability: repository-semantic-steward
+    status: completed
+    reason: "Reapplication found drift. The contract required two domain_concept claims for relates_to; ADR 0033 and knowledge.py require only cardinality."
+    artifact_refs: [skills/repository-semantic-steward/references/knowledge-contract.md, docs/adr/0033-architecture-and-ontology-vocabulary.md, src/sensemaking_skills/semantic_architecture/knowledge.py]
+    validation:
+      - command: "source inspection of knowledge.py relates_to and synonym_of rules"
+        result: PASS
+  - id: R-6
+    responsibility: Reload the revised Skills and reapply them to sensemaking-skills
+    capability: using-sensemaking
+    status: partial
+    reason: "Two Skill trees copied to the user-level Claude directory after backup. The in-session re-invocation returned cached older text, so the reapplication used a manual load. Fifty other divergent copies were not overwritten."
+    artifact_refs: [.sensemaking/receipts/2026-10-30-using-sensemaking-relational-reconciliation.query.yaml]
+    validation:
+      - command: "diff -rq branch skills against the installed copies"
+        result: PASS
+      - command: "in-session Skill re-invocation shows the Negative-claim rule"
+        result: FAIL
+findings:
+  - id: F-1
+    statement: "The completion receipt read a reviewed-graph miss (no receipt-Campaign relation at db821c25) as absence of a product relation and asked the owner for an ADR. The contract (sections 3 and 7) and ADRs 0029 and 0032 already defined the optional pointer."
+    epistemic_status: OBSERVED
+    evidence_refs: [.sensemaking/receipts/2026-10-30-using-sensemaking-repository-completion.session.yaml, "skills/using-sensemaking/references/session-receipt-v1.md:196", "skills/using-sensemaking/references/session-receipt-v1.md:283", "docs/adr/0029-current-product-boundary.md:26", "docs/adr/0032-session-and-query-receipts.md:81"]
+    disposition: resolved
+  - id: F-2
+    statement: "The pointer is declared and unexercised. validate-receipt.py checks its shape and, with --target-repo, its existence. No src/ module reads campaign_ref, and all 29 committed session receipts hold null."
+    epistemic_status: OBSERVED
+    evidence_refs: ["scripts/validate-receipt.py:331", "scripts/validate-receipt.py:332", ".sensemaking/receipts"]
+    disposition: no_action
+  - id: F-3
+    statement: "The 1.0 native-harness claim is a declared exclusion, until real harness evidence exists, over implemented install roots for claude, codex and opencode, with no runtime detection. The graph lacked the link, which is now recorded."
+    epistemic_status: OBSERVED
+    evidence_refs: ["release-v1.0.yaml:113", "src/sensemaking_skills/harness_adapters.py", "docs/adr/0028-agent-agnostic-product-management-domain.md:36"]
+    disposition: resolved
+  - id: F-4
+    statement: "knowledge-contract.md required two domain_concept claims for relates_to. ADR 0033 and knowledge.py require only cardinality. Corrected in this change."
+    epistemic_status: CONTRADICTED
+    evidence_refs: ["skills/repository-semantic-steward/references/knowledge-contract.md:78", "docs/adr/0033-architecture-and-ontology-vocabulary.md:25", "src/sensemaking_skills/semantic_architecture/knowledge.py:167"]
+    disposition: resolved
+  - id: F-5
+    statement: "A literal search for 'native harness' misses the identifier native_harnesses. RELATE now asks for identifier variants and explain-based retrieval."
+    epistemic_status: OBSERVED
+    evidence_refs: ["file:skills/repository-semantic-steward/references/relational-reconciliation.md"]
+    disposition: resolved
+  - id: F-6
+    statement: "The Skill loaded at session start was an installed user-level copy older than HEAD. Fifty other user-level Skill copies diverge from HEAD and were not overwritten."
+    epistemic_status: OBSERVED
+    evidence_refs: ["C:/Users/Admin/.claude/skills (installer dry run, claude user scope)"]
+    disposition: handed_off
+  - id: F-7
+    statement: "An in-session re-invocation after copying the revised Skill returned the cached older text. The revised procedure reaches this host by manual load now and by native load in a fresh session."
+    epistemic_status: OBSERVED
+    evidence_refs: ["in-session Skill re-invocation of using-sensemaking"]
+    disposition: handed_off
+  - id: F-8
+    statement: "ADR 0032 remains PROPOSED while the controller states the receipt duty as an owner decision [owner: 2026-10-27]. Ratification is owner-reserved and unchanged here."
+    epistemic_status: OBSERVED
+    evidence_refs: ["docs/adr/0032-session-and-query-receipts.md:4", "skills/using-sensemaking/SKILL.md"]
+    disposition: handed_off
+open_questions:
+  - id: Q-1
+    question: "Should the other user-level Skill copies that diverge from HEAD be synchronized?"
+    source: owner_intent
+    blocking: false
+    options:
+      - option: "Sync all with --force"
+        consequence: "The user-level copies match HEAD, and any local edits in them are replaced."
+      - option: "Leave the other copies as installed"
+        consequence: "Those Skills load older guidance in this host until the owner decides."
+    durable_ref: null
+stop:
+  disposition: GOAL_SATISFIED
+  reason: "Procedure, controller trigger and reconciled knowledge are committed and integrated through the PR process. Native reload needs a fresh session."
+next:
+  warranted_responsibility: "Start a fresh session to confirm native loading of the revised using-sensemaking, then run RELATE on the first-visit repository case, which is still unobserved."
+  blocked_on: []
+persistence: committed
+claim_ceiling: "Two replayed and reapplied cases plus source inspection. No fresh-agent, comparative or behavioral evidence. Unit tests NOT_RUN. In-session native reload not achieved. Fifty other user-level Skill copies not synchronized."
+action_authorized_by_receipt: false
+immutable: true

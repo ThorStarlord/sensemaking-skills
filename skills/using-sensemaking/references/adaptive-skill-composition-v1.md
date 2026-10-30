@@ -15,6 +15,7 @@ specialist has just returned.
 | Activity | Owner (procedure) | Durable product |
 | --- | --- | --- |
 | Semantic foundation, recall, audit, reconciliation | `repository-semantic-steward` (BOOTSTRAP, RECALL, AUDIT, RECONCILE) | `.sensemaking/knowledge/*.json`, query receipts |
+| Relational verification of an absence, dependency or relation claim | `repository-semantic-steward` (RELATE) | `RELATIONAL_VERDICT` in the report or receipt finding; reconciled knowledge when warranted |
 | Repository orientation when boundaries or ownership are unclear | `repo-sensemaker` | `repository_sensemaking_brief` |
 | Divergent and convergent possibility exploration | `strategic-repository-analysis` (Strategic Exploration Funnel) | report; `poss:` records when retained |
 | Architectural synthesis and consequence depth | `repository-semantic-steward` (architecture exploration) | `architectural_synthesis`; `arch:` and consequence records when retained |
@@ -41,6 +42,7 @@ maintainers; ordinary users need only `using-sensemaking`.
 | Consequence depth | A provisional preference may cause downstream effects that change the choice |
 | Adversarial challenge | Important assumptions, commitments or consequences need scrutiny |
 | Reconsideration | New evidence changes the premises behind an earlier preference |
+| Relational verification | A recommendation or owner escalation rests on an absence, or on a relation the reviewed graph does not settle |
 
 Skip an activity whose result could not change the decision. Skipping is a
 judgment to state when it is consequential, not a failure.
@@ -56,7 +58,11 @@ The controller may move:
   defeats or reshapes the preferred option;
 - from architectural synthesis into construction-path comparison;
 - from evaluation into further evidence gathering;
-- from a justified preference into durable knowledge retention.
+- from a justified preference into durable knowledge retention;
+- from a recommendation or escalation back into relational verification, when
+  it rests on a graph miss, an unexercised declaration or an unrecorded
+  relation. The verdict then returns to the controller before the choice is
+  finalized.
 
 Each move is a fresh controller choice, made because the returned evidence
 warrants it.
@@ -112,6 +118,9 @@ continuing.
 - Numeric scores or a selector that picks the next Skill.
 - A specialist that hands work directly to another specialist.
 - Treating a strategic selection as a request to implement.
+- Treating a graph miss, `NOT_ASSESSED` or an unexercised declaration as
+  product absence, or escalating such a gap to the owner without relational
+  verification.
 - A second controller: continuation procedures resume and preserve reasoning;
   they do not redefine responsibility selection.
 

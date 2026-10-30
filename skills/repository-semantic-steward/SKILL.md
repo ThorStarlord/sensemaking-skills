@@ -15,6 +15,7 @@ Own the **knowledge-continuity responsibility**, not engineering responsibility 
 - **RECALL:** A specific new engineering task needs previously learned context. Query narrowly, check original sources and revision. Use [recall](references/recall.md).
 - **RECONCILE:** Consequential code, tests, product intent, design or incident evidence may invalidate or enrich persisted knowledge. Use [reconciliation](references/reconciliation.md).
 - **AUDIT:** Inspect source drift and evidence integrity without proposing semantic mutation until the evidence warrants it. Use [reconciliation](references/reconciliation.md).
+- **RELATE:** The controller needs to know whether an absence, dependency or relation is established, because a recommendation or owner escalation rests on it. Retrieve the graph, reconcile the declared contract, validators, implementation and recorded use, classify the claim, and return a verdict to the controller. A graph miss is `ABSENT_FROM_GRAPH`, not absence. Use [relational reconciliation](references/relational-reconciliation.md).
 
 Do not use BOOTSTRAP on every edit or repeat it when adequate knowledge exists; do not demand a complete ontology before useful authorized development or a narrow task. A messy, sparsely documented or contradictory repository is a normal input, not a refusal condition.
 
