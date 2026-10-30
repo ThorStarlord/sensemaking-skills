@@ -40,7 +40,11 @@ authority.
   converging. `references/ontology-first-entry-v1.md`.
 - **Continuing engagement** (reviewed knowledge or earlier analyses exist):
   retrieve them, check currentness and coverage, reconcile only consequential
-  gaps, and resume the open reasoning question. Do not repeat the bootstrap.
+  gaps, then establish the current reasoning question. A recorded open question
+  is candidate evidence until it is re-warranted. For a repository-level goal,
+  apply the possibility coverage assessment in
+  `references/ontology-first-entry-v1.md` section 3 before resuming it. Do not
+  repeat the bootstrap.
 - **Focused reasoning** (one architecture change, possibility, contradiction
   or consequence): use the relevant existing knowledge and keep the requested
   scope. A focused result never claims repository-wide coverage.
@@ -198,12 +202,14 @@ candidate; a recent receipt does not set the scope or outcome. If a
 `.sensemaking/` Grounding Pack exists, read `intent.md` and task-relevant
 `invariants.md`. No receipts or pack is a normal condition.
 
-**Recover history, not priorities.** A receipt's `next`, a recent PR, and
-repeated findings are candidate evidence, not an automatic task queue. When
-the next responsibility is open, challenge recency and same-subsystem
-anchoring against current product purpose, governing decisions and actual
-source gaps before selecting work. A known bounded task needs no survey of
-alternatives.
+**Recover history, not priorities.** A receipt's `next`, a recent PR, a roadmap
+or `STATUS.md` recommendation, and repeated findings are candidate evidence, not
+an automatic task queue. Whenever a proposed responsibility matches one,
+re-warrant it before selecting it: check that its trigger and premises still
+hold at the current revision, challenge recency and same-subsystem anchoring
+against product purpose, governing decisions and source gaps, and compare it
+with the alternatives in `references/ontology-first-entry-v1.md` section 4. A
+bounded task that the request itself names needs no survey of alternatives.
 
 **Question ratchet.** Before asking the owner, inspect recorded intent,
 decisions, ADRs and owner-authored issues or PRs. Reuse an answer while its
@@ -498,8 +504,12 @@ possibility coverage reached, the selected direction or responsibility, and the
 scope of the conclusion and receipt. A matching `target_repository` field alone
 does not establish repository-wide coverage. If a component-only no-change
 finding is about to close a whole-repository request, correct the task frame
-and continue permitted reasoning. This is a semantic judgment, not a new
-artifact, validator or approval gate.
+and continue permitted reasoning. An authority boundary stops the action beyond
+it, not reasoning inside the granted scope. A no-construction conclusion states
+whether it concerns warrant or only the authority currently granted, and the
+coverage it rests on: a read-only grant bounds action and does not show that
+nothing is warranted. This is a semantic judgment, not a new artifact, validator
+or approval gate.
 
 **Stop** when the goal is satisfied, further work is unwarranted, the next
 action is stable and remaining uncertainty cannot change it, a real authority
