@@ -1,0 +1,260 @@
+artifact_id: semantic_query_receipt
+schema_version: 1
+session_ref: 2026-10-30-prospective-reentry
+state: final
+created_at: '2026-10-30T20:07:49Z'
+updated_at: '2026-10-30T20:07:49Z'
+target_repository: ThorStarlord/sensemaking-skills
+modes: [RECALL, RECONCILE]
+decision: Recover discovery-memory alternatives and assess snapshot reuse against current sources.
+cli_identity:
+  sensemaking_source_ref: 9f26bb4f2cc86c3e4f55265425ac3fd239f8a0f5
+  invocation_prefix: python -c "from sensemaking_skills.cli import main; main()" with checkout src on PYTHONPATH
+  version_output: null
+index:
+  indexed_ref: 987cc390514c5f2a292f5192833bbfcff4c7d713
+  current_head: 987cc390514c5f2a292f5192833bbfcff4c7d713
+  worktree_clean: true
+  uncommitted_changes_not_indexed: false
+queries:
+- id: QY-1
+  operation: context-for
+  terms: []
+  subject: skills/using-sensemaking/references/portable-construction-loop-v1.md
+  expect_kinds: []
+  target_ref: 9f26bb4f2cc86c3e4f55265425ac3fd239f8a0f5
+  result:
+    hit_count: 4
+    claim_ids: ['observation:legacy-brief-producer-bypasses-runtime-paths', 'observation:legacy-plan-producer-overwrites-tracked-plan', 'rule:runtime-owns-artifact-paths', 'verification:executor-path-handoff-tests']
+    truncated: false
+    not_assessed_kinds: []
+  outcome: NOT_ASSESSED
+  decision_relevant: true
+- id: QY-2
+  operation: context-for
+  terms: []
+  subject: skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md
+  expect_kinds: []
+  target_ref: 9f26bb4f2cc86c3e4f55265425ac3fd239f8a0f5
+  result:
+    hit_count: 4
+    claim_ids: ['observation:legacy-brief-producer-bypasses-runtime-paths', 'observation:legacy-plan-producer-overwrites-tracked-plan', 'rule:runtime-owns-artifact-paths', 'verification:executor-path-handoff-tests']
+    truncated: false
+    not_assessed_kinds: []
+  outcome: NOT_ASSESSED
+  decision_relevant: true
+- id: QY-3
+  operation: explain
+  terms: []
+  subject: arch:git-reviewed-local-memory
+  expect_kinds: [alternative, hypothesis]
+  target_ref: 9f26bb4f2cc86c3e4f55265425ac3fd239f8a0f5
+  result:
+    hit_count: 13
+    claim_ids: ['arch:git-reviewed-local-memory', 'arch:grounding-pack-decision-log', 'arch:receipt-based-memory', 'arch:strategic-artifact-projection', 'cap:possibility-records', 'cap:repository-only-discovery', 'conseq:candidate-recall-in-later-discovery', 'conseq:citation-noise', 'conseq:knowledge-surface-bootstrap', 'conseq:persistence-requires-write-authority', 'conseq:prospective-decision-memory-reuse', 'conseq:target-maintenance-burden', 'poss:target-repository-discovery-memory']
+    truncated: false
+    not_assessed_kinds: []
+  outcome: HIT
+  decision_relevant: true
+- id: QY-4
+  operation: proposal-check
+  terms: []
+  subject: .sensemaking/knowledge/architecture.json
+  expect_kinds: []
+  target_ref: 9f26bb4f2cc86c3e4f55265425ac3fd239f8a0f5
+  result:
+    hit_count: 0
+    claim_ids: []
+    truncated: false
+    not_assessed_kinds: []
+  outcome: NOT_APPLICABLE
+  decision_relevant: false
+- id: QY-5
+  operation: build
+  terms: []
+  subject: null
+  expect_kinds: []
+  target_ref: 7050dd84869bceeeef6e8add460cd1fde89a46d1
+  result:
+    hit_count: 0
+    claim_ids: []
+    truncated: false
+    not_assessed_kinds: []
+  outcome: NOT_APPLICABLE
+  decision_relevant: false
+- id: QY-6
+  operation: context-for
+  terms: []
+  subject: skills/using-sensemaking/references/portable-construction-loop-v1.md
+  expect_kinds: []
+  target_ref: 7050dd84869bceeeef6e8add460cd1fde89a46d1
+  result:
+    hit_count: 7
+    claim_ids: ['component:using-sensemaking-skill', 'decision:ontology-first-adaptive-sensemaking', 'observation:discovery-memory-as-built', 'observation:legacy-brief-producer-bypasses-runtime-paths', 'observation:legacy-plan-producer-overwrites-tracked-plan', 'rule:runtime-owns-artifact-paths', 'verification:executor-path-handoff-tests']
+    truncated: false
+    not_assessed_kinds: []
+  outcome: PARTIAL
+  decision_relevant: true
+- id: QY-7
+  operation: context-for
+  terms: []
+  subject: skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md
+  expect_kinds: []
+  target_ref: 7050dd84869bceeeef6e8add460cd1fde89a46d1
+  result:
+    hit_count: 7
+    claim_ids: ['component:using-sensemaking-skill', 'decision:ontology-first-adaptive-sensemaking', 'observation:discovery-memory-as-built', 'observation:legacy-brief-producer-bypasses-runtime-paths', 'observation:legacy-plan-producer-overwrites-tracked-plan', 'rule:runtime-owns-artifact-paths', 'verification:executor-path-handoff-tests']
+    truncated: false
+    not_assessed_kinds: []
+  outcome: NOT_ASSESSED
+  decision_relevant: true
+- id: QY-8
+  operation: explain
+  terms: []
+  subject: inv:index-snapshot-vs-working-overlay
+  expect_kinds: []
+  target_ref: 7050dd84869bceeeef6e8add460cd1fde89a46d1
+  result:
+    hit_count: 5
+    claim_ids: ['inv:index-snapshot-vs-working-overlay', 'cap:semantic-queries', 'decision:index-from-temporary-worktree', 'decision:workspace-impact-path-overlap', 'verification:clean-index-tests']
+    truncated: false
+    not_assessed_kinds: []
+  outcome: HIT
+  decision_relevant: true
+- id: QY-9
+  operation: context-for
+  terms: []
+  subject: src/sensemaking_skills/semantic_architecture/knowledge_sources.py
+  expect_kinds: []
+  target_ref: 7050dd84869bceeeef6e8add460cd1fde89a46d1
+  result:
+    hit_count: 11
+    claim_ids: ['alternative:dirty-tree-byte-audit', 'alternative:shared-clone-checkout', 'bounded_context:knowledge-stewardship', 'component:semantic-knowledge-plane', 'decision:index-from-temporary-worktree', 'layer:knowledge-plane', 'rule:console-output-ascii', 'rule:stable-core-no-lab-imports', 'verification:architecture-vocabulary-tests', 'verification:clean-index-tests', 'verification:semantic-knowledge-tests']
+    truncated: false
+    not_assessed_kinds: []
+  outcome: PARTIAL
+  decision_relevant: true
+- id: QY-10
+  operation: context-for
+  terms: []
+  subject: src/sensemaking_skills/semantic_architecture/worktree_context.py
+  expect_kinds: []
+  target_ref: 7050dd84869bceeeef6e8add460cd1fde89a46d1
+  result:
+    hit_count: 11
+    claim_ids: ['alternative:dirty-tree-byte-audit', 'alternative:shared-clone-checkout', 'bounded_context:knowledge-stewardship', 'component:semantic-knowledge-plane', 'decision:index-from-temporary-worktree', 'layer:knowledge-plane', 'rule:console-output-ascii', 'rule:stable-core-no-lab-imports', 'verification:architecture-vocabulary-tests', 'verification:clean-index-tests', 'verification:semantic-knowledge-tests']
+    truncated: false
+    not_assessed_kinds: []
+  outcome: NOT_ASSESSED
+  decision_relevant: true
+- id: QY-11
+  operation: workspace-impact
+  terms: []
+  subject: null
+  expect_kinds: []
+  target_ref: 7050dd84869bceeeef6e8add460cd1fde89a46d1
+  result:
+    hit_count: 0
+    claim_ids: []
+    truncated: false
+    not_assessed_kinds: []
+  outcome: HIT
+  decision_relevant: true
+- id: QY-12
+  operation: build
+  terms: []
+  subject: null
+  expect_kinds: []
+  target_ref: 987cc390514c5f2a292f5192833bbfcff4c7d713
+  result:
+    hit_count: 0
+    claim_ids: []
+    truncated: false
+    not_assessed_kinds: []
+  outcome: NOT_APPLICABLE
+  decision_relevant: false
+- id: QY-13
+  operation: context-for
+  terms: []
+  subject: skills/using-sensemaking/references/portable-construction-loop-v1.md
+  expect_kinds: []
+  target_ref: 987cc390514c5f2a292f5192833bbfcff4c7d713
+  result:
+    hit_count: 7
+    claim_ids: ['component:using-sensemaking-skill', 'rule:runtime-owns-artifact-paths', 'decision:ontology-first-adaptive-sensemaking', 'observation:discovery-memory-as-built', 'observation:legacy-brief-producer-bypasses-runtime-paths', 'observation:legacy-plan-producer-overwrites-tracked-plan', 'verification:executor-path-handoff-tests']
+    truncated: false
+    not_assessed_kinds: []
+  outcome: PARTIAL
+  decision_relevant: true
+source_checks:
+- claim_id: arch:git-reviewed-local-memory
+  sources: [artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md, skills/using-sensemaking/references/portable-construction-loop-v1.md]
+  result: SUPPORTED
+- claim_id: inv:index-snapshot-vs-working-overlay
+  sources: [docs/semantic-architecture/persistent-knowledge-cli.md, src/sensemaking_skills/semantic_architecture/worktree_context.py]
+  result: SUPPORTED
+misses:
+- id: M-1
+  query_ref: QY-1
+  needed_for: Recover earlier reasoning from the implementation path.
+  kind: NOT_ASSESSED
+  resolved_by: Original source inspection and the recorded report; remaining categories stay unassessed.
+  follow_up: ADDED
+  proposal_ref: .sensemaking/knowledge/architecture.json
+- id: M-2
+  query_ref: QY-2
+  needed_for: Assess the distinct funnel path coverage.
+  kind: NOT_ASSESSED
+  resolved_by: Original source inspection and the recorded report; remaining categories stay unassessed.
+  follow_up: DEFERRED
+  proposal_ref: null
+- id: M-3
+  query_ref: QY-6
+  needed_for: Direct alternatives and contracts remain unassessed.
+  kind: NOT_ASSESSED
+  resolved_by: Original source inspection and the recorded report; remaining categories stay unassessed.
+  follow_up: DEFERRED
+  proposal_ref: null
+- id: M-4
+  query_ref: QY-7
+  needed_for: Assess the distinct funnel path coverage.
+  kind: NOT_ASSESSED
+  resolved_by: Original source inspection and the recorded report; remaining categories stay unassessed.
+  follow_up: DEFERRED
+  proposal_ref: null
+- id: M-5
+  query_ref: QY-9
+  needed_for: Check prior alternatives and contracts for source-index behavior.
+  kind: NOT_ASSESSED
+  resolved_by: Original source inspection and the recorded report; remaining categories stay unassessed.
+  follow_up: NO_MODEL_CHANGE
+  proposal_ref: null
+- id: M-6
+  query_ref: QY-10
+  needed_for: Recover ownership and decisions for worktree inspection.
+  kind: NOT_ASSESSED
+  resolved_by: Original source inspection and the recorded report; remaining categories stay unassessed.
+  follow_up: DEFERRED
+  proposal_ref: null
+- id: M-7
+  query_ref: QY-13
+  needed_for: Direct alternatives and contracts remain unassessed.
+  kind: NOT_ASSESSED
+  resolved_by: Original source inspection and the recorded report; remaining categories stay unassessed.
+  follow_up: DEFERRED
+  proposal_ref: null
+reconcile:
+- claim_id: observation:discovery-memory-as-built
+  disposition: ADD
+  applied: true
+  proposal_ref: .sensemaking/knowledge/architecture.json
+  proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID
+- claim_id: null
+  disposition: NO_MODEL_CHANGE
+  applied: false
+  proposal_ref: null
+  proposal_check: NOT_RUN
+persistence: committed
+action_authorized: false
+semantic_truth_established: false
+immutable: true
