@@ -791,6 +791,63 @@
           "src/sensemaking_skills/campaign_execution_cli.py"
         ]
       }
+    },
+    {
+      "id": "component:distribution-setup",
+      "kind": "component",
+      "statement": "At db821c25, the explicit installer maps a host and scope chosen by the caller to a filesystem discovery root, copies packaged Skill trees there, and classifies each destination as missing, current or different by file fingerprint. It never detects the active host and does not establish what a host loaded.",
+      "epistemic_status": "observed",
+      "authority_kind": "code",
+      "authority_ref": "src/sensemaking_skills/setup_skills.py",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/setup_skills.py",
+        "file:src/sensemaking_skills/harness_adapters.py"
+      ],
+      "attributes": {
+        "owned_paths": [
+          "src/sensemaking_skills/setup_skills.py",
+          "src/sensemaking_skills/harness_adapters.py"
+        ]
+      }
+    },
+    {
+      "id": "observation:release-declares-no-native-harness",
+      "kind": "observation",
+      "statement": "At db821c25, release-v1.0.yaml lists generic-agent-skills as the only supported harness and an empty native_harnesses list, so host-native Skill loading lies outside the declared support surface.",
+      "epistemic_status": "observed",
+      "authority_kind": "document",
+      "authority_ref": "release-v1.0.yaml",
+      "evidence_refs": [
+        "file:release-v1.0.yaml"
+      ],
+      "attributes": {}
+    },
+    {
+      "id": "component:campaign-core",
+      "kind": "component",
+      "statement": "At db821c25, the stable campaigns package (about 10,400 lines in 35 files) is the file-backed Campaign workspace and its deterministic lifecycle primitives. Campaign CLI registrations and the reviewed-knowledge bridge depend on it.",
+      "epistemic_status": "observed",
+      "authority_kind": "code",
+      "authority_ref": "src/sensemaking_skills/campaigns/__init__.py",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/campaigns/__init__.py",
+        "file:release-v1.0.yaml"
+      ],
+      "attributes": {}
+    },
+    {
+      "id": "observation:continuity-mechanisms-unrelated",
+      "kind": "observation",
+      "statement": "At db821c25, two continuity mechanisms exist: Skill-level session receipts (ADR 0032, PROPOSED) and file-backed Campaign state in the stable campaigns package, which ADR 0029 permits when continuation complexity warrants it. No reviewed record relates them, and ADR 0034 does not decide their relation.",
+      "epistemic_status": "observed",
+      "authority_kind": "document",
+      "authority_ref": "docs/adr/0034-ontology-first-adaptive-sensemaking.md",
+      "evidence_refs": [
+        "file:docs/adr/0032-session-and-query-receipts.md",
+        "file:docs/adr/0029-current-product-boundary.md",
+        "file:docs/adr/0034-ontology-first-adaptive-sensemaking.md"
+      ],
+      "attributes": {}
     }
   ],
   "relations": [
@@ -1271,6 +1328,39 @@
       "evidence_refs": [
         "file:src/sensemaking_skills/campaign_execution_cli.py"
       ]
+    },
+    {
+      "id": "rel:distribution-setup-package-core",
+      "subject": "component:distribution-setup",
+      "predicate": "belongs_to",
+      "object": "layer:package-core",
+      "evidence_refs": [
+        "file:release-v1.0.yaml"
+      ],
+      "epistemic_status": "observed"
+    },
+    {
+      "id": "rel:campaign-core-package-core",
+      "subject": "component:campaign-core",
+      "predicate": "belongs_to",
+      "object": "layer:package-core",
+      "evidence_refs": [
+        "file:release-v1.0.yaml"
+      ],
+      "epistemic_status": "observed"
+    },
+    {
+      "id": "rel:campaign-knowledge-context-campaign-core",
+      "subject": "component:campaign-knowledge-context",
+      "predicate": "relates_to",
+      "object": "component:campaign-core",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/campaign_knowledge_context.py"
+      ],
+      "epistemic_status": "observed",
+      "attributes": {
+        "cardinality": "N:M"
+      }
     }
   ]
 }
