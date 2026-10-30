@@ -71,3 +71,15 @@ This does not establish that all relevant decisions, alternatives or
 dependencies have been modeled. ADRs 0032 and 0033 remain proposed; mechanical
 proposal validation and later retrieval are not semantic truth or independent
 proof of agent benefit.
+
+## Reachability after reconciliation
+
+At clean commit `2e9bb5c7039da15b9321b94e5b994f9a946e3d27`, the same
+source-pinned index and two-path `context-for` query returned the controller
+and Steward owners respectively and `decision:ontology-first-adaptive-sensemaking`
+for both paths. Neither result was truncated. The controller context still
+reported contracts and alternatives `NOT_ASSESSED`; the Steward context still
+reported alternatives `NOT_ASSESSED`. This confirms those specific links are
+reachable in the query, not that a later agent will use them or that its
+decision context is complete. Both modified knowledge proposals passed the
+schema and reference checker before the commit.
