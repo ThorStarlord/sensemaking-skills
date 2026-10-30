@@ -226,6 +226,7 @@ procedure, not a reusable answer.
   and link the installer component to it with `constrained_by`. A later agent
   asking "does Sensemaking support Claude Code?" then gets the precise answer:
   install destinations exist, and native support is excluded until evidence exists.
+
 ## 9. Method notes
 
 - RELATE is proportionate. Two or three layers often settle a claim. Most
