@@ -259,7 +259,9 @@ def _check_envelope(c: Checker, data: dict, artifact_id: str, path: Path | None)
                     "a final receipt must record how it was persisted, not 'pending'")
         if persistence == "working_tree_only":
             c.warn("RECEIPT_NOT_DURABLE", "persistence",
-                   "receipt was not committed or uploaded; it is lost when this checkout is discarded")
+                   "declared persistence is working_tree_only, a write-time record; if HEAD "
+                   "does not contain this receipt it is lost when this checkout is discarded "
+                   "(summarize-receipts.py reports current Git state)")
     elif state == "in_progress":
         if immutable is True:
             c.error("RECEIPT_STATE_CONFLICT", "immutable", "an in_progress receipt cannot be immutable")
