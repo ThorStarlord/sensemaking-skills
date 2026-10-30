@@ -839,13 +839,45 @@
       "id": "observation:continuity-mechanisms-unrelated",
       "kind": "observation",
       "statement": "At db821c25, two continuity mechanisms exist: Skill-level session receipts (ADR 0032, PROPOSED) and file-backed Campaign state in the stable campaigns package, which ADR 0029 permits when continuation complexity warrants it. No reviewed record relates them, and ADR 0034 does not decide their relation.",
-      "epistemic_status": "observed",
+      "epistemic_status": "superseded",
       "authority_kind": "document",
       "authority_ref": "docs/adr/0034-ontology-first-adaptive-sensemaking.md",
       "evidence_refs": [
         "file:docs/adr/0032-session-and-query-receipts.md",
         "file:docs/adr/0029-current-product-boundary.md",
         "file:docs/adr/0034-ontology-first-adaptive-sensemaking.md"
+      ],
+      "attributes": {
+        "observed_ref": "db821c25d0201441ecdd89d490e49a4bcc1a173c",
+        "role": "design_relation",
+        "superseded_note": "Misleading as first recorded: the receipt contract, ADR 0029 and proposed ADR 0032 define an optional, one-way continuity.campaign_ref pointer from receipts to Campaign state. The statement confused a missing reviewed-knowledge relation with a missing product relation. Superseded for current reasoning by observation:receipt-campaign-pointer-contract and observation:receipt-campaign-pointer-runtime."
+      }
+    },
+    {
+      "id": "observation:receipt-campaign-pointer-contract",
+      "kind": "observation",
+      "statement": "At db821c25, the session-receipt contract defines one optional, one-way pointer: continuity.campaign_ref names repository-relative Campaign state when state must survive many sessions or actors (section 7). ADR 0029 places optional Campaign persistence in current product scope, and ADR 0032 (PROPOSED) describes the same receipt-to-Campaign pointer. The pointer gives receipts no authority over Campaign state.",
+      "epistemic_status": "observed",
+      "authority_kind": "document",
+      "authority_ref": "skills/using-sensemaking/references/session-receipt-v1.md",
+      "evidence_refs": [
+        "file:skills/using-sensemaking/references/session-receipt-v1.md",
+        "file:docs/adr/0029-current-product-boundary.md",
+        "file:docs/adr/0032-session-and-query-receipts.md"
+      ],
+      "attributes": {}
+    },
+    {
+      "id": "observation:receipt-campaign-pointer-runtime",
+      "kind": "observation",
+      "statement": "At db821c25, the receipt validator checks campaign_ref when it is present: it must be a repository-relative path that exists under the target repository. No module under src/ reads or writes session receipts or campaign_ref, and no Campaign workflow writes a reverse pointer. All recorded session receipts hold null, so the pointer is declared but unexercised. Campaign admission and completion receipts are a separate artifact.",
+      "epistemic_status": "observed",
+      "authority_kind": "code",
+      "authority_ref": "scripts/validate-receipt.py",
+      "evidence_refs": [
+        "file:scripts/validate-receipt.py",
+        "file:src/sensemaking_skills/campaign_completion_cli.py",
+        "file:src/sensemaking_skills/campaigns/completion.py"
       ],
       "attributes": {}
     }
@@ -1361,6 +1393,29 @@
       "attributes": {
         "cardinality": "N:M"
       }
+    },
+    {
+      "id": "rel:receipt-contract-relates-campaign-core",
+      "subject": "contract:receipt-schema",
+      "predicate": "relates_to",
+      "object": "component:campaign-core",
+      "attributes": {
+        "cardinality": "N:M"
+      },
+      "evidence_refs": [
+        "file:skills/using-sensemaking/references/session-receipt-v1.md"
+      ],
+      "epistemic_status": "observed"
+    },
+    {
+      "id": "rel:receipt-pointer-supersedes-continuity-claim",
+      "subject": "observation:receipt-campaign-pointer-contract",
+      "predicate": "supersedes",
+      "object": "observation:continuity-mechanisms-unrelated",
+      "evidence_refs": [
+        "file:skills/using-sensemaking/references/session-receipt-v1.md"
+      ],
+      "epistemic_status": "observed"
     }
   ]
 }
