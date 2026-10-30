@@ -1,0 +1,133 @@
+artifact_id: semantic_query_receipt
+schema_version: 1
+session_ref: 2026-10-30-grounded-prospective-construction
+state: final
+created_at: '2026-10-30T20:45:48Z'
+updated_at: '2026-10-30T20:48:06Z'
+target_repository: ThorStarlord/sensemaking-skills
+modes:
+- RECALL
+- RECONCILE
+decision: Compare prospective opportunities and correct a contradicted knowledge pointer.
+cli_identity:
+  sensemaking_source_ref: null
+  invocation_prefix: sensemaking-skills
+  version_output: sensemaking-skills, version 1.0.0rc5.dev0
+index:
+  indexed_ref: 2f650f8d9cf968d9086e4e531e91e0971b6c1fb7
+  current_head: 2f650f8d9cf968d9086e4e531e91e0971b6c1fb7
+  worktree_clean: false
+  uncommitted_changes_not_indexed: true
+# Two build invocations overlapped; the observed second reported already indexed.
+# An initial search failed because the database was not yet available; the later search succeeded.
+queries:
+- id: QY-1
+  operation: build
+  terms: []
+  subject: null
+  expect_kinds: []
+  target_ref: 2f650f8d9cf968d9086e4e531e91e0971b6c1fb7
+  result:
+    hit_count: 0
+    claim_ids: []
+    truncated: false
+    not_assessed_kinds: []
+  outcome: NOT_APPLICABLE
+  decision_relevant: false
+- id: QY-2
+  operation: search
+  terms:
+  - prospective
+  - possibility
+  subject: null
+  expect_kinds: &id001 []
+  target_ref: 2f650f8d9cf968d9086e4e531e91e0971b6c1fb7
+  result:
+    hit_count: 11
+    claim_ids:
+    - decision:ontology-first-adaptive-sensemaking
+    - cap:breadth-exploration-guidance
+    - cap:possibility-records
+    - cap:repository-only-discovery
+    - conseq:prospective-decision-memory-reuse
+    - poss:construction-time-possibility-reconciliation
+    - poss:cross-episode-possibility-synthesis
+    - poss:possibility-memory
+    - poss:possibility-reconsideration-from-change
+    - poss:ranked-possibility-backlog
+    - poss:repository-local-prospective-decision-memory
+    truncated: false
+    not_assessed_kinds: []
+  outcome: HIT
+  decision_relevant: true
+- id: QY-3
+  operation: explain
+  terms: []
+  subject: poss:cross-episode-possibility-synthesis
+  expect_kinds:
+  - alternative
+  - verification
+  target_ref: 2f650f8d9cf968d9086e4e531e91e0971b6c1fb7
+  result:
+    hit_count: 8
+    claim_ids:
+    - poss:cross-episode-possibility-synthesis
+    - cap:possibility-records
+    - goal:compounding-product-knowledge
+    - hyp:cross-episode-synthesis-recurs
+    - hyp:later-sessions-consult-knowledge
+    - poss:git-authored-knowledge-index
+    - poss:strategic-continuity-reassessment
+    - poss:strategic-exploration-funnel
+    truncated: false
+    not_assessed_kinds:
+    - alternative
+    - verification
+  outcome: PARTIAL
+  decision_relevant: true
+- id: QY-4
+  operation: explain
+  terms: []
+  subject: hyp:cross-episode-synthesis-recurs
+  expect_kinds: *id001
+  target_ref: 2f650f8d9cf968d9086e4e531e91e0971b6c1fb7
+  result:
+    hit_count: 3
+    claim_ids:
+    - hyp:cross-episode-synthesis-recurs
+    - poss:capability-learning-analysis
+    - poss:cross-episode-possibility-synthesis
+    truncated: false
+    not_assessed_kinds: []
+  outcome: HIT
+  decision_relevant: true
+source_checks:
+- claim_id: poss:cross-episode-possibility-synthesis
+  sources:
+  - docs/idea-library.md
+  - skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md
+  result: SUPPORTED
+- claim_id: hyp:cross-episode-synthesis-recurs
+  sources:
+  - .sensemaking/knowledge/possibilities.json
+  - docs/idea-library.md
+  result: SUPPORTED
+misses:
+- id: M-1
+  query_ref: QY-3
+  needed_for: Alternative paths and verification for the synthesis opportunity.
+  kind: NOT_ASSESSED
+  resolved_by: 'Source inspection: docs/idea-library.md and prospective synthesis;
+    no comparative benefit established.'
+  follow_up: NO_MODEL_CHANGE
+  proposal_ref: null
+reconcile:
+- claim_id: null
+  disposition: NO_MODEL_CHANGE
+  applied: false
+  proposal_ref: null
+  proposal_check: NOT_RUN
+persistence: committed
+action_authorized: false
+semantic_truth_established: false
+immutable: true
