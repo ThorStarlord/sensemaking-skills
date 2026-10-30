@@ -1,0 +1,61 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-10-30-using-sensemaking-self-improvement-addendum
+state: final
+created_at: "2026-10-30T09:26:22Z"
+updated_at: "2026-10-30T09:26:22Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: f83491d5d157d28990c511be9091540fa7b42435
+  end_ref: 62518564031c610146e70b94d089c2ae99476170
+  worktree_clean_at_end: true
+skill_identity:
+  load_mode: manual_explicit_load
+  sensemaking_source_ref: 62518564031c610146e70b94d089c2ae99476170
+goal:
+  statement: "Record PR 663 and the final manual reapplication in a linked successor to the self-improvement receipt."
+  source: owner_message
+  source_ref: null
+delegation:
+  granted: [read, local_write, run_local_commands, commit, push, open_pr, merge]
+  withheld: [release, deploy, tracker_write, external_publication, knowledge_edit]
+continuity:
+  resumes: 2026-10-30-using-sensemaking-self-improvement
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: Add the installed-versus-loaded rule and merge it
+    capability: using-sensemaking
+    status: completed
+    reason: "Merged as PR #663 (62518564). Core section 2 separates a copy's parity from what a host loaded. Native and manual loading rules in the references are unchanged."
+    artifact_refs: [skills/using-sensemaking/SKILL.md, STATUS.md]
+    validation:
+      - command: "source and diff inspection (unit tests not run under owner policy)"
+        result: NOT_RUN
+  - id: R-2
+    responsibility: Reapply the final revision manually and record its state
+    capability: using-sensemaking
+    status: completed
+    reason: "The final SKILL.md at origin/main 62518564 was read manually and the new paragraph applied. No host-native reload. The earlier assessments used f83491d5, which predates the paragraph."
+    artifact_refs: [skills/using-sensemaking/SKILL.md]
+    validation:
+      - command: "manual check that origin/main SKILL.md contains the installed-not-loaded section"
+        result: PASS
+findings:
+  - id: F-1
+    statement: "The parent receipt's end_ref stops at f83491d5 and does not list PRs #662 and #663. PR #662 is its own R-4 work and PR #663 is recorded here. The parent is not edited."
+    epistemic_status: OBSERVED
+    evidence_refs: [.sensemaking/receipts/2026-10-30-using-sensemaking-self-improvement.session.yaml]
+    disposition: resolved
+open_questions: []
+stop:
+  disposition: GOAL_SATISFIED
+  reason: "Successor record complete. The parent receipt's Q-1 is unchanged and still needs an owner decision."
+next:
+  warranted_responsibility: "Owner decision on the parent receipt Q-1 (no-records repository and write authority); not blocked here."
+  blocked_on: []
+persistence: committed
+claim_ceiling: "Records the final manual reapplication and PR 663. No host-native reload; unit tests NOT_RUN."
+action_authorized_by_receipt: false
+immutable: true
