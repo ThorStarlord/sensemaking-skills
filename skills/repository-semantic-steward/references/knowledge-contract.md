@@ -75,7 +75,8 @@ The version-2 constructs have exact constraints (checked by `knowledge-proposal-
 | `architecture_rule` | `rule_type` is one of `convention`, `dependency_direction`, `forbidden_term`, `naming`, `placement`; `severity` is `warning` or `error`; `applies_to` lists repository paths or globs (scope a directory as `dir/**`; a bare `dir/` matches no file) or is empty with an `applies_to` relation. `dependency_direction` needs `allowed_targets` or `forbidden_targets`; `naming` and `placement` need `pattern`; `forbidden_term` needs `terms`. A path-scoped authority boundary is a `convention`; one without a path scope is an `invariant` or `constraint` |
 | `flows_to` | component -> component, with `attributes.carries` naming a `contract` claim. A progression between domain concepts uses `derived_from` or `references` with `attributes.conceptual_relation` |
 | `belongs_to`, `transitions_to`, `exposes`, `applies_to` | target `layer` or `bounded_context`; `lifecycle_state` -> `lifecycle_state`; `component` -> `contract`; `architecture_rule` -> `component`, `layer` or `bounded_context` |
-| `synonym_of`, `distinct_from`, `relates_to` | two `domain_concept` claims; `relates_to` needs `cardinality` (`1:1`, `1:N`, `N:M`) |
+| `synonym_of`, `distinct_from` | two `domain_concept` claims |
+| `relates_to` | any two claims (ADR 0033 and `knowledge.py`); `cardinality` is required (`1:1`, `1:N`, `N:M`) |
 
 Areas not yet assessed go in the bootstrap coverage report, not in claims. A new type is justified only through [schema evolution](schema-evolution.md).
 
