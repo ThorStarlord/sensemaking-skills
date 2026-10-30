@@ -218,7 +218,7 @@ def format_ledger_report(ledger: dict) -> str:
     )
     for code in sorted(ledger["unique_error_codes"].keys()):
         data = ledger["unique_error_codes"][code]
-        repeatable = "⚠️ Yes" if data["is_repeatable"] else "No"
+        repeatable = "Yes [!]" if data["is_repeatable"] else "No"
         lines.append(
             f"| `{code}` | {data['occurrence_count']} | "
             f"{data['independent_run_count']} | {repeatable} |"

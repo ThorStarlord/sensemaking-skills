@@ -157,8 +157,8 @@ def main():
         "",
         "## Summary",
         f"- Total Cases: {len(results)}",
-        f"- Passed: {success_count} ✅",
-        f"- Failed: {fail_count} ❌",
+        f"- Passed: {success_count}",
+        f"- Failed: {fail_count}",
         f"- Missing Required Regressions: {len(required_missing)}",
         f"- Coverage Failures: {len(coverage_failures)}",
         "",
@@ -168,14 +168,14 @@ def main():
     ]
     
     for r in results:
-        status_icon = "✅ PASS" if r["status"] == "PASS" else "❌ FAIL"
-        report_lines.append(f"| `{r['validator']}` | `{os.path.basename(r['fixture'])}` | {r['case']} | {status_icon} | {r['detail']} |")
+        status_label = "PASS" if r["status"] == "PASS" else "FAIL"
+        report_lines.append(f"| `{r['validator']}` | `{os.path.basename(r['fixture'])}` | {r['case']} | {status_label} | {r['detail']} |")
     
     for m in required_missing:
-        report_lines.append(f"| `{m['validator']}` | `{m['fixture']}` | N/A | ❌ MISSING | REQUIRED REGRESSION NOT FOUND |")
+        report_lines.append(f"| `{m['validator']}` | `{m['fixture']}` | N/A | MISSING | REQUIRED REGRESSION NOT FOUND |")
     
     for c in coverage_failures:
-        report_lines.append(f"| `{c}` | N/A | N/A | ❌ [CRITICAL] | VALIDATOR HAS NO FIXTURE DIRECTORY |")
+        report_lines.append(f"| `{c}` | N/A | N/A | [CRITICAL] | VALIDATOR HAS NO FIXTURE DIRECTORY |")
 
     if fail_count > 0:
         report_lines.append("\n## Failure Breakdowns")

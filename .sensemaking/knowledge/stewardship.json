@@ -316,6 +316,26 @@
         "disposition": "rejected",
         "scope": "Observed on this repository's shallow cloud checkout on 2026-10-28; revisit only if shallow sources need not be supported"
       }
+    },
+    {
+      "id": "lesson:console-guard-literal-print-arguments-only",
+      "kind": "lesson",
+      "statement": "The ASCII console guard (tests/test_console_output_ascii_only.py) inspects only string literals written directly inside print() calls, so non-ASCII text that reaches print() through a variable passes it. On this Windows host a redirected stdout is cp1252, and printing U+2705 raises UnicodeEncodeError (probed). scripts/test-validators.py and scripts/analyze-run-failures.py printed report text that carried such glyphs, and only the cli.py main() entry point escapes unencodable output, so scripts/ entrypoints depend on ASCII source discipline alone.",
+      "authority_kind": "document",
+      "authority_ref": "CLAUDE.md",
+      "evidence_refs": [
+        "file:tests/test_console_output_ascii_only.py",
+        "file:scripts/test-validators.py",
+        "file:scripts/analyze-run-failures.py",
+        "file:scripts/portfolio-orchestrator.py",
+        "file:src/sensemaking_skills/cli.py"
+      ],
+      "epistemic_status": "observed",
+      "attributes": {
+        "scope": "Source inspection and a stdout-encoding probe on one Windows host at 0b1df456. The two scripts were not executed (local test-runner execution is withheld by the construction policy). Whether later agents apply this lesson is NOT TESTED.",
+        "operationalized_by": "Not operationalized by a new check. The guard is unchanged; non-ASCII glyphs were replaced in the three scripts' console-reachable report text. scripts/workflow-runtime.py was not assessed for console-reachable text.",
+        "staleness_condition": "Stale when the guard learns to follow data flow into print(), when scripts/ gains an escape layer, or when the named print paths change."
+      }
     }
   ],
   "relations": [

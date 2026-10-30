@@ -235,7 +235,7 @@ class PortfolioOrchestrator:
         lines.append("## Results by Project")
         lines.append("")
         for r in results:
-            icon = "✓" if r["status"] == "completed" else "✗" if r["status"] == "failed" else "→"
+            icon = "[OK]" if r["status"] == "completed" else "[FAIL]" if r["status"] == "failed" else "[->]"
             lines.append(f"### {icon} {r['project_name']}")
             lines.append(f"- **Type**: {r['classification_type']} ({r['confidence']}%)")
             lines.append(f"- **Workflow**: {r['workflow']}")

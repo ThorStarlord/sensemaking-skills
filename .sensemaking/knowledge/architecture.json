@@ -923,6 +923,20 @@
         "file:src/sensemaking_skills/campaigns/completion.py"
       ],
       "attributes": {}
+    },
+    {
+      "id": "verification:console-output-ascii-guard",
+      "kind": "verification",
+      "statement": "Guard test: string literals passed directly to print() in src/ and scripts/ must be ASCII-only. It inspects literal arguments only and does not follow a variable into print().",
+      "epistemic_status": "observed",
+      "authority_kind": "test",
+      "authority_ref": "tests/test_console_output_ascii_only.py",
+      "evidence_refs": [
+        "file:tests/test_console_output_ascii_only.py"
+      ],
+      "attributes": {
+        "claim_ceiling": "Test source presence; execution not evidenced in the 2026-10-30 construction session (NOT_RUN by construction policy)"
+      }
     }
   ],
   "relations": [
@@ -1504,6 +1518,19 @@
         "conceptual_relation": "implementation_outside_declared_support",
         "implemented_targets": ["claude", "codex", "opencode"],
         "runtime_invocation_evidence": "none in the reviewed graph; the exclusion constrains supported claims, not installer behaviour"
+      }
+    },
+    {
+      "id": "rel:console-ascii-rule-tested-by-guard",
+      "subject": "rule:console-output-ascii",
+      "predicate": "tested_by",
+      "object": "verification:console-output-ascii-guard",
+      "evidence_refs": [
+        "file:tests/test_console_output_ascii_only.py"
+      ],
+      "epistemic_status": "observed",
+      "attributes": {
+        "scope": "Declared coverage of literal print() arguments only; variable-carried text is not covered"
       }
     }
   ]
