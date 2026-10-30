@@ -76,7 +76,7 @@ The version-2 constructs have exact constraints (checked by `knowledge-proposal-
 | `flows_to` | component -> component, with `attributes.carries` naming a `contract` claim. A progression between domain concepts uses `derived_from` or `references` with `attributes.conceptual_relation` |
 | `belongs_to`, `transitions_to`, `exposes`, `applies_to` | target `layer` or `bounded_context`; `lifecycle_state` -> `lifecycle_state`; `component` -> `contract`; `architecture_rule` -> `component`, `layer` or `bounded_context` |
 | `synonym_of`, `distinct_from` | two `domain_concept` claims |
-| `relates_to` | any two claims (ADR 0033 and `knowledge.py`); `cardinality` is required (`1:1`, `1:N`, `N:M`) |
+| `relates_to` | the validator accepts any two claims and requires `cardinality` (`1:1`, `1:N`, `N:M`); ADR 0033 scopes it to domain-concept cardinality. Use `references` with `attributes.conceptual_relation` for one-way or field-level relations |
 
 Areas not yet assessed go in the bootstrap coverage report, not in claims. A new type is justified only through [schema evolution](schema-evolution.md).
 

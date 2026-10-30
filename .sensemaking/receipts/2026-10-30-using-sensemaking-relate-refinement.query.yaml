@@ -1,0 +1,120 @@
+artifact_id: semantic_query_receipt
+schema_version: 1
+session_ref: 2026-10-30-using-sensemaking-relate-refinement
+state: final
+created_at: "2026-10-30T17:14:11Z"
+updated_at: "2026-10-30T17:14:11Z"
+target_repository: ThorStarlord/sensemaking-skills
+modes: [RECALL, RECONCILE]
+decision: "Whether the overstated positive records and the constrained_by relation change the relational verdicts, and which reviewed records should be corrected."
+cli_identity:
+  sensemaking_source_ref: d1a5f923c75dd7cc54866e6430fe5c5fdb770726
+  invocation_prefix: "PYTHONPATH=src python -c 'from sensemaking_skills.cli import main; main()' semantic (worktree src; the global PATH CLI resolves to the main checkout)"
+  version_output: null
+index:
+  indexed_ref: 1f25cad4dd173ee5c06a923cd8e5fc0f4680cb27
+  current_head: 1f25cad4dd173ee5c06a923cd8e5fc0f4680cb27
+  worktree_clean: true
+  uncommitted_changes_not_indexed: false
+queries:
+  - id: QY-1
+    operation: build
+    terms: []
+    subject: null
+    expect_kinds: []
+    target_ref: 1f25cad4dd173ee5c06a923cd8e5fc0f4680cb27
+    result:
+      hit_count: 0
+      claim_ids: []
+      truncated: false
+      not_assessed_kinds: []
+    outcome: NOT_APPLICABLE
+    decision_relevant: false
+  - id: QY-2
+    operation: search
+    terms: ["reads them at session start"]
+    subject: null
+    expect_kinds: []
+    target_ref: 1a71df887e994219f1002ddbcd601b34d39104be
+    result:
+      hit_count: 1
+      claim_ids: [component:receipt-validator]
+      truncated: false
+      not_assessed_kinds: []
+    outcome: HIT
+    decision_relevant: true
+  - id: QY-3
+    operation: search
+    terms: ["reads them at session start"]
+    subject: null
+    expect_kinds: []
+    target_ref: 1f25cad4dd173ee5c06a923cd8e5fc0f4680cb27
+    result:
+      hit_count: 0
+      claim_ids: []
+      truncated: false
+      not_assessed_kinds: []
+    outcome: HIT
+    decision_relevant: true
+  - id: QY-4
+    operation: explain
+    terms: []
+    subject: component:distribution-setup
+    expect_kinds: []
+    target_ref: 1f25cad4dd173ee5c06a923cd8e5fc0f4680cb27
+    result:
+      hit_count: 3
+      claim_ids: [component:distribution-setup, layer:package-core, observation:release-declares-no-native-harness]
+      truncated: false
+      not_assessed_kinds: []
+    outcome: HIT
+    decision_relevant: true
+  - id: QY-5
+    operation: explain
+    terms: []
+    subject: contract:receipt-schema
+    expect_kinds: []
+    target_ref: 1f25cad4dd173ee5c06a923cd8e5fc0f4680cb27
+    result:
+      hit_count: 3
+      claim_ids: [contract:receipt-schema, arch:receipt-based-memory, component:campaign-core]
+      truncated: false
+      not_assessed_kinds: []
+    outcome: HIT
+    decision_relevant: true
+source_checks:
+  - claim_id: component:receipt-validator
+    sources: [".claude/settings.json", ".claude/hooks/sessionstart.md"]
+    result: CONTRADICTED
+  - claim_id: component:distribution-setup
+    sources: ["release-v1.0.yaml:113", "src/sensemaking_skills/harness_adapters.py"]
+    result: SUPPORTED
+  - claim_id: contract:receipt-schema
+    sources: ["skills/using-sensemaking/references/session-receipt-v1.md:196", "skills/using-sensemaking/references/session-receipt-v1.md:283"]
+    result: SUPPORTED
+misses: []
+reconcile:
+  - claim_id: component:receipt-validator
+    disposition: REVISE
+    applied: true
+    proposal_ref: .sensemaking/knowledge/architecture.json
+    proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID
+  - claim_id: component:distribution-setup
+    disposition: REVISE
+    applied: true
+    proposal_ref: .sensemaking/knowledge/architecture.json
+    proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID
+  - claim_id: observation:release-declares-no-native-harness
+    disposition: REVISE
+    applied: true
+    proposal_ref: .sensemaking/knowledge/architecture.json
+    proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID
+  - claim_id: contract:receipt-schema
+    disposition: REVISE
+    applied: true
+    proposal_ref: .sensemaking/knowledge/architecture.json
+    proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID
+persistence: committed
+action_authorized: false
+semantic_truth_established: false
+immutable: true
