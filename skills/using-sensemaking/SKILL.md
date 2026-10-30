@@ -193,6 +193,12 @@ Locate artifacts by their recorded identity and resolved paths, not by an
 assumed filename. Sparse-repository recovery, artifact reuse and currentness
 checks: `references/portable-construction-loop-v1.md` section 1a.
 
+**Installed is not loaded.** A Skill copy's parity with a repository revision is
+a file-level fact. It does not show which revision a host loaded for a session,
+and a host may keep an earlier copy. Report the loaded revision only from the
+host's own evidence or from content you can compare, never from parity alone; a
+manual load of repository text is labelled as one.
+
 **Continuity is evidence, not the discovery target.** If
 `.sensemaking/receipts/` exists, read relevant receipts for unfinished sessions
 and open questions, using `scripts/summarize-receipts.py` only if that optional
