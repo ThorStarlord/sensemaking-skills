@@ -101,6 +101,18 @@ For file-based installed Skill roots:
 python scripts/probe_skill_distribution.py --no-write
 ```
 
+A bare invocation checks only the generic root `~/.agents/skills`, and a bare
+`--sync` writes to that root. The Claude Code and Codex installs above live in
+other roots (`~/.claude/skills`; `$CODEX_HOME/skills`, default
+`~/.codex/skills`). Name the root the harness actually reads, and pass the same
+`--installed-dir` to `--sync`:
+
+```bash
+python scripts/probe_skill_distribution.py --installed-dir ~/.claude/skills --no-write
+```
+
+A verdict for one root says nothing about another root's copy.
+
 The probe reports synchronized, line-ending-only, content-drift, and missing
 Skill copies. It compares each Skill's `SKILL.md` and every file under its
 `references/` directory, because a Skill's core loads its references on demand:

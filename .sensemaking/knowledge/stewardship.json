@@ -277,13 +277,14 @@
       "authority_ref": "scripts/repo_probes.py",
       "evidence_refs": [
         "file:scripts/repo_probes.py",
+        "file:scripts/probe_skill_distribution.py",
         "file:INSTALLATION.md",
         "file:skills/using-sensemaking/SKILL.md"
       ],
       "epistemic_status": "observed",
       "attributes": {
         "decision_changed": "Whether a host's installed Sensemaking Skill can be reported as current after a merge.",
-        "claim_ceiling": "Observed on one scratch setup-skills install; hosted or remote Skill surfaces are not covered by the file probe."
+        "claim_ceiling": "Observed on one scratch setup-skills install; hosted or remote Skill surfaces are not covered by the file probe. The probe's default root is ~/.agents/skills, not the Claude Code root ~/.claude/skills; a Claude Code install is verified only when --installed-dir names its root, and a verdict covers only the root probed."
       }
     },
     {
