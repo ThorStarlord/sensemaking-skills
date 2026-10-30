@@ -134,6 +134,9 @@ def inspect_knowledge_proposal(repo_root: Path, proposal: Path) -> dict:
 
     # Placeholder endpoints are restricted to in-memory validation. They are
     # NEVER indexed, persisted, displayed as factual claims or marked verified.
+    # Their identity and kind are checked; their own attributes and rule scope
+    # are not, because the owning file is validated where it is read.
+    external_ids = frozenset(needed - candidate_ids)
     placeholders = [
         KnowledgeClaim(
             id=identifier, kind=external_kinds.get(identifier, "hypothesis"),
@@ -142,14 +145,14 @@ def inspect_knowledge_proposal(repo_root: Path, proposal: Path) -> dict:
             authority_ref="proposal-validation-only", source_ref="proposal-validation-only",
             evidence_refs=("proposal-validation-only",),
         )
-        for identifier in sorted(needed - candidate_ids)
+        for identifier in sorted(external_ids)
     ]
     validate_snapshot(KnowledgeSnapshot(
         repository="proposal-validation-only", target_ref=target_ref,
         claims=tuple([*claims, *placeholders]), relations=tuple(relations),
         source_scope=("proposed non-authoritative working records",),
         limits=("Uncommitted proposals and dirty source bytes are not authoritative.",),
-    ))
+    ), existence_only_ids=external_ids)
     return {
         "code": "SEMANTIC_KNOWLEDGE_PROPOSAL_VALID",
         "valid": True,

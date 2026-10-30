@@ -336,6 +336,36 @@
         "operationalized_by": "Not operationalized by a new check. The guard is unchanged; non-ASCII glyphs were replaced in the three scripts' console-reachable report text. scripts/workflow-runtime.py was not assessed for console-reachable text.",
         "staleness_condition": "Stale when the guard learns to follow data flow into print(), when scripts/ gains an escape layer, or when the named print paths change."
       }
+    },
+    {
+      "id": "decision:proposal-check-existence-only-endpoints",
+      "kind": "decision",
+      "statement": "knowledge-proposal-check checks an endpoint whose authored record lives in another file for existence and kind only. That record's own attributes and rule scope are validated where its file is read, so a proposal is not rejected for another file's defect. Kind-dependent relation checks still apply to the endpoint.",
+      "authority_kind": "delegated",
+      "authority_ref": "docs/adr/0031-persistent-semantic-stewardship.md",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/stewardship_validation.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge.py"
+      ],
+      "attributes": {
+        "scope": "Delegated construction choice within ADR 0031; not an owner mandate",
+        "claim_ceiling": "Source inspection and proposal-check on this proposal before and after the change; unit tests NOT_RUN by construction policy; no independent-agent use observed",
+        "staleness_condition": "Stale if proposal-check starts validating external endpoint attributes, or if placeholders stop carrying the declared kind"
+      }
+    },
+    {
+      "id": "alternative:carry-external-attributes-into-placeholders",
+      "kind": "alternative",
+      "statement": "Rejected alternative: copy an external record's attributes into proposal placeholders so v2 checks run on real data. It reports another file's defect as a proposal failure, and a rule whose scope is given by a relation in a third file would still fail the scope check.",
+      "authority_kind": "delegated",
+      "authority_ref": "docs/adr/0031-persistent-semantic-stewardship.md",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/stewardship_validation.py"
+      ],
+      "attributes": {
+        "disposition": "rejected",
+        "scope": "Considered at 465420ed while choosing the proposal-check repair recorded by the 2026-10-30 console-ASCII receipt"
+      }
     }
   ],
   "relations": [
@@ -625,6 +655,26 @@
       "object": "verification:clean-index-tests",
       "evidence_refs": [
         "file:tests/test_semantic_knowledge_self_repo.py"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:console-guard-lesson-references-rule",
+      "subject": "lesson:console-guard-literal-print-arguments-only",
+      "predicate": "references",
+      "object": "rule:console-output-ascii",
+      "evidence_refs": [
+        "file:tests/test_console_output_ascii_only.py"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:proposal-decision-rejected-alternative",
+      "subject": "decision:proposal-check-existence-only-endpoints",
+      "predicate": "references",
+      "object": "alternative:carry-external-attributes-into-placeholders",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/stewardship_validation.py"
       ],
       "epistemic_status": "declared"
     }
