@@ -63,6 +63,10 @@ sources:
 - Which areas were assessed, and which remain `NOT_ASSESSED`?
 - Is the model current against the revision you are reasoning about?
 
+Recalled records answer these questions only where a current source check
+confirms them for the areas the goal turns on. A summary of records is not an
+inspection of the systems they describe.
+
 If the answers exist and are current, reuse them and go to exploration. If they
 are missing or materially stale for the area the goal turns on, bootstrap or
 deepen that area by invoking the `repository-semantic-steward` Skill in
@@ -121,6 +125,17 @@ Do not repeat the full bootstrap. Instead:
 6. Apply the specialist that owns it.
 7. Persist meaningful changes.
 8. Stop, or continue within the delegated reasoning mission.
+
+**Re-warrant recorded next steps.** A receipt's `next`, a `STATUS.md`
+recommendation or an earlier queue names a candidate responsibility, not the
+current one. Before applying a specialist to it, check that its trigger and
+premises still hold at the current revision, and compare it on the same terms
+as the alternatives in section 3: productive reasoning, reversible construction
+within the granted authority, investigation that could change the decision,
+reconsideration of an upstream assumption, and stopping. Compare expected
+contribution to the decision, opportunity cost, dependencies, reversibility and
+consequences. A missing qualification or observation result is evidence about
+confidence; it is not by itself the most important next responsibility.
 
 Understanding should improve across sessions; a session that only re-derives
 what the records already say has not used them.
