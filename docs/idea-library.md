@@ -139,7 +139,7 @@ Construction paths and evidence prerequisites that earlier drafts listed as poss
 - **Alignment:** `ALIGNED` since 2026-10-28: the owner's plan PR 4 and follow-up message direct exploration to recall retained possibilities and record consequential new synthesis. Earlier assessment at `d0af33b`: `ADJACENT`, because ADR 0031 names exploration and synthesis in the reasoning plane but not synthesis of product futures from retained possibilities.
 - **Realization:** `PARTIALLY_IMPLEMENTED` since plan PR 4: funnel section 4 and `strategic-repository-analysis` section 1B tell agents to recall retained possibilities and retain new syntheses, and one same-session exploration is recorded (section 6). Cross-session use is not established. Earlier assessment at `d0af33b`: `NOT_ASSESSED`; a lexical search of `skills/` found no guidance for synthesizing retained possibilities, and the learning policy says cross-episode synthesis "is currently agent-owned reasoning" (`skills/using-sensemaking/references/learning-reconciliation-policy-v0.md:355`).
 - **Disposition history:** `EXPLORATORY` (owner plan example, 2026-10-28); `SELECTED` for its guidance under plan PR 4 (2026-10-28).
-- **Assumptions:** ASSUMPTION-1; and that cross-episode synthesis is a stable, recurring responsibility worth retained structure (not yet recorded as a hypothesis claim).
+- **Assumptions:** ASSUMPTION-1; and `hyp:cross-episode-synthesis-recurs`, the hypothetical premise that cross-episode synthesis is a stable, recurring responsibility worth retained structure. It is also referenced by `poss:capability-learning-analysis`; the shared premise does not establish either possibility's value.
 
 #### `poss:possibility-reconsideration-from-change`: reconsideration from indexed change
 
