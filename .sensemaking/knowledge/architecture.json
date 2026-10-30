@@ -870,7 +870,7 @@
     {
       "id": "observation:receipt-campaign-pointer-runtime",
       "kind": "observation",
-      "statement": "At db821c25, the receipt validator checks campaign_ref when it is present: it must be a repository-relative path that exists under the target repository. No module under src/ reads or writes session receipts or campaign_ref, and no Campaign workflow writes a reverse pointer. All recorded session receipts hold null, so the pointer is declared but unexercised. Campaign admission and completion receipts are a separate artifact.",
+      "statement": "At db821c25, the receipt validator checks campaign_ref when it is present: it must be a repository-relative path, and it must exist under the target repository when --target-repo is given. No module under src/ reads or writes session receipts or campaign_ref, and no Campaign workflow writes a reverse pointer. All 29 committed session receipts hold null, so the pointer is declared but unexercised. Campaign admission and completion receipts are a separate artifact.",
       "epistemic_status": "observed",
       "authority_kind": "code",
       "authority_ref": "scripts/validate-receipt.py",
