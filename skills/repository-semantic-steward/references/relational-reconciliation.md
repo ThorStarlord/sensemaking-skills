@@ -195,15 +195,18 @@ procedure, not a reusable answer.
   the owner escalation was unnecessary.
 - **Knowledge:** reconcile. The reviewed relation between the receipt contract
   and the Campaign core existed only after the correction. Its evidence should
-  name the governing contract, ADR 0029, and the unexercised status.
+  name the governing contract (the pointer field and section 7) and ADR 0032, and
+  record the pointer field and the unexercised status.
 
 ### Case B: native-harness support
 
 - **Claim:** the product has no native harness relationship. Scope: the release
   support surface and the installer. Kind: absence.
 - **Retrieval:** the reviewed graph held an observation that the release declares
-  an empty `native_harnesses` list. It held no record of the installer's explicit
-  harness adapters.
+  an empty `native_harnesses` list, and a `distribution-setup` component that
+  describes the installer's explicit host-to-root mapping. No relation linked the
+  two. A literal search for "native harness" returned nothing, because the graph
+  writes the identifier as `native_harnesses`. Search for identifier variants too.
 - **Layers:**
   - Declared exclusion: `release-v1.0.yaml` declares `native_harnesses: []` and
     excludes native harness discovery and invocation from the 1.0 support promise
@@ -219,10 +222,10 @@ procedure, not a reusable answer.
   evidence. It is not a capability gap that needs an owner decision. Changing the
   1.0 promise would be an owner decision, and the release names the condition
   under which it could change.
-- **Knowledge:** reconcile. Record the exclusion and its condition, and record the
-  adapter layer, so a later agent asking "does Sensemaking support Claude Code?"
-  gets a precise answer.
-
+- **Knowledge:** reconcile. Record the exclusion's condition on its observation,
+  and link the installer component to it with `constrained_by`. A later agent
+  asking "does Sensemaking support Claude Code?" then gets the precise answer:
+  install destinations exist, and native support is excluded until evidence exists.
 ## 9. Method notes
 
 - RELATE is proportionate. Two or three layers often settle a claim. Most
