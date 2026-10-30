@@ -153,7 +153,7 @@ grep -v "Do NOT.*inspect\|Do NOT.*orchestrate" .claude/hooks/sessionstart.md
 1. **Claude Code**:
    - No hook is configured: `.claude/settings.json` is `{}`; this file is a description
    - `CLAUDE.md` ("SessionStart hook" section) names the skill and points here
-   - The skill tree is copied into an agent-discoverable skills directory (`~/.claude/skills` per `INSTALLATION.md`; `~/.agents/skills` or the Superpowers plugin cache per `src/sensemaking_skills/setup_skills.py`, which never silently overwrites an installed copy); `scripts/probe_skill_distribution.py` reports drift between `skills/<skill>/` and the installed copy
+   - The skill tree is copied into an agent-discoverable skills directory (`~/.claude/skills` per `INSTALLATION.md`; `~/.agents/skills` or the Superpowers plugin cache per `src/sensemaking_skills/setup_skills.py`, which never silently overwrites an installed copy); `scripts/probe_skill_distribution.py` reports drift between `skills/<skill>/` and the installed copy at the root it is given (a bare invocation checks `~/.agents/skills`, so pass `--installed-dir ~/.claude/skills` for this install)
    - Nothing installs that copy automatically; a host that never ran `setup-skills` (such as a fresh cloud session) has none
    - Agent invokes via `/skill using-sensemaking` or the Skill tool where installed, or reads `skills/using-sensemaking/SKILL.md` directly
    - Skill content is loaded from a file; the repository copy and an installed copy can drift (see the distribution probe)
@@ -189,7 +189,7 @@ grep -v "Do NOT.*inspect\|Do NOT.*orchestrate" .claude/hooks/sessionstart.md
 |-----------|--------|-----------|
 | No executable hook | Nothing runs at session start; an agent that does not read `CLAUDE.md` will not see the reminder | `CLAUDE.md` names the skill; the installed skill is discoverable via the Skill tool |
 | No installed copy | On a fresh host the Skill tool cannot load `using-sensemaking` | Read `skills/using-sensemaking/SKILL.md` directly, or run `setup-skills --target claude --scope user` |
-| Installed-copy drift | The installed skill copy may lag the repository copy | `scripts/probe_skill_distribution.py` reports drift; `setup_skills.py --force` or the probe's `--sync` replaces it explicitly |
+| Installed-copy drift | The installed skill copy may lag the repository copy | `scripts/probe_skill_distribution.py --installed-dir ~/.claude/skills` reports drift for a Claude Code install (a bare invocation checks `~/.agents/skills`); `setup_skills.py --force` or the probe's `--sync`, with the same `--installed-dir`, replaces it explicitly |
 | Cursor/OpenCode | No hook exists on any platform | Same file-based convention: read the skill file |
 | File path availability | Must be relative to repo root | `.claude/` and `skills/` directories standard |
 

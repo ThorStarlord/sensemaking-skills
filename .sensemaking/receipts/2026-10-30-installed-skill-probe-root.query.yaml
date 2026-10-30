@@ -1,0 +1,121 @@
+artifact_id: semantic_query_receipt
+schema_version: 1
+session_ref: 2026-10-30-installed-skill-probe-root
+state: final
+created_at: "2026-10-30T21:02:53Z"
+updated_at: "2026-10-30T21:02:53Z"
+target_repository: ThorStarlord/sensemaking-skills
+modes: [RECALL, RECONCILE]
+decision: "Whether the installed-Skill currency check and its operator guidance are reliable for a Claude Code host, and whether retained knowledge needed correction."
+cli_identity:
+  sensemaking_source_ref: 7c85a5d19f1221f28600c7d046b57b61bdef831e
+  invocation_prefix: "PYTHONPATH=src python -c 'from sensemaking_skills.cli import cli' (worktree src)"
+  version_output: "1.0.0rc5.dev0 (worktree src; PATH CLI resolves to the primary checkout)"
+index:
+  indexed_ref: 7c85a5d19f1221f28600c7d046b57b61bdef831e
+  current_head: 7c85a5d19f1221f28600c7d046b57b61bdef831e
+  worktree_clean: true
+  uncommitted_changes_not_indexed: false
+queries:
+  - id: QY-1
+    operation: build
+    terms: []
+    subject: null
+    expect_kinds: []
+    target_ref: 7c85a5d19f1221f28600c7d046b57b61bdef831e
+    result:
+      hit_count: 679
+      claim_ids: []
+      truncated: false
+      not_assessed_kinds: []
+    outcome: HIT
+    decision_relevant: false
+  - id: QY-2
+    operation: search
+    terms: ["installed skill", "skill parity", "probe"]
+    subject: null
+    expect_kinds: []
+    target_ref: 7c85a5d19f1221f28600c7d046b57b61bdef831e
+    result:
+      hit_count: 44
+      claim_ids: []
+      truncated: true
+      not_assessed_kinds: []
+    outcome: PARTIAL
+    decision_relevant: true
+  - id: QY-3
+    operation: explain
+    terms: []
+    subject: lesson:installed-skill-currency-includes-references
+    expect_kinds: []
+    target_ref: 7c85a5d19f1221f28600c7d046b57b61bdef831e
+    result:
+      hit_count: 1
+      claim_ids: [lesson:installed-skill-currency-includes-references]
+      truncated: false
+      not_assessed_kinds: []
+    outcome: HIT
+    decision_relevant: true
+  - id: QY-4
+    operation: context-for
+    terms: []
+    subject: scripts/probe_skill_distribution.py
+    expect_kinds: []
+    target_ref: 7c85a5d19f1221f28600c7d046b57b61bdef831e
+    result:
+      hit_count: 2
+      claim_ids: [rule:console-output-ascii, rule:validators-placement]
+      truncated: false
+      not_assessed_kinds: []
+    outcome: NOT_ASSESSED
+    decision_relevant: true
+  - id: QY-5
+    operation: search
+    terms: ["next warranted engineering responsibility", "single front door"]
+    subject: null
+    expect_kinds: []
+    target_ref: 7c85a5d19f1221f28600c7d046b57b61bdef831e
+    result:
+      hit_count: 0
+      claim_ids: []
+      truncated: false
+      not_assessed_kinds: []
+    outcome: MISS
+    decision_relevant: true
+source_checks:
+  - claim_id: lesson:installed-skill-currency-includes-references
+    sources: ["scripts/repo_probes.py:513-523", "scripts/repo_probes.py:590-591", "tests/test_skill_distribution_probe.py:85-91"]
+    result: SUPPORTED
+  - claim_id: cap:repository-only-discovery
+    sources: [".sensemaking/knowledge/possibilities.json:1148", "docs/adr/0034-ontology-first-adaptive-sensemaking.md"]
+    result: SUPPORTED
+misses:
+  - id: M-1
+    query_ref: QY-4
+    needed_for: "Whether the graph records what the probe verifies by default (install root) for a Claude Code host."
+    kind: NOT_ASSESSED
+    resolved_by: "source inspection: scripts/probe_skill_distribution.py; scripts/repo_probes.py:590-591; tests/test_skill_distribution_probe.py:85-91"
+    follow_up: NO_MODEL_CHANGE
+    proposal_ref: null
+  - id: M-2
+    query_ref: QY-5
+    needed_for: "Confirm the reviewed graph does not still present the superseded entrypoint framing."
+    kind: NO_MATCH_IN_SCOPE
+    resolved_by: "direct record read: .sensemaking/knowledge/possibilities.json (cap:repository-only-discovery, REVISE for ADR 0034)"
+    follow_up: NO_MODEL_CHANGE
+    proposal_ref: null
+reconcile:
+  - claim_id: lesson:installed-skill-currency-includes-references
+    disposition: REVISE
+    applied: true
+    proposal_ref: .sensemaking/knowledge/stewardship.json
+    proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID
+  - claim_id: null
+    disposition: NO_MODEL_CHANGE
+    applied: false
+    proposal_ref: null
+    proposal_check: NOT_RUN
+persistence: committed
+action_authorized: false
+semantic_truth_established: false
+immutable: true
