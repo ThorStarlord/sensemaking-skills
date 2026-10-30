@@ -818,9 +818,13 @@
       "authority_kind": "document",
       "authority_ref": "release-v1.0.yaml",
       "evidence_refs": [
-        "file:release-v1.0.yaml"
+        "file:release-v1.0.yaml",
+        "file:release-v1.0.yaml:line:113",
+        "file:docs/adr/0028-agent-agnostic-product-management-domain.md:line:36"
       ],
-      "attributes": {}
+      "attributes": {
+        "exclusion_condition": "native harness discovery and invocation stay excluded from the 1.0 support promise until real harness evidence exists"
+      }
     },
     {
       "id": "component:campaign-core",
@@ -1400,10 +1404,14 @@
       "predicate": "relates_to",
       "object": "component:campaign-core",
       "attributes": {
-        "cardinality": "N:M"
+        "cardinality": "N:M",
+        "pointer_field": "continuity.campaign_ref",
+        "runtime_consumer": "scripts/validate-receipt.py checks shape and, with --target-repo, existence; no src/ reader or writer"
       },
       "evidence_refs": [
-        "file:skills/using-sensemaking/references/session-receipt-v1.md"
+        "file:skills/using-sensemaking/references/session-receipt-v1.md:line:196",
+        "file:skills/using-sensemaking/references/session-receipt-v1.md:line:283",
+        "file:docs/adr/0032-session-and-query-receipts.md:line:81"
       ],
       "epistemic_status": "observed"
     },
@@ -1416,6 +1424,20 @@
         "file:skills/using-sensemaking/references/session-receipt-v1.md"
       ],
       "epistemic_status": "observed"
+    },
+    {
+      "id": "rel:distribution-setup-constrained-by-native-exclusion",
+      "subject": "component:distribution-setup",
+      "predicate": "constrained_by",
+      "object": "observation:release-declares-no-native-harness",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/harness_adapters.py",
+        "file:release-v1.0.yaml:line:113"
+      ],
+      "epistemic_status": "observed",
+      "attributes": {
+        "condition": "adapter install roots are explicit destinations; native discovery and invocation stay excluded from the 1.0 support promise"
+      }
     }
   ]
 }
