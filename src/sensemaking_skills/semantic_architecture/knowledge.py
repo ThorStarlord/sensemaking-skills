@@ -103,8 +103,13 @@ def _required_id(value: str) -> bool:
     return isinstance(value, str) and bool(ID_PATTERN.fullmatch(value))
 
 
-def validate_snapshot(snapshot: KnowledgeSnapshot) -> None:
-    """Check representational integrity, not semantic truth."""
+def validate_snapshot(snapshot: KnowledgeSnapshot, *, existence_only_ids: frozenset[str] = frozenset()) -> None:
+    """Check representational integrity, not semantic truth.
+
+    ``existence_only_ids`` names endpoints whose authored record lives in another
+    file. Their identity and kind are checked, but their attributes and rule scope
+    are not: the owning file is validated where it is read.
+    """
     if snapshot.schema_version != SCHEMA_VERSION:
         raise ValueError("unsupported semantic knowledge schema version")
     if not snapshot.repository or not isinstance(snapshot.repository, str):
@@ -127,7 +132,7 @@ def validate_snapshot(snapshot: KnowledgeSnapshot) -> None:
         if not item.evidence_refs or any(not str(v).strip() for v in item.evidence_refs):
             raise ValueError(f"claim requires evidence references: {item.id}")
         _json_object(item.attributes, item.id)
-        if item.kind == "architecture_rule" or (item.kind == "component" and "owned_paths" in item.attributes):
+        if item.id not in existence_only_ids and (item.kind == "architecture_rule" or (item.kind == "component" and "owned_paths" in item.attributes)):
             validate_v2_attributes(item.kind, None, item.attributes, item.id)
     kinds = {item.id: item.kind for item in snapshot.claims}
     for item in snapshot.claims:
@@ -168,7 +173,7 @@ def validate_snapshot(snapshot: KnowledgeSnapshot) -> None:
                 raise ValueError(f"{relation.predicate} needs two domain concepts: {relation.id}")
     scoped_rules = {rel.subject for rel in snapshot.relations if rel.predicate == "applies_to"}
     for claim in snapshot.claims:
-        if claim.kind == "architecture_rule" and not claim.attributes.get("applies_to") and claim.id not in scoped_rules:
+        if claim.kind == "architecture_rule" and claim.id not in existence_only_ids and not claim.attributes.get("applies_to") and claim.id not in scoped_rules:
             raise ValueError(f"architecture_rule has no path or graph scope: {claim.id}")
 
 
