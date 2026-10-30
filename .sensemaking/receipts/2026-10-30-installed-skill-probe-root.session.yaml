@@ -1,0 +1,116 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-10-30-installed-skill-probe-root
+state: final
+created_at: "2026-10-30T21:02:53Z"
+updated_at: "2026-10-30T21:02:53Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: 7c85a5d19f1221f28600c7d046b57b61bdef831e
+  end_ref: 8ce1b9c2804f54dc70d8a5c0e07c692b6eabb7f2
+  worktree_clean_at_end: true
+skill_identity:
+  load_mode: harness_discovered
+  sensemaking_source_ref: null
+goal:
+  statement: "Select and advance one warranted engineering responsibility from current sources, using retained knowledge; report knowledge used, Skill load mode and evidence limits."
+  source: owner_message
+  source_ref: null
+delegation:
+  granted: [read, local_write, run_local_commands, knowledge_edit, commit, push, open_pr, merge]
+  withheld: [release, deploy, tracker_write, external_publication]
+continuity:
+  resumes: null
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: retained-knowledge recall and relational check of installed-Skill currency
+    capability: repository-semantic-steward (RECALL, RELATE)
+    status: completed
+    reason: "Retrieved the installed-Skill currency lesson; the probe default root and the operator guidance did not match a Claude Code install."
+    artifact_refs: [".sensemaking/knowledge/stewardship.json", "INSTALLATION.md", ".claude/hooks/sessionstart.md"]
+    validation:
+      - command: "semantic knowledge-query explain lesson:installed-skill-currency-includes-references"
+        result: PASS
+  - id: R-2
+    responsibility: installed Skill load-mode and parity check
+    capability: using-sensemaking
+    status: completed
+    reason: "Loaded via the Skill tool; loaded wording matches the installed copy, not repository HEAD. Probe run against the default and Claude roots."
+    artifact_refs: ["skills/using-sensemaking/SKILL.md"]
+    validation:
+      - command: "python scripts/probe_skill_distribution.py --installed-dir ~/.claude/skills --no-write"
+        result: PASS
+  - id: R-3
+    responsibility: bounded operator-guidance and lesson-ceiling correction; ThorStarlord/sensemaking-skills#675
+    capability: repository-semantic-steward (RECONCILE); ordinary_coding
+    status: completed
+    reason: "Tested probe default left unchanged; INSTALLATION.md and session-start doc name the Claude root; lesson claim ceiling gains the root condition. No code or test change."
+    artifact_refs: ["INSTALLATION.md", ".claude/hooks/sessionstart.md", ".sensemaking/knowledge/stewardship.json"]
+    validation:
+      - command: "git diff --check"
+        result: PASS
+      - command: "semantic knowledge-proposal-check --repo . --proposal .sensemaking/knowledge/stewardship.json"
+        result: PASS
+      - command: "python scripts/validate-docs-currentness.py"
+        result: PASS
+      - command: "pytest tests/test_skill_distribution_probe.py -q"
+        result: NOT_RUN
+findings:
+  - id: F-1
+    statement: "Installed Claude copy of using-sensemaking is an older revision than HEAD: SKILL.md 599 vs 617 lines; adaptive-skill-composition-v1.md 134 vs 137 lines, with older RELATE wording."
+    epistemic_status: OBSERVED
+    evidence_refs: ["file:skills/using-sensemaking/SKILL.md", "file:skills/using-sensemaking/references/adaptive-skill-composition-v1.md"]
+    disposition: handed_off
+  - id: F-2
+    statement: "Bare probe and bare --sync check ~/.agents/skills (a tested default), not the Claude Code root; INSTALLATION.md and the session-start doc gave the mitigation without that root."
+    epistemic_status: CONTRADICTED
+    evidence_refs: ["file:INSTALLATION.md", "file:.claude/hooks/sessionstart.md", "file:scripts/probe_skill_distribution.py", "file:tests/test_skill_distribution_probe.py"]
+    disposition: resolved
+  - id: F-3
+    statement: "Retained currency lesson was correct on reference parity but its claim ceiling omitted the install root; ceiling revised in reviewed knowledge."
+    epistemic_status: OBSERVED
+    evidence_refs: ["file:.sensemaking/knowledge/stewardship.json"]
+    disposition: resolved
+  - id: F-4
+    statement: "Reviewed graph reflects ADR 0034 entrypoint framing (cap:repository-only-discovery records REVISE); no stale framing found."
+    epistemic_status: RATIFIED
+    evidence_refs: ["file:.sensemaking/knowledge/possibilities.json", "file:docs/adr/0034-ontology-first-adaptive-sensemaking.md"]
+    disposition: no_action
+  - id: F-5
+    statement: "PATH sensemaking-skills resolves to the primary checkout src; knowledge-build failed there and succeeded with PYTHONPATH=src from this worktree."
+    epistemic_status: OBSERVED
+    evidence_refs: ["file:skills/repository-semantic-steward/SKILL.md"]
+    disposition: handed_off
+open_questions:
+  - id: Q-1
+    question: "Refresh this host's user-level Claude using-sensemaking copy to the merged revision now?"
+    source: owner_intent
+    blocking: false
+    options:
+      - option: "Refresh now with setup-skills --target claude --scope user --force"
+        consequence: "Later sessions on this host load the merged Skill text; the user-level directory is overwritten, so local edits there would be lost."
+      - option: "Leave the copy until a later trial needs it"
+        consequence: "Sessions on this host keep the older rules; a trial needing the merged RELATE text must record the load gap."
+    durable_ref: null
+  - id: Q-2
+    question: "Should the bare skill-distribution probe check every harness root, or keep the generic default with documented --installed-dir?"
+    source: owner_intent
+    blocking: false
+    options:
+      - option: "Keep the ~/.agents/skills default and the documented --installed-dir"
+        consequence: "The tested contract is unchanged; operators must pass the Claude root."
+      - option: "Probe all first-class roots by default"
+        consequence: "Changes the tested default and sync target; the probe report contract must be revisited."
+    durable_ref: null
+stop:
+  disposition: GOAL_SATISFIED
+  reason: "Bounded responsibility done: installed-copy staleness, root trap and ceiling gap recorded; corrections reviewed. Q-1 and Q-2 remain owner items."
+next:
+  warranted_responsibility: "No further repository change is warranted by this evidence; owner decides Q-1 (host refresh) and Q-2 (probe default)."
+  blocked_on: []
+persistence: committed
+claim_ceiling: "Mechanical checks and read-only probe runs only; local unit tests NOT_RUN per construction policy; hosted CI not observed; loaded revision not pinned (content matches installed copy); no independent-session, comparative or benefit claim."
+action_authorized_by_receipt: false
+immutable: true
