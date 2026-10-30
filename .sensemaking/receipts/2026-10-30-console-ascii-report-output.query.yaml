@@ -1,0 +1,212 @@
+artifact_id: semantic_query_receipt
+schema_version: 1
+session_ref: 2026-10-30-console-ascii-report-output
+state: final
+created_at: "2026-10-30T22:43:15Z"
+updated_at: "2026-10-30T22:43:15Z"
+target_repository: ThorStarlord/sensemaking-skills
+modes: [RECALL, RECONCILE]
+decision: "Which warranted responsibility to select from retained knowledge and current sources: console-output ASCII defects, the proposal-check defect, or no change; and which reviewed records to add or correct."
+cli_identity:
+  sensemaking_source_ref: 0b1df456ebba3d0a7d61bf5a297c06662658c37f
+  invocation_prefix: "PYTHONPATH=src python -c 'sys.argv=[sensemaking-skills, semantic, knowledge-query, ...]; cli.main()' (worktree src)"
+  version_output: "1.0.0rc5.dev0 (worktree src; PATH CLI resolves to the primary checkout)"
+index:
+  indexed_ref: 0b1df456ebba3d0a7d61bf5a297c06662658c37f
+  current_head: 0b1df456ebba3d0a7d61bf5a297c06662658c37f
+  worktree_clean: true
+  uncommitted_changes_not_indexed: true
+queries:
+  - id: QY-1
+    operation: build
+    terms: []
+    subject: null
+    expect_kinds: []
+    target_ref: 0b1df456ebba3d0a7d61bf5a297c06662658c37f
+    result:
+      hit_count: 679
+      claim_ids: []
+      truncated: false
+      not_assessed_kinds: []
+    outcome: HIT
+    decision_relevant: false
+  - id: QY-2
+    operation: search
+    terms: ["query", "lesson"]
+    subject: null
+    expect_kinds: []
+    target_ref: 0b1df456ebba3d0a7d61bf5a297c06662658c37f
+    result:
+      hit_count: 22
+      claim_ids: []
+      truncated: true
+      not_assessed_kinds: []
+    outcome: PARTIAL
+    decision_relevant: true
+  - id: QY-3
+    operation: context-for
+    terms: []
+    subject: "multi-path context-for (3 paths)"
+    expect_kinds: []
+    target_ref: 0b1df456ebba3d0a7d61bf5a297c06662658c37f
+    result:
+      hit_count: 3
+      claim_ids: []
+      truncated: true
+      not_assessed_kinds: []
+    outcome: PARTIAL
+    decision_relevant: true
+  - id: QY-4
+    operation: search
+    terms: ["ascii", "console", "cp1252"]
+    subject: null
+    expect_kinds: []
+    target_ref: 0b1df456ebba3d0a7d61bf5a297c06662658c37f
+    result:
+      hit_count: 2
+      claim_ids: [rule:console-output-ascii]
+      truncated: false
+      not_assessed_kinds: []
+    outcome: PARTIAL
+    decision_relevant: true
+  - id: QY-5
+    operation: explain
+    terms: []
+    subject: rule:console-output-ascii
+    expect_kinds: [decision, verification]
+    target_ref: 0b1df456ebba3d0a7d61bf5a297c06662658c37f
+    result:
+      hit_count: 1
+      claim_ids: [rule:console-output-ascii]
+      truncated: false
+      not_assessed_kinds: [decision, verification]
+    outcome: NOT_ASSESSED
+    decision_relevant: true
+  - id: QY-6
+    operation: workspace-impact
+    terms: []
+    subject: null
+    expect_kinds: []
+    target_ref: 0b1df456ebba3d0a7d61bf5a297c06662658c37f
+    result:
+      hit_count: 47
+      claim_ids: []
+      truncated: false
+      not_assessed_kinds: []
+    outcome: HIT
+    decision_relevant: true
+  - id: QY-7
+    operation: history
+    terms: []
+    subject: lesson:query-completeness-is-evidence
+    expect_kinds: []
+    target_ref: 0b1df456ebba3d0a7d61bf5a297c06662658c37f
+    result:
+      hit_count: 1
+      claim_ids: [lesson:query-completeness-is-evidence]
+      truncated: false
+      not_assessed_kinds: []
+    outcome: HIT
+    decision_relevant: false
+  - id: QY-8
+    operation: build
+    terms: []
+    subject: null
+    expect_kinds: []
+    target_ref: 8c180f068b826ce5452fa831594f8992d32a7edf
+    result:
+      hit_count: 681
+      claim_ids: []
+      truncated: false
+      not_assessed_kinds: []
+    outcome: HIT
+    decision_relevant: false
+  - id: QY-9
+    operation: explain
+    terms: []
+    subject: rule:console-output-ascii
+    expect_kinds: [verification]
+    target_ref: 8c180f068b826ce5452fa831594f8992d32a7edf
+    result:
+      hit_count: 2
+      claim_ids: [rule:console-output-ascii, verification:console-output-ascii-guard]
+      truncated: false
+      not_assessed_kinds: []
+    outcome: HIT
+    decision_relevant: true
+  - id: QY-10
+    operation: search
+    terms: ["literal", "print"]
+    subject: null
+    expect_kinds: []
+    target_ref: 8c180f068b826ce5452fa831594f8992d32a7edf
+    result:
+      hit_count: 7
+      claim_ids: [lesson:console-guard-literal-print-arguments-only]
+      truncated: true
+      not_assessed_kinds: []
+    outcome: PARTIAL
+    decision_relevant: true
+  - id: QY-11
+    operation: workspace-impact
+    terms: []
+    subject: null
+    expect_kinds: []
+    target_ref: 8c180f068b826ce5452fa831594f8992d32a7edf
+    result:
+      hit_count: 0
+      claim_ids: []
+      truncated: false
+      not_assessed_kinds: []
+    outcome: HIT
+    decision_relevant: true
+source_checks:
+  - claim_id: lesson:uncited-change-is-coverage-gap
+    sources: ["file:src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py", "QY-6 output: uncited_changed_paths listed scripts/analyze-run-failures.py, scripts/portfolio-orchestrator.py, scripts/test-validators.py"]
+    result: SUPPORTED
+  - claim_id: incident:shared-authored-pack-fingerprint-fanout
+    sources: ["QY-6 output: 47 pre-existing records of stewardship.json flagged record_source_changed", "file:src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py"]
+    result: SUPPORTED
+  - claim_id: rule:console-output-ascii
+    sources: ["file:src/sensemaking_skills/cli.py (_escape_unencodable_output, called only from main)", "file:tests/test_console_output_ascii_only.py (literal print() arguments only)"]
+    result: SUPPORTED
+misses:
+  - id: M-1
+    query_ref: QY-5
+    needed_for: "Whether the graph links the console rule to its guard test and to any decision or verification record."
+    kind: NOT_ASSESSED
+    resolved_by: "source inspection: tests/test_console_output_ascii_only.py; verification:console-output-ascii-guard and rel:console-ascii-rule-tested-by-guard added to architecture.json"
+    follow_up: ADDED
+    proposal_ref: ".sensemaking/knowledge/architecture.json"
+  - id: M-2
+    query_ref: QY-4
+    needed_for: "Whether the ASCII guard covers text that reaches print() through a variable."
+    kind: NO_MATCH_IN_SCOPE
+    resolved_by: "source inspection: guard test AST logic; scripts/test-validators.py print(report_content); lesson recorded in stewardship.json"
+    follow_up: ADDED
+    proposal_ref: ".sensemaking/knowledge/stewardship.json"
+reconcile:
+  - claim_id: lesson:console-guard-literal-print-arguments-only
+    disposition: ADD
+    applied: true
+    proposal_ref: ".sensemaking/knowledge/stewardship.json"
+    proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID
+  - claim_id: verification:console-output-ascii-guard
+    disposition: ADD
+    applied: true
+    proposal_ref: ".sensemaking/knowledge/architecture.json"
+    proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID
+  - claim_id: incident:shared-authored-pack-fingerprint-fanout
+    disposition: CONFIRM
+    applied: false
+    proposal_ref: null
+    proposal_check: NOT_RUN
+  - claim_id: null
+    disposition: NO_MODEL_CHANGE
+    applied: false
+    proposal_ref: null
+    proposal_check: NOT_RUN
+persistence: committed
+action_authorized: false
+semantic_truth_established: false
+immutable: true
