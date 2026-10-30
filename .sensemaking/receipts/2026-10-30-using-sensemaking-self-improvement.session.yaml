@@ -1,0 +1,102 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-10-30-using-sensemaking-self-improvement
+state: final
+created_at: "2026-10-30T09:23:14Z"
+updated_at: "2026-10-30T09:40:00Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: 81b47374f142d0b7491f4f5ed043c11ead701e21
+  end_ref: f83491d5d157d28990c511be9091540fa7b42435
+  worktree_clean_at_end: true
+skill_identity:
+  load_mode: manual_explicit_load
+  sensemaking_source_ref: f83491d5d157d28990c511be9091540fa7b42435
+goal:
+  statement: "Diagnose using-sensemaking failures from this conversation, correct the warranted contract and tooling through PRs, and reapply the revised Skill to sensemaking-skills."
+  source: owner_message
+  source_ref: null
+delegation:
+  granted: [read, local_write, run_local_commands, commit, push, open_pr, merge]
+  withheld: [release, deploy, tracker_write, external_publication, knowledge_edit]
+continuity:
+  resumes: null
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: Diagnose observed failures against the current Skill contract
+    capability: using-sensemaking
+    status: completed
+    reason: "Six failures classified: three application errors against existing rules, two salience or trigger gaps, one reader defect. No rule added for comparative depth or specialist evidence, which already exist."
+    artifact_refs: [skills/using-sensemaking/SKILL.md, skills/using-sensemaking/references/ontology-first-entry-v1.md, skills/using-sensemaking/references/decision-observability-v1.md, scripts/summarize-receipts.py]
+    validation: []
+  - id: R-2
+    responsibility: Correct reader durability reporting and continuation guidance
+    capability: using-sensemaking
+    status: completed
+    reason: "Merged as PR #660 (616df945) and PR #661 (f83491d5). The reader separates declared persistence from HEAD containment; the Skill re-warrants recorded next steps and separates warrant from authority."
+    artifact_refs: [scripts/summarize-receipts.py, skills/using-sensemaking/SKILL.md, skills/using-sensemaking/references/ontology-first-entry-v1.md, skills/using-sensemaking/references/session-receipt-v1.md]
+    validation:
+      - command: "python scripts/summarize-receipts.py --repo . (manual run, not a test)"
+        result: PASS
+      - command: "tests/test_sensemaking_receipts.py (owner construction policy: not added or run locally)"
+        result: NOT_RUN
+  - id: R-3
+    responsibility: Reapply the revised Skill to the same repository and assess it
+    capability: using-sensemaking
+    status: completed
+    reason: "Revised SKILL.md and references read manually from origin/main f83491d5; no host-native reload. Steward applied from repository copy, since the installed copy differs. No native specialist invocation."
+    artifact_refs: [CONTEXT.md, docs/adr/0034-ontology-first-adaptive-sensemaking.md, .sensemaking/knowledge/possibilities.json, .sensemaking/knowledge/prospective-reasoning.json, .sensemaking/knowledge/product.json]
+    validation:
+      - command: "cited-path existence check over .sensemaking/knowledge/*.json at f83491d5 (126 paths)"
+        result: PASS
+  - id: R-4
+    responsibility: Reconcile validator wording and the continuation record
+    capability: using-sensemaking
+    status: completed
+    reason: "RECEIPT_NOT_DURABLE stated a current fact from a write-time declaration; corrected. STATUS.md records the loop and revises the next decision context. No immutable receipt or reviewed knowledge edited."
+    artifact_refs: [scripts/validate-receipt.py, STATUS.md]
+    validation: []
+findings:
+  - id: F-1
+    statement: "First pass adopted the STATUS.md next item. The Recover-history trigger required an open next responsibility, so the re-warrant check did not fire."
+    epistemic_status: DERIVED
+    evidence_refs: [STATUS.md, skills/using-sensemaking/SKILL.md]
+    disposition: resolved
+  - id: F-2
+    statement: "Declared working_tree_only on 17 receipts: 11 untracked, 6 committed in HEAD. Reader and validator read the declaration alone. Supersedes F-5 of 2026-10-29-using-sensemaking-target-repo (immutable, unedited)."
+    epistemic_status: OBSERVED
+    evidence_refs: [scripts/summarize-receipts.py, scripts/validate-receipt.py, .sensemaking/receipts/2026-10-29-repository-sensemaking-discovery.session.yaml]
+    disposition: resolved
+  - id: F-3
+    statement: "Installed copies differ. The user-level Skill matches the pre-change repository, not HEAD. The user-level steward differs by 269 SKILL.md lines and lacks two references. Host-loaded text is not proof of parity."
+    epistemic_status: OBSERVED
+    evidence_refs: [skills/using-sensemaking, skills/repository-semantic-steward, docs/normal-use/operational-qualification-001.md]
+    disposition: handed_off
+  - id: F-4
+    statement: "126 cited repository paths exist at f83491d5. Seven operational packages are cited by no reviewed claim; decision-relevant only if construction lands there."
+    epistemic_status: OBSERVED
+    evidence_refs: [.sensemaking/knowledge/architecture.json, src/sensemaking_skills]
+    disposition: handed_off
+open_questions:
+  - id: Q-1
+    question: "Which repository with no .sensemaking records should a productive first-visit mission use, and is write authority granted for it?"
+    source: owner_intent
+    blocking: true
+    options:
+      - option: Name a repository and grant write authority
+        consequence: A productive first-visit mission can start, subject to pre-registration and credits.
+      - option: Decline the mission
+        consequence: Standalone or independent qualification stays owner-reauthorized; the reuse evidence gap stays open.
+    durable_ref: STATUS.md
+stop:
+  disposition: GOAL_SATISFIED
+  reason: "Corrections integrated, revised Skill applied to the same repository, comparison and next decision explained. The next responsibility needs an owner decision."
+next:
+  warranted_responsibility: "Owner decision on a no-records repository and write authority for a productive first-visit mission, or decline. Empirical qualification stays owner-reauthorized per CONTEXT.md."
+  blocked_on: [Q-1]
+persistence: committed
+claim_ceiling: "Source and contract inspection, manual reader and path checks; unit tests NOT_RUN. No host-native reload, independent-session or behavioral evidence. Single-agent loop, not a causal comparison."
+action_authorized_by_receipt: false
+immutable: true
