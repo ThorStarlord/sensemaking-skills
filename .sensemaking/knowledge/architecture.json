@@ -142,14 +142,16 @@
     {
       "id": "component:receipt-validator",
       "kind": "component",
-      "statement": "Validates session and semantic query receipts and reads them at session start.",
+      "statement": "Validates session and semantic query receipts. Nothing executes at session start: no hook reads receipts (.claude/settings.json is {}), and the Skill directs agents to read relevant receipts when resuming work.",
       "authority_kind": "code",
       "authority_ref": "scripts/validate-receipt.py",
       "evidence_refs": [
         "file:scripts/validate-receipt.py",
-        "file:scripts/summarize-receipts.py"
+        "file:scripts/summarize-receipts.py",
+        "file:.claude/settings.json",
+        "file:.claude/hooks/sessionstart.md"
       ],
-      "epistemic_status": "declared",
+      "epistemic_status": "observed",
       "attributes": {
         "owned_paths": [
           "scripts/validate-receipt.py",
@@ -823,7 +825,8 @@
         "file:docs/adr/0028-agent-agnostic-product-management-domain.md:line:36"
       ],
       "attributes": {
-        "exclusion_condition": "native harness discovery and invocation stay excluded from the 1.0 support promise until real harness evidence exists"
+        "exclusion_condition": "native harness discovery and invocation stay excluded from the 1.0 support promise until real harness evidence exists",
+        "constrains": "supported product claims about native harness discovery and invocation; it does not constrain installer behaviour"
       }
     },
     {
@@ -1399,12 +1402,13 @@
       }
     },
     {
-      "id": "rel:receipt-contract-relates-campaign-core",
+      "id": "rel:receipt-contract-points-to-campaign-core",
       "subject": "contract:receipt-schema",
-      "predicate": "relates_to",
+      "predicate": "references",
       "object": "component:campaign-core",
       "attributes": {
-        "cardinality": "N:M",
+        "conceptual_relation": "optional_one_way_pointer",
+        "direction": "receipt contract -> campaign state; at most one campaign_ref per receipt",
         "pointer_field": "continuity.campaign_ref",
         "runtime_consumer": "scripts/validate-receipt.py checks shape and, with --target-repo, existence; no src/ reader or writer"
       },
@@ -1426,9 +1430,9 @@
       "epistemic_status": "observed"
     },
     {
-      "id": "rel:distribution-setup-constrained-by-native-exclusion",
+      "id": "rel:distribution-setup-references-native-exclusion",
       "subject": "component:distribution-setup",
-      "predicate": "constrained_by",
+      "predicate": "references",
       "object": "observation:release-declares-no-native-harness",
       "evidence_refs": [
         "file:src/sensemaking_skills/harness_adapters.py",
@@ -1436,7 +1440,9 @@
       ],
       "epistemic_status": "observed",
       "attributes": {
-        "condition": "adapter install roots are explicit destinations; native discovery and invocation stay excluded from the 1.0 support promise"
+        "conceptual_relation": "implementation_outside_declared_support",
+        "implemented_targets": ["claude", "codex", "opencode"],
+        "runtime_invocation_evidence": "none in the reviewed graph; the exclusion constrains supported claims, not installer behaviour"
       }
     }
   ]

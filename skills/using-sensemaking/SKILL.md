@@ -20,13 +20,15 @@ by itself, and no artifact field selects or dispatches a downstream Skill.
 > enough decision-relevant evidence at acceptable downside and cost. Assurance
 > bounds action; it does not automatically outrank value creation.
 
-> **Negative-claim rule:** "the product has no X", "X does not depend on Y" or
-> "nothing reads Z" is a claim about the product, not about the reviewed
-> knowledge. A graph miss means `NOT_ASSESSED` for the product until the
-> governing contract, decisions, validators and implementation are checked.
-> Before a recommendation or owner escalation rests on such a claim, run
-> relational verification (`repository-semantic-steward`, RELATE) and let its
-> verdict inform the decision; the verdict does not make the decision.
+> **Relation rule:** "the product has no X", "X does not depend on Y" and
+> "nothing reads Z" are claims about the product, not about the reviewed
+> knowledge. A graph miss is `ABSENT_FROM_GRAPH`, not absence. The same test
+> applies to positive claims: a recorded relation or runtime behavior ("X is
+> constrained by Y", "X reads Z at session start") holds only as far as its
+> governing and implementing sources show. Before a recommendation, a correction
+> or an owner escalation rests on either kind of claim, run relational
+> verification (`repository-semantic-steward`, RELATE). Its verdict informs the
+> decision; it does not make the decision.
 
 **The Skill carries the method; the repository carries its knowledge. When
 only a repository is supplied, you establish what it is and reason about what
@@ -245,7 +247,7 @@ knowledge may be stale against current source. After consequential evidence,
 **RECONCILE** only affected knowledge or record `NO_MODEL_CHANGE`. Disputed,
 superseded, hypothetical and `NOT_ASSESSED` knowledge stays labelled as such;
 none of it establishes clearance. A graph miss is `ABSENT_FROM_GRAPH`, not
-absence (see the Negative-claim rule). Never block ordinary coding because no
+absence (see the Relation rule). Never block ordinary coding because no
 index exists, and never treat a bootstrap as a prerequisite for a narrow task.
 
 ## 3. The adaptive reasoning loop
@@ -363,7 +365,9 @@ stop investigating once the next action is stable.
 Do not ask the owner what the repository can answer, infer owner preference
 from code, or infer external reality from repository text. Whether the product
 has a relationship, capability or dependency is a `repository_evidence`
-question even when the reviewed graph does not record it.
+question even when the reviewed graph does not record it. Whether it should
+have one is a separate question: owner intent, or ratification when it would
+create a new commitment (see Escalate).
 
 ```text
 warrant != confidence score
@@ -409,7 +413,7 @@ nearest unresolved uncertainty, and authorized within scope.
 | --- | --- | --- |
 | no adequate semantic model for a repository-level goal | semantic foundation | `repository-semantic-steward` BOOTSTRAP |
 | retained knowledge could change a bounded decision | recall, audit or reconcile | `repository-semantic-steward` |
-| a consequential conclusion asserts absence, or a relation the reviewed graph does not settle | relational evidence reconciliation | `repository-semantic-steward` RELATE (`references/relational-reconciliation.md`) |
+| a consequential conclusion asserts an absence, or states a relation or runtime behavior more strongly than its sources show | relational evidence reconciliation | `repository-semantic-steward` RELATE (`references/relational-reconciliation.md`) |
 | repository boundary or ownership unclear | repository sensemaking | `repo-sensemaker` (produces a `repository_sensemaking_brief`) |
 | the repository's future is open | possibility exploration and strategic analysis | `strategic-repository-analysis` |
 | structural alternatives would change a future's value or feasibility | architecture synthesis and consequence depth | `repository-semantic-steward` architecture exploration |
@@ -538,12 +542,26 @@ boundary is reached, scope is exhausted, or safety requires it. **A clear stop
 after completed understanding or analysis is success, not unfinished
 implementation.**
 
-**Escalate** when the remaining gap is owner intent, a higher-scope commitment,
-protected authority or external control. A correct conclusion can be: *the
-remaining uncertainty is no longer technical; it is an owner decision.* Do not
-retry an authority boundary. An architecture gap is an owner question only after
-RELATE leaves a choice among governed alternatives. A missing graph edge or an
-unexercised declaration is not a gap in the product.
+**Escalate** only when the unresolved residue needs an authority the agent does
+not hold. First sort the residue; most of it is not owner intent:
+
+- *Unsupported premise* (an absence, or a relation or behavior stated more
+  strongly than its sources show): verify or correct it. Never escalate it.
+- *Technical residue* (more inspection of code, contracts or runtime would
+  settle it): inspect. Do not ask.
+- *New architectural commitment* (a new rule, boundary, contract or hook):
+  draft it for ratification through the ADR or owner-decision path.
+  The agent does not decide it ad hoc.
+- *Owner-reserved choice* (a choice among governed alternatives that only the
+  owner can make, such as scope, support promise or priority): escalate with the
+  options, through `owner-decision-capsule`.
+
+A correct conclusion can be: *the remaining uncertainty is no longer technical;
+it is an owner decision.* Do not retry an authority boundary. A missing graph
+edge is not a product gap. An unexercised declaration is not a gap by itself. A
+runtime behavior that a governing source promises and the inspected
+implementation lacks can be a genuine implementation gap; RELATE's implementation
+check decides that.
 
 Valid outcomes include a semantic foundation and coverage report, a
 possibility landscape, an architecture synthesis, a strategic selection or
@@ -566,7 +584,7 @@ already stated above, so skipping a file never loses the rule.
 | `references/ontology-first-entry-v1.md` | repository-level understanding, possibility coverage or a consequential final recommendation | a narrow task | understanding before selection; substantive justification |
 | `references/decision-observability-v1.md` | maximum decision transparency or detailed Skill-selection audit requested | ordinary proportional explanation | self-reported rationale != observed execution or causal proof |
 | `references/adaptive-skill-composition-v1.md` | choosing, sequencing or interpreting specialist reasoning, or a specialist has returned | the next action is a single obvious step | specialist result != controller decision |
-| `../repository-semantic-steward/references/relational-reconciliation.md` (RELATE) | a conclusion of absence, or a relation the graph does not settle, would shape a recommendation or an owner escalation | a file-local change, or a fact one inspected source already states | graph miss != product absence; verdict != decision |
+| `../repository-semantic-steward/references/relational-reconciliation.md` (RELATE) | an absence, or a relation or behavior stated more strongly than its sources show, would shape a recommendation, a correction or an owner escalation | a file-local change, or a fact one inspected source already states | graph miss != product absence; verdict != decision; unexercised != gap |
 | `references/portable-construction-loop-v1.md` | authorized implementation, an explicit engineering task, coding outside the Sensemaking repository, or earlier-artifact reuse (section 1a) | reasoning-only work, or a clear local fix in a familiar repo | warranted direction != implementation authority |
 | `references/evidence-and-closure-v1.md` | validating, reconciling a claim, verifying a repair, reading a Brief, using a workflow | ordinary tests and diff review settle it | validated != closed |
 | `references/session-receipt-v1.md` | every session using this Skill | never; follow the contract when a receipt can be written | receipt != authority |

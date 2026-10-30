@@ -15,7 +15,7 @@ specialist has just returned.
 | Activity | Owner (procedure) | Durable product |
 | --- | --- | --- |
 | Semantic foundation, recall, audit, reconciliation | `repository-semantic-steward` (BOOTSTRAP, RECALL, AUDIT, RECONCILE) | `.sensemaking/knowledge/*.json`, query receipts |
-| Relational verification of an absence, dependency or relation claim | `repository-semantic-steward` (RELATE) | `RELATIONAL_VERDICT` in the report or receipt finding; reconciled knowledge when warranted |
+| Relational verification of an absence, dependency, relation or runtime-behavior claim | `repository-semantic-steward` (RELATE) | `RELATIONAL_VERDICT` in the report or receipt finding; reconciled knowledge when warranted |
 | Repository orientation when boundaries or ownership are unclear | `repo-sensemaker` | `repository_sensemaking_brief` |
 | Divergent and convergent possibility exploration | `strategic-repository-analysis` (Strategic Exploration Funnel) | report; `poss:` records when retained |
 | Architectural synthesis and consequence depth | `repository-semantic-steward` (architecture exploration) | `architectural_synthesis`; `arch:` and consequence records when retained |
@@ -121,6 +121,9 @@ continuing.
 - Treating a graph miss, `NOT_ASSESSED` or an unexercised declaration as
   product absence, or escalating such a gap to the owner without relational
   verification.
+- Recording a relation or runtime behavior stronger than its governing and
+  implementing sources show, for example a constraint on an implementation that
+  the governing source constrains only as a support claim.
 - A second controller: continuation procedures resume and preserve reasoning;
   they do not redefine responsibility selection.
 
