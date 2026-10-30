@@ -104,6 +104,14 @@ checkout can be as ephemeral as `/tmp`. Therefore:
   final report that the receipt will be lost with the checkout**. The validator
   warns with `RECEIPT_NOT_DURABLE`.
 
+`persistence` is a write-time declaration. An immutable receipt is never edited
+to match later Git history, so the declared value can lag: a receipt written as
+`working_tree_only` may later be committed with another change. Current
+durability is a separate fact, whether HEAD contains the receipt. Readers report
+the two separately, and `scripts/summarize-receipts.py` counts a declared
+non-durable receipt as at risk only when HEAD does not contain it. A correction
+is recorded in a new receipt, not by editing the old one.
+
 Never push to a protected branch, open a PR, or widen authority merely to
 persist a receipt. Persisting follows the session's existing Git authority.
 A stop hook or other harness request to push does not itself grant Git

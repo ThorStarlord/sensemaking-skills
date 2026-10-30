@@ -12,7 +12,9 @@ It reports, mechanically and without judging meaning:
     latest final session by update time (not a relevance or authority decision);
   - knowledge misses recorded as ADD_PROPOSED or DEFERRED at the time;
   - misses whose subject or terms recur across two or more sessions;
-  - receipts that were not durably persisted;
+  - receipts whose declared persistence is non-durable and that HEAD does not
+    contain (the declared value is historical: session-receipt-v1 section 3);
+  - declared non-durable receipts that HEAD does contain (reported separately);
   - receipts that fail validation.
 
 Exit codes: 0 = every receipt valid (or no receipts), 1 = at least one invalid receipt,
@@ -24,6 +26,7 @@ from __future__ import annotations
 import argparse
 import importlib.util
 import json
+import subprocess
 import sys
 from collections import defaultdict
 from pathlib import Path
@@ -65,11 +68,33 @@ def _miss_keys(query: dict | None) -> list[str]:
     return keys
 
 
-def summarize(receipt_dir: Path) -> dict[str, Any]:
+_NON_DURABLE = ("pending", "working_tree_only")
+
+
+def _committed_receipt_names(repo_root: Path | None, receipt_dir: Path) -> set[str] | None:
+    """File names of the receipts that HEAD contains, or None when Git cannot say."""
+    if repo_root is None:
+        return None
+    try:
+        relative = receipt_dir.resolve().relative_to(repo_root.resolve()).as_posix()
+        result = subprocess.run(
+            ["git", "-C", str(repo_root), "ls-tree", "-r", "--name-only", "HEAD", "--", relative],
+            capture_output=True, text=True, timeout=30, check=False,
+        )
+    except (ValueError, OSError, subprocess.SubprocessError):
+        return None
+    if result.returncode != 0:
+        return None
+    prefix = "" if relative == "." else f"{relative}/"
+    return {line[len(prefix):] for line in result.stdout.splitlines() if line.startswith(prefix)}
+
+
+def summarize(receipt_dir: Path, repo_root: Path | None = None) -> dict[str, Any]:
     files = sorted(
         p for p in receipt_dir.glob("*.yaml")
         if p.name.endswith(".session.yaml") or p.name.endswith(".query.yaml")
     ) if receipt_dir.is_dir() else []
+    committed = _committed_receipt_names(repo_root, receipt_dir)
 
     sessions: list[dict] = []
     queries: list[dict] = []
@@ -83,7 +108,11 @@ def summarize(receipt_dir: Path) -> dict[str, Any]:
             })
             continue
         data, _ = _validator.load_receipt(path)
-        record = {"file": path.name, "data": data}
+        record = {
+            "file": path.name,
+            "data": data,
+            "committed_in_head": None if committed is None else path.name in committed,
+        }
         (sessions if artifact_id == _validator.SESSION_RECEIPT_ID else queries).append(record)
 
     sessions.sort(key=lambda r: (r["data"]["updated_at"], r["data"]["session_ref"]))
@@ -131,9 +160,19 @@ def summarize(receipt_dir: Path) -> dict[str, Any]:
         {"receipt": r["file"], "updated_at": r["data"]["updated_at"]}
         for r in sessions + queries if r["data"]["state"] == "in_progress"
     ]
+    # The declared persistence is written once and never edited (receipts are
+    # immutable), so it can lag a later commit. Current durability is whether
+    # HEAD contains the file; when Git cannot answer, the declaration stands.
     not_durable = [
+        {"receipt": r["file"], "persistence": r["data"]["persistence"],
+         "committed_in_head": r["committed_in_head"]}
+        for r in sessions + queries
+        if r["data"]["persistence"] in _NON_DURABLE and r["committed_in_head"] is not True
+    ]
+    declared_but_committed = [
         {"receipt": r["file"], "persistence": r["data"]["persistence"]}
-        for r in sessions + queries if r["data"]["persistence"] in ("pending", "working_tree_only")
+        for r in sessions + queries
+        if r["data"]["persistence"] in _NON_DURABLE and r["committed_in_head"] is True
     ]
 
     pending_misses = []
@@ -166,6 +205,7 @@ def summarize(receipt_dir: Path) -> dict[str, Any]:
                 "state": r["data"]["state"],
                 "stop": r["data"]["stop"]["disposition"] if r in sessions else None,
                 "persistence": r["data"]["persistence"],
+                "committed_in_head": r["committed_in_head"],
             }
             for r in sessions + queries
         ],
@@ -178,6 +218,7 @@ def summarize(receipt_dir: Path) -> dict[str, Any]:
         "pending_misses_note": _MISS_STATUS_NOTE,
         "repeated_misses": repeated_misses,
         "not_durable": not_durable,
+        "declared_but_committed": declared_but_committed,
         "invalid": invalid,
     }
 
@@ -186,7 +227,11 @@ def _print_text(summary: dict[str, Any]) -> None:
     lines = [f"RECEIPTS in {summary['receipt_dir']}: {len(summary['receipts'])} valid, {len(summary['invalid'])} invalid"]
     for r in summary["receipts"]:
         stop = f" stop={r['stop']}" if r["stop"] else ""
-        lines.append(f"  {r['receipt']}: {r['state']}{stop} persistence={r['persistence']}")
+        committed = {True: "yes", False: "no", None: "unknown"}[r["committed_in_head"]]
+        lines.append(
+            f"  {r['receipt']}: {r['state']}{stop} persistence={r['persistence']}"
+            f" committed_in_head={committed}"
+        )
     lines.append(f"UNFINISHED (in_progress; possibly interrupted): {len(summary['unfinished'])}")
     lines.extend(f"  {u['receipt']} (last update {u['updated_at']})" for u in summary["unfinished"])
     lines.append(f"OPEN QUESTIONS: {len(summary['open_questions'])}")
@@ -219,8 +264,13 @@ def _print_text(summary: dict[str, Any]) -> None:
         lines.append(f"  {m['ref']} {m['follow_up']}: {m['needed_for']}{ref}")
     lines.append(f"REPEATED MISSES (same subject/term in 2+ sessions): {len(summary['repeated_misses'])}")
     lines.extend(f"  {m['key']}: {', '.join(m['sessions'])}" for m in summary["repeated_misses"])
-    lines.append(f"NOT DURABLE: {len(summary['not_durable'])}")
+    lines.append(f"NOT DURABLE (declared non-durable; not confirmed committed in HEAD): {len(summary['not_durable'])}")
     lines.extend(f"  {n['receipt']} persistence={n['persistence']}" for n in summary["not_durable"])
+    lines.append(
+        "DECLARED NON-DURABLE BUT COMMITTED IN HEAD (historical declaration; "
+        f"receipts are immutable): {len(summary['declared_but_committed'])}"
+    )
+    lines.extend(f"  {n['receipt']} persistence={n['persistence']}" for n in summary["declared_but_committed"])
     if summary["invalid"]:
         lines.append("INVALID RECEIPTS (run scripts/validate-receipt.py for detail):")
         lines.extend(f"  {i['file']}: {'; '.join(i['errors'])}" for i in summary["invalid"])
@@ -235,7 +285,7 @@ def main(argv: list[str]) -> int:
     args = parser.parse_args(argv)
 
     receipt_dir = Path(args.dir) if args.dir else Path(args.repo) / _validator.RECEIPT_DIR
-    summary = summarize(receipt_dir)
+    summary = summarize(receipt_dir, Path(args.repo))
     if args.json:
         print(_ascii(json.dumps(summary, indent=2)))
     else:
