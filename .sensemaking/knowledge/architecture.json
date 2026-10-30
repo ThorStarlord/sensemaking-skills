@@ -479,11 +479,30 @@
       "authority_ref": "docs/adr/0034-ontology-first-adaptive-sensemaking.md",
       "evidence_refs": [
         "file:docs/adr/0034-ontology-first-adaptive-sensemaking.md",
-        "file:skills/using-sensemaking/SKILL.md"
+        "file:skills/using-sensemaking/SKILL.md",
+        "file:skills/using-sensemaking/references/portable-construction-loop-v1.md"
       ],
       "epistemic_status": "declared",
       "attributes": {
-        "owned_paths": ["skills/using-sensemaking/SKILL.md"]
+        "owned_paths": ["skills/using-sensemaking/SKILL.md", "skills/using-sensemaking/references/portable-construction-loop-v1.md"]
+      }
+    },
+    {
+      "id": "observation:discovery-memory-as-built",
+      "kind": "observation",
+      "statement": "At 9f26bb4f, the portable discovery guidance recalls relevant poss: and arch: records, classifies candidates and retains them only with the stated target authority. Its earlier synthesis compared arch:git-reviewed-local-memory, arch:receipt-based-memory, arch:strategic-artifact-projection and arch:grounding-pack-decision-log; the provisional preference was narrowed by write authority, and the as-built guidance classifies candidates rather than making every candidate a poss: record.",
+      "authority_kind": "document",
+      "authority_ref": "artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "file:skills/using-sensemaking/references/portable-construction-loop-v1.md",
+        "file:.sensemaking/knowledge/prospective-reasoning.json",
+        "file:.sensemaking/knowledge/possibilities.json"
+      ],
+      "epistemic_status": "observed",
+      "attributes": {
+        "observed_ref": "9f26bb4f2cc86c3e4f55265425ac3fd239f8a0f5",
+        "scope": "Guidance and recorded history only; independent reuse and causal benefit are not established."
       }
     },
     {
@@ -1105,6 +1124,14 @@
         "file:tests/test_sensemaking_receipts.py"
       ],
       "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:using-sensemaking-references-discovery-memory-history",
+      "subject": "component:using-sensemaking-skill",
+      "predicate": "references",
+      "object": "observation:discovery-memory-as-built",
+      "evidence_refs": ["file:skills/using-sensemaking/references/portable-construction-loop-v1.md", "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md"],
+      "epistemic_status": "observed"
     },
     {
       "id": "rel:using-sensemaking-decided-by-ontology-first",
