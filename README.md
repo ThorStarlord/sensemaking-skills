@@ -195,6 +195,8 @@ The installed product includes:
 - change-impact analysis over bounded contemplated/completed changes, identifying decision-relevant affected surfaces and verification/reconciliation consequences without automatic backlog generation or change authorization.
 - Decision Journey Productization v1 read-only composition: `journey inspect`, caller-selected context packs, authored strategic decision deltas, anticipated-vs-observed impact/closure comparison, static beginner guidance, and canonical end-to-end playbooks; no router, planner, causal inference, or closure inference.
 
+The Product Management domain pack (27 Skills, ADR 0028) is supported at the repository level as a set of repository-qualified capabilities. That is not a native-harness claim. Today every `setup-skills` target installs all 52 Skills; a selector for the domain pack is planned and is not yet implemented.
+
 The Level-3/Level-4 Strategic Outer Loop foundation is currently a **repository documentation/authority architecture**, not a shipped autonomous strategic runtime. Installing the package does not create a `StrategicPlanner`, automatically rank the Strategic Frontier, revise product strategy, or generate Campaigns without agent judgment.
 
 The shipped wheel deliberately excludes retained research-lab packages (`campaign_validation`, `campaign_accounting`, `exploratory_authorization`, `exploratory_execution`). Those remain source-only repository/lab infrastructure.

@@ -1,4 +1,8 @@
 # Skill Registry: Sensemaking Toolkit
+#
+# Status vocabulary: `deprecated` or `proposed` on an entry describes that entry's
+# legacy invocation metadata or unshipped status. It does not describe Skill support,
+# which is governed by release-v1.0.yaml and docs/release-v1.0-contract.md.
 
 ecosystems:
   core:
@@ -104,6 +108,10 @@ ecosystems:
         purpose: install the canonical Skill tree into an explicitly selected harness scope
         artifact: setup_report
         availability: { type: local, executable_by_orchestrator: true, requires_installed_skill: true }
+      - id: using-sensemaking
+        purpose: public entrypoint for repository understanding; composes specialists under the active agent's judgment
+        availability: { type: local_command, executable_by_orchestrator: false, requires_installed_skill: true }
+        invocation: { runtime: claude_code, command: "/using-sensemaking" }
 
   drafting:
     name: Implementation Drafting
@@ -114,11 +122,6 @@ ecosystems:
         availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
         capabilities: [write_files]
         invocation: { runtime: claude_code, command: "/docs-aligner" }
-      - id: to-prd
-        purpose: transform alignment report into a PRD
-        artifact: prd
-        availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
-        invocation: { runtime: claude_code, command: "/to-prd", input_artifact: domain_alignment_report, output_artifact: prd }
       - id: to-issues
         purpose: transform PRD into specific implementation issues
         artifact: issue_list
@@ -163,6 +166,11 @@ ecosystems:
   product:
     name: Product Management
     skills:
+      - id: to-prd
+        purpose: transform alignment report into a PRD
+        artifact: prd
+        availability: { type: local_command, executable_by_orchestrator: true, requires_installed_skill: true }
+        invocation: { runtime: claude_code, command: "/to-prd", input_artifact: domain_alignment_report, output_artifact: prd }
       - id: persona
         purpose: define target user and player fantasy
         status: deprecated

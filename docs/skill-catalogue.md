@@ -4,7 +4,7 @@
 selection rule. It is subordinate to each Skill's own `skills/<name>/SKILL.md`,
 `docs/system-capability-atlas-v1.md`, and `docs/canonical-vocabulary.yaml`.
 
-The repository ships 51 Skills under `skills/`. This page says what each one
+The repository ships 52 Skills under `skills/`. This page says what each one
 is for and how visible it should normally be. Per the operating discipline,
 **choose the responsibility first, then the Skill**; a Skill's existence is not
 a reason to invoke it.
@@ -87,20 +87,22 @@ shipped
 ## 5. Optional Product Management domain pack (ADR 0028)
 
 This domain is shipped for explicit product-management work but is not part of the default repository-engineering cognitive surface. Contracts in
-`docs/product-management/`, manifests in `skill-manifests/pm/`.
+`docs/product-management/`, manifests in `skill-manifests/pm/`. Today every setup
+target installs these Skills with the rest of the 52; an opt-in selector is planned
+and is not yet implemented.
 
 | Group | Skills |
 | --- | --- |
 | Customer understanding | `persona`, `interview-synthesis`, `customer-journey`, `ideal-customer-profile` |
 | Discovery and hypotheses | `discovery`, `opportunity-tree`, `hypothesis`, `pre-mortem` |
-| Definition and delivery | `to-prd`, `user-stories`, `acceptance-criteria`, `to-issues` |
+| Definition and delivery | `to-prd`, `user-stories`, `acceptance-criteria` |
 | Strategy and planning | `strategy`, `prioritize`, `north-star`, `okr`, `roadmap`, `lean-canvas` |
 | Experimentation and fit | `experiment-design`, `ab-test-analysis`, `measure-pmf` |
 | Market and commercial | `competitive-analysis`, `battlecard`, `pricing`, `gtm` |
 | Launch and communication | `launch-checklist`, `release-notes`, `stakeholder-update` |
 
-`to-issues` is the one PM-adjacent Skill without a `skill-manifests/pm/`
-manifest.
+`to-issues` is an internal engineering Skill. It is not part of this domain pack
+and has no `skill-manifests/pm/` manifest.
 
 ## 6. Skill maintenance
 
