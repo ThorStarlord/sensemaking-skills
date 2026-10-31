@@ -82,7 +82,8 @@ Consequences the owner accepted by decision H, to state in that release note:
 ## 6. Remaining dependencies
 
 - **Planner wiring (done).** `scripts/workflow-planner.py` reports installation availability and `execution_status` against an explicit `--installed-skills-root`, using the same `workflow_availability.py` model as the installer. Without that root, installation is unknown and the plan is `not_executable_now`.
-- **Runtime wiring (open).** The execution runtime (`scripts/workflow-runtime.py`: plan generation, finalize, and step execution) and the campaign capability inspection (`campaigns/capabilities.py`) still depend on liveness alone, and do not check installation availability. A runtime that presents or runs a workflow must check it as well. This is the next engineering increment, separate from M4.
+- **Runtime wiring (evidence and refusal).** `scripts/workflow-runtime.py` reports installation availability in preflight, plan generation, finalization, run logs and the summary JSON, using `--installed-skills-root`. It never grants or changes execution authority. Its step records state whether a Skill was invoked, whether a step's output came from a supplied artifact or a fixture, and what a conditional step did and did not evaluate. A step whose Skill is missing or unknown is refused before any invocation. In the current product no executor supports real invocation, so the refusal guards a path that no current mode reaches.
+- **Campaign capability inspection (open).** `campaigns/capabilities.py` still reports catalogue identity and liveness. It does not report installation availability, and it stays at its P6 contract.
 - **Packaged workflow registry.** The packaged copy still lacks three compatibility-only workflows that the canonical copy has. Owner direction keeps this outside M3, unless a current contract requires it.
 - **Installed copies outside a profile.** A user who installed all 52 keeps them. No profile removes them.
 
@@ -97,5 +98,6 @@ Consequences the owner accepted by decision H, to state in that release note:
 | H: `coding-agent-native-campaign` excluded from `entrypoint`; available under `full` | Decided, implemented |
 | M4 rollout: which release announces the default change, and when | Open, owner decision |
 | Planner consumer of installation availability | Done: `workflow-planner.py --installed-skills-root` |
+| Workflow runtime evidence and refusal | Done: `workflow-runtime.py --installed-skills-root`; the refusal guards a path no current mode reaches |
 | Runtime and campaign-capability consumers of installation availability | Open, next increment |
 | Packaged workflow registry differences | Outside M3 |
