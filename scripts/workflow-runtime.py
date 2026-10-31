@@ -83,6 +83,9 @@ INVALID_STATE = "INVALID_STATE"
 # installed. Raised before any invocation of that Skill.
 SKILL_NOT_INSTALLED = "SKILL_NOT_INSTALLED"
 SKILL_AVAILABILITY_UNKNOWN = "SKILL_AVAILABILITY_UNKNOWN"
+# A conditional step's decision evidence is missing, invalid or unsupported. The step
+# pauses with no branch selected and no gate approved.
+CONDITION_UNRESOLVED = "CONDITION_UNRESOLVED"
 
 # -- Known modes --------------------------------------------------------------
 KNOWN_MODES = OrderedDict([
@@ -552,17 +555,197 @@ class OrchestrationRunner:
             return "not_applicable"
         return self._skill_availability(skill)
 
-    def _conditional_branch_record(self, step: dict) -> dict:
-        """Record a conditional step accurately. This runtime does not evaluate its condition."""
+    # -- Conditional step resolution ------------------------------------------
+    # Bounded: only the documented decision field unknowns_map.research_needed is
+    # supported. The runtime never performs discovery. It records the selected branch,
+    # the open unknowns, and any handoff that remains necessary.
+
+    _SUPPORTED_DECISION_FIELD = ("unknowns_map", "research_needed")
+
+    def _read_unknowns_routing_field(self, artifact_path: str, field: str) -> bool | None:
+        """Read a boolean from the unknowns-map routing block, mirroring validate-unknowns-map.py.
+
+        Returns None when the block or the field is absent, or the value is not boolean.
+        """
+        with open(artifact_path, encoding="utf-8") as f:
+            content = f.read()
+        match = re.search(
+            r"## 7\. Machine-readable routing\s+```yaml\s+(.*?)\s+```",
+            content, re.DOTALL | re.IGNORECASE,
+        )
+        if not match:
+            return None
+        try:
+            data = yaml.safe_load(match.group(1))
+        except Exception:
+            return None
+        if not isinstance(data, dict):
+            return None
+        value = data.get(field)
+        return value if isinstance(value, bool) else None
+
+    def _relpath(self, path: str) -> str:
+        try:
+            return os.path.relpath(path, self.repo_root).replace("\\", "/")
+        except ValueError:
+            return path
+
+    def _condition_unresolved(self, result: dict, step_num: int, reason: str) -> dict:
+        """Leave the condition unresolved. The step halts and never claims a gate."""
+        result.update({
+            "status": "PAUSED",
+            "gate_result": "not_applicable",
+            "condition_resolution": "unresolved",
+            "selected_branch": None,
+            "handoff_required": True,
+            "open_unknowns": [f"condition unresolved: {reason}"],
+        })
+        self.errors.append(format_error(
+            CONDITION_UNRESOLVED,
+            f"Step {step_num} (conditional-branch): {reason}; no branch was selected.",
+        ))
+        print(f"  [CONDITION] UNRESOLVED: {reason}; no branch selected, no gate approved")
+        return self._finalize_step_result(result, step_num)
+
+    def _resolve_conditional_step(self, step: dict, step_num: int, result: dict) -> dict:
+        """Resolve a conditional step from its declared decision evidence."""
         branch = step.get("if_true") or {}
         branch_skill = branch.get("skill")
-        has_skill = isinstance(branch_skill, str) and bool(branch_skill)
-        return {
+        result.update({
+            "condition_source": step.get("decision_field"),
             "condition_evaluated": False,
+            "condition_resolution": "unresolved",
+            "selected_branch": None,
             "research_performed": False,
-            "branch_skill": branch_skill if has_skill else None,
-            "branch_skill_installation": self._skill_availability(branch_skill) if has_skill else "not_applicable",
-        }
+            "handoff_required": None,
+            "open_unknowns": [],
+            "branch_skill": branch_skill,
+            "branch_skill_installation": (
+                self._skill_availability(branch_skill)
+                if isinstance(branch_skill, str) and branch_skill else "not_applicable"
+            ),
+            "gate": branch.get("gate", "none"),
+            "gate_result": "not_applicable",
+        })
+
+        if self.mode == "plan_only":
+            # plan_only never evaluates a condition and does not require its evidence.
+            result.update({"status": "PLANNED", "condition_resolution": "not_evaluated"})
+            print("  [PLAN_ONLY] Conditional step recorded; condition not evaluated in plan_only")
+            return self._finalize_step_result(result, step_num)
+        if self.mode == "prompt_chain":
+            # prompt_chain never evaluates a condition and does not require its evidence.
+            result.update({
+                "status": "PROMPT_GENERATED",
+                "condition_resolution": "not_evaluated",
+                "prompt_written": False,
+            })
+            print("  [PROMPT_CHAIN] Step marked PROMPT_GENERATED (not executed)")
+            return self._finalize_step_result(result, step_num)
+
+        decision_field = step.get("decision_field") or ""
+        artifact_id, _, field = decision_field.partition(".")
+        if (artifact_id, field) != self._SUPPORTED_DECISION_FIELD:
+            return self._condition_unresolved(
+                result, step_num, f"unsupported decision field '{decision_field or 'none'}'")
+
+        # Decision evidence: the fixture when fixtures are in use, else the session artifact.
+        evidence_path = None
+        if self.use_fixtures:
+            evidence_path = self._get_fixture_artifact_path(artifact_id)
+        if not evidence_path:
+            evidence_path = self._resolve_artifact_path(artifact_id)
+        if not evidence_path or not os.path.exists(evidence_path):
+            return self._condition_unresolved(
+                result, step_num, f"decision evidence '{artifact_id}' is not present")
+        if any(v.get("result") == "FAILED" for v in self._run_validator_stack(artifact_id, evidence_path)):
+            return self._condition_unresolved(
+                result, step_num, f"decision evidence '{artifact_id}' failed validation")
+        research_needed = self._read_unknowns_routing_field(evidence_path, field)
+        if research_needed is None:
+            return self._condition_unresolved(
+                result, step_num, f"'{field}' is absent or not a boolean in '{artifact_id}'")
+
+        result.update({
+            "condition_evaluated": True,
+            "condition_source": f"{artifact_id}.{field} = {str(research_needed).lower()} "
+                                f"({self._relpath(evidence_path)})",
+        })
+        print(f"  [CONDITION] {artifact_id}.{field} = {str(research_needed).lower()}")
+
+        if research_needed is False:
+            result.update({
+                "status": "BRANCH_SKIPPED",
+                "condition_resolution": "resolved",
+                "selected_branch": "if_false",
+                "handoff_required": False,
+            })
+            print("  [BRANCH] Skip branch selected; research is not required by the decision evidence")
+            return self._finalize_step_result(result, step_num)
+
+        # research_needed is true. Discovery is an external routing handoff, not a runtime action.
+        findings_path = self._resolve_artifact_path("discovery_findings")
+        if findings_path and os.path.exists(findings_path):
+            if any(v.get("result") == "FAILED" for v in self._run_validator_stack("discovery_findings", findings_path)):
+                self.errors.append(format_error(
+                    VALIDATOR_FAILED,
+                    f"Step {step_num} (conditional-branch): supplied discovery_findings failed validation."))
+                result.update({"status": "FAILED", "selected_branch": "if_true", "condition_resolution": "resolved"})
+                return self._finalize_step_result(result, step_num)
+            gate_name = branch.get("gate", "none")
+            gate_result = self._manage_gate(gate_name, step_num, branch_skill) if gate_name != "none" else "not_applicable"
+            result.update({"gate_result": gate_result})
+            if gate_result in ("denied_by_user",):
+                self.errors.append(format_error(
+                    GATE_DENIED, f"Step {step_num} (conditional-branch): Gate '{gate_name}' was denied"))
+                result.update({"status": "PAUSED", "selected_branch": "if_true", "condition_resolution": "resolved"})
+                return self._finalize_step_result(result, step_num)
+            if gate_result in ("failed",):
+                self.errors.append(format_error(
+                    GATE_AUTO_FAILED, f"Step {step_num} (conditional-branch): Gate '{gate_name}' auto-failed"))
+                result.update({"status": "FAILED", "selected_branch": "if_true", "condition_resolution": "resolved"})
+                return self._finalize_step_result(result, step_num)
+            result.update({
+                "status": "BRANCH_SELECTED",
+                "condition_resolution": "resolved",
+                "selected_branch": "if_true",
+                "handoff_required": False,
+                "execution_source": "supplied_artifact",
+                "artifact_path": self._relpath(findings_path),
+                "output_artifact": branch.get("output_artifact", "discovery_findings"),
+            })
+            print("  [BRANCH] Skill-independent handoff: supplied discovery_findings validated; runtime did not run discovery")
+            return self._finalize_step_result(result, step_num)
+
+        discovery_installation = self._skill_availability(branch_skill or "discovery")
+        if discovery_installation == "available":
+            # Discovery is installed, so the handoff is required and the run must pause.
+            result.update({
+                "status": "PAUSED",
+                "condition_resolution": "handoff_required",
+                "selected_branch": "if_true",
+                "handoff_required": True,
+                "open_unknowns": ["research_needed=true: external discovery handoff required"],
+                "output_artifact": branch.get("output_artifact", "discovery_findings"),
+            })
+            print("  [HANDOFF] research_needed=true: external discovery is required. The runtime did not run it. "
+                  "Provide discovery_findings, then resume.")
+            return self._finalize_step_result(result, step_num)
+
+        # Documented fallback: discovery is unavailable (missing or unknown), so research is
+        # preserved as an open unknown. The workflow proceeds without claiming it was done.
+        result.update({
+            "status": "OPEN_UNKNOWN",
+            "condition_resolution": "open_unknown",
+            "selected_branch": "if_true",
+            "handoff_required": True,
+            "open_unknowns": [
+                f"research_needed=true; discovery {discovery_installation}; research not performed"
+            ],
+        })
+        print(f"  [OPEN_UNKNOWN] research_needed=true; discovery is {discovery_installation}. "
+              "Research is preserved as an open unknown (documented fallback); not performed.")
+        return self._finalize_step_result(result, step_num)
 
     def _installation_fields(self, record: dict | None) -> list:
         """Machine-readable installation fields. Contains no local paths."""
@@ -1410,8 +1593,6 @@ class OrchestrationRunner:
         result["skill_installation"] = self._step_skill_installation(step)
         result["skill_invoked"] = False
         result["execution_source"] = "none"
-        if step.get("conditional"):
-            result.update(self._conditional_branch_record(step))
 
         print(f"\n{'-'*50}")
         print(f"STEP {step_num}/{total_steps}  |  Skill: {skill}  |  Gate: {gate_name}")
@@ -1424,6 +1605,11 @@ class OrchestrationRunner:
             "skill_id": skill,
             "output_artifact": output_artifact or "N/A",
         })
+
+        # -- Conditional steps are resolved from their decision evidence. They are never
+        # run as a generic gated step, so no gate is approved for an unresolved condition.
+        if step.get("conditional"):
+            return self._resolve_conditional_step(step, step_num, result)
 
         # -- Mode ceiling enforcement: don't validate artifacts in prompt_chain --
         if self.mode == "prompt_chain":
@@ -2709,10 +2895,15 @@ class OrchestrationRunner:
                 f"- **skill_invoked**: {str(sr.get('skill_invoked', False)).lower()}",
                 f"- **execution_source**: {sr.get('execution_source', 'none')}",
             ])
-            if "condition_evaluated" in sr:
+            if "condition_resolution" in sr:
                 lines.extend([
-                    f"- **condition_evaluated**: {str(sr['condition_evaluated']).lower()}",
-                    f"- **research_performed**: {str(sr['research_performed']).lower()}",
+                    f"- **condition_source**: {sr.get('condition_source') or 'none'}",
+                    f"- **condition_evaluated**: {str(sr.get('condition_evaluated', False)).lower()}",
+                    f"- **condition_resolution**: {sr['condition_resolution']}",
+                    f"- **selected_branch**: {sr.get('selected_branch') or 'none'}",
+                    f"- **research_performed**: {str(sr.get('research_performed', False)).lower()}",
+                    f"- **handoff_required**: {str(sr.get('handoff_required')).lower()}",
+                    f"- **open_unknowns**: {'; '.join(sr.get('open_unknowns') or []) or 'none'}",
                     f"- **branch_skill**: {sr.get('branch_skill') or 'none'}",
                     f"- **branch_skill_installation**: {sr.get('branch_skill_installation', 'not_applicable')}",
                 ])
@@ -3353,7 +3544,8 @@ class OrchestrationRunner:
         print(f"  Status:       {self.final_state}")
         # Count steps at each semantic state (not just COMPLETED)
         successful_steps = len([s for s in self.step_results
-                               if s['status'] in ('COMPLETED', 'EXECUTED', 'VALIDATED', 'APPROVED', 'PLANNED', 'PROMPT_GENERATED')])
+                               if s['status'] in ('COMPLETED', 'EXECUTED', 'VALIDATED', 'APPROVED', 'PLANNED', 'PROMPT_GENERATED',
+                                                  'BRANCH_SKIPPED', 'BRANCH_SELECTED')])
         print(f"  Steps:        {successful_steps}/{len(steps)}")
         print(f"  Gates:        {len(self.gate_decisions)}")
         print(f"  Errors:       {len(self.errors)}")
@@ -3374,10 +3566,18 @@ class OrchestrationRunner:
             print(f"  [PAUSE]  Execution paused. Can resume.")
             return self._finalize_run(3, "paused")
         else:
-            print(f"  [OK] Execution completed successfully.")
+            open_unknown_steps = [s for s in self.step_results if s.get("status") == "OPEN_UNKNOWN"]
+            if open_unknown_steps:
+                # Not a clean success: a documented fallback left research as an open unknown.
+                print("  [OK] Execution completed with open unknowns (not a clean success).")
+            else:
+                print(f"  [OK] Execution completed successfully.")
             if not invoked:
                 print("  [NOTE] No Skill was invoked by the runtime; step results reflect supplied "
                       "artifacts, fixtures or prompt records as recorded per step.")
+            if open_unknown_steps:
+                print("  [NOTE] Open unknown carried forward; research was NOT performed: "
+                      + "; ".join(u for s in open_unknown_steps for u in s.get("open_unknowns", [])))
             return self._finalize_run(0, "completed")
 
     def _finalize_run(self, exit_code: int, status: str) -> int:
