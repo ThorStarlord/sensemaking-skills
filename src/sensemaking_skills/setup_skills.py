@@ -29,12 +29,19 @@ import hashlib
 import shutil
 import sys
 from pathlib import Path
-from typing import List, Tuple
+from typing import List, Sequence, Tuple
+
+import yaml
 
 from . import __version__
 from .harness_adapters import (
     HarnessAdapterError,
     resolve_harness_destinations,
+)
+from .workflow_availability import (
+    installed_skill_ids,
+    summarize_availability,
+    workflow_availability,
 )
 
 __all__ = [
@@ -254,7 +261,104 @@ def _resolve_destinations(
     return destinations
 
 
-def setup_skills(
+NO_FLAG_PROFILE = "full"
+"""Profile used when no ``--profile`` flag is given.
+
+It stays ``full`` in M3, so the installed set is unchanged. Changing it is a
+separate release decision (M4), not part of profile selection.
+"""
+
+
+def _load_install_profiles() -> Tuple[dict, dict]:
+    """Return (profiles, add_ons) from the packaged install-profile catalogue."""
+    from importlib.resources import files
+
+    text = files("sensemaking_skills.defaults").joinpath("install-profiles.yaml").read_text(
+        encoding="utf-8"
+    )
+    data = yaml.safe_load(text) or {}
+    if not isinstance(data, dict) or data.get("schema_version") != 1:
+        raise SkillsSetupError("packaged install-profiles.yaml must be a schema_version 1 mapping")
+    profiles = data.get("profiles")
+    add_ons = data.get("add_ons") or {}
+    if not isinstance(profiles, dict) or not isinstance(add_ons, dict):
+        raise SkillsSetupError(
+            "packaged install-profiles.yaml must define 'profiles' and 'add_ons' mappings"
+        )
+    for group in (profiles, add_ons):
+        for name, spec in group.items():
+            if not isinstance(spec, dict):
+                raise SkillsSetupError(f"install profile {name!r} must be a mapping")
+            if spec.get("all_packaged") is not True and not isinstance(spec.get("skills"), list):
+                raise SkillsSetupError(
+                    f"install profile {name!r} must list 'skills' or set all_packaged"
+                )
+    return profiles, add_ons
+
+
+def _select_skill_names(
+    packaged: List[str],
+    *,
+    profile: str | None,
+    include: Sequence[str],
+) -> Tuple[str, List[str], List[str]]:
+    """Resolve a profile and add-ons to the exact Skill names to copy.
+
+    Fails closed: an unknown profile or add-on, or a profile member that is not
+    packaged, raises before anything is copied.
+    """
+    profiles, add_ons = _load_install_profiles()
+    name = NO_FLAG_PROFILE if profile is None else profile
+    if name not in profiles:
+        raise SkillsSetupError(
+            f"unknown profile {name!r}; choose one of: {', '.join(sorted(profiles))}"
+        )
+    spec = profiles[name]
+    chosen = set(packaged) if spec.get("all_packaged") is True else set(spec["skills"])
+    selected_add_ons: List[str] = []
+    for add_on in include:
+        if add_on not in add_ons:
+            raise SkillsSetupError(
+                f"unknown add-on {add_on!r}; choose from: {', '.join(sorted(add_ons))}"
+            )
+        if add_on not in selected_add_ons:
+            selected_add_ons.append(add_on)
+            chosen.update(add_ons[add_on]["skills"])
+    missing = sorted(chosen - set(packaged))
+    if missing:
+        raise SkillsSetupError("profile names Skills that are not packaged: " + ", ".join(missing))
+    return name, selected_add_ons, sorted(chosen)
+
+
+def _report_workflow_availability(
+    dest_dir: Path,
+    *,
+    dry_run: bool,
+    planned: frozenset[str],
+) -> None:
+    """Print installation availability of active workflows for one destination.
+
+    This is installation availability only. It does not change liveness and does
+    not authorize execution. Workflows missing required Skills are listed as not
+    available rather than presented as executable.
+    """
+    present = installed_skill_ids(dest_dir)
+    label = "planned" if dry_run else "installed"
+    installed = (present | planned) if dry_run else present
+    try:
+        rows = workflow_availability(installed)
+    except (OSError, ValueError, yaml.YAMLError) as exc:
+        print(
+            f"  Workflow installation availability: not evaluated ({exc}); "
+            "no workflow is presented as available."
+        )
+        return
+    print(f"  Workflow installation availability ({label} Skill set):")
+    for line in summarize_availability(rows):
+        print(f"    {line}")
+
+
+def setup_skill_profile(
     target: str = "agents",
     skills_dir: str | None = None,
     dry_run: bool = False,
@@ -262,6 +366,8 @@ def setup_skills(
     verbose: bool = False,
     scope: str = "user",
     project_root: str | Path | None = None,
+    profile: str | None = None,
+    include: Sequence[str] = (),
 ) -> bool:
     """Install packaged Skill trees to explicitly selected discovery roots.
 
@@ -279,12 +385,20 @@ def setup_skills(
     ``scope=user`` selects user/global roots. ``scope=project`` requires an
     explicit project root and selects project-local discovery roots. No active
     harness is detected automatically.
+
+    ``profile`` selects a dependency-closed installation profile (``entrypoint``
+    or ``full``); ``include`` adds named add-ons (for example
+    ``product-management``). Omitting both installs every packaged Skill, which
+    is the current default. Profiles never change workflow liveness.
     """
     try:
         package_skills_dir = get_package_skills_dir()
         skill_names = find_skills_in_package(package_skills_dir)
         if not skill_names:
             raise SkillsSetupError(f"No skills found in {package_skills_dir}")
+        profile_name, add_on_names, selected = _select_skill_names(
+            skill_names, profile=profile, include=include
+        )
 
         destinations = _resolve_destinations(
             target=target,
@@ -297,6 +411,10 @@ def setup_skills(
 
         if verbose:
             print(f"Found {len(skill_names)} skills: {', '.join(skill_names)}")
+            print(
+                f"Profile: {profile_name}; add-ons: {', '.join(add_on_names) or 'none'}; "
+                f"{len(selected)} of {len(skill_names)} Skills selected"
+            )
             print(f"Explicit target: {target}")
             print(f"Scope: {scope}")
 
@@ -313,7 +431,7 @@ def setup_skills(
                 if verbose:
                     print(f"Created directory: {dest_dir}")
 
-            for skill_name in skill_names:
+            for skill_name in selected:
                 success, message = copy_skill(
                     package_skills_dir,
                     dest_dir,
@@ -326,12 +444,20 @@ def setup_skills(
                 if not success:
                     all_success = False
 
+            _report_workflow_availability(
+                dest_dir,
+                dry_run=dry_run,
+                planned=frozenset(selected),
+            )
+
         print(f"\n{'=' * 60}")
         print("Summary")
         print(f"{'=' * 60}")
         if dry_run:
             print("[DRY-RUN MODE] No files were actually installed.")
-        print(f"Skills to install: {', '.join(skill_names)}")
+        print(f"Profile: {profile_name}")
+        print(f"Add-ons: {', '.join(add_on_names) or 'none'}")
+        print(f"Skills to install: {', '.join(selected)}")
         print(f"Target locations: {len(destinations)}")
         print(f"Requested adapter target: {target}")
         print(f"Requested scope: {scope}")
@@ -368,3 +494,28 @@ def setup_skills(
     except Exception as exc:
         print(f"Unexpected error: {exc}", file=sys.stderr)
         return False
+
+
+def setup_skills(
+    target: str = "agents",
+    skills_dir: str | None = None,
+    dry_run: bool = False,
+    force: bool = False,
+    verbose: bool = False,
+    scope: str = "user",
+    project_root: str | Path | None = None,
+) -> bool:
+    """Install every packaged Skill tree to explicitly selected discovery roots.
+
+    This is the frozen public entry point. Profile selection is available through
+    ``setup_skill_profile`` and the ``setup-skills`` command.
+    """
+    return setup_skill_profile(
+        target=target,
+        skills_dir=skills_dir,
+        dry_run=dry_run,
+        force=force,
+        verbose=verbose,
+        scope=scope,
+        project_root=project_root,
+    )

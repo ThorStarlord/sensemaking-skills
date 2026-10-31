@@ -1,0 +1,68 @@
+# Installation profiles for setup-skills.
+#
+# A profile selects which packaged Skill trees setup-skills copies into a
+# harness root. It does not change workflow liveness (ADR 0027), execution
+# authority, or any Skill's release tier.
+#
+# The entrypoint profile is dependency-closed from using-sensemaking: no member
+# requires a Skill outside the profile by path reference or named controller
+# owner. Conditional PM dependencies are stated in the controller text and in
+# the workflow registry. See docs/product-management/distribution-profile-contract.md.
+schema_version: 1
+profiles:
+  entrypoint:
+    description: The public entrypoint and the Skills its repository-understanding path needs.
+    skills:
+      - using-sensemaking
+      - repository-semantic-steward
+      - repo-sensemaker
+      - strategic-repository-analysis
+      - strategic-repository-reconciliation
+      - strategic-sensemaking-loop
+      - multi-repository-strategic-analysis
+      - external-evidence-packet
+      - owner-decision-capsule
+      - thesis-review-packet
+      - architectural-review
+      - change-impact-analysis
+      - output-reconciler
+      - repair-verifier
+      - workflow-planner
+      - problem-framer
+      - unknowns-mapper
+      - sensemaking-docs-reconciler
+      - handoff
+  full:
+    description: Every packaged Skill tree. Selected when no profile flag is given.
+    all_packaged: true
+add_ons:
+  product-management:
+    description: Product Management domain pack (ADR 0028). Required by docs-implementation-workflow through to-prd.
+    skills:
+      - persona
+      - discovery
+      - interview-synthesis
+      - competitive-analysis
+      - strategy
+      - opportunity-tree
+      - hypothesis
+      - customer-journey
+      - ideal-customer-profile
+      - user-stories
+      - acceptance-criteria
+      - prioritize
+      - roadmap
+      - okr
+      - lean-canvas
+      - pricing
+      - north-star
+      - experiment-design
+      - measure-pmf
+      - ab-test-analysis
+      - pre-mortem
+      - launch-checklist
+      - release-notes
+      - stakeholder-update
+      - gtm
+      - battlecard
+      - to-prd

@@ -912,7 +912,7 @@ workflows:
     gate: review
     input_artifact: domain_alignment_report
     output_artifact: prd
-    description: Documentation specification - define structure and coverage. Conditional installation requirement - requires the Product Management domain pack (to-prd).
+    description: Documentation specification - define structure and coverage. Installation requirement - requires docs-aligner (step 1) and the Product Management domain pack (to-prd, step 2); not available without both.
   - id: 3
     skill: handoff
     step_type: local_execution
