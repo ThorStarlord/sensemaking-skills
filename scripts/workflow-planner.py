@@ -13,60 +13,32 @@ executable now.
 """
 
 import argparse
-import importlib.util
 import json
 import os
 import sys
 import yaml
 from datetime import datetime, timezone
-from pathlib import Path
 from typing import TypedDict, Any, Optional
 
-from _validator_utils import load_workflow_registry
-
-_SCRIPTS_DIR = Path(__file__).resolve().parent
-_AVAILABILITY_SOURCE = _SCRIPTS_DIR.parent / "src" / "sensemaking_skills" / "workflow_availability.py"
-_availability_module: Any = None
+from _validator_utils import (
+    load_workflow_availability,
+    load_workflow_registry,
+    resolve_installed_skill_context,
+)
 
 
 def _availability():
-    """Load the shared installation-availability model from this checkout's source.
-
-    The module is loaded by file path, so the planner never imports whichever
-    sensemaking_skills happens to be installed in the environment.
-    """
-    global _availability_module
-    if _availability_module is None:
-        if not _AVAILABILITY_SOURCE.is_file():
-            raise ImportError(f"shared availability model not found: {_AVAILABILITY_SOURCE}")
-        spec = importlib.util.spec_from_file_location("workflow_availability", _AVAILABILITY_SOURCE)
-        if spec is None or spec.loader is None:
-            raise ImportError(f"cannot load availability model from {_AVAILABILITY_SOURCE}")
-        module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(module)
-        _availability_module = module
-    return _availability_module
+    """Return the shared installation-availability model (one implementation, see _validator_utils)."""
+    return load_workflow_availability()
 
 
 def _installed_context(installed_skills_root: Optional[str]) -> tuple[Optional[frozenset], str, str]:
     """Return (installed Skill ids or None, human note, machine context kind).
 
-    Only an explicitly supplied root grounds installation. The planner never infers
-    a host's installation from repo_root/skills or from any source checkout. The
-    machine-readable kind carries no local path, because validate-plan rejects
-    absolute paths in YAML blocks.
+    Only an explicitly supplied root grounds installation. The machine-readable kind
+    carries no local path, because validate-plan rejects absolute paths in YAML.
     """
-    if installed_skills_root is None:
-        return None, "not supplied; installation is unknown", "not_supplied"
-    root = Path(installed_skills_root)
-    if not root.is_dir():
-        return None, f"installed Skills root not found: {installed_skills_root}", "root_not_found"
-    module = _availability()
-    return (
-        module.installed_skill_ids(root),
-        f"explicit installed Skills root: {installed_skills_root}",
-        "explicit_root",
-    )
+    return resolve_installed_skill_context(installed_skills_root)
 
 # Fog type to historical/default workflow candidate (from workflow-planner
 # SKILL.md). ADR 0027 requires a liveness check before any candidate can become

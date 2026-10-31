@@ -169,6 +169,52 @@ def load_workflow_registry(repo_root: str) -> dict | None:
     )
 
 
+_WORKFLOW_AVAILABILITY = None
+
+
+def load_workflow_availability():
+    """Load the shared installation-availability model from this checkout's source.
+
+    The single availability model is src/sensemaking_skills/workflow_availability.py.
+    It is loaded by file path, so scripts never import whichever sensemaking_skills
+    happens to be installed in the environment. Missing source raises ImportError,
+    and callers must report installation as unknown rather than guess.
+    """
+    global _WORKFLOW_AVAILABILITY
+    if _WORKFLOW_AVAILABILITY is None:
+        path = os.path.normpath(os.path.join(
+            os.path.dirname(os.path.abspath(__file__)),
+            os.pardir, "src", "sensemaking_skills", "workflow_availability.py",
+        ))
+        if not os.path.isfile(path):
+            raise ImportError(f"shared availability model not found: {path}")
+        spec = importlib.util.spec_from_file_location("workflow_availability", path)
+        if spec is None or spec.loader is None:
+            raise ImportError(f"cannot load availability model from {path}")
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        _WORKFLOW_AVAILABILITY = module
+    return _WORKFLOW_AVAILABILITY
+
+
+def resolve_installed_skill_context(installed_skills_root):
+    """Return (installed Skill ids or None, human note, machine context kind).
+
+    Only an explicitly supplied root grounds installation. Nothing is inferred from
+    the repository, the framework checkout, or any host directory. Without a usable
+    root the installed set is None, which means unknown.
+    """
+    from pathlib import Path
+
+    if installed_skills_root is None:
+        return None, "not supplied; installation is unknown", "not_supplied"
+    root = Path(installed_skills_root)
+    if not root.is_dir():
+        return None, f"installed Skills root not found: {installed_skills_root}", "root_not_found"
+    installed = load_workflow_availability().installed_skill_ids(root)
+    return installed, f"explicit installed Skills root: {installed_skills_root}", "explicit_root"
+
+
 def load_artifact_contracts(repo_root: str) -> dict | None:
     """Load artifact-contracts.yaml from the repo."""
     return load_yaml(_registry_path(repo_root, "artifact-contracts.yaml"))

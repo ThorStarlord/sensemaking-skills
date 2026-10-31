@@ -36,9 +36,11 @@ from collections import OrderedDict
 from _validator_utils import (
     format_error,
     load_yaml,
+    load_workflow_availability,
     load_workflow_registry,
     load_artifact_contracts,
     load_skill_registry,
+    resolve_installed_skill_context,
     resolve_repo_root,
     run_subprocess,
 )
@@ -77,6 +79,10 @@ ROLLBACK_RECOMMENDED = "ROLLBACK_RECOMMENDED"
 UNKNOWN_GATE_RESULT = "UNKNOWN_GATE_RESULT"
 RECOVERY_APPLIED = "RECOVERY_APPLIED"
 INVALID_STATE = "INVALID_STATE"
+# Installation availability: a Skill a step needs is missing or not grounded as
+# installed. Raised before any invocation of that Skill.
+SKILL_NOT_INSTALLED = "SKILL_NOT_INSTALLED"
+SKILL_AVAILABILITY_UNKNOWN = "SKILL_AVAILABILITY_UNKNOWN"
 
 # -- Known modes --------------------------------------------------------------
 KNOWN_MODES = OrderedDict([
@@ -236,6 +242,7 @@ class OrchestrationRunner:
         authorization=None,
         invocation_identity=None,
         warrant_enabled: bool = False,  # BOUNDED SEAM: opt-in MODEL_WARRANT gate
+        installed_skills_root: str | None = None,  # explicit grounding for installation availability
     ):
         self.workflow_id = workflow_id
         self.mode = mode
@@ -258,6 +265,8 @@ class OrchestrationRunner:
         # GATE_A_INVOCATION_IDENTITY_MISMATCH.
         self.invocation_identity = invocation_identity
         self.errors: list[str] = []
+        # Explicit installed Skill root (None = unknown). Never inferred.
+        self.installed_skills_root = installed_skills_root
         if self.mode in RETIRED_EXECUTION_MODES:
             self.errors.append(format_error(
                 "EXECUTION_MODE_RETIRED",
@@ -343,6 +352,10 @@ class OrchestrationRunner:
 
         # Load registries
         self._load_registries()
+        # Installation availability for the effective workflow definition loaded above.
+        # Evidence only: liveness and execution authority are unchanged.
+        self._installed_skills: frozenset | None = None
+        self.installation = self._evaluate_installation()
 
         # State tracking
         self.final_state: str = "not_started"
@@ -454,6 +467,128 @@ class OrchestrationRunner:
             )
 
         self.contracts = load_artifact_contracts(self.repo_root)
+
+    # ------------------------------------------------------------------
+    # Installation availability (evidence only: never liveness, never authority)
+    # ------------------------------------------------------------------
+
+    def _evaluate_installation(self) -> dict | None:
+        """Evaluate installation availability for the effective workflow loaded for this run.
+
+        The definition is the operational registry view (repository overrides included).
+        The installed Skill set is grounded only by an explicit installed root. A missing
+        or ungrounded root is unknown, and unknown is never reported as available.
+        """
+        try:
+            installed, note, kind = resolve_installed_skill_context(self.installed_skills_root)
+        except ImportError as exc:
+            installed, note, kind = None, f"availability model unavailable: {exc}", "model_unavailable"
+        self._installed_skills = installed
+        self._installed_context_note = note
+        self._installed_context_kind = kind
+        if not self.workflow:
+            return None
+        return self._installation_record(self.workflow)
+
+    def _installation_record(self, definition: dict) -> dict:
+        """Installation availability and execution status for one workflow definition."""
+        try:
+            availability = load_workflow_availability()
+        except ImportError as exc:
+            note = f"availability model unavailable: {exc}"
+            return {
+                "installation": {
+                    "installation": "unknown",
+                    "installation_available": False,
+                    "required_skills": [],
+                    "conditional_skills": [],
+                    "missing_required_skills": [],
+                    "conditional_skills_absent": [],
+                },
+                "execution": {
+                    "execution_status": "not_executable_now",
+                    "not_executable_reason": "installation_context_unknown",
+                    "installation_context_note": note,
+                    "execution_authorized": False,
+                },
+                "installed": None,
+                "context_kind": "model_unavailable",
+                "context_note": note,
+            }
+        installation = availability.installation_status(definition, self._installed_skills)
+        execution = availability.execution_status(
+            live=True,
+            installation=installation,
+            context_note=self._installed_context_note,
+        )
+        return {
+            "installation": installation,
+            "execution": execution,
+            "installed": self._installed_skills,
+            "context_kind": self._installed_context_kind,
+            "context_note": self._installed_context_note,
+        }
+
+    def _skill_availability(self, skill: str) -> str:
+        """Return available, missing or unknown for one Skill name, from the grounded set."""
+        if self._installed_skills is None:
+            return "unknown"
+        return "available" if skill in self._installed_skills else "missing"
+
+    def _step_skill_installation(self, step: dict) -> str:
+        """Installation status of the Skill one step names, or not_applicable."""
+        skill = step.get("skill")
+        if step.get("conditional") or not isinstance(skill, str) or skill in ("", "?"):
+            return "not_applicable"
+        return self._skill_availability(skill)
+
+    def _conditional_branch_record(self, step: dict) -> dict:
+        """Record a conditional step accurately. This runtime does not evaluate its condition."""
+        branch = step.get("if_true") or {}
+        branch_skill = branch.get("skill")
+        has_skill = isinstance(branch_skill, str) and bool(branch_skill)
+        return {
+            "condition_evaluated": False,
+            "research_performed": False,
+            "branch_skill": branch_skill if has_skill else None,
+            "branch_skill_installation": self._skill_availability(branch_skill) if has_skill else "not_applicable",
+        }
+
+    def _installation_fields(self, record: dict | None) -> list:
+        """Machine-readable installation fields. Contains no local paths."""
+        if record is None:
+            return [
+                ("installation_availability", "unknown"),
+                ("execution_status", "not_executable_now"),
+                ("not_executable_reason", "installation_context_unknown"),
+                ("execution_authorized", False),
+            ]
+        installation = record["installation"]
+        execution = record["execution"]
+        return [
+            ("installation_availability", installation["installation"]),
+            ("required_skills", installation["required_skills"]),
+            ("missing_required_skills", installation["missing_required_skills"]),
+            ("conditional_skills_absent", installation["conditional_skills_absent"]),
+            ("installation_context", record["context_kind"]),
+            ("execution_status", execution["execution_status"]),
+            ("not_executable_reason", execution["not_executable_reason"]),
+            ("execution_authorized", False),
+        ]
+
+    def _installation_text(self) -> str:
+        """One human-readable line describing installation availability for this run."""
+        if not self.installation:
+            return "not evaluated (workflow not loaded)"
+        installation = self.installation["installation"]
+        status = installation["installation"]
+        if status == "available":
+            text = "available in the supplied installed Skill root"
+        elif status == "missing_required_skills":
+            text = f"missing required Skills: {', '.join(installation['missing_required_skills'])}"
+        else:
+            text = "unknown (no grounded installed Skill root; execution readiness not established)"
+        return f"{text}; {self._installed_context_note}"
 
     def _create_user_intent_artifact(self, problem_statement: str | None, scope_mode: str) -> str | None:
         """Create 00-user-intent.md artifact. Returns artifact path or None on error."""
@@ -642,6 +777,10 @@ class OrchestrationRunner:
                 print(f"  [FAIL] CONTEXT: {msg}")
                 all_ok = False
 
+        # 5. Installation availability is evidence, not a gate for manual-artifact
+        # validation or planning (reported once by run(); see there). Steps that would
+        # invoke a Skill are refused separately, in execute_step.
+
         if all_ok:
             print(f"\n  [OK] All pre-flight checks passed.\n")
         else:
@@ -722,6 +861,7 @@ class OrchestrationRunner:
             ("scope_expansion_requires_approval", True),
             ("status", "created"),
             ("session_id", self.session_id),
+            *self._installation_fields(self.installation),
             ("initial_inputs", initial_inputs),
             ("steps", machine_steps),
             ("approval_gates", approval_gates),
@@ -1104,6 +1244,7 @@ class OrchestrationRunner:
             ("subset_reason", None),
             ("included_steps", [s.get("id") for s in workflows_steps]),
             ("excluded_steps", []),
+            *self._installation_fields(self._installation_record(target)),
             ("created_at", created_at),
         ])
         machine_yaml = yaml.dump(
@@ -1254,6 +1395,13 @@ class OrchestrationRunner:
             "status": "PENDING",
             "step_type": s_type,
         }
+        # Honest provenance. Nothing below says a Skill ran unless invoke_skill ran it
+        # (skill_invoked). Installation status is evidence about the grounded root.
+        result["skill_installation"] = self._step_skill_installation(step)
+        result["skill_invoked"] = False
+        result["execution_source"] = "none"
+        if step.get("conditional"):
+            result.update(self._conditional_branch_record(step))
 
         print(f"\n{'-'*50}")
         print(f"STEP {step_num}/{total_steps}  |  Skill: {skill}  |  Gate: {gate_name}")
@@ -1272,6 +1420,9 @@ class OrchestrationRunner:
             # prompt_chain: generate prompts, not validate execution artifacts
             result["status"] = "PROMPT_GENERATED"
             result["gate_result"] = "not_applicable"
+            # Compatibility: the status is retained, but this path writes no prompt file,
+            # so the record says so instead of implying one exists.
+            result["prompt_written"] = False
             print(f"  [PROMPT_CHAIN] Step marked PROMPT_GENERATED (not executed)")
             return self._finalize_step_result(result, step_num)
 
@@ -1294,6 +1445,9 @@ class OrchestrationRunner:
                     result["artifact_path"] = f"examples/{os.path.relpath(fixture_path, os.path.join(self.repo_root, 'examples')).replace(chr(92), '/')}"
                     print(f"  [FIXTURE] Using fixture artifact: {os.path.relpath(fixture_path, self.repo_root)}")
                     result["status"] = "EXECUTED"
+                    # Compatibility: EXECUTED is retained for fixture simulations. The
+                    # record states that no Skill ran.
+                    result["execution_source"] = "fixture"
                     is_fixture = True
 
             if is_fixture:
@@ -1309,6 +1463,7 @@ class OrchestrationRunner:
                     os.path.exists(self._resolve_artifact_path(output_artifact)):
                 print(f"  [RUNTIME_PLAN] Using runtime-authored orchestration plan "
                       f"(skipping skill re-generation; ADR 0010)")
+                result["execution_source"] = "runtime_authored"
 
             # Try to execute skill if executor supports real execution
             elif skill and skill != "?" and self.skill_executor and self.skill_executor.supports_real_execution:
@@ -1326,6 +1481,19 @@ class OrchestrationRunner:
                             f"was found at {resolved_inputs['proposed_direction']['path']}. Supply it "
                             f"as a prewritten artifact before invoking this workflow (see --from-session).")
                     )
+                    result["status"] = "FAILED"
+                    return self._finalize_step_result(result, step_num)
+
+                # Refuse before invoking. A Skill that is missing, or not grounded as
+                # installed, must not be invoked or reported as having run.
+                if result["skill_installation"] != "available":
+                    refusal = (SKILL_NOT_INSTALLED if result["skill_installation"] == "missing"
+                               else SKILL_AVAILABILITY_UNKNOWN)
+                    self.errors.append(format_error(
+                        refusal,
+                        f"Step {step_num} ({skill}): required Skill '{skill}' is "
+                        f"{result['skill_installation']}; the Skill was not invoked.",
+                    ))
                     result["status"] = "FAILED"
                     return self._finalize_step_result(result, step_num)
 
@@ -1384,6 +1552,8 @@ class OrchestrationRunner:
                         rel = os.path.relpath(artifact_path, self.repo_root)
                         result["artifact_path"] = rel.replace("\\", "/")
                         result["status"] = "EXECUTED"
+                        result["skill_invoked"] = True
+                        result["execution_source"] = "skill_invocation"
                         print(f"  [SKILL_EXECUTED] Skill '{skill}' executed and produced artifact")
                         # Continue to validation
                     else:
@@ -1412,6 +1582,12 @@ class OrchestrationRunner:
                 # Store repo-relative path in the run log for portability
                 rel = os.path.relpath(artifact_path, self.repo_root)
                 result["artifact_path"] = rel.replace("\\", "/")
+
+        # Manual artifact: the runtime validates what it was given. It did not invoke
+        # the Skill, so the record must not say that it did.
+        if (artifact_path and os.path.exists(artifact_path) and not is_fixture
+                and result["execution_source"] == "none"):
+            result["execution_source"] = "supplied_artifact"
 
         # -- Guarantee deterministic machine fields before validating -----------
         # source_intent_ref is the same for every artifact in the run; the runtime
@@ -2519,7 +2695,19 @@ class OrchestrationRunner:
                 f"- **runtime**: {runtime_str}",
                 f"- **output_artifact**: {sr.get('output_artifact', 'N/A')}",
                 f"- **artifact_path**: {sr.get('artifact_path', 'N/A')}",
+                f"- **skill_installation**: {sr.get('skill_installation', 'not_recorded')}",
+                f"- **skill_invoked**: {str(sr.get('skill_invoked', False)).lower()}",
+                f"- **execution_source**: {sr.get('execution_source', 'none')}",
             ])
+            if "condition_evaluated" in sr:
+                lines.extend([
+                    f"- **condition_evaluated**: {str(sr['condition_evaluated']).lower()}",
+                    f"- **research_performed**: {str(sr['research_performed']).lower()}",
+                    f"- **branch_skill**: {sr.get('branch_skill') or 'none'}",
+                    f"- **branch_skill_installation**: {sr.get('branch_skill_installation', 'not_applicable')}",
+                ])
+            if "prompt_written" in sr:
+                lines.append(f"- **prompt_written**: {str(sr['prompt_written']).lower()}")
             vstack = sr.get("validator_stack", [])
             if vstack:
                 lines.append("- **validator_stack**:")
@@ -2558,6 +2746,8 @@ class OrchestrationRunner:
             f"- **Note**: {self.final_note}",
             f"- **Steps completed**: {len(completed)}/{len(steps)}",
             f"- **Gate decisions**: {len(self.gate_decisions)}",
+            f"- **Installation availability**: {self._installation_text()}",
+            f"- **Skills invoked by runtime**: {len([s for s in self.step_results if s.get('skill_invoked')])}",
             f"- **Errors**: {len(self.errors)}",
             f"",
         ])
@@ -2875,6 +3065,14 @@ class OrchestrationRunner:
             "steps_total": len(self.step_results),
             "steps_failed": len([s for s in self.step_results if s["status"] == "FAILED"]),
             "steps": steps_summary,
+            "installation": {
+                "workflow_installation": (self.installation or {}).get("installation", {}).get("installation", "unknown"),
+                "execution_status": (self.installation or {}).get("execution", {}).get("execution_status", "not_executable_now"),
+                "skills_invoked": len([s for s in self.step_results if s.get("skill_invoked")]),
+                "steps_supplied_artifact": len([s for s in self.step_results if s.get("execution_source") == "supplied_artifact"]),
+                "steps_fixture": len([s for s in self.step_results if s.get("execution_source") == "fixture"]),
+                "execution_authorized": False,
+            },
             "errors": self.errors[-5:] if self.errors else [],  # Last 5 errors
         }
 
@@ -3037,6 +3235,7 @@ class OrchestrationRunner:
         print(f"{'='*60}")
         print(f"PHASE 2: GENERATE PLAN")
         print(f"{'='*60}")
+        print(f"  ~ INSTALLATION: {self._installation_text()}")
         self.generate_plan()
 
         # Generate diagnostic report (what WILL happen)
@@ -3081,6 +3280,11 @@ class OrchestrationRunner:
                     "artifact_path": "",
                     "validator_stack": [],
                     "gate_result": "resumed_from_previous_session",
+                    # Re-evaluated for this session. A prior session's completion says
+                    # nothing about the Skills installed now.
+                    "skill_installation": self._step_skill_installation(step),
+                    "skill_invoked": False,
+                    "execution_source": "prior_session",
                     "status": "COMPLETED",
                     "step_type": step.get("step_type", "local_execution"),
                 }
@@ -3146,6 +3350,13 @@ class OrchestrationRunner:
         print(f"  Run Log:      {run_log_path}")
         print()
 
+        invoked = [s for s in self.step_results if s.get("skill_invoked")]
+        supplied = [s for s in self.step_results if s.get("execution_source") == "supplied_artifact"]
+        fixtures = [s for s in self.step_results if s.get("execution_source") == "fixture"]
+        print(f"  Skills invoked by runtime: {len(invoked)}; supplied artifacts: {len(supplied)}; "
+              f"fixture substitutions: {len(fixtures)}")
+        print(f"  Installation availability: {self._installation_text()}")
+
         if has_failures:
             print(f"  [WARN]  Execution completed with failures.")
             return self._finalize_run(2, "failed")
@@ -3154,6 +3365,9 @@ class OrchestrationRunner:
             return self._finalize_run(3, "paused")
         else:
             print(f"  [OK] Execution completed successfully.")
+            if not invoked:
+                print("  [NOTE] No Skill was invoked by the runtime; step results reflect supplied "
+                      "artifacts, fixtures or prompt records as recorded per step.")
             return self._finalize_run(0, "completed")
 
     def _finalize_run(self, exit_code: int, status: str) -> int:
@@ -3448,6 +3662,10 @@ def main(argv: list[str] | None = None) -> int:
                         help="Non-interactive gate decision for testing: auto-approve all gates or auto-deny the first gate")
     parser.add_argument("--use-fixtures", action="store_true",
                         help="Use fixture artifacts instead of validating actual artifacts (for testing orchestration without skill execution)")
+    parser.add_argument("--installed-skills-root", default=None,
+                        help="Installed Skill root that the agent loads from. Required to establish installation "
+                             "availability; without it installation is reported as unknown and no step is "
+                             "presented as ready to execute. Never inferred from the framework checkout.")
     parser.add_argument("--chained", action="store_true", default=False,
                         help="Internal: invoked as a chained/child workflow from another workflow run")
     parser.add_argument("--from-session", default=None,
@@ -3532,6 +3750,7 @@ def main(argv: list[str] | None = None) -> int:
         target_repo=args.target_repo,
         model=args.model,
         controlled_experiment=args.controlled_experiment,
+        installed_skills_root=args.installed_skills_root,
     )
 
     if runner.errors:
