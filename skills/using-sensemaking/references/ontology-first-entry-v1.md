@@ -126,6 +126,32 @@ Do not repeat the full bootstrap. Instead:
 7. Persist meaningful changes.
 8. Stop, or continue within the delegated reasoning mission.
 
+**Currentness reconciliation.** Step 3 is not met by noting that the analyzed
+revision trails a newer accessible one. When a relevant newer revision or later
+evidence exists (a merged PR, a newer receipt or normal-use record, a source
+revision ahead of the checkout), decide whether it could change the pending
+claim, comparison, recommendation or closure:
+
+1. Establish current source identity: the revision analyzed, and the latest
+   relevant revision accessible within the granted scope.
+2. Find candidate newer changes from commit subjects, changed paths and linked
+   PR or receipt records. A narrow task that the request bounds needs no history
+   scan.
+3. Inspect only the changes that could alter the decision.
+4. Classify each finding's effect as `material` (it changes a claim, comparison,
+   recommendation or closure), `immaterial` (it confirms or leaves the
+   conclusion unchanged) or `unresolved` (it could matter, and inspection could
+   not settle it).
+5. Reconcile proportionately: revise the affected claim, state the limit, or
+   record that no change is needed. Reopening strategy is a separate judgment
+   (`../SKILL.md` section 7).
+
+If the newer evidence is unavailable (offline, a shallow checkout, no remote, or
+an authoritative branch outside the granted scope), complete the appropriately
+scoped reasoning, name the revision actually inspected, and do not assert global
+currentness. Do not checkout or rewrite a repository merely to resolve a
+revision difference; that environment change needs its own authority.
+
 **Re-warrant recorded next steps.** A receipt's `next`, a `STATUS.md`
 recommendation or an earlier queue names a candidate responsibility, not the
 current one. Before applying a specialist to it, check that its trigger and
