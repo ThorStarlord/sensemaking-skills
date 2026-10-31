@@ -203,6 +203,16 @@ Locate artifacts by their recorded identity and resolved paths, not by an
 assumed filename. Sparse-repository recovery, artifact reuse and currentness
 checks: `references/portable-construction-loop-v1.md` section 1a.
 
+**Divergence is not reconciliation.** When the revision you analyzed trails a
+newer accessible revision that could change a pending claim, comparison,
+recommendation or closure, noting the gap does not settle it. Inspect the
+changes that could matter, classify their effect as material, immaterial or
+unresolved, and reconcile the conclusion proportionately; a material effect on
+the conclusion does not by itself reopen strategy (section 7). Unrelated newer
+commits need no further analysis. If the newer revision is unavailable, shallow
+or outside the granted scope, report that limit instead of asserting global
+currentness. Procedure: `references/ontology-first-entry-v1.md` section 4.
+
 **Installed is not loaded.** A Skill copy's parity with a repository revision is
 a file-level fact. It does not show which revision a host loaded for a session,
 and a host may keep an earlier copy. Report the loaded revision only from the
@@ -533,8 +543,9 @@ and continue permitted reasoning. An authority boundary stops the action beyond
 it, not reasoning inside the granted scope. A no-construction conclusion states
 whether it concerns warrant or only the authority currently granted, and the
 coverage it rests on: a read-only grant bounds action and does not show that
-nothing is warranted. This is a semantic judgment, not a new artifact, validator
-or approval gate.
+nothing is warranted. The conclusion must also withstand any known, accessible
+newer evidence that could change it (section 2). This is a semantic judgment, not
+a new artifact, validator or approval gate.
 
 **Stop** when the goal is satisfied, further work is unwarranted, the next
 action is stable and remaining uncertainty cannot change it, a real authority
