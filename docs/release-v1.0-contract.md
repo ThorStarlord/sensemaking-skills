@@ -57,6 +57,30 @@ sensemaking_skills.exploratory_execution
 
 The release gate must prove this from fresh wheel and sdist installations.
 
+## Skill support language and public entrypoint
+
+Status: proposed wording. It records the owner's direction on support levels and
+the public entrypoint (see `docs/product-management/distribution-owner-decision.md`).
+Its exact bounds await owner ratification.
+
+- **Supported** (the `skill_inventory.supported` tier) means repository-level
+  mechanical support. A supported Skill has a manifest that declares its
+  responsibility, outputs and repository mutation, and repository validators check
+  that declaration. It does not mean the Skill is discovered or invoked in any named
+  coding-agent harness. No Skill in this release claims native-harness support;
+  `support.native_harnesses` is empty.
+- **Product Management domain pack.** The 27 PM Skills are supported at the
+  repository level under ADR 0028's maturity ladder (`REPOSITORY_QUALIFIED`).
+  Native-harness and portability qualification remain pending.
+- **Public entrypoint.** `using-sensemaking` is the single public entry point for
+  repository understanding (ADR 0034, decision B). The statement is bounded to the
+  controller's documented procedure, composition rules and stop conditions in this
+  repository. It does not promise host discovery, native invocation in any harness,
+  the quality or truth of any specialist's output, or automatic selection of Skills,
+  workflows or responsibilities by machinery (ADR 0029). Because the entrypoint
+  produces no single artifact, its inventory tier stays `internal` until the owner
+  ratifies a separate entrypoint classification.
+
 ## Claim levels
 
 The release distinguishes four claim states:

@@ -4,7 +4,7 @@ release:
   status: development
   product_name: Sensemaking Skills
   scope_classification: reduced
-  scope: local-first repository decision-support and durability layer plus mechanically qualified engineering Skills
+  scope: local-first repository understanding and decision-support layer plus mechanically qualified engineering Skills and a repository-qualified Product Management domain pack; native-harness support is not claimed
   release_policy: docs/release-v1.0-contract.md
 
 support:

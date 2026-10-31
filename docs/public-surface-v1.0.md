@@ -96,7 +96,6 @@ encounter the surface**. These must not be collapsed.
 FRONT DOOR
 - GETTING_STARTED.md
 - using-sensemaking
-- strategic-sensemaking-loop
 
 SPECIALIZED DIRECT CAPABILITY
 - repo-sensemaker
@@ -112,6 +111,7 @@ SPECIALIZED DIRECT CAPABILITY
 - repair-verifier
 
 INTERNAL SUBSTRATE / COMPOSITION
+- strategic-sensemaking-loop (continuation capability composed by using-sensemaking; ADR 0034)
 - Policy Hierarchy contracts
 - Strategic Exploration Funnel internals
 - Strategic Continuity projections
