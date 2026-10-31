@@ -1012,6 +1012,16 @@ artifacts:
       - subset_reason
       - included_steps
       - excluded_steps
+      # Installation availability is separate from liveness. execution_authorized is
+      # always false: planning never authorizes execution.
+      - installation_availability
+      - required_skills
+      - missing_required_skills
+      - conditional_skills_absent
+      - installation_context
+      - execution_status
+      - not_executable_reason
+      - execution_authorized
     notes:
       - "Validation results are NOT stored in this artifact. See validators/run_log.md for validation output."
       - "PATH B (transient validation): validation_status field is NOT present."

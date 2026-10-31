@@ -81,7 +81,8 @@ Consequences the owner accepted by decision H, to state in that release note:
 
 ## 6. Remaining dependencies
 
-- **Planner and runtime wiring.** The availability check lives in `workflow_availability.py` and is used by the installer. Planner, runtime and `WorkflowRegistry` selection still depend on liveness alone. A consumer that presents workflows as runnable must check installation availability as well. This is the next engineering increment, separate from M4.
+- **Planner wiring (done).** `scripts/workflow-planner.py` reports installation availability and `execution_status` against an explicit `--installed-skills-root`, using the same `workflow_availability.py` model as the installer. Without that root, installation is unknown and the plan is `not_executable_now`.
+- **Runtime wiring (open).** The execution runtime (`scripts/workflow-runtime.py`: plan generation, finalize, and step execution) and the campaign capability inspection (`campaigns/capabilities.py`) still depend on liveness alone, and do not check installation availability. A runtime that presents or runs a workflow must check it as well. This is the next engineering increment, separate from M4.
 - **Packaged workflow registry.** The packaged copy still lacks three compatibility-only workflows that the canonical copy has. Owner direction keeps this outside M3, unless a current contract requires it.
 - **Installed copies outside a profile.** A user who installed all 52 keeps them. No profile removes them.
 
@@ -95,5 +96,6 @@ Consequences the owner accepted by decision H, to state in that release note:
 | G: setup and maintenance liveness preserved; catalogue eligibility separate from installation availability | Decided, implemented |
 | H: `coding-agent-native-campaign` excluded from `entrypoint`; available under `full` | Decided, implemented |
 | M4 rollout: which release announces the default change, and when | Open, owner decision |
-| Planner and runtime consumers of installation availability | Open, next increment |
+| Planner consumer of installation availability | Done: `workflow-planner.py --installed-skills-root` |
+| Runtime and campaign-capability consumers of installation availability | Open, next increment |
 | Packaged workflow registry differences | Outside M3 |
