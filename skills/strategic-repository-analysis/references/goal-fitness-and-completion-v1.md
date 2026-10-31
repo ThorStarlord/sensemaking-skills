@@ -41,6 +41,13 @@ terminal | milestone | proxy | constraint | evidence_state | unclear
 - `evidence_state` — a qualification, validation, audit, or claim state;
 - `unclear` — repository/owner evidence does not yet establish the relationship.
 
+When candidate options are compared, classify each candidate by its comparison
+level instead: product outcome, enabling capability, mechanism, engineering
+intervention or evidence activity (`strategic-exploration-funnel-v1.md` section
+8). This applies the same distinction to candidates. It is not a second
+objective-role taxonomy, so do not add one. A stated milestone can be a candidate,
+and the terminal outcome is what candidates are compared against.
+
 Do not infer a hidden “true goal” from vibes. Ground governing intent in explicit
 owner direction, authoritative product strategy, current repository authority,
 or another identified source.

@@ -475,6 +475,12 @@ of the candidate frontiers as well as the construction paths within the selected
 frontier. Preserve enough rationale for an owner-visible Strategic Exploration
 Summary without exposing private scratch reasoning.
 
+Compare candidates at one decision level. Name the product outcome they serve,
+and compare enabling capabilities, mechanisms, interventions and evidence
+activities against that outcome rather than as rival futures: they are means to
+it, not the outcome itself. The level table is in
+`references/strategic-exploration-funnel-v1.md` section 8.
+
 Use the canonical strategic-comparison lenses:
 
 1. mission relevance;
