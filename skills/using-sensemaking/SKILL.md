@@ -427,7 +427,7 @@ nearest unresolved uncertainty, and authorized within scope.
 | repository boundary or ownership unclear | repository sensemaking | `repo-sensemaker` (produces a `repository_sensemaking_brief`) |
 | the repository's future is open | possibility exploration and strategic analysis | `strategic-repository-analysis` |
 | structural alternatives would change a future's value or feasibility | architecture synthesis and consequence depth | `repository-semantic-steward` architecture exploration |
-| a provisional direction needs independent scrutiny | adversarial challenge | `architectural-review`, `pre-mortem` |
+| a provisional direction needs independent scrutiny | adversarial challenge | `architectural-review`; `pre-mortem` only when the PM domain pack is installed (if absent, state that the second lens was not applied) |
 | problem definition unclear | problem framing | `problem-framer` |
 | unknowns block a decision | unknown mapping or research | `unknowns-mapper` |
 | docs and implementation disagree | docs/contract reconciliation | `sensemaking-docs-reconciler` |

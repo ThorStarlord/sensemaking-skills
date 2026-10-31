@@ -453,7 +453,7 @@ workflows:
       output_artifact: unknowns_map
       next_step: 4
     condition_rule: If unknowns_map.research_needed == true, insert discovery (producing
-      discovery_findings); else skip and pass through unknowns_map to repo-sensemaker
+      discovery_findings); else skip and pass through unknowns_map to repo-sensemaker. If the discovery Skill is not installed (PM domain pack absent), keep research_needed as an open unknown in unknowns_map and proceed to repo-sensemaker without claiming the research was done.
   - id: 4
     skill: repo-sensemaker
     step_type: local_execution
@@ -841,7 +841,7 @@ workflows:
     gate: review
     input_artifact: domain_alignment_report
     output_artifact: prd
-    description: Documentation specification - define structure and coverage
+    description: Documentation specification - define structure and coverage. Conditional installation requirement - requires the Product Management domain pack (to-prd).
   - id: 3
     skill: handoff
     step_type: local_execution
