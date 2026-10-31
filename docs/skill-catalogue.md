@@ -87,9 +87,9 @@ shipped
 ## 5. Optional Product Management domain pack (ADR 0028)
 
 This domain is shipped for explicit product-management work but is not part of the default repository-engineering cognitive surface. Contracts in
-`docs/product-management/`, manifests in `skill-manifests/pm/`. Today every setup
-target installs these Skills with the rest of the 52; an opt-in selector is planned
-and is not yet implemented.
+`docs/product-management/`, manifests in `skill-manifests/pm/`. Every setup target
+installs these Skills with the rest of the 52 unless `--profile entrypoint` is given.
+`--include product-management` adds them to that profile.
 
 | Group | Skills |
 | --- | --- |

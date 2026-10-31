@@ -70,6 +70,18 @@ sensemaking-skills setup-skills --target claude --scope project --project-root /
 
 Use `--dry-run` to preview. Divergent installed Skill trees are preserved unless `--force` is explicit.
 
+With no `--profile` flag, every packaged Skill is installed (52), as before. To install a smaller, dependency-closed set:
+
+```bash
+# the public entrypoint and the Skills its repository-understanding path needs (19)
+sensemaking-skills setup-skills --target claude --scope user --profile entrypoint
+
+# the same profile plus the Product Management domain pack (46)
+sensemaking-skills setup-skills --target claude --scope user --profile entrypoint --include product-management
+```
+
+Setup reports which active workflows have their required Skills installed in that location. That is installation availability. It is not workflow liveness and does not authorize execution. A workflow whose required Skills are missing is listed as not available.
+
 Installing the Skills is the only setup the entrypoint needs. Repository
 configuration through `setup-sensemaking-skills` is optional and never a
 prerequisite for `using-sensemaking`.

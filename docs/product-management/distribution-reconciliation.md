@@ -111,8 +111,8 @@ Walk the named owners, path references and workflow steps from each member of a 
 | M0 | This record, and the corrections to it | None | Yes | Owner selection recorded |
 | M1 | Wording and drift fixes: the `supported` definition (A), the entrypoint statement (B), the front-door list, the count of 52, the release scope text, the registry grouping and header note (R5), the README note | None | Yes, by git revert | Owner ratifies the wording for A and B. The rest needs maintainer review. |
 | M2 | Conditional wording for E-1 and E-2 (R1, R2), the E-3 fallback and E-4 requirement (R3), and the profile contract | None | Yes | Owner accepts the fallback rules and the profile contract |
-| M3 | Selector on `setup-skills`. The default stays all 52. Tests assert the installed set with and without the selector. | Adds an option; the default is unchanged | Yes, by reverting the option | A separate engineering increment |
-| M4 | The default becomes the dependency-complete profile. The full set stays available by name. The release note announces the change one release ahead. | Scripted default installs receive fewer Skills. Existing installed trees are not touched. | Yes, by reverting the default | A separate owner decision on timing |
+| M3 | Selector on `setup-skills` (`--profile entrypoint|full`, `--include product-management`), installation availability reporting, and the profile validator. The default stays all 52. | Adds options and output lines; the no-flag installed set is unchanged | Yes, by reverting the option | Implemented in PR #684 (merged `b89dcbab`) under owner decisions E, G and H |
+| M4 | The default becomes the dependency-complete profile. The full set stays available by name. The release note announces the change one release ahead. | Scripted default installs receive fewer Skills. Existing installed trees are not touched. | Yes, by reverting the default | Not implemented. Owner decision D: reconsider for the first suitable release after an M3-bearing release has announced the change, through a separate rollout decision. |
 
 **Not in this path:** removing any PM Skill. That requires an owner-authored ADR superseding ADR 0028 first. Disposition 2 does not include it.
 
@@ -163,13 +163,14 @@ Class: DOC (documentation), CONTRACT (release contract), SKILL (Skill instructio
 
 ## 6. Open questions
 
-Each item is marked by who frames it. None is an owner decision unless it says so.
+Status after M3. Owner decisions are recorded in [distribution-owner-decision.md](distribution-owner-decision.md) section 8.
 
-- **C (agent framing).** `docs-implementation-workflow` (E-4) needs `to-prd`, a PM Skill, unconditionally. Options: a conditional installation requirement, which is the recommendation because it keeps Disposition 2 intact, or moving `to-prd` into core as a stated exception. The owner's direction that conditional requirements are acceptable would settle this. The owner has not yet stated it.
-- **R2 acceptance (agent framing).** Accept the controller fallback for experiment design, or promote `experiment-design` into core. The recommendation is the fallback.
-- **D (agent framing).** The release in which M4 takes effect.
-- **E (agent framing).** Profile and flag names. The profile contract compares the options.
-- **F (agent framing).** Whether `to-issues` is core or conditional. The analysis in the profile contract classifies it as conditional, since only compatibility-only workflows need it.
+- **C, decided.** `to-prd` stays in the PM add-on, and `docs-implementation-workflow` requires it explicitly. Implemented in the workflow text and the M3 availability check.
+- **R2, implemented in M2 under the owner's direction to preserve fallbacks.** No separate acceptance of the experiment-design fallback is recorded.
+- **D, decided in part.** M4 is not part of M3 or RC5. The rollout decision, meaning which release announces the change, remains open.
+- **E, decided.** `--profile entrypoint|full` and `--include product-management`. Implemented in M3.
+- **F, not addressed by the owner.** `to-issues` is excluded from the entrypoint profile and included under `full`. It is not part of the PM add-on. Low priority.
+- **G and H, decided.** Liveness preserved. `coding-agent-native-campaign` excluded from `entrypoint`, available under `full`.
 
 ## 7. Verification and limits
 
