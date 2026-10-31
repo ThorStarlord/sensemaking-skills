@@ -125,6 +125,10 @@ class TestPhaseOrder(unittest.TestCase):
         r._run_validator_stack = MagicMock(
             return_value=[{"command": "x", "result": "PASSED"}])
         r._manage_gate = MagicMock(side_effect=lambda g, s, sk: "approved")
+        # The producer is a real-invocation step; its Skill is stated as grounded.
+        r._installed_skills = frozenset({"repo-sensemaker"})
+        r._step_skill_installation = OrchestrationRunner._step_skill_installation.__get__(r, OrchestrationRunner)
+        r._skill_availability = OrchestrationRunner._skill_availability.__get__(r, OrchestrationRunner)
         r._finalize_step_result = OrchestrationRunner._finalize_step_result.__get__(r, OrchestrationRunner)
         r._read_brief_machine_data = OrchestrationRunner._read_brief_machine_data.__get__(r, OrchestrationRunner)
         r._read_brief_outcome = OrchestrationRunner._read_brief_outcome.__get__(r, OrchestrationRunner)
@@ -276,6 +280,11 @@ class TestFailClosedWarrantFailure(unittest.TestCase):
         r._compute_file_hash = MagicMock(return_value="abc")
         r._run_validator_stack = MagicMock(return_value=[{"command": "x", "result": "PASSED"}])
         r._manage_gate = MagicMock(side_effect=lambda g, s, sk: "approved")
+        # The producer is a real-invocation step, so its Skill must be grounded as
+        # installed before invocation. The fixture states that explicitly.
+        r._installed_skills = frozenset({"repo-sensemaker"})
+        r._step_skill_installation = OrchestrationRunner._step_skill_installation.__get__(r, OrchestrationRunner)
+        r._skill_availability = OrchestrationRunner._skill_availability.__get__(r, OrchestrationRunner)
         r._finalize_step_result = OrchestrationRunner._finalize_step_result.__get__(r, OrchestrationRunner)
         r._read_brief_machine_data = OrchestrationRunner._read_brief_machine_data.__get__(r, OrchestrationRunner)
         r._read_brief_outcome = OrchestrationRunner._read_brief_outcome.__get__(r, OrchestrationRunner)

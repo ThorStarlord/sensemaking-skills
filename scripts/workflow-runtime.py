@@ -223,6 +223,16 @@ def _resolve_artifact_verification(
 class OrchestrationRunner:
     """Manages the full lifecycle of a single workflow execution."""
 
+    # Installation-evidence defaults. A runner built without __init__ (reconstructed
+    # or test-created) has no grounded installed Skill set, so every reading is
+    # unknown. Unknown fails closed: nothing is reported as available, and no
+    # invocation is allowed on that basis.
+    installation: dict | None = None
+    installed_skills_root: str | None = None
+    _installed_skills: frozenset | None = None
+    _installed_context_note: str = "not evaluated (runner was not initialized with installation evidence)"
+    _installed_context_kind: str = "not_initialized"
+
     def __init__(
         self,
         workflow_id: str,

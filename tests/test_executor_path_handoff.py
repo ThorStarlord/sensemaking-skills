@@ -150,8 +150,18 @@ class TestRuntimeExecutorHandoff(unittest.TestCase):
         }
         self.runner.skill_executor = _PathHonoringExecutor(self.repo_root)
 
+        # Installation availability is an explicit prerequisite for real invocation:
+        # a step whose Skill is unknown or missing is refused before invoke_skill runs.
+        # The fixture therefore states grounded availability for the Skill it runs,
+        # instead of relying on a mock to return one.
+        self.runner._installed_skills = frozenset({"problem-framer"})
+
         # Bind the real methods we want to exercise.
         self.runner.execute_step = OrchestrationRunner.execute_step.__get__(
+            self.runner, OrchestrationRunner)
+        self.runner._step_skill_installation = OrchestrationRunner._step_skill_installation.__get__(
+            self.runner, OrchestrationRunner)
+        self.runner._skill_availability = OrchestrationRunner._skill_availability.__get__(
             self.runner, OrchestrationRunner)
         self.runner._resolve_artifact_path = OrchestrationRunner._resolve_artifact_path.__get__(
             self.runner, OrchestrationRunner)
@@ -201,6 +211,32 @@ class TestRuntimeExecutorHandoff(unittest.TestCase):
         self.assertFalse(
             os.path.exists(flat),
             "Artifact written to flat path; producer and consumer disagree.",
+        )
+
+    def test_step_refused_before_invocation_when_installation_unknown(self):
+        """Fail closed: with no grounded installed Skill set, the real invocation
+        path refuses before the executor is called. Unknown is never treated as
+        available to satisfy a path that needs the Skill."""
+        self.runner._installed_skills = None
+        step = {
+            "skill": "problem-framer",
+            "gate": "review_problem_frame",
+            "output_artifact": "problem_frame",
+            "step_type": "local_execution",
+        }
+
+        executor = MagicMock(wraps=self.runner.skill_executor)
+        self.runner.skill_executor = executor
+
+        result = self.runner.execute_step(step, 1, 6)
+
+        self.assertEqual(result["status"], "FAILED")
+        self.assertEqual(result["skill_installation"], "unknown")
+        self.assertFalse(executor.invoke_skill.called,
+                         "executor must not be invoked for an unknown Skill")
+        self.assertTrue(
+            any("SKILL_AVAILABILITY_UNKNOWN" in e for e in self.runner.errors),
+            f"expected SKILL_AVAILABILITY_UNKNOWN, got {self.runner.errors}",
         )
 
 
