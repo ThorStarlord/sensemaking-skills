@@ -380,6 +380,32 @@ Selection should answer:
 
 No numeric score or deterministic winner is allowed.
 
+### Comparison level
+
+Breadth may consider every category below. Comparative selection should compare
+candidates at one consistent level, and each candidate should be named by the
+level it sits at:
+
+| Level | Question it answers | Sensemaking example |
+| --- | --- | --- |
+| Product outcome | What user or product result matters? | Better-informed decisions over time |
+| Enabling capability | What must the product be able to do? | Retain and retrieve applicable knowledge |
+| Mechanism | How does that capability work? | Git-authored records and a source-pinned index |
+| Engineering intervention | What change could improve it? | Correct an insufficient retrieval path |
+| Evidence activity | What observation would strengthen a claim? | Authentic later-session use |
+
+Name the outcome that the candidates serve, and compare the means against it.
+Enabling capabilities, mechanisms, interventions and evidence activities are
+ways to reach the outcome. They are not peer futures, and the outcome is not one
+of the options. So "improve retrieval" and "gather later-session evidence" are
+weighed against the same product result, not against each other as if each were
+a whole future.
+
+These levels are descriptive. They are not a schema, a ranking or a required
+artifact field. They do not exclude speculative or counterfactual options: a
+capability hypothesized before any mechanism exists remains a legitimate
+candidate when its level is named and its premises are explicit.
+
 ## 9. Owner-visible exploration summary
 
 When the funnel actually runs, preserve a compact **Strategic Exploration
@@ -451,4 +477,5 @@ Do not:
 - generate construction paths before understanding which frontier matters;
 - rerun the full funnel during an already-settled EXECUTE/VERIFY continuation;
 - use numeric ranking, search-tree scores, or deterministic routing;
-- expose private chain-of-thought instead of a compact decision summary.
+- expose private chain-of-thought instead of a compact decision summary;
+- rank a product outcome against its own means as if they were rival futures.
