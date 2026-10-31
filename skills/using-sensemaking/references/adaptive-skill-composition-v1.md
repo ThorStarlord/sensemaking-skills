@@ -20,7 +20,7 @@ specialist has just returned.
 | Divergent and convergent possibility exploration | `strategic-repository-analysis` (Strategic Exploration Funnel) | report; `poss:` records when retained |
 | Architectural synthesis and consequence depth | `repository-semantic-steward` (architecture exploration) | `architectural_synthesis`; `arch:` and consequence records when retained |
 | Strategic construction-path synthesis and comparative selection | `strategic-repository-analysis` (construction-path synthesis) | `strategic_repository_analysis` |
-| Adversarial challenge of a provisional direction | `architectural-review`, `pre-mortem` | review report |
+| Adversarial challenge of a provisional direction | `architectural-review`; `pre-mortem` only when the PM domain pack is installed (if absent, state that the second lens was not applied) | review report |
 | Reconsideration after strategic evidence | `strategic-repository-reconciliation`; Steward RECONCILE for knowledge | reconciliation; record history |
 | Owner-reserved choice | `owner-decision-capsule` | decision capsule |
 | Cross-session continuation of a reasoning mission | `strategic-sensemaking-loop` | session receipts |

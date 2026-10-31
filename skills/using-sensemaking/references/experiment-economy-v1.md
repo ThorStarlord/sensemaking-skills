@@ -70,6 +70,10 @@ Once experiment warrant exists, `experiment-design` owns efficient experiment de
 decision discrimination, total cost, minimum sufficient rigor, necessary controls, stop
 conditions, and claim ceiling. It does not re-decide its own activation.
 
+If `experiment-design` is not installed, apply these criteria yourself, state the
+design's claim ceiling, and record that the specialist design was not applied. Its
+absence is not evidence against the experiment.
+
 ## 2. Experiment Warrant Gate
 
 Before selecting an experiment, answer:
