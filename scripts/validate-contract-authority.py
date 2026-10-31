@@ -50,6 +50,63 @@ def _list(value: Any, label: str) -> list[str]:
     return value
 
 
+_SKILL_PATH_REFERENCE = re.compile(r"(?:\.\./|skills/)([a-z0-9][a-z0-9-]*)/")
+
+
+def _install_profile_errors(
+    repo_root: Path,
+    canonical: set[str],
+    manifests: dict[str, dict[str, Any]],
+) -> list[str]:
+    """Check the packaged install-profile catalogue used by setup-skills.
+
+    Profile members must be shipped Skills. The PM add-on must equal the PM
+    manifest set. The entrypoint profile must be closed: a Markdown path
+    reference from a member to any other Skill is an error.
+    """
+    path = repo_root / "src" / "sensemaking_skills" / "defaults" / "install-profiles.yaml"
+    if not path.is_file():
+        return ["packaged install-profiles.yaml is missing"]
+    data = _load(path)
+    if not isinstance(data, dict) or data.get("schema_version") != 1:
+        return ["install-profiles.yaml must be a schema_version 1 mapping"]
+    profiles = data.get("profiles") if isinstance(data.get("profiles"), dict) else {}
+    add_ons = data.get("add_ons") if isinstance(data.get("add_ons"), dict) else {}
+    errors: list[str] = []
+    for required in ("entrypoint", "full"):
+        if required not in profiles:
+            errors.append(f"install profile is missing: {required}")
+    full_spec = profiles.get("full")
+    if not isinstance(full_spec, dict) or full_spec.get("all_packaged") is not True:
+        errors.append("install profile full must set all_packaged: true")
+    if "product-management" not in add_ons:
+        errors.append("install add-on is missing: product-management")
+
+    named: dict[str, set[str]] = {}
+    for group in (profiles, add_ons):
+        for name, spec in group.items():
+            members = set(spec.get("skills", []) or []) if isinstance(spec, dict) else set()
+            named[str(name)] = members
+            for member in sorted(members - canonical):
+                errors.append(f"install profile {name} names a Skill that is not shipped: {member}")
+
+    pm_manifests = {skill_id for skill_id, value in manifests.items() if value.get("domain") == "product-management"}
+    if named.get("product-management") is not None and named["product-management"] != pm_manifests:
+        errors.append("install add-on product-management must equal the product-management manifest set")
+
+    entry = named.get("entrypoint", set())
+    for member in sorted(entry):
+        for markdown in (repo_root / "skills" / member).rglob("*.md"):
+            text = markdown.read_text(encoding="utf-8", errors="replace")
+            for target in sorted(set(_SKILL_PATH_REFERENCE.findall(text))):
+                if target in canonical and target not in entry:
+                    errors.append(
+                        f"entrypoint profile is not closed: {member} references {target} "
+                        f"in {markdown.relative_to(repo_root).as_posix()}"
+                    )
+    return errors
+
+
 def validate_contract_authority(repo_root: Path) -> list[str]:
     errors: list[str] = []
     release = _load(repo_root / "release-v1.0.yaml")
@@ -104,6 +161,8 @@ def validate_contract_authority(repo_root: Path) -> list[str]:
         for reference in value.get("skill_manifests", []) if isinstance(value, dict) else []:
             packed.add(Path(str(reference)).stem)
     errors.extend(f"supported Skill is absent from Domain Packs: {item}" for item in sorted(supported - packed))
+
+    errors.extend(_install_profile_errors(repo_root, canonical, manifests))
 
     pyproject = (repo_root / "pyproject.toml").read_text(encoding="utf-8") if (repo_root / "pyproject.toml").is_file() else ""
     for module in release.get("package_boundary", {}).get("source_only_modules", []):

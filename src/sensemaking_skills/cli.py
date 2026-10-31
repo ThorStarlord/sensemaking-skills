@@ -43,7 +43,7 @@ from .organization_cli import register_organization_commands
 from .release_cli import register_release_commands
 from .strategy_cli import register_strategy_commands
 from .decision_journey_cli import register_decision_journey_commands
-from .setup_skills import setup_skills as run_setup_skills
+from .setup_skills import setup_skill_profile as run_setup_skill_profile
 
 CAMPAIGN_INVALID_EXIT = 3
 CAMPAIGN_WORKSPACE_EXIT = 4
@@ -433,6 +433,25 @@ def test(repos):
     help="Overwrite existing skills",
 )
 @click.option(
+    "--profile",
+    type=click.Choice(["entrypoint", "full"]),
+    default=None,
+    help=(
+        "Install a dependency-closed profile: entrypoint (the public entrypoint and "
+        "the Skills its repository-understanding path needs) or full (every packaged "
+        "Skill). Omitted: full."
+    ),
+)
+@click.option(
+    "--include",
+    "include",
+    multiple=True,
+    help=(
+        "Add a named add-on to the selected profile, for example product-management. "
+        "Repeatable; additive only, never removes a Skill."
+    ),
+)
+@click.option(
     "--verbose",
     "-v",
     is_flag=True,
@@ -445,6 +464,8 @@ def setup_skills(
     skills_dir,
     dry_run,
     force,
+    profile,
+    include,
     verbose,
 ):
     """
@@ -456,12 +477,16 @@ def setup_skills(
         sensemaking-skills setup-skills --target opencode
         sensemaking-skills setup-skills --target generic
         sensemaking-skills setup-skills --target claude --scope project --project-root .
+        sensemaking-skills setup-skills --target claude --profile entrypoint
+        sensemaking-skills setup-skills --target claude --profile entrypoint --include product-management
 
     The command maps an explicit target/scope to a documented filesystem root.
     It does not detect the active harness, select a Skill, invoke a Skill, or
-    grant execution authority.
+    grant execution authority. It reports which active workflows have their
+    required Skills installed in that root; that is installation availability,
+    not liveness and not execution authorization.
     """
-    success = run_setup_skills(
+    success = run_setup_skill_profile(
         target=target,
         scope=scope,
         project_root=project_root,
@@ -469,6 +494,8 @@ def setup_skills(
         dry_run=dry_run,
         force=force,
         verbose=verbose,
+        profile=profile,
+        include=include,
     )
 
     if not success:
