@@ -295,6 +295,12 @@ Preserve explicit lessons such as attempt/result, falsified assumption, revised 
 
 Do not persist private chain-of-thought.
 
+**Retention is not use.** A preserved lesson shows that it was kept. It does not
+show that a later context used it, or that the use helped. When a later question
+turns on such effects, grade the evidence by the classes in
+`ontology-first-entry-v1.md` section 4 and do not infer a stronger class from a
+weaker one.
+
 ## 13A. Cross-episode capability learning
 
 Cross-context learning preserves what another context needs to continue one

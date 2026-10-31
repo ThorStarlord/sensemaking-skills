@@ -10,7 +10,8 @@ a checklist to complete, or a grant of authority.
 **Load when:** the request is repository-level ("apply Sensemaking to this
 repository", "what could this product become", a broad delegated mission), or
 a returning session must judge whether existing semantic and possibility
-coverage is adequate for its goal.
+coverage is adequate for its goal, or a question asks whether earlier knowledge
+or findings were reused, helped or changed a decision (section 4).
 **Skip when:** the request is narrow (section 5). Even when adequate, current
 knowledge answers a repository-level question, use section 6 for any
 consequential final recommendation.
@@ -165,6 +166,59 @@ confidence; it is not by itself the most important next responsibility.
 
 Understanding should improve across sessions; a session that only re-derives
 what the records already say has not used them.
+
+**Longitudinal evidence.** A question whether earlier knowledge was reused,
+helped or changed a decision (for example, whether an earlier recorded finding
+shaped later work) needs a scoped synthesis across the evidence history, not a
+read of one surface. Relevant evidence can sit in reviewed knowledge records,
+original source and decisions, committed session and query receipts,
+normal-use assessments, PR descriptions, diffs and merge history, and current
+source checks. Read only what the question turns on. Do not read every receipt
+for every request, and do not start a bootstrap just for this synthesis. With no
+earlier records, proceed normally and invent no longitudinal evidence.
+
+Each item of evidence supports at most the class it shows. These are
+interpretive classes, not ontology kinds, receipt fields or scores:
+
+| Class | What the evidence shows |
+| --- | --- |
+| Retention | A claim or lesson was preserved |
+| Retrieval | A later context accessed it |
+| Decision use | It materially informed a later selection or reasoning step |
+| Productive continuity | Later authorized work built on the recorded understanding |
+| Causal contribution | Evidence supports a specific influence on the outcome |
+| Comparative benefit | A suitable comparison shows improvement over an alternative |
+
+Do not infer a stronger class from a weaker one: retention does not show use, a
+later citation does not show causal contribution, and one episode does not show
+comparative benefit. Evidence can support several classes at once.
+
+**Record the channel that carried the information.** Committed repository
+knowledge differs from inherited session handover material, ambient or
+auto-loaded host memory, independently observed host events and a session's
+self-reported reasons. A handover note or auto-loaded memory supports retrieval,
+but not independence from the session that wrote it, unless that provenance is
+checked. A later session can show useful continuity while its causal or
+independence question stays open.
+
+**Worked example (illustrative; verified at `ebcc28df`).** Session C (PR #676)
+recorded open finding F-4 in its committed console-ASCII receipt, with the
+proposal-check defect as that receipt's next responsibility. Session D's receipt
+names that committed receipt and a shared handover note among its inputs.
+Session D re-checked F-4 against current source before selecting it, and PR
+#677 merged the fix (`9b42fb4a`). On that evidence:
+
+- retention: the committed receipt holds F-4 and its next item;
+- retrieval: D's receipt cites both the receipt and the handover note;
+- decision use: D re-checked F-4 before selecting it;
+- productive continuity: the fix commit and its merge, PR #677;
+- causal contribution: not established. D's own receipt and PR give its reason,
+  and the handover channel was also inherited;
+- comparative benefit: not assessed; no comparison exists.
+
+The example does not show that the earlier receipt caused the fix, or that
+cross-session reuse generally helps. It is a calibrated illustration, not a
+permanent product claim.
 
 ## 5. Narrow requests
 
