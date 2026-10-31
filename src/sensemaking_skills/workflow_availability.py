@@ -98,25 +98,77 @@ def workflow_availability(installed: Optional[Iterable[str]]) -> list[dict[str, 
         workflow_id = str(workflow["id"])
         if liveness.get(workflow_id, ACTIVE) != ACTIVE:
             continue
-        required, conditional = required_skills(workflow)
-        if installed_set is None:
-            status = "unknown"
-            missing = sorted(required)
-            conditional_absent = sorted(conditional)
-        else:
-            missing = sorted(required - installed_set)
-            status = "available" if not missing else "missing_required_skills"
-            conditional_absent = sorted(conditional - installed_set)
-        rows.append(
-            {
-                "workflow_id": workflow_id,
-                "installation": status,
-                "installation_available": status == "available",
-                "missing_required_skills": missing,
-                "conditional_skills_absent": conditional_absent,
-            }
-        )
+        rows.append({"workflow_id": workflow_id, **installation_status(workflow, installed_set)})
     return rows
+
+
+def installation_status(
+    workflow: Mapping[str, Any],
+    installed: Optional[Iterable[str]],
+) -> dict[str, Any]:
+    """Return installation availability for one workflow definition.
+
+    This is the only availability model in the repository. The installer and the
+    workflow planner both call it. It takes the effective definition from the
+    caller, so repository overrides apply when the caller supplies them. It never
+    reads liveness, and it never grants execution authority.
+
+    ``installed=None`` means the installed Skill set is unknown. Required Skills
+    are then reported as unknown, and the workflow is not available.
+    """
+    required, conditional = required_skills(workflow)
+    if installed is None:
+        # Not evaluated: nothing is claimed missing or present. The Skills the
+        # workflow needs are still listed, so the caller can report them.
+        return {
+            "installation": "unknown",
+            "installation_available": False,
+            "required_skills": sorted(required),
+            "conditional_skills": sorted(conditional),
+            "missing_required_skills": [],
+            "conditional_skills_absent": [],
+        }
+    installed_set = frozenset(installed)
+    missing = sorted(required - installed_set)
+    status = "available" if not missing else "missing_required_skills"
+    return {
+        "installation": status,
+        "installation_available": status == "available",
+        "required_skills": sorted(required),
+        "conditional_skills": sorted(conditional),
+        "missing_required_skills": missing,
+        "conditional_skills_absent": sorted(conditional - installed_set),
+    }
+
+
+def execution_status(
+    *,
+    live: bool,
+    installation: Mapping[str, Any],
+    context_note: Optional[str] = None,
+) -> dict[str, Any]:
+    """Separate installation availability from execution.
+
+    ``executable_if_authorized`` means the workflow is live and its required
+    Skills are installed. It can run once execution is separately authorized. It
+    never implies that execution is authorized, so ``execution_authorized`` is
+    always false here. Anything else is ``not_executable_now`` with a reason.
+    """
+    if not live:
+        reason = "workflow_not_live"
+    elif installation.get("installation") == "available":
+        reason = None
+    elif installation.get("installation") == "unknown":
+        reason = "installation_context_unknown"
+    else:
+        reason = "required_skills_missing"
+    status = "not_executable_now" if reason else "executable_if_authorized"
+    return {
+        "execution_status": status,
+        "not_executable_reason": reason,
+        "installation_context_note": context_note,
+        "execution_authorized": False,
+    }
 
 
 def summarize_availability(rows: list[dict[str, Any]]) -> list[str]:

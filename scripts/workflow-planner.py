@@ -3,17 +3,70 @@
 
 Reads a repository_sensemaking_brief and produces a workflow_orchestration_plan
 by mapping fog_type to implementation workflow and extracting workflow steps.
+
+The plan separates three facts. Liveness (ADR 0027) decides whether the workflow
+is selectable. Installation availability decides whether its required Skills are
+present in an explicitly supplied installed Skill root. Execution status combines
+the two and is never execution authorization. Without an explicit installed root,
+installation is reported as unknown, and the workflow is not presented as
+executable now.
 """
 
+import argparse
+import importlib.util
+import json
 import os
 import sys
-import json
 import yaml
-import argparse
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import TypedDict, Any, Optional
 
 from _validator_utils import load_workflow_registry
+
+_SCRIPTS_DIR = Path(__file__).resolve().parent
+_AVAILABILITY_SOURCE = _SCRIPTS_DIR.parent / "src" / "sensemaking_skills" / "workflow_availability.py"
+_availability_module: Any = None
+
+
+def _availability():
+    """Load the shared installation-availability model from this checkout's source.
+
+    The module is loaded by file path, so the planner never imports whichever
+    sensemaking_skills happens to be installed in the environment.
+    """
+    global _availability_module
+    if _availability_module is None:
+        if not _AVAILABILITY_SOURCE.is_file():
+            raise ImportError(f"shared availability model not found: {_AVAILABILITY_SOURCE}")
+        spec = importlib.util.spec_from_file_location("workflow_availability", _AVAILABILITY_SOURCE)
+        if spec is None or spec.loader is None:
+            raise ImportError(f"cannot load availability model from {_AVAILABILITY_SOURCE}")
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        _availability_module = module
+    return _availability_module
+
+
+def _installed_context(installed_skills_root: Optional[str]) -> tuple[Optional[frozenset], str, str]:
+    """Return (installed Skill ids or None, human note, machine context kind).
+
+    Only an explicitly supplied root grounds installation. The planner never infers
+    a host's installation from repo_root/skills or from any source checkout. The
+    machine-readable kind carries no local path, because validate-plan rejects
+    absolute paths in YAML blocks.
+    """
+    if installed_skills_root is None:
+        return None, "not supplied; installation is unknown", "not_supplied"
+    root = Path(installed_skills_root)
+    if not root.is_dir():
+        return None, f"installed Skills root not found: {installed_skills_root}", "root_not_found"
+    module = _availability()
+    return (
+        module.installed_skill_ids(root),
+        f"explicit installed Skills root: {installed_skills_root}",
+        "explicit_root",
+    )
 
 # Fog type to historical/default workflow candidate (from workflow-planner
 # SKILL.md). ADR 0027 requires a liveness check before any candidate can become
@@ -53,8 +106,16 @@ def get_workflow_steps(workflow_id: str, registry: dict[str, Any]) -> list[dict[
     return []
 
 
-def plan_workflow(brief_path: str, repo_root: str = ".") -> str:
+def plan_workflow(
+    brief_path: str,
+    repo_root: str = ".",
+    installed_skills_root: Optional[str] = None,
+) -> str:
     """Generate workflow orchestration plan from brief artifact.
+
+    ``installed_skills_root`` is the Skill root an agent loads from, when the caller
+    knows it. Omitting it leaves installation unknown. Planning still succeeds, but
+    the plan records that the workflow is not executable now.
 
     Returns markdown artifact or error message.
     """
@@ -131,6 +192,41 @@ def plan_workflow(brief_path: str, repo_root: str = ".") -> str:
     if not workflow_steps:
         return f"ERROR: No active steps found for workflow: {chosen_workflow_id}"
 
+    # Installation availability is evaluated against the same effective definition
+    # that liveness selected above, so repository overrides apply. The chosen
+    # workflow is active by construction (operational view), so live is True.
+    chosen_definition = next(
+        (
+            workflow
+            for workflow in workflows
+            if isinstance(workflow, dict) and workflow.get("id") == chosen_workflow_id
+        ),
+        {},
+    )
+    availability = _availability()
+    installed, context_note, context_kind = _installed_context(installed_skills_root)
+    installation = availability.installation_status(chosen_definition, installed)
+    execution = availability.execution_status(
+        live=True,
+        installation=installation,
+        context_note=context_note,
+    )
+    installation_text = {
+        "available": "available in the supplied installed Skill root",
+        "missing_required_skills": "missing required Skills",
+        "unknown": "unknown (no installed Skill root supplied)",
+    }[installation["installation"]]
+    required_text = ", ".join(installation["required_skills"]) or "none"
+    if installation["installation"] == "unknown":
+        missing_text = f"not evaluated (required: {required_text})"
+        conditional_text = "not evaluated"
+    else:
+        missing_text = ", ".join(installation["missing_required_skills"]) or "none"
+        conditional_text = ", ".join(installation["conditional_skills_absent"]) or "none"
+    execution_text = execution["execution_status"]
+    if execution["not_executable_reason"]:
+        execution_text += f" ({execution['not_executable_reason']})"
+
     # Generate plan artifact
     timestamp = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 
@@ -160,6 +256,12 @@ Based on fog type classification:
 **Selected Workflow**: `{chosen_workflow_id}`
 **Routing Decision Method**: `{routing_decision_method}`
 **Routing Divergence**: {str(routing_divergence).lower()}
+**Installation Availability**: {installation_text}
+**Missing Required Skills**: {missing_text}
+**Conditional Skills Absent**: {conditional_text}
+**Installation Context**: {context_note}
+**Execution Status**: {execution_text}
+**Execution Authorized**: false (planning never authorizes execution)
 
 ---
 
@@ -244,6 +346,14 @@ routing_decision_method: {routing_decision_method}
 routing_divergence: {str(routing_divergence).lower()}
 escalation_recommended: {str(brief_data.get('escalation_recommended', False)).lower()}
 auto_escalation_allowed: false
+installation_availability: {installation["installation"]}
+required_skills: {json.dumps(installation["required_skills"])}
+missing_required_skills: {json.dumps(installation["missing_required_skills"])}
+conditional_skills_absent: {json.dumps(installation["conditional_skills_absent"])}
+installation_context: {context_kind}
+execution_status: {execution["execution_status"]}
+not_executable_reason: {json.dumps(execution["not_executable_reason"])}
+execution_authorized: false
 created_at: "{timestamp}"
 immutable: true
 workflow_steps:
@@ -269,6 +379,15 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Workflow Planner: Convert brief to orchestration plan")
     parser.add_argument("brief_path", nargs="?", help="Path to repository_sensemaking_brief.md")
     parser.add_argument("--repo-root", default=".", help="Root of the repository")
+    parser.add_argument(
+        "--installed-skills-root",
+        default=None,
+        help=(
+            "Installed Skill root that the agent loads from (for example the harness "
+            "Skills directory). Required to establish installation availability; "
+            "without it the plan records installation as unknown."
+        ),
+    )
     parser.add_argument("--output", "-o", help="Output file path (default: artifacts/workflow_orchestration_plan.md)")
     args = parser.parse_args(argv)
 
@@ -277,7 +396,11 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     # Generate plan
-    plan_artifact = plan_workflow(args.brief_path, args.repo_root)
+    plan_artifact = plan_workflow(
+        args.brief_path,
+        args.repo_root,
+        installed_skills_root=args.installed_skills_root,
+    )
 
     # Check for errors
     if plan_artifact.startswith("ERROR:"):

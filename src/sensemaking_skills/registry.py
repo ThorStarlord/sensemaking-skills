@@ -5,8 +5,10 @@ and allows external repo overrides.
 """
 
 import yaml
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict, Any, Iterable, List
 from pathlib import Path
+
+from .workflow_availability import installation_status as _installation_status
 
 
 ACTIVE = "active"
@@ -171,6 +173,22 @@ class WorkflowRegistry:
         if not self.is_workflow_selectable(workflow_id):
             return None
         return self._workflows.get(workflow_id)
+
+    def installation_status(
+        self,
+        workflow_id: str,
+        installed_skill_ids: Optional[Iterable[str]],
+    ) -> Optional[Dict[str, Any]]:
+        """Installation availability of a registered workflow, separate from liveness.
+
+        Returns None for an unknown workflow id. ``installed_skill_ids=None`` means the
+        installed Skill set is unknown, so nothing is reported as available. Liveness
+        is unchanged, and this is not an execution authorization.
+        """
+        workflow = self._workflows.get(workflow_id)
+        if workflow is None:
+            return None
+        return _installation_status(workflow, installed_skill_ids)
 
     def list_workflows(self) -> List[str]:
         """List all registered catalog workflow IDs."""

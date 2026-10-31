@@ -122,6 +122,7 @@ Every response must follow the [Workflow Orchestration Plan](references/workflow
 - **Catalog vs Liveness**: A known workflow ID can be structurally valid historical data while being ineligible for current planning. Current recommendations and selections MUST be `active` under `workflow-liveness.yaml`.
 - **No Silent Replacement**: A compatibility-only former default does not authorize the planner to choose a different workflow. New selection requires current evidence/authority.
 - **Handoff Compliance**: A finalized plan's chosen workflow must be both registered in `workflow-registry.yaml` and `active` under `workflow-liveness.yaml`.
+- **Installation vs Liveness**: An active workflow may still lack the Skills it requires in the installation an agent uses. The plan reports installation availability only against an explicitly supplied installed Skill root (`--installed-skills-root`). Without one, installation is unknown. A workflow whose required Skills are missing, or whose installation is unknown, is `not_executable_now`. `execution_authorized` is always `false`: planning never authorizes execution.
 - **Path Normalization**: All artifact paths in the plan MUST use relative paths. Never use absolute `file:///` links.
 
 ## References

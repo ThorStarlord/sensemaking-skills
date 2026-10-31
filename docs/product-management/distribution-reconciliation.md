@@ -169,7 +169,7 @@ Status after M3. Owner decisions are recorded in [distribution-owner-decision.md
 - **R2, implemented in M2 under the owner's direction to preserve fallbacks.** No separate acceptance of the experiment-design fallback is recorded.
 - **D, decided in part.** M4 is not part of M3 or RC5. The rollout decision, meaning which release announces the change, remains open.
 - **E, decided.** `--profile entrypoint|full` and `--include product-management`. Implemented in M3.
-- **F, not addressed by the owner.** `to-issues` is excluded from the entrypoint profile and included under `full`. It is not part of the PM add-on. Low priority.
+- **F, direction from the current instruction, not a ratified decision.** `to-issues` is an internal engineering Skill. It is excluded from the entrypoint profile and from the PM add-on, and it is available through `full`. This follows the planning-availability instruction. The owner's earlier messages did not decide it.
 - **G and H, decided.** Liveness preserved. `coding-agent-native-campaign` excluded from `entrypoint`, available under `full`.
 
 ## 7. Verification and limits
