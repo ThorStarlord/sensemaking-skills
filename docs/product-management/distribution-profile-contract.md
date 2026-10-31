@@ -1,126 +1,99 @@
-# PM distribution: candidate profiles and the installation contract
+# PM distribution: installation profiles and the installation contract
 
-**Status:** agent proposal. Nothing here changes installer behavior. It refines the candidate default profile from [distribution-reconciliation.md](distribution-reconciliation.md), selects an interface for the planned selector, and lists what remains open. The owner has not yet decided the questions in section 6.
+**Status:** implemented in M3 (`main` `b89dcbab`, merged from PR #684). The owner decisions C, D, E, G and H are recorded in [distribution-owner-decision.md](distribution-owner-decision.md) section 8. The no-flag default is unchanged: every packaged Skill is installed. The M4 default change is not decided.
 
-**Baseline:** `origin/main` after the M1 merge (`c088714f`). Dependency checks were run by static scan of `skills/` and the packaged registries at that revision. Tests were not run.
+**Source of truth:** `src/sensemaking_skills/defaults/install-profiles.yaml`. `scripts/validate-contract-authority.py` checks it in CI.
 
-## 1. The entrypoint profile (candidate default)
+## 1. Profiles and add-on
 
-A profile is a set of Skills selected by dependency closure from the public entrypoint and the workflows it can run. It is not selected by domain or by support tier.
+| Name | Kind | Skills | Selected by |
+| --- | --- | --- | --- |
+| `full` | profile | every packaged Skill (52) | `--profile full`, or no flag |
+| `entrypoint` | profile | 19 | `--profile entrypoint` |
+| `product-management` | add-on | 27 PM Skills | `--include product-management`, repeatable |
 
-**Members (20):**
+`--include` is additive and never removes a Skill. `entrypoint` plus `product-management` installs 46.
 
-| Skill | Why it is in the profile |
-| --- | --- |
-| `using-sensemaking` | The public entrypoint (ADR 0034 B). |
-| `repository-semantic-steward` | The semantic foundation. Path-referenced by `using-sensemaking` and `repo-sensemaker`. |
-| `repo-sensemaker` | Repository orientation. Named owner, and the target of several path references. |
-| `strategic-repository-analysis` | Possibility exploration and construction paths. Named owner, and path-referenced by `repo-sensemaker`. |
-| `strategic-repository-reconciliation` | Reconsideration after evidence. Named owner. |
-| `strategic-sensemaking-loop` | Cross-session continuation (ADR 0034 line 54). Named owner. |
-| `multi-repository-strategic-analysis` | Named owner, used only for an explicit repository set. |
-| `external-evidence-packet` | Named owner for decision-changing external evidence. |
-| `owner-decision-capsule` | Named owner for owner-reserved choices. |
-| `thesis-review-packet` | Routed to by the controller for `THESIS_REVIEW`. |
-| `architectural-review` | Named owner for adversarial challenge. |
-| `change-impact-analysis` | Named in the controller's guided-entry reference. |
-| `output-reconciler` | Named owner for completed-work claims. |
-| `repair-verifier` | Named owner for repaired findings. Used by `docs-contract-reconciliation`. |
-| `workflow-planner` | Holds the artifact contracts and registries that core Skills read by path. |
-| `problem-framer` | Named owner for problem framing. Used by `full-fog-workflow` and `full-local-sensemaking`. |
-| `unknowns-mapper` | Named owner for unknowns. Used by `full-fog-workflow` and `full-local-sensemaking`. |
-| `sensemaking-docs-reconciler` | Named owner for docs and implementation that disagree. Used by `docs-contract-reconciliation`. |
-| `handoff` | Final step of `full-local-sensemaking` and `fast-local-diagnostic`. |
-| `coding-agent-native-campaign` | Campaign approval discipline. `conversation_approval.py` states the coding agent enforces it per this Skill, and the runtime cannot see the transcript. Without it, approvals run without the documented discipline. |
+A profile selects which packaged Skill trees are copied. It does not change workflow liveness (ADR 0027), execution authority or any Skill's release tier.
 
-**Closure check.** The scan found no required reference from a member to an excluded non-PM Skill. The only non-PM mentions outside the member set are examples: `docs-aligner` as an example skill id in `repo-sensemaker/SKILL.md` line 329, `to-issues` as an example consumer in `repo-sensemaker/references/evidence-rules.md` line 50, and `to-prd` and `tdd` as examples in `handoff/SKILL.md` line 8.
+## 2. The entrypoint profile
 
-The references from members to PM Skills are of three kinds, and each is classified in [distribution-reconciliation.md](distribution-reconciliation.md) section 2.2:
+Members are selected by dependency closure from `using-sensemaking`, not by domain or tier:
 
-- **Named owners in the controller.** `pre-mortem` (adversarial challenge) and `experiment-design` (experiment design). Both are now conditional, with a stated fallback (M2).
-- **Workflow steps.** `discovery` in `full-local-sensemaking`, a conditional step, and `to-prd` in `docs-implementation-workflow`, an unconditional step. Both carry a stated fallback or a stated installation requirement (M2).
-- **Historical pointers.** Status notes in the skill registry. They are not dependencies.
+`using-sensemaking`, `repository-semantic-steward`, `repo-sensemaker`, `strategic-repository-analysis`, `strategic-repository-reconciliation`, `strategic-sensemaking-loop`, `multi-repository-strategic-analysis`, `external-evidence-packet`, `owner-decision-capsule`, `thesis-review-packet`, `architectural-review`, `change-impact-analysis`, `output-reconciler`, `repair-verifier`, `workflow-planner`, `problem-framer`, `unknowns-mapper`, `sensemaking-docs-reconciler`, `handoff`.
 
-**Workflows.** Under the entrypoint profile, four active workflows are runnable: `full-fog-workflow`, `fast-local-diagnostic`, `full-local-sensemaking` (its discovery branch excepted) and `docs-contract-reconciliation`. Five active workflows need Skills outside the profile. They are conditional, and they run only when the add-on that supplies those Skills is installed:
+**Excluded:** `coding-agent-native-campaign` (owner decision H: a specialized exploratory approval protocol, not a general dependency of Campaign durability; available under `full`), `docs-aligner`, `to-issues`, `skill-maintainer`, `usage-researcher`, `setup-sensemaking-skills`, and the 27 PM Skills.
 
-| Workflow | Needs | Supplied by |
+**Closure check.** `validate-contract-authority.py` fails if a Markdown path reference from any member names a Skill outside the profile. Named references are reviewed separately. The named PM owners `pre-mortem` and `experiment-design` are conditional (M2), with stated fallbacks.
+
+## 3. Workflow availability, as installed
+
+`setup-skills` reports, for each destination, which active catalogue workflows have their required Skills present there. This is installation availability. It is not workflow liveness and it does not authorize execution. A workflow missing a required Skill is listed as not available.
+
+Verified in scratch roots at merge time (nine active workflows):
+
+| Install | Installed Skills | Active workflows available here |
 | --- | --- | --- |
-| `setup-sensemaking-repo` | `setup-sensemaking-skills` | `--profile full` |
+| no flag, or `--profile full` | 52 | 9 of 9 |
+| `--profile entrypoint` | 19 | 4 of 9 |
+| `--profile entrypoint --include product-management` | 46 | 4 of 9 |
+
+The four available under `entrypoint` are `full-fog-workflow`, `fast-local-diagnostic`, `full-local-sensemaking` and `docs-contract-reconciliation`. `full-local-sensemaking` keeps its conditional `discovery` branch with the fallback stated in the workflow text.
+
+Not available under `entrypoint`, with the Skills each needs:
+
+| Workflow | Needs | Available with |
+| --- | --- | --- |
 | `docs-architecture` | `docs-aligner` | `--profile full` |
+| `docs-implementation-workflow` | `docs-aligner` (step 1) and `to-prd` (step 2) | `--profile full` (`--include product-management` supplies only `to-prd`) |
+| `setup-sensemaking-repo` | `setup-sensemaking-skills` | `--profile full` |
 | `skill-maintenance-loop` | `skill-maintainer` | `--profile full` |
-| `skill-evaluation-workflow` | `usage-researcher`, `skill-maintainer` | `--profile full` |
-| `docs-implementation-workflow` | `to-prd` | `--include product-management` |
+| `skill-evaluation-workflow` | `skill-maintainer`, `usage-researcher` | `--profile full` |
 
-**Excluded from the entrypoint profile:** `docs-aligner`, `to-issues`, `skill-maintainer`, `usage-researcher` and `setup-sensemaking-skills`. Together with the 27 PM Skills, they account for the rest of the 52.
+`docs-implementation-workflow` requires `to-prd` in the PM add-on, as owner decision C directs. It does not silently substitute another Skill. It also requires `docs-aligner`, which the earlier contract text omitted. The workflow text in both registry copies now names both requirements.
 
-`to-issues` is excluded because only compatibility-only workflows need it. `skill-maintainer`, `usage-researcher` and `setup-sensemaking-skills` are excluded because they serve the maintenance and setup workflows, not the repository-understanding path. Whether those workflows should stay active in the default experience is owner question G.
+## 4. Interface: `--profile` and `--include`
 
-## 2. Add-on: the Product Management domain pack
+The selector is `setup-skills --profile entrypoint|full` with repeatable `--include product-management`. This is owner decision E. Two alternatives were rejected:
 
-Membership: the 27 Skills in `skill-manifests/pm/`. Closure: the PM set needs only `using-sensemaking`, which is in every profile (section 2.2, E-6, of the reconciliation record). Installing the add-on satisfies `pre-mortem`, `experiment-design` and the `docs-implementation-workflow` requirement. It does not change any member of the entrypoint profile.
+- `--domain` classifies Skills by domain, which the owner rejected. Maintainer and setup Skills would also need a domain name.
+- `--profile core` collides with the skill registry's `core` ecosystem name.
 
-## 3. Interface: `--profile` against `--domain`
+`--profile` follows the CLI's existing named-choice pattern, for example the campaign resume profiles.
 
-The planned interface was `--domain product-management` and `--domain all`. The comparison:
+The public Python signature `setup_skills` is frozen and unchanged. The selector is `setup_skill_profile`, which is not in `__all__`. Its signature digest is still covered by `docs/public-api-v1.0.yaml`.
 
-| Criterion | `--domain` | `--profile` |
-| --- | --- | --- |
-| Matches the owner's framing | No. It classifies Skills by domain, which the owner rejected. Maintainer and setup Skills would also need a domain name. | Yes. A profile is a dependency-closed set. |
-| Name collisions in this CLI | None | Already used as a named-bundle choice in `campaign resume-profile` (`campaign_resume_v2_cli.py` line 49) and `campaign usability` (`campaign_usability_cli.py` line 165). The shape matches. |
-| Name collisions in the repository | None | `core` is already an ecosystem name in the skill registry, so `--profile core` is rejected. |
-| Behaviour when the default changes | Not applicable | `default` is rejected, because its meaning would change at M4. |
-| Compatibility | Works | Works |
+## 5. Compatibility
 
-**Decision (agent proposal).** Use `--profile` with two values, and add a repeatable `--include` for add-ons:
+- With no flag, the installed set is every packaged Skill, the same as before M3. The installed tree is byte-identical to the previous release.
+- Nothing deletes an installed Skill. `copy_skill` replaces a same-named tree only under `--force`. A divergent tree is still refused without it.
+- `--dry-run` creates nothing and reports the planned set.
+- Unknown profiles and add-ons, and profile members that are not packaged, fail before anything is copied.
 
-- `--profile entrypoint` installs the entrypoint profile (20 Skills).
-- `--profile full` installs every packaged Skill (52). This reproduces today's behaviour exactly.
-- `--include product-management` adds the PM add-on (27). It is repeatable and additive. It never removes a Skill.
+## 5a. The M4 default change
 
-**Naming.** `entrypoint` describes what the profile is closed under (ADR 0034 B). It is not a domain, a tier or a default. Owner question E asks whether to keep it.
+M4 would make `entrypoint` the no-flag default. Owner decision D: M4 is not part of M3 or the current RC5 development target. It is reconsidered for the first suitable release after an M3-bearing release has announced the change, through a separate rollout decision. Until then the default is `full`.
 
-**Compatibility rules, for M3 and M4:**
+Consequences the owner accepted by decision H, to state in that release note:
 
-- M3 adds the flags. With no flag, the installed set stays all 52, exactly as today.
-- M4 changes only the no-flag default, to `entrypoint`. `--profile full` keeps today's set. The release note announces the change one release ahead.
-- No flag, profile or add-on ever deletes an installed Skill. `copy_skill` is unchanged, so a divergent tree still needs `--force` (`setup_skills.py` lines 174-191).
-- The wheel is unchanged. The selector filters at install time.
+- `coding-agent-native-campaign` is not installed by `entrypoint`. Campaign approval discipline is documented in that Skill, and the runtime cannot see the conversation (`exploratory_execution/conversation_approval.py`). Under `entrypoint`, approval discipline is not installed.
+- Maintenance and setup workflows are not runnable under `entrypoint` (G: their liveness is preserved).
 
-**Acceptance counts for M3 tests (proposed):**
+## 6. Remaining dependencies
 
-| Invocation | Installed Skills |
-| --- | --- |
-| no flag | 52 |
-| `--profile full` | 52 |
-| `--profile entrypoint` | 20 |
-| `--profile entrypoint --include product-management` | 47 |
-
-## 4. The smallest next implementation increment (M3)
-
-Add the two profile names and the `--include` flag to `setup-skills`. Define the membership once, in a data file that a test checks against the closure in section 1. The no-flag default stays `full`. The tests assert the four counts above, and that a second run of the same invocation reports every Skill as current.
-
-This increment changes no default behaviour, so it can ship before any owner decision on M4.
-
-## 5. Remaining dependencies after M2
-
-- **Runtime enforcement of conditional installation.** Sections 1 and 2 state the requirements in text. Nothing at runtime checks whether a required Skill is installed. The skill registry has an `availability.requires_installed_skill` field. Whether the runtime already honours it is unverified and must be checked as the first step of M3.
-- **`coding-agent-native-campaign` and the entrypoint profile.** Section 1 includes it, which is an agent proposal. Owner question H covers it.
-- **Packaged registry copy.** It lacks three compatibility-only workflows that the canonical copy has (R6). Syncing them changes the installed catalogue, so it waits for M3.
+- **Planner and runtime wiring.** The availability check lives in `workflow_availability.py` and is used by the installer. Planner, runtime and `WorkflowRegistry` selection still depend on liveness alone. A consumer that presents workflows as runnable must check installation availability as well. This is the next engineering increment, separate from M4.
+- **Packaged workflow registry.** The packaged copy still lacks three compatibility-only workflows that the canonical copy has. Owner direction keeps this outside M3, unless a current contract requires it.
 - **Installed copies outside a profile.** A user who installed all 52 keeps them. No profile removes them.
 
-## 6. Owner questions
+## 7. Owner decisions and open items
 
-Each is marked by who framed it. None is an owner decision.
-
-- **G (agent framing).** Keep the maintenance and setup workflows active for the default experience. The consequence is that their Skills belong to `full`, or to an add-on that is not yet defined. The alternative is a liveness change under ADR 0027. This record proposes no liveness change.
-- **H (agent framing).** Campaign approval: include `coding-agent-native-campaign` in the entrypoint profile, as section 1 does, or leave it to `full`. The recommendation is to include it, because ADR 0029 places optional Campaign durability in current scope and the runtime's approval discipline depends on this Skill.
-- **E (agent framing).** Keep the names `entrypoint`, `full` and `--include`.
-- **D (agent framing).** The release in which M4 changes the no-flag default.
-- **C (agent framing).** Whether `to-prd` in `docs-implementation-workflow` stays a conditional installation requirement, as M2 states, or moves to the core as a stated exception. This record keeps the conditional requirement.
-
-## 7. Verification
-
-- Static reading and a scripted closure scan at `origin/main` `c088714f`.
-- Registry and workflow YAML parsed after the edits. `validate-repo.py` run on the M2 tree (see the pull request).
-- Tests that read the edited files were read for their assertions. The edits keep every string they check.
-- Unit tests: `NOT_RUN` under the current construction policy.
+| Item | Status |
+| --- | --- |
+| C: `to-prd` stays in the PM add-on; `docs-implementation-workflow` must require it explicitly | Decided, implemented |
+| D: no default change in M3 or RC5; M4 reconsidered after an M3-bearing release has announced it | Decided. The rollout decision itself remains open. |
+| E: `--profile entrypoint|full` and additive `--include product-management` | Decided, implemented |
+| G: setup and maintenance liveness preserved; catalogue eligibility separate from installation availability | Decided, implemented |
+| H: `coding-agent-native-campaign` excluded from `entrypoint`; available under `full` | Decided, implemented |
+| M4 rollout: which release announces the default change, and when | Open, owner decision |
+| Planner and runtime consumers of installation availability | Open, next increment |
+| Packaged workflow registry differences | Outside M3 |

@@ -10,17 +10,16 @@
 
 ## 0. Authority levels
 
-Each item below is labelled by who decided it. Only the first row is an explicit owner selection. Nothing here is a ratified ADR.
+Each item below is labelled by who decided it. Nothing here is a ratified ADR. Owner statements and acceptances are recorded as the owner gave them; agent recommendations and proposals are labelled as such.
 
 | Item | Level | Basis |
 | --- | --- | --- |
-| Disposition 2 is the intended product direction | Owner selection, explicit | Owner message, 2026-10-31 |
-| Sub-decision A: support levels must be distinguished | Owner direction, explicit. The contract wording is not yet ratified. | Owner message |
-| Sub-decision B: `using-sensemaking` gets a bounded public promise | Owner direction, explicit. The bounds are not yet ratified. | Owner message |
+| Disposition 2 is the intended product direction | Owner selection, explicit. Accepted again with the M1 wording. | Owner messages, 2026-10-31 |
+| Sub-decision A: support levels must be distinguished | Owner direction, explicit. Owner accepted the M1 wording (PR #682). | Owner message |
+| Sub-decision B: `using-sensemaking` gets a bounded public promise | Owner direction, explicit. Owner accepted the bounded M1 wording without unsupported empirical claims. | Owner message |
 | "Not removing PM; giving it an appropriate place" | Owner statement | Owner message |
-| Disposition 2 as the packet's recommendation | Agent recommendation, provisional | Packet |
-| Bounded scope of the entrypoint promise; exact release wording | Agent proposal, pending owner ratification | Companion, section 3 |
-| Candidate default profile; `--profile` and `--include` names | Agent proposal, pending owner decision | Companion, sections 2 and 6 |
+| Disposition 2 as the packet's recommendation | Agent recommendation, superseded by the owner's selection | Packet |
+| Profile names, add-on, and membership | Owner decision E, with H for `coding-agent-native-campaign`. Implemented in M3 (PR #684). | Owner message; section 8 |
 
 ## 1. Decision
 
@@ -93,6 +92,20 @@ S5 asks whether retained repository knowledge changes later decisions. This deci
 
 ## 7. Persistence and authority
 
-- This record and the companion are committed on branch `claude/pm-distribution-disposition-2` and are part of the M0 pull request.
-- The packet's persistence statement, which said nothing was in the repository, is superseded by this branch. The packet itself remains private.
-- Installer code, Skill files, registries, the release contract and ADRs are unchanged by this record.
+- This record and the companion were merged as PR #681 (M0). Later milestones are recorded in PRs #682 (M1 wording), #683 (M2 conditional dependencies) and #684 (M3 installer).
+- The packet's persistence statement, which said nothing was in the repository, is superseded by these merges. The packet itself remains private.
+- This record changes no installer, Skill, registry, release contract or ADR. Section 8 records the owner decisions. The installer change that implements them is PR #684.
+
+## 8. Follow-up owner decisions (2026-10-31)
+
+The owner answered the open questions as follows. Each answer is an owner decision unless it says otherwise.
+
+| Question | Owner decision | Implemented |
+| --- | --- | --- |
+| C: `to-prd` in the PM add-on | Keep `to-prd` in the PM add-on. `docs-implementation-workflow` must clearly require it, not silently substitute another Skill. | M2 requirement text; M3 availability check (also requires `docs-aligner`) |
+| D: default change timing | Do not change the default during M3 or the current RC5 target. Reconsider M4 for the first suitable release after an M3-bearing release has announced the change, through a separate rollout decision. | Not implemented. Default remains all 52. |
+| E: interface | Adopt `--profile entrypoint|full` and additive, repeatable `--include product-management`. | M3, PR #684 |
+| G: liveness | Preserve the existing liveness of setup and maintenance workflows. Distinguish catalogue eligibility from installation availability. Workflows missing required Skills must not be presented as executable. | M3, PR #684 |
+| H: `coding-agent-native-campaign` | Exclude it from the entrypoint profile. It is a specialized exploratory approval protocol, not a general dependency of ordinary Campaign durability. Keep it under `full`. | M3, PR #684 |
+
+Accepted scope: the entrypoint profile is 19 Skills, and 46 with the PM add-on. The owner described the change as "not reducing the product's capabilities": it selects which capabilities belong in the default experience.

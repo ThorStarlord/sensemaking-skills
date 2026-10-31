@@ -195,7 +195,7 @@ The installed product includes:
 - change-impact analysis over bounded contemplated/completed changes, identifying decision-relevant affected surfaces and verification/reconciliation consequences without automatic backlog generation or change authorization.
 - Decision Journey Productization v1 read-only composition: `journey inspect`, caller-selected context packs, authored strategic decision deltas, anticipated-vs-observed impact/closure comparison, static beginner guidance, and canonical end-to-end playbooks; no router, planner, causal inference, or closure inference.
 
-The Product Management domain pack (27 Skills, ADR 0028) is supported at the repository level as a set of repository-qualified capabilities. That is not a native-harness claim. Today every `setup-skills` target installs all 52 Skills; a selector for the domain pack is planned and is not yet implemented.
+The Product Management domain pack (27 Skills, ADR 0028) is supported at the repository level as a set of repository-qualified capabilities. That is not a native-harness claim. Every `setup-skills` target installs all 52 Skills unless `--profile` or `--include` is given (see "Make Skills discoverable" below).
 
 The Level-3/Level-4 Strategic Outer Loop foundation is currently a **repository documentation/authority architecture**, not a shipped autonomous strategic runtime. Installing the package does not create a `StrategicPlanner`, automatically rank the Strategic Frontier, revise product strategy, or generate Campaigns without agent judgment.
 
@@ -490,6 +490,8 @@ sensemaking-skills setup-skills --target codex --scope user
 sensemaking-skills setup-skills --target opencode --scope user
 sensemaking-skills setup-skills --target claude --scope project --project-root /path/to/repo
 ```
+
+With no `--profile` flag every packaged Skill is installed (52). `--profile entrypoint` installs the 19-Skill dependency-closed profile, and `--include product-management` adds the 27 Product Management Skills. Setup reports installation availability of active workflows per location. That is not liveness and not execution authority. See `GETTING_STARTED.md`.
 
 Setup preserves drift protection. Copying a Skill into a discovery root is not evidence that a harness observed or natively invoked it.
 
