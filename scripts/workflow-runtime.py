@@ -103,6 +103,12 @@ RETIRED_EXECUTION_MODES = {"yolo_execution"}
 
 GATE_RESULTS = ["approved_by_user", "denied_by_user", "automated_approval", "bypassed", "not_applicable"]
 
+# A resolved conditional branch is a completed decision, so both branch statuses count as
+# clean completion. OPEN_UNKNOWN, PAUSED, FAILED and any unrecognized or unverified status
+# are deliberately absent.
+BRANCH_RESOLVED_STATUSES = frozenset({"BRANCH_SKIPPED", "BRANCH_SELECTED"})
+CLEAN_STEP_STATUSES = frozenset({"COMPLETED", "EXECUTED", "VALIDATED", "APPROVED"}) | BRANCH_RESOLVED_STATUSES
+
 # First-class terminal-success outcome (ratified product direction / PHB §29).
 # Mirrors the validate-brief.py constant; kept locally so workflow-runtime can
 # detect a validated NO_CHANGE brief without importing the validator module.
@@ -2842,13 +2848,22 @@ class OrchestrationRunner:
         elif self.mode == "plan_only" and len(planned) == len(steps):
             self.final_state = "planned"
             self.final_note = f"All {len(steps)} workflow steps planned successfully."
-        elif not failures and not pauses and (len(completed) == len(steps) or len(validated) == len(steps) or len(executed) == len(steps) or len(approved) == len(steps)):
+        elif (not failures and not pauses and self.step_results
+              and len(self.step_results) == len(steps)
+              and all(s["status"] in CLEAN_STEP_STATUSES for s in self.step_results)):
+            # Mixed completion counts: a resolved conditional branch is a completed decision.
             self.final_state = "completed"
             self.final_note = f"All {len(steps)} steps completed successfully in '{self.mode}' mode."
         else:
             self.final_state = "partial"
-            success_steps = len(planned) + len(prompted) + len(executed) + len(validated) + len(approved) + len(completed)
+            branch_resolved = len([s for s in self.step_results if s["status"] in BRANCH_RESOLVED_STATUSES])
+            success_steps = (len(planned) + len(prompted) + len(executed) + len(validated)
+                             + len(approved) + len(completed) + branch_resolved)
             self.final_note = f"{success_steps}/{len(steps)} steps completed."
+            open_unknown_steps = [s for s in self.step_results if s["status"] == "OPEN_UNKNOWN"]
+            if open_unknown_steps:
+                self.final_note += (" Open unknown carried forward: research was NOT performed "
+                                    f"(step {open_unknown_steps[0]['step_id']}).")
 
         lines = [
             f"# Workflow Run Log: {workflow_name}",
@@ -3465,7 +3480,13 @@ class OrchestrationRunner:
                 resume_skip = set(resume_state.get("completed_steps", []))
                 paused = resume_state.get("paused_step")
                 if paused:
-                    resume_skip.add(paused)
+                    if 1 <= paused <= len(steps) and steps[paused - 1].get("conditional"):
+                        # A paused conditional decision is not a completed step. It is
+                        # re-evaluated against current evidence, not reconstructed as COMPLETED.
+                        print(f"  ~ Step {paused} is a paused conditional decision; "
+                              f"re-evaluating it against current evidence")
+                    else:
+                        resume_skip.add(paused)
                 print(f"  [OK] Resuming: skipping steps {sorted(resume_skip)}, "
                       f"starting from step {max(resume_skip) + 1 if resume_skip else 1}")
 
@@ -3569,7 +3590,8 @@ class OrchestrationRunner:
             open_unknown_steps = [s for s in self.step_results if s.get("status") == "OPEN_UNKNOWN"]
             if open_unknown_steps:
                 # Not a clean success: a documented fallback left research as an open unknown.
-                print("  [OK] Execution completed with open unknowns (not a clean success).")
+                print("  [OK] Execution finished with open unknowns; the run log records final state "
+                      "'partial' (not a clean success).")
             else:
                 print(f"  [OK] Execution completed successfully.")
             if not invoked:
@@ -3578,7 +3600,8 @@ class OrchestrationRunner:
             if open_unknown_steps:
                 print("  [NOTE] Open unknown carried forward; research was NOT performed: "
                       + "; ".join(u for s in open_unknown_steps for u in s.get("open_unknowns", [])))
-            return self._finalize_run(0, "completed")
+            # The ledger records the same final state as the run log.
+            return self._finalize_run(0, "partial" if open_unknown_steps else "completed")
 
     def _finalize_run(self, exit_code: int, status: str) -> int:
         """Log run_completed ledger event and return exit_code unchanged."""
