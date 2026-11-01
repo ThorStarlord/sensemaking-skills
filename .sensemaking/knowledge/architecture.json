@@ -484,10 +484,7 @@
       ],
       "epistemic_status": "declared",
       "attributes": {
-        "owned_paths": [
-          "skills/using-sensemaking/SKILL.md",
-          "skills/using-sensemaking/references/portable-construction-loop-v1.md"
-        ]
+        "owned_paths": ["skills/using-sensemaking/SKILL.md", "skills/using-sensemaking/references/portable-construction-loop-v1.md"]
       }
     },
     {
@@ -1220,10 +1217,7 @@
       "subject": "component:using-sensemaking-skill",
       "predicate": "references",
       "object": "observation:discovery-memory-as-built",
-      "evidence_refs": [
-        "file:skills/using-sensemaking/references/portable-construction-loop-v1.md",
-        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md"
-      ],
+      "evidence_refs": ["file:skills/using-sensemaking/references/portable-construction-loop-v1.md", "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md"],
       "epistemic_status": "observed"
     },
     {
@@ -1231,9 +1225,7 @@
       "subject": "component:using-sensemaking-skill",
       "predicate": "decided_by",
       "object": "decision:ontology-first-adaptive-sensemaking",
-      "evidence_refs": [
-        "file:docs/adr/0034-ontology-first-adaptive-sensemaking.md"
-      ],
+      "evidence_refs": ["file:docs/adr/0034-ontology-first-adaptive-sensemaking.md"],
       "epistemic_status": "declared"
     },
     {
@@ -1241,13 +1233,9 @@
       "subject": "component:repository-semantic-steward-skill",
       "predicate": "decided_by",
       "object": "decision:ontology-first-adaptive-sensemaking",
-      "evidence_refs": [
-        "file:docs/adr/0034-ontology-first-adaptive-sensemaking.md"
-      ],
+      "evidence_refs": ["file:docs/adr/0034-ontology-first-adaptive-sensemaking.md"],
       "epistemic_status": "declared",
-      "attributes": {
-        "scope": "ADR 0034 specifies the Steward's first-engagement role and composition under the controller."
-      }
+      "attributes": {"scope": "ADR 0034 specifies the Steward's first-engagement role and composition under the controller."}
     },
     {
       "id": "rel:semantic-receipt-exposed",
@@ -1601,11 +1589,7 @@
       "epistemic_status": "observed",
       "attributes": {
         "conceptual_relation": "implementation_outside_declared_support",
-        "implemented_targets": [
-          "claude",
-          "codex",
-          "opencode"
-        ],
+        "implemented_targets": ["claude", "codex", "opencode"],
         "runtime_invocation_evidence": "none in the reviewed graph; the exclusion constrains supported claims, not installer behaviour"
       }
     },
