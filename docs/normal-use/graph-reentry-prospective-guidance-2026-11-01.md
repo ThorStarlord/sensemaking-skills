@@ -47,8 +47,15 @@ The governing product outcome is improved future-agent understanding of real arc
 
 This change updates only the existing component's statement, evidence and exact `owned_paths` in `.sensemaking/knowledge/architecture.json`. The source-backed governing decision and contract already exist, so no new claim kind, relation predicate, second controller, standalone synthesis artifact or duplicate normative decision is added.
 
-The same optional GitHub Actions consumer should be extended to the two prospective paths on this change, reusing its actual exact-SHA index and `context-for` path. Success establishes the file-to-component/decision/contract route at that head, **not** semantic completeness, independent use, or longitudinal agent benefit.
+PR [#697](https://github.com/ThorStarlord/sensemaking-skills/pull/697) extended the same exact-commit consumer and merged the two source anchors. The [hosted workflow run 41323680926](https://github.com/ThorStarlord/sensemaking-skills/actions/runs/41323680926) **passed** on exact PR head `63410c7c45443a7ce12ebf6fe8e1fd3b3ccc74f2`, using the actual `knowledge-build` and `knowledge-query --operation context-for` CLI operations. Both prospective source paths returned:
+
+- owner: `component:repository-semantic-steward-skill`;
+- decision: `decision:ontology-first-adaptive-sensemaking`;
+- contracts: `contract:architectural-synthesis` and `contract:semantic-query-receipt`;
+- alternatives: `NOT_ASSESSED`; no relevant alternative was linked in the bounded query.
+
+The response was not truncated and preserved `semantic_truth_established: false` and `action_authorized: false`. The component-level receipt contract is returned for both paths as part of their shared owner context; it is not a claim that these two files separately implement that contract. This is a confirmed source-to-owner/decision/contract retrieval path at the tested PR SHA, **not** semantic completeness, native host application, independent agent benefit or a post-merge exact-main re-execution.
 
 R6 fresh-host knowledge consumption and R7 independent comparison remain distinct evidence responsibilities. The cloud Chess-Mentor-Engine pair showed a narrow, unreplicated reuse signal, not general superiority. This connector/CI-based episode does not create a fresh autonomous agent, isolate participant credentials or observe its decision-making. Further independent qualification must use the existing safety and authorization boundaries.
 
-**Decision for continuation:** Continue agent-native selective RECALL and source-driven knowledge enrichment (PATH-1). No new runtime graph injection or ontology schema is warranted by these findings. If the new exact-revision consumer passes, prioritize a later real coding-agent decision where the additional context could change an option, assumption or consequence, and reconcile only its demonstrated learning.
+**Decision for continuation:** REAFFIRM agent-native selective RECALL and source-driven knowledge enrichment (PATH-1). No new runtime graph injection or ontology schema is warranted. R1 exact-commit retrieval and R2-R5 source-anchor work have now executed and are mechanically supported at their PR revisions; a later **independent coding-agent decision** should establish whether the context is actually loaded, source-verified and used. Reconcile only consequential learning. Do not relabel the CI process as a fresh-agent session or comparative qualification.
