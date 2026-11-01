@@ -455,18 +455,22 @@
     {
       "id": "component:repository-semantic-steward-skill",
       "kind": "component",
-      "statement": "The semantic steward Skill supports source-grounded knowledge bootstrap, recall, relational verification and reconciliation, and produces query receipts when applicable. The active agent retains responsibility selection.",
+      "statement": "The semantic steward Skill supports source-grounded knowledge bootstrap, recall, relational verification, optional architecture exploration and synthesis, and reconciliation, and produces query receipts when applicable. The active agent retains responsibility selection.",
       "authority_kind": "document",
       "authority_ref": "skills/repository-semantic-steward/SKILL.md",
       "evidence_refs": [
         "file:skills/repository-semantic-steward/SKILL.md",
-        "file:skills/repository-semantic-steward/references/recall.md"
+        "file:skills/repository-semantic-steward/references/recall.md",
+        "file:skills/repository-semantic-steward/references/architecture-exploration.md",
+        "file:skills/repository-semantic-steward/references/architectural-synthesis-template.md"
       ],
       "epistemic_status": "declared",
       "attributes": {
         "owned_paths": [
           "skills/repository-semantic-steward/SKILL.md",
-          "skills/repository-semantic-steward/references/recall.md"
+          "skills/repository-semantic-steward/references/recall.md",
+          "skills/repository-semantic-steward/references/architecture-exploration.md",
+          "skills/repository-semantic-steward/references/architectural-synthesis-template.md"
         ],
         "contract_actor": "repository-semantic-steward"
       }
