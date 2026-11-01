@@ -50,6 +50,7 @@ The example paths are illustrative, not a claim that the documents exist. All `f
 ### Hard boundaries
 
 - `epistemic_status=observed` requires source-inspected evidence, not a design aspiration.
+- **Keep normative authority separate from an observed implementation.** The authored-record parser accepts `observed` only with `authority_kind` `code`, `test`, `document` or `mechanical` (`semantic_architecture/knowledge.py`, `read_authored_claim`). A delegated/owner/policy decision remains a `declared` decision record, even if its chosen guidance or code has been merged; describe the as-built fact separately with an `observed` `observation` and actual source evidence. A hypothetical option is not an observed decision. PR #693 corrected this exact authority/status error in the strategic comparison records after hosted Product Validation rejected it. Do not weaken the parser to accept normative observations.
 - A declared decision/status may be a *document observation*, without thereby verifying policy authority.
 - `authority_verified`, `semantic_truth_established` and `action_authorized` cannot be author-promoted.
 - Evidence must be locally source-linked, currentness-reconciled and properly scoped. Histories and uncertainty are legitimate first-class outcomes.
