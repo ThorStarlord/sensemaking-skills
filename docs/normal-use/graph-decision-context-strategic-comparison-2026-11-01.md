@@ -42,7 +42,7 @@ The seven tracked `.sensemaking/knowledge/*.json` authored packs were inspected 
 
 1. Add a `component` with exact `owned_paths` for the strategic-analysis Skill and two relevant references.
 2. Record PR #680's implemented comparison-level rule as an **observed** guidance fact, separately from its delegated design decision.
-3. Link the decision to the existing ADR 0034 product decision without treating PR #680 as a Level-4 owner decision; retain the rejected schema alternative as a historical alternative.
+3. Link the owning component separately to its delegated PR #680 design decision and the governing ADR 0034 product decision without promoting PR #680 to Level-4 owner authority; retain the rejected schema alternative as a historical alternative.
 4. Anchor source references so file-oriented context can expose the governing decision, design decision, alternative and implementation observation.
 
 The more conservative choice (keep only PR text and use literal search) preserves the information but makes the file-first re-entry depend on knowing the earlier identifier. The more aggressive choice (introduce `decision-context` API or mandatory schema) adds runtime/contract complexity without a demonstrated consumer limitation. The authored-knowledge repair creates useful retained value at lower cost.
