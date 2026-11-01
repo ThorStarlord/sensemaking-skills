@@ -484,7 +484,10 @@
       ],
       "epistemic_status": "declared",
       "attributes": {
-        "owned_paths": ["skills/using-sensemaking/SKILL.md", "skills/using-sensemaking/references/portable-construction-loop-v1.md"]
+        "owned_paths": [
+          "skills/using-sensemaking/SKILL.md",
+          "skills/using-sensemaking/references/portable-construction-loop-v1.md"
+        ]
       }
     },
     {
@@ -937,6 +940,79 @@
       "attributes": {
         "claim_ceiling": "Test source presence; execution not evidenced in the 2026-10-30 construction session (NOT_RUN by construction policy)"
       }
+    },
+    {
+      "id": "component:strategic-repository-analysis-skill",
+      "kind": "component",
+      "statement": "The strategic-repository-analysis Skill owns Level-3 repository system mapping, breadth and depth exploration, coherent construction-path comparison and warranted strategic disposition; it is agent-operated guidance rather than an automatic planner.",
+      "authority_kind": "document",
+      "authority_ref": "skills/strategic-repository-analysis/SKILL.md",
+      "evidence_refs": [
+        "file:skills/strategic-repository-analysis/SKILL.md",
+        "file:skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "owned_paths": [
+          "skills/strategic-repository-analysis/SKILL.md",
+          "skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md",
+          "skills/strategic-repository-analysis/references/goal-fitness-and-completion-v1.md"
+        ],
+        "contract_actor": "strategic-repository-analysis"
+      }
+    },
+    {
+      "id": "decision:comparison-level-guidance",
+      "kind": "decision",
+      "statement": "Delegated PR #680 design choice: strategic comparison guidance names a governing product outcome and compares candidates at a consistent decision level; it distinguishes product outcomes, enabling capabilities, mechanisms, engineering interventions and evidence activities without adding a mandatory artifact level field or a second objective-role taxonomy.",
+      "authority_kind": "delegated",
+      "authority_ref": "docs/normal-use/graph-decision-context-strategic-comparison-2026-11-01.md",
+      "evidence_refs": [
+        "file:docs/normal-use/graph-decision-context-strategic-comparison-2026-11-01.md",
+        "file:skills/strategic-repository-analysis/SKILL.md",
+        "file:skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md",
+        "file:skills/strategic-repository-analysis/references/goal-fitness-and-completion-v1.md"
+      ],
+      "epistemic_status": "observed",
+      "attributes": {
+        "scope": "Agent-selected guidance design in merged PR #680, subordinate to accepted ADR 0034; not a new owner-ratified product thesis",
+        "claim_ceiling": "Guidance is implemented in repository sources; later host loading, agent adherence and decision improvement are not established",
+        "source_pr": "https://github.com/ThorStarlord/sensemaking-skills/pull/680"
+      }
+    },
+    {
+      "id": "alternative:comparison-level-required-schema",
+      "kind": "alternative",
+      "statement": "Rejected PR #680 implementation alternative: require an artifact field or schema label to enforce comparison levels. The selected guidance-only change avoided adding a compulsory schema and duplicate taxonomy; reconsider enforcement only if normal use reveals a recurring consumer failure.",
+      "authority_kind": "document",
+      "authority_ref": "docs/normal-use/graph-decision-context-strategic-comparison-2026-11-01.md",
+      "evidence_refs": [
+        "file:docs/normal-use/graph-decision-context-strategic-comparison-2026-11-01.md",
+        "file:skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md"
+      ],
+      "epistemic_status": "hypothetical",
+      "attributes": {
+        "disposition": "rejected_for_now",
+        "scope": "Engineering alternative to PR #680's implemented guidance, not a product-level ban on future schema development"
+      }
+    },
+    {
+      "id": "observation:comparison-level-guidance-in-source",
+      "kind": "observation",
+      "statement": "At main@2ea8d357, strategic-repository-analysis SKILL.md requires comparing candidates at one decision level; its funnel reference provides a five-level table and goal-fitness explains that candidate level differs from objective role. This is source guidance, not demonstrated agent adherence.",
+      "authority_kind": "document",
+      "authority_ref": "skills/strategic-repository-analysis/SKILL.md",
+      "evidence_refs": [
+        "file:skills/strategic-repository-analysis/SKILL.md",
+        "file:skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md",
+        "file:skills/strategic-repository-analysis/references/goal-fitness-and-completion-v1.md",
+        "file:docs/normal-use/graph-decision-context-strategic-comparison-2026-11-01.md"
+      ],
+      "epistemic_status": "observed",
+      "attributes": {
+        "observed_revision": "2ea8d357af3c52b627f9344aff4e40275439b9af",
+        "claim_ceiling": "Source inspection only; no fresh-host agent execution or comparative benefit established"
+      }
     }
   ],
   "relations": [
@@ -1144,7 +1220,10 @@
       "subject": "component:using-sensemaking-skill",
       "predicate": "references",
       "object": "observation:discovery-memory-as-built",
-      "evidence_refs": ["file:skills/using-sensemaking/references/portable-construction-loop-v1.md", "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md"],
+      "evidence_refs": [
+        "file:skills/using-sensemaking/references/portable-construction-loop-v1.md",
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md"
+      ],
       "epistemic_status": "observed"
     },
     {
@@ -1152,7 +1231,9 @@
       "subject": "component:using-sensemaking-skill",
       "predicate": "decided_by",
       "object": "decision:ontology-first-adaptive-sensemaking",
-      "evidence_refs": ["file:docs/adr/0034-ontology-first-adaptive-sensemaking.md"],
+      "evidence_refs": [
+        "file:docs/adr/0034-ontology-first-adaptive-sensemaking.md"
+      ],
       "epistemic_status": "declared"
     },
     {
@@ -1160,9 +1241,13 @@
       "subject": "component:repository-semantic-steward-skill",
       "predicate": "decided_by",
       "object": "decision:ontology-first-adaptive-sensemaking",
-      "evidence_refs": ["file:docs/adr/0034-ontology-first-adaptive-sensemaking.md"],
+      "evidence_refs": [
+        "file:docs/adr/0034-ontology-first-adaptive-sensemaking.md"
+      ],
       "epistemic_status": "declared",
-      "attributes": {"scope": "ADR 0034 specifies the Steward's first-engagement role and composition under the controller."}
+      "attributes": {
+        "scope": "ADR 0034 specifies the Steward's first-engagement role and composition under the controller."
+      }
     },
     {
       "id": "rel:semantic-receipt-exposed",
@@ -1516,7 +1601,11 @@
       "epistemic_status": "observed",
       "attributes": {
         "conceptual_relation": "implementation_outside_declared_support",
-        "implemented_targets": ["claude", "codex", "opencode"],
+        "implemented_targets": [
+          "claude",
+          "codex",
+          "opencode"
+        ],
         "runtime_invocation_evidence": "none in the reviewed graph; the exclusion constrains supported claims, not installer behaviour"
       }
     },
@@ -1532,6 +1621,65 @@
       "attributes": {
         "scope": "Declared coverage of literal print() arguments only; variable-carried text is not covered"
       }
+    },
+    {
+      "id": "rel:strategic-analysis-skill-layer",
+      "subject": "component:strategic-repository-analysis-skill",
+      "predicate": "belongs_to",
+      "object": "layer:skills",
+      "evidence_refs": [
+        "file:skills/strategic-repository-analysis/SKILL.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:strategic-analysis-governed-by-ontology-first",
+      "subject": "component:strategic-repository-analysis-skill",
+      "predicate": "decided_by",
+      "object": "decision:ontology-first-adaptive-sensemaking",
+      "evidence_refs": [
+        "file:docs/adr/0034-ontology-first-adaptive-sensemaking.md",
+        "file:skills/strategic-repository-analysis/SKILL.md"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "scope": "ADR 0034 governs breadth before repository-wide convergence and agent-owned specialist composition; it does not ratify PR #680's implementation detail"
+      }
+    },
+    {
+      "id": "rel:strategic-analysis-comparison-design",
+      "subject": "component:strategic-repository-analysis-skill",
+      "predicate": "decided_by",
+      "object": "decision:comparison-level-guidance",
+      "evidence_refs": [
+        "file:skills/strategic-repository-analysis/SKILL.md",
+        "file:docs/normal-use/graph-decision-context-strategic-comparison-2026-11-01.md"
+      ],
+      "epistemic_status": "observed"
+    },
+    {
+      "id": "rel:comparison-design-schema-alternative",
+      "subject": "decision:comparison-level-guidance",
+      "predicate": "references",
+      "object": "alternative:comparison-level-required-schema",
+      "evidence_refs": [
+        "file:docs/normal-use/graph-decision-context-strategic-comparison-2026-11-01.md"
+      ],
+      "epistemic_status": "observed",
+      "attributes": {
+        "scope": "Rejected engineering alternative from PR #680; not an accepted schema or Level-4 decision"
+      }
+    },
+    {
+      "id": "rel:strategic-analysis-comparison-observation",
+      "subject": "component:strategic-repository-analysis-skill",
+      "predicate": "references",
+      "object": "observation:comparison-level-guidance-in-source",
+      "evidence_refs": [
+        "file:skills/strategic-repository-analysis/SKILL.md",
+        "file:docs/normal-use/graph-decision-context-strategic-comparison-2026-11-01.md"
+      ],
+      "epistemic_status": "observed"
     }
   ]
 }
