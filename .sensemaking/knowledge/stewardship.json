@@ -366,6 +366,44 @@
         "disposition": "rejected",
         "scope": "Considered at 465420ed while choosing the proposal-check repair recorded by the 2026-10-30 console-ASCII receipt"
       }
+    },
+    {
+      "id": "component:workflow-installation-availability",
+      "kind": "component",
+      "statement": "The workflow installation-availability module distinguishes which required Skills are present in an explicitly grounded installed root from workflow liveness and execution authorization; it does not load host instructions or select semantic work.",
+      "authority_kind": "code",
+      "authority_ref": "src/sensemaking_skills/workflow_availability.py",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/workflow_availability.py",
+        "file:docs/product-management/distribution-profile-contract.md",
+        "file:artifacts/history/2026-11-01-graph-activation-architectural-synthesis.md"
+      ],
+      "epistemic_status": "observed",
+      "attributes": {
+        "owned_paths": [
+          "src/sensemaking_skills/workflow_availability.py"
+        ],
+        "claim_ceiling": "Inspected source semantics at main@7319af1; no fresh-host loading or independent agent adherence established"
+      }
+    },
+    {
+      "id": "observation:installation-availability-not-graph-use",
+      "kind": "observation",
+      "statement": "At main@7319af1, installation availability records whether required Skill files are in an explicit root, while the runtime separately reports step invocation. Neither installation availability nor invocation by itself establishes that an agent loaded the intended references, retrieved reviewed graph knowledge or used it in a decision. Campaign reviewed context remains opt-in, read-only and source-pinned.",
+      "authority_kind": "code",
+      "authority_ref": "src/sensemaking_skills/workflow_availability.py",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/workflow_availability.py",
+        "file:scripts/workflow-runtime.py",
+        "file:skills/using-sensemaking/SKILL.md",
+        "file:src/sensemaking_skills/campaign_knowledge_context.py",
+        "file:artifacts/history/2026-11-01-graph-activation-architectural-synthesis.md"
+      ],
+      "epistemic_status": "observed",
+      "attributes": {
+        "source_revision": "7319af1a52ad3a77b17ae04d6de26b28beae45a9",
+        "claim_ceiling": "Static source/interface distinction; not a record of actual host graph consultation or comparative benefit"
+      }
     }
   ],
   "relations": [
@@ -677,6 +715,71 @@
         "file:src/sensemaking_skills/semantic_architecture/stewardship_validation.py"
       ],
       "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:workflow-availability-package-layer",
+      "subject": "component:workflow-installation-availability",
+      "predicate": "belongs_to",
+      "object": "layer:package-core",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/workflow_availability.py"
+      ],
+      "epistemic_status": "observed"
+    },
+    {
+      "id": "rel:workflow-availability-consumption-boundary",
+      "subject": "component:workflow-installation-availability",
+      "predicate": "references",
+      "object": "observation:installation-availability-not-graph-use",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/workflow_availability.py",
+        "file:artifacts/history/2026-11-01-graph-activation-architectural-synthesis.md"
+      ],
+      "epistemic_status": "observed"
+    },
+    {
+      "id": "rel:using-sensemaking-consumption-boundary",
+      "subject": "component:using-sensemaking-skill",
+      "predicate": "references",
+      "object": "observation:installation-availability-not-graph-use",
+      "evidence_refs": [
+        "file:skills/using-sensemaking/SKILL.md",
+        "file:artifacts/history/2026-11-01-graph-activation-architectural-synthesis.md"
+      ],
+      "epistemic_status": "observed"
+    },
+    {
+      "id": "rel:distribution-setup-consumption-boundary",
+      "subject": "component:distribution-setup",
+      "predicate": "references",
+      "object": "observation:installation-availability-not-graph-use",
+      "evidence_refs": [
+        "file:docs/product-management/distribution-profile-contract.md",
+        "file:artifacts/history/2026-11-01-graph-activation-architectural-synthesis.md"
+      ],
+      "epistemic_status": "observed"
+    },
+    {
+      "id": "rel:campaign-knowledge-consumption-boundary",
+      "subject": "component:campaign-knowledge-context",
+      "predicate": "references",
+      "object": "observation:installation-availability-not-graph-use",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/campaign_knowledge_context.py",
+        "file:artifacts/history/2026-11-01-graph-activation-architectural-synthesis.md"
+      ],
+      "epistemic_status": "observed"
+    },
+    {
+      "id": "rel:installed-skill-lesson-consumption-boundary",
+      "subject": "lesson:installed-skill-currency-includes-references",
+      "predicate": "references",
+      "object": "observation:installation-availability-not-graph-use",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-01-graph-activation-architectural-synthesis.md",
+        "file:skills/using-sensemaking/SKILL.md"
+      ],
+      "epistemic_status": "observed"
     }
   ]
 }
