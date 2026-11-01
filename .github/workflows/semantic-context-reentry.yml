@@ -84,6 +84,20 @@ jobs:
                   set(),
                   {"observation:installation-availability-not-graph-use"},
               ),
+              (
+                  "skills/repository-semantic-steward/references/architecture-exploration.md",
+                  "component:repository-semantic-steward-skill",
+                  {"decision:ontology-first-adaptive-sensemaking"},
+                  set(),
+                  set(),
+              ),
+              (
+                  "skills/repository-semantic-steward/references/architectural-synthesis-template.md",
+                  "component:repository-semantic-steward-skill",
+                  {"decision:ontology-first-adaptive-sensemaking"},
+                  set(),
+                  set(),
+              ),
           ]
 
           def ids(items):
@@ -103,6 +117,10 @@ jobs:
               assert decisions <= ids(context["decisions"]), (path, "decisions")
               assert alternatives <= ids(context["alternatives"]), (path, "alternatives")
               assert history <= ids(context["history"]), (path, "history")
+              if owner == "component:repository-semantic-steward-skill":
+                  assert "contract:architectural-synthesis" in ids(context["contracts"]), (
+                      path, "architectural synthesis contract"
+                  )
               assert not response["truncated"], (path, "truncated")
               assert not context["truncated"], (path, "context truncated")
               assert response["semantic_truth_established"] is False
@@ -114,6 +132,7 @@ jobs:
                   "path": path,
                   "owner": owner,
                   "decisions": sorted(ids(context["decisions"])),
+                  "contracts": sorted(ids(context["contracts"])),
                   "alternatives": sorted(ids(context["alternatives"])),
                   "history": sorted(ids(context["history"])),
                   "unassessed": [
