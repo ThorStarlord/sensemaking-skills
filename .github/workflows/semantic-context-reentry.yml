@@ -1,0 +1,128 @@
+name: Semantic Context Re-entry
+
+# A real exact-commit knowledge-build -> knowledge-query consumer for the
+# source-to-decision links repaired in PRs #691-#693. This does not measure
+# agent cognition, establish semantic truth, or authorize implementation.
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.sensemaking/knowledge/**'
+      - 'src/sensemaking_skills/semantic_architecture/**'
+      - 'src/sensemaking_skills/workflow_availability.py'
+      - 'skills/strategic-repository-analysis/**'
+      - 'skills/repository-semantic-steward/**'
+      - '.github/workflows/semantic-context-reentry.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  source-pinned-context:
+    name: Source-pinned context consumer
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install this exact repository revision
+        run: python -m pip install -e .
+      - name: Build and inspect the real committed graph
+        shell: bash
+        run: |
+          set -euo pipefail
+          REF="$(git rev-parse HEAD)"
+          EXPECTED="${{ github.event.pull_request.head.sha || github.sha }}"
+          test "$REF" = "$EXPECTED"
+          DB="$RUNNER_TEMP/sensemaking-graph.sqlite"
+          for pack in .sensemaking/knowledge/*.json; do
+            sensemaking-skills semantic knowledge-proposal-check \
+              --repo . --proposal "$pack" --json > /dev/null
+          done
+          sensemaking-skills semantic knowledge-build \
+            --repo . --repository ThorStarlord/sensemaking-skills \
+            --target-ref "$REF" --db "$DB" \
+            --include-repository-structure --json > "$RUNNER_TEMP/graph-build.json"
+          GRAPH_DB="$DB" GRAPH_REF="$REF" python - <<'PY'
+          import json
+          import os
+          import subprocess
+
+          db, revision = os.environ["GRAPH_DB"], os.environ["GRAPH_REF"]
+          queries = [
+              (
+                  "skills/strategic-repository-analysis/SKILL.md",
+                  "component:strategic-repository-analysis-skill",
+                  {"decision:ontology-first-adaptive-sensemaking",
+                   "decision:comparison-level-guidance"},
+                  {"alternative:comparison-level-required-schema"},
+                  {"observation:comparison-level-guidance-in-source"},
+              ),
+              (
+                  "skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md",
+                  "component:strategic-repository-analysis-skill",
+                  {"decision:ontology-first-adaptive-sensemaking",
+                   "decision:comparison-level-guidance"},
+                  {"alternative:comparison-level-required-schema"},
+                  {"observation:comparison-level-guidance-in-source"},
+              ),
+              (
+                  "skills/strategic-repository-analysis/references/goal-fitness-and-completion-v1.md",
+                  "component:strategic-repository-analysis-skill",
+                  {"decision:ontology-first-adaptive-sensemaking",
+                   "decision:comparison-level-guidance"},
+                  {"alternative:comparison-level-required-schema"},
+                  {"observation:comparison-level-guidance-in-source"},
+              ),
+              (
+                  "src/sensemaking_skills/workflow_availability.py",
+                  "component:workflow-installation-availability",
+                  set(),
+                  set(),
+                  {"observation:installation-availability-not-graph-use"},
+              ),
+          ]
+
+          def ids(items):
+              return {item["claim_id"] for item in items}
+
+          for path, owner, decisions, alternatives, history in queries:
+              command = [
+                  "sensemaking-skills", "semantic", "knowledge-query",
+                  "--db", db, "--repository", "ThorStarlord/sensemaking-skills",
+                  "--target-ref", revision, "--operation", "context-for",
+                  "--subject", path, "--repo", ".", "--json",
+              ]
+              result = subprocess.run(command, check=True, capture_output=True, text=True)
+              response = json.loads(result.stdout)
+              context = response["context"]
+              assert owner in context["ownership"]["components"], (path, "owner")
+              assert decisions <= ids(context["decisions"]), (path, "decisions")
+              assert alternatives <= ids(context["alternatives"]), (path, "alternatives")
+              assert history <= ids(context["history"]), (path, "history")
+              assert not response["truncated"], (path, "truncated")
+              assert not context["truncated"], (path, "context truncated")
+              assert response["semantic_truth_established"] is False
+              assert response["action_authorized"] is False
+              workspace = response["workspace_context"]
+              assert workspace["head_matches_indexed_ref"] is True
+              assert workspace["uncommitted_changes_not_indexed"] is False
+              print(json.dumps({
+                  "path": path,
+                  "owner": owner,
+                  "decisions": sorted(ids(context["decisions"])),
+                  "alternatives": sorted(ids(context["alternatives"])),
+                  "history": sorted(ids(context["history"])),
+                  "unassessed": [
+                      gap["category"] for gap in context["knowledge_gaps"]
+                      if gap["status"] == "NOT_ASSESSED"
+                  ],
+                  "source_revision": revision,
+                  "mechanical_reentry": "PASS",
+                  "semantic_truth_established": False,
+                  "agent_decision_benefit_established": False,
+              }, sort_keys=True))
+          PY
