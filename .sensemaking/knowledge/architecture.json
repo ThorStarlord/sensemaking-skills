@@ -970,7 +970,7 @@
         "file:skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md",
         "file:skills/strategic-repository-analysis/references/goal-fitness-and-completion-v1.md"
       ],
-      "epistemic_status": "observed",
+      "epistemic_status": "declared",
       "attributes": {
         "scope": "Agent-selected guidance design in merged PR #680, subordinate to accepted ADR 0034; not a new owner-ratified product thesis",
         "claim_ceiling": "Guidance is implemented in repository sources; later host loading, agent adherence and decision improvement are not established",
