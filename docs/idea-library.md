@@ -1,6 +1,6 @@
 # Idea Library v1: Product Possibility Landscape
 
-**Status:** exploratory / non-authoritative possibility landscape; curated selection (18 possibilities, plus construction paths and evidence prerequisites kept separate)  
+**Status:** exploratory / non-authoritative possibility landscape; curated selection (19 possibilities, plus construction paths and evidence prerequisites kept separate)  
 **Typed records:** [`../.sensemaking/knowledge/possibilities.json`](../.sensemaking/knowledge/possibilities.json) (plan PR 3)  
 **Assessed:** 2026-10-28 at `main@d0af33beb52e94b375d6a471e9990df11c8c424d`  
 **Authority:** none. A possibility, its dimension labels or its relationships here are not Strategic Frontier membership, priority, implementation authorization, owner decisions or ADR ratification.  
@@ -55,6 +55,7 @@ Possibilities that originate in a conversation, a plan or a synthesis have their
 | `poss:target-repository-discovery-memory` | Discovery memory for target repositories (new) | ALIGNED | SUBSTANTIAL | FORESEEABLE | NOT_ASSESSED | EXPLORATORY |
 | `poss:possibilities-projected-from-analyses` | Derive possibilities from strategic analyses (new counterfactual) | COUNTERFACTUAL | INCREMENTAL | FORESEEABLE | NOT_ASSESSED | REJECTED_FOR_NOW |
 | `poss:repository-local-prospective-decision-memory` | Prospective decision memory in target repositories (from a consequence) | ALIGNED | SUBSTANTIAL | FORESEEABLE | IMPLEMENTED_BASELINE | SELECTED |
+| `poss:assumption-aware-opportunity-ecology` | Relational families of future product possibilities | ALIGNED | SUBSTANTIAL | FORESEEABLE | NOT_ASSESSED | EXPLORATORY 2026-11-02 |
 
 Order is grouping (realized, aligned future, deferred, long-horizon, conflicting, then the three recorded from the 2026-10-28 exploration), not priority. `ranked-possibility-backlog` is `FORESEEABLE` because it would be easy to build: horizon is not desirability.
 
@@ -253,6 +254,17 @@ These grew from the typed records and queries described in section 6. Each is a 
 - **Disposition:** 2026-10-28, agent (design choice within plan PR 3), `REJECTED_FOR_NOW`, reason `better_alternative`. Analyses cover Level-3 episodes and their paths, and none of the 17 possibilities recorded with it originates in one: they come from ADRs, plans, the reservoir, the research agenda and syntheses, which a projection would drop. Citing analyses as records of origin keeps their value. `revisit_when`: authored records drift from or duplicate analyses in real use, or their maintenance cost becomes material.
 - **Relations:** alternative to `poss:possibility-memory`; derived from `poss:strategic-continuity-reassessment`.
 
+### 3.6 Creative prospective discovery (2026-11-02)
+
+#### `poss:assumption-aware-opportunity-ecology`: relational families of future possibilities
+
+- **Proposed future:** for one explicit user/product outcome, a coding agent explores how retained futures interact through shared assumptions, conflicts, complementarity, and conditional effects, producing coherent *families* of alternative capabilities rather than simply a ranked or isolated idea list.
+- **Origin and creative lineage:** [source-reviewed normal-use discovery](../docs/normal-use/2026-11-02-creative-prospective-discovery.md) (2026-11-02). It combines `poss:cross-episode-possibility-synthesis`, `poss:possibility-reconsideration-from-change` and `poss:repository-local-prospective-decision-memory` without claiming any causal graph inference. A new outcome-centered relational exploration is its differentiator; the closest existing ideas still cover isolated synthesis, temporal reconsideration and prior architecture memory.
+- **Dimensions:** ALIGNED with ADR 0034; SUBSTANTIAL ambition; FORESEEABLE with current authored memory and guidance; realization NOT_ASSESSED (independent user-facing application unavailable). All are judgments with the case's bounded source evidence, not empirical success.
+- **Value hypothesis:** related possibilities and changing shared premises could help later agents discover coherent, materially distinct product futures that a linear list or backlog would hide.
+- **Disposition:** EXPLORATORY agent proposal; no owner selection, mandatory planner, authorized implementation or endorsed strategic frontier.
+- **Revisit when:** a fresh agent attempts the relational view on an open prospective question and demonstrates or refutes actual value. Its result may show this is merely an extension of existing synthesis, in which case revise or supersede the concept without rewriting its history.
+
 ## 4. Construction paths and evidence prerequisites (not possibilities)
 
 These advance or condition possibilities but are not product futures. They keep their identities from the analysis that defined them. Earlier drafts of this page (PR #625 before merge) listed PATH-2 and the "S5 evidence first" option as possibilities; they are corrected here.
@@ -310,6 +322,8 @@ Implementation evidence is listed with each realized entry in section 3. The tab
 | `poss:possibilities-projected-from-analyses` | `derivedFrom` | `poss:strategic-continuity-reassessment` (possibility) | HYPOTHESIZED | Counterfactual on 2026-10-28 |
 | `poss:repository-local-prospective-decision-memory` | `derivedFrom` | `conseq:prospective-decision-memory-reuse` (ConsequenceHypothesis) | HYPOTHESIZED | Prospective reasoning reference case |
 | `poss:repository-local-prospective-decision-memory` | `extends` | `poss:target-repository-discovery-memory` (possibility) | HYPOTHESIZED | Prospective reasoning reference case |
+| `poss:assumption-aware-opportunity-ecology` | `derivedFrom` | `poss:cross-episode-possibility-synthesis`, `poss:possibility-reconsideration-from-change` (possibilities) | HYPOTHESIZED | 2026-11-02 creative prospective normal-use case |
+| `poss:assumption-aware-opportunity-ecology` | `complements` | `poss:repository-local-prospective-decision-memory` (possibility) | HYPOTHESIZED | Same case; creative family exploration complements decision memory |
 
 Links to construction paths and evidence prerequisites are in section 4; they are not possibility relations.
 
