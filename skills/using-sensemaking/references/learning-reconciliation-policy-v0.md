@@ -363,6 +363,16 @@ Cross-episode synthesis is currently agent-owned reasoning. A dedicated
 normal use establishes a stable reusable responsibility; its existence is not
 implied by this policy.
 
+### Later-session feedback on a retained engineering lesson
+
+When a later engineering responsibility actually encounters a recorded `lesson`, ask whether the source-verified historical failure/success mechanism is applicable to this decision. Distinguish the original incident or observation from the interpretation that the agent should reuse. Explicitly consider changed architecture, accepted authority, contrary cases and the possibility that a prior lesson is still historically accurate but no longer operationally relevant.
+
+For consequential later use, separate: **retained** (authored knowledge exists); **retrieved** (the actor really read it); **source-checked** (the actor inspected original evidence/current source); **decision-informing** (an observed reasoning step applied, narrowed or rejected it); **outcome-supported** (returned engineering evidence bears on that step); **independently reused** (a distinct later coding-agent session did so); and **comparatively beneficial** (a credible alternative was assessed). A stored record, CLI result, or same-context retrospective establishes none of the stronger classes automatically. Do not introduce these labels as machine enums or required receipts.
+
+If the new episode falsifies or limits the old lesson, preserve the historical incident and dated interpretation. REVISE, SUPERSEDE or CONTEST only the appropriate current claim through existing Steward RECONCILE with original sources and the newer episode. If the precedent does not apply, a source-grounded rejection can be the correct result and may require `NO_MODEL_CHANGE`; do not add a universal 'never use X' rule. When several independently useful episodes become comparable, the existing Capability Learning Loop v0 can assess a bounded reusable doctrine candidate with counterevidence; it never edits doctrine automatically.
+
+**Worked boundary:** An earlier agent learned that a bounded historical query falsely reported completeness. A later agent editing a different query consumer may use that precedent to check its own omitted-entry semantics, may find the current consumer already correct, or may reject the analogy because the result is an exhaustive enumeration. Only the later decision and its evidence establish which outcome occurred.
+
 ## 14. Compact use
 
 After a consequential result, ask:
