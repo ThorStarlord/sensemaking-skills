@@ -195,6 +195,10 @@ before reusing it. Then:
 - a retained possibility, or a satisfied `revisit_when`, is not a frontier
   candidate until frontier synthesis (section 5) admits it.
 
+### Creative prospective discovery when meaningful novelty matters
+
+When the user explicitly seeks new product futures, or current retained records anchor breadth too narrowly, optionally apply [Creative Prospective Discovery](creative-prospective-discovery-v1.md). Use source-grounded seeds without limiting the candidate set to current graph nodes; try materially helpful recombination, assumption inversion, consequence-derived opportunity or negative-space search. Distinguish new user capability from alternative architecture and check RESTATED / REVISED / NEW / NOT_ASSESSED before retaining. This is agent reasoning, not a mandatory extra stage, ranking, or schema change.
+
 ### Breadth output
 
 Produce a compact **opportunity landscape** of material observations. It may
