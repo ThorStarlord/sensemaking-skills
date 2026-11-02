@@ -264,6 +264,44 @@ These questions extend sections M and N for agent-native creative graph use. The
 
 **Baseline fit:** CQ-103--113 can be explored with current `poss:`/`arch:`/`conseq:` records, source inspection and existing guidance; their reliable independent application is unproven. CQ-114 requires a separate real hosted-agent observation. None currently demonstrates a need for a new schema, automatic generator or query command.
 
+## P. Longitudinal engineering learning
+
+Added 2026-11-02 under [longitudinal engineering learning plan](../superpowers/plans/2026-11-02-longitudinal-engineering-learning.md); extends existing lesson, history, continuity and capability-learning concepts without a new ontology family. These are **agent competency questions**, not deterministic query command contracts or proof that a later agent used historical knowledge.
+
+**CQ-115** -- Given a current engineering question or changed source file, which historical lessons could materially alter the decision?
+
+**CQ-116** -- Can the agent recover the original incident, decision, source revision, observation and uncertainty supporting a lesson?
+
+**CQ-117** -- Which source and contextual assumptions made the lesson applicable originally, and are they still valid now?
+
+**CQ-118** -- What materially different constraints or counterexamples might make a retrieved lesson inapplicable or misleading?
+
+**CQ-119** -- Can the agent explicitly reject or narrow historical advice rather than treating retrieval as authority?
+
+**CQ-120** -- Can a file-first `context-for` query reach explicitly relevant historical lessons through actual reviewed owner links without broad keyword guesses?
+
+**CQ-121** -- Can the agent distinguish a historical incident, its interpreted lesson, later observed implementation and an authorized rule?
+
+**CQ-122** -- Did a future agent merely read a lesson, or did it source-check and use or reject it in a material reasoning step?
+
+**CQ-123** -- Can a new engineering episode revise a prior lesson while preserving the historically correct prior evidence and limits?
+
+**CQ-124** -- Which apparently recurring failures are comparable across episodes, and which may have unrelated causes?
+
+**CQ-125** -- Which contrary episodes and changed premises defeat a proposed general lesson?
+
+**CQ-126** -- Can a later independent agent apply, correct or reject consequential retained knowledge without receiving its answer or earlier conversation?
+
+**CQ-127** -- Is there actual comparative benefit versus appropriately scoped source-only reconstruction, including any new omissions or authority failures?
+
+**CQ-128** -- Does a proposed cross-episode pattern warrant modifying existing reusable guidance, or only keeping a local lesson?
+
+**CQ-129** -- When should a once-applicable lesson be narrowed, superseded or retired without deleting its historical record?
+
+**CQ-130** -- Can normal local work proceed without an obligatory lesson search or a general learning-engine workflow?
+
+**Baseline fit:** existing `lesson`, `incident`, `observation`, `decision`, `references` and `learned_from` represent the core facts; existing source-pinned `search`, `explain`, `history`, and `context-for` provide selective retrieval. CQ-120 is blocked for some directly relevant source files by unreviewed/missing owner-to-lesson anchors, not necessarily a missing query algorithm; validate with an actual consumer after the source correction. CQ-122 and CQ-126..127 need authentic external agent evidence. CQ-124..125 and CQ-128 need cross-episode qualitative source review. No demonstrated unanswered question currently requires a new schema, generic learning runtime or specialized Skill.
+
 ## Initial priority set
 
 The first implementation experiments should prioritize questions that already recur across existing Skills and Campaigns:
