@@ -85,6 +85,20 @@ jobs:
                   {"observation:creative-discovery-guidance-in-source"},
               ),
               (
+                  "src/sensemaking_skills/semantic_architecture/knowledge_architecture.py",
+                  "component:semantic-knowledge-plane",
+                  set(),
+                  set(),
+                  {"lesson:source-anchored-context-reentry"},
+              ),
+              (
+                  "skills/repository-semantic-steward/references/recall.md",
+                  "component:repository-semantic-steward-skill",
+                  {"decision:ontology-first-adaptive-sensemaking"},
+                  set(),
+                  {"lesson:source-anchored-context-reentry"},
+              ),
+              (
                   "src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py",
                   "component:knowledge-store",
                   set(),
