@@ -16,6 +16,12 @@ retained possibility
 != implementation commitment
 ```
 
+## Exploration archive (uncurated, non-authoritative)
+
+The [Prospective Exploration Atlas](explorations/README.md) links separate 2026-11-02 [generative-depth](explorations/2026-11-02-generative-depth-repository-knowledge.md) and [divergent-breadth](explorations/2026-11-02-divergent-repository-knowledge.md) conversation-origin records, with a separate [inquiry-method reflection](explorations/2026-11-02-inquiry-method-reflection.md). Their provisional `GD-` and `DE-` labels are navigation-only and are **not** `poss:` records, curated entries, validated product claims, Strategic Frontier candidates or backlog items. Exploratory retention does not imply source-reviewed promotion, owner selection or authority.
+
+This library retains only its curated, source-reviewed possibilities; exploration records preserve wider possibilities and unexplored conceptual dimensions without changing the library's historical count or the reviewed `possibilities.json` pack. A subsequent selective reconciliation may compare candidates with existing `poss:` entries under the usual source, novelty and authority rules.
+
 ## 1. How to read this library
 
 Each entry gives a stable `poss:` identifier, the proposed future, its origin, the six dimensions of the conceptual model (alignment, ambition, horizon, realization, epistemic status, disposition), the disposition history with reasons and `revisit_when`, and its relationships.
