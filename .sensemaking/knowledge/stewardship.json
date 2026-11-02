@@ -404,6 +404,46 @@
         "source_revision": "7319af1a52ad3a77b17ae04d6de26b28beae45a9",
         "claim_ceiling": "Static source/interface distinction; not a record of actual host graph consultation or comparative benefit"
       }
+    },
+    {
+      "id": "incident:source-context-link-gaps-20261102",
+      "kind": "incident",
+      "statement": "Across several source-reviewed Sensemaking edits in 2026-11-01 to 2026-11-02, file-first semantic context lacked a relevant ownership or history/decision link even though the underlying Skill guidance or historical lessons existed in original sources. PRs #691, #697, #701 and #704 used reviewed graph corrections rather than new query algorithms.",
+      "epistemic_status": "observed",
+      "authority_kind": "document",
+      "authority_ref": "docs/normal-use/2026-11-02-cross-episode-source-reentry-learning.md",
+      "evidence_refs": [
+        "file:docs/normal-use/2026-11-02-cross-episode-source-reentry-learning.md",
+        "file:docs/normal-use/graph-decision-context-strategic-comparison-2026-11-01.md",
+        "file:docs/normal-use/graph-reentry-prospective-guidance-2026-11-01.md",
+        "file:docs/normal-use/2026-11-02-longitudinal-lesson-reentry.md"
+      ],
+      "attributes": {
+        "scope": "Historical source-to-context anchor assessments within Sensemaking-skills, not independent-agent cognition or cross-repository proof",
+        "observed_revisions": [
+          "2026-11-01",
+          "2026-11-02"
+        ],
+        "claim_ceiling": "Multiple same-repository source-inspected cases; one PR #704 exact-head `context-for` consumer passed, but repeated agent benefit was not measured"
+      }
+    },
+    {
+      "id": "lesson:source-anchored-context-reentry",
+      "kind": "lesson",
+      "statement": "For Sensemaking's file-first `context-for` retrieval, current source guidance or historical lessons do not become reachable merely by existing: reviewed component `owned_paths` plus relevant explicit component/rule-to-history or decision relations must connect the source file. Before adding a new query type, inspect those anchors and original sources; missing graph context is not evidence that the engineering history is absent.",
+      "epistemic_status": "declared",
+      "authority_kind": "document",
+      "authority_ref": "docs/normal-use/2026-11-02-cross-episode-source-reentry-learning.md",
+      "evidence_refs": [
+        "file:docs/normal-use/2026-11-02-cross-episode-source-reentry-learning.md",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_architecture.py",
+        "file:skills/repository-semantic-steward/references/recall.md"
+      ],
+      "attributes": {
+        "scope": "Sensemaking source-file context-for mechanism only; not a universal directive to add more links or a demonstration that an agent applies this rule",
+        "claim_ceiling": "Source-grounded local lesson from several overlapping repository episodes, with independent repeated benefit and transfer NOT_ASSESSED",
+        "revisit_when": "If context-for gains a different documented source-selection mechanism, or a fresh independent agent demonstrates a misleading or non-useful application, source-check and revise this lesson without deleting the original incident"
+      }
     }
   ],
   "relations": [
@@ -824,6 +864,19 @@
       "attributes": {
         "scope": "Historical fingerprint-fanout issue; source drift, record drift and changed meaning are distinct",
         "establishment": "inferred"
+      }
+    },
+    {
+      "id": "rel:context-anchor-lesson-from-gaps",
+      "subject": "lesson:source-anchored-context-reentry",
+      "predicate": "learned_from",
+      "object": "incident:source-context-link-gaps-20261102",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:docs/normal-use/2026-11-02-cross-episode-source-reentry-learning.md"
+      ],
+      "attributes": {
+        "scope": "Interpretation of repeated local source-context anchoring findings; not proof of a generalized causal improvement"
       }
     }
   ]
