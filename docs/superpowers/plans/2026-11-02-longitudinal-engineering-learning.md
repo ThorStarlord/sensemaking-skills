@@ -52,7 +52,7 @@ Distinguish (A) current responsibility learning, (B) durable target-repository l
 - **PR-A:** baseline/program and CQ-115..130, existing ontology fit, source-inspected retrieval question.
 - **PR-B:** minimal optional situation-aware RECALL / applicability / learning-feedback guidance; no second controller.
 - **PR-C:** source-grounded lesson graph reachability correction plus one actual exact-head CLI CI consumer; only if relevant links are truly missing.
-- **PR-D:** bounded cross-episode historical analysis where actual comparable independent evidence supports a substantive candidate; retain counterexamples, do not grant it universal doctrine.
+- **PR-D:** bounded cross-episode historical analysis of real comparable cases; retain one repository-local candidate when only overlapping self-repository evidence exists, and require genuinely independent corroboration before broader doctrine or cross-repository transfer.
 - **Later conditional PRs:** reusable guidance or retrieval code only for observed consumer need; independent qualification only from actual independent host; cross-repository only with explicit authority.
 
 ## Qualification ladder and completion
@@ -64,3 +64,16 @@ Distinguish retention, retrieval, source verification, semantic applicability, c
 ## Risks and stopping boundaries
 
 Memory inflation, historical anchoring, false transfer, causal overclaims, stale lessons, authority laundering, process-only busywork and verification theater are real risks. Prefer selective source inspection and reversible capability work. No universal append-only `LEARNINGS.md`, automatic lesson extractor, idea scorer, policy router or mandatory lesson lookup. Stop at lack of warranted productive work or a genuinely unavailable independent agent/authority boundary; do not pretend that a CI run crossed it.
+
+## Construction return / evidence reconciliation (2026-11-02)
+
+| Increment | Integrated repository result | Verification and remaining uncertainty |
+| --- | --- | --- |
+| [#702](https://github.com/ThorStarlord/sensemaking-skills/pull/702) | Plan and CQ-115..130 | Source/diff reviewed; no new runtime, graph schema or mechanical qualification claim |
+| [#703](https://github.com/ThorStarlord/sensemaking-skills/pull/703) | Optional source-verified historical recall and lesson applicability/rejection feedback in existing Steward/using-sensemaking references | Agent-facing guidance; not a separately demonstrated host behavior |
+| [#704](https://github.com/ThorStarlord/sensemaking-skills/pull/704) | Three lesson relationships from the existing query-store owner plus a real two-file `context-for` consumer | [Run 41480135285](https://github.com/ThorStarlord/sensemaking-skills/actions/runs/41480135285) passed at exact PR head `c74c3e68`; no independent agent performance claim |
+| [#705](https://github.com/ThorStarlord/sensemaking-skills/pull/705) | One scoped local incident and lesson connected by `learned_from` and two source owner references; cross-case counterevidence retained | [Run 41480921119](https://github.com/ThorStarlord/sensemaking-skills/actions/runs/41480921119) passed at exact PR head `86bfc959`; repeated benefit and transfer NOT_ASSESSED |
+
+**Current assessment:** initial WP-0..4 source/competency/guidance construction and narrow WP-6/7/9 reconciliation were performed. WP-5/10 authentic later-agent learning and independent comparative benefit remain `NOT_EXECUTED` from this GitHub-connector session, not implied by CI or the same-agent source review. WP-8 generalized reusable doctrine, WP-11 cross-repository change, and WP-12 dedicated `capability-learning-analysis` Skill were **not promoted**, because the available evidence/authority does not warrant them. The local lesson is not an automatic future work item.
+
+**Decision trace:** source-grounded owner/history links plus optional agent guidance created immediate valuable retrieval while also generating exact-head mechanical evidence. A docs-only plan would leave the reviewed file-first history gap open; a new learning runtime, new ontology predicate, or automatic doctrine engine would add unwarranted maintenance and authority risk. Preserve ADR 0029/0031/0034 and PATH-1. Future work begins from current source and a real engineering question, not from this table as an automatic queue.
