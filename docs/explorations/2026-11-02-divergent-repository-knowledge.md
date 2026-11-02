@@ -10,7 +10,7 @@
 
 Reviewed sources available to the source discussion:
 - [product strategy](../product-strategy.md) and accepted [ADRs 0029](../adr/0029-current-product-boundary.md), [0031](../adr/0031-persistent-semantic-stewardship.md), [0034](../adr/0034-ontology-first-adaptive-sensemaking.md);
-- reviewed `[.sensemaking/knowledge/*.json](../../.sensemaking/knowledge/)` claims and relations, the [layered ontology](../semantic-architecture/ontology.md), [prospective reasoning ontology](../semantic-architecture/prospective-reasoning-ontology.md) and [Idea Library](../idea-library.md);
+- reviewed [Git-authored semantic knowledge records](../../.sensemaking/knowledge/) and their claims and relations, the [layered ontology](../semantic-architecture/ontology.md), [prospective reasoning ontology](../semantic-architecture/prospective-reasoning-ontology.md) and [Idea Library](../idea-library.md);
 - [Creative Prospective Discovery](../../skills/strategic-repository-analysis/references/creative-prospective-discovery-v1.md) with optional recombination, assumption inversion, negative-space search and analogical transfer;
 - [Atlas Midgard](../normal-use/ontology-first-entry-atlas-001.md), [first Atlas prospective reasoning](../normal-use/prospective-reasoning-atlas-001.md) and [cross-episode link learning](../normal-use/2026-11-02-cross-episode-source-reentry-learning.md) as *bounded historical cases*.
 
