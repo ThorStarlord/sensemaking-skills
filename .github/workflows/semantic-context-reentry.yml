@@ -78,6 +78,13 @@ jobs:
                   {"observation:comparison-level-guidance-in-source"},
               ),
               (
+                  "skills/strategic-repository-analysis/references/creative-prospective-discovery-v1.md",
+                  "component:strategic-repository-analysis-skill",
+                  {"decision:ontology-first-adaptive-sensemaking"},
+                  set(),
+                  {"observation:creative-discovery-guidance-in-source"},
+              ),
+              (
                   "src/sensemaking_skills/workflow_availability.py",
                   "component:workflow-installation-availability",
                   set(),

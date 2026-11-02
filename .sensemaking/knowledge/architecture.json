@@ -950,14 +950,16 @@
       "authority_ref": "skills/strategic-repository-analysis/SKILL.md",
       "evidence_refs": [
         "file:skills/strategic-repository-analysis/SKILL.md",
-        "file:skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md"
+        "file:skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md",
+        "file:skills/strategic-repository-analysis/references/creative-prospective-discovery-v1.md"
       ],
       "epistemic_status": "declared",
       "attributes": {
         "owned_paths": [
           "skills/strategic-repository-analysis/SKILL.md",
           "skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md",
-          "skills/strategic-repository-analysis/references/goal-fitness-and-completion-v1.md"
+          "skills/strategic-repository-analysis/references/goal-fitness-and-completion-v1.md",
+          "skills/strategic-repository-analysis/references/creative-prospective-discovery-v1.md"
         ],
         "contract_actor": "strategic-repository-analysis"
       }
@@ -1013,6 +1015,23 @@
       "attributes": {
         "observed_revision": "2ea8d357af3c52b627f9344aff4e40275439b9af",
         "claim_ceiling": "Source inspection only; no fresh-host agent execution or comparative benefit established"
+      }
+    },
+    {
+      "id": "observation:creative-discovery-guidance-in-source",
+      "kind": "observation",
+      "statement": "At main@bb77dac, the strategic exploration funnel includes an optional creative prospective discovery reference that distinguishes capability novelty from architecture novelty and RESTATED/REVISED/NEW/NOT_ASSESSED candidate judgments. This is observed guidance, not proof that coding agents apply it.",
+      "authority_kind": "document",
+      "authority_ref": "skills/strategic-repository-analysis/references/creative-prospective-discovery-v1.md",
+      "evidence_refs": [
+        "file:skills/strategic-repository-analysis/references/creative-prospective-discovery-v1.md",
+        "file:skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md",
+        "file:docs/normal-use/2026-11-02-creative-prospective-discovery.md"
+      ],
+      "epistemic_status": "observed",
+      "attributes": {
+        "observed_revision": "bb77dac13fa4212d11f414176c9a37071dcc0a7f",
+        "claim_ceiling": "Source text only; independent hosted reasoning and comparative creative benefit not established"
       }
     }
   ],
@@ -1666,6 +1685,17 @@
       "evidence_refs": [
         "file:skills/strategic-repository-analysis/SKILL.md",
         "file:docs/normal-use/graph-decision-context-strategic-comparison-2026-11-01.md"
+      ],
+      "epistemic_status": "observed"
+    },
+    {
+      "id": "rel:strategic-analysis-creative-discovery-observation",
+      "subject": "component:strategic-repository-analysis-skill",
+      "predicate": "references",
+      "object": "observation:creative-discovery-guidance-in-source",
+      "evidence_refs": [
+        "file:skills/strategic-repository-analysis/references/creative-prospective-discovery-v1.md",
+        "file:skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md"
       ],
       "epistemic_status": "observed"
     }
