@@ -1698,6 +1698,34 @@
         "file:skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md"
       ],
       "epistemic_status": "observed"
+    },
+    {
+      "id": "rel:knowledge-plane-references-context-anchor-lesson",
+      "subject": "component:semantic-knowledge-plane",
+      "predicate": "references",
+      "object": "lesson:source-anchored-context-reentry",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_architecture.py",
+        "file:docs/normal-use/2026-11-02-cross-episode-source-reentry-learning.md"
+      ],
+      "attributes": {
+        "scope": "Source-grounded local lesson on explicit file-first historical re-entry; no general agent-use claim"
+      }
+    },
+    {
+      "id": "rel:steward-references-context-anchor-lesson",
+      "subject": "component:repository-semantic-steward-skill",
+      "predicate": "references",
+      "object": "lesson:source-anchored-context-reentry",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:skills/repository-semantic-steward/references/recall.md",
+        "file:docs/normal-use/2026-11-02-cross-episode-source-reentry-learning.md"
+      ],
+      "attributes": {
+        "scope": "Source-grounded local lesson on explicit file-first historical re-entry; no general agent-use claim"
+      }
     }
   ]
 }
