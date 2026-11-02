@@ -780,6 +780,51 @@
         "file:skills/using-sensemaking/SKILL.md"
       ],
       "epistemic_status": "observed"
+    },
+    {
+      "id": "rel:store-references-query-completeness-lesson",
+      "subject": "component:knowledge-store",
+      "predicate": "references",
+      "object": "lesson:query-completeness-is-evidence",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_store.py",
+        "file:docs/normal-use/semantic-stewardship-episode-a-2026-10-15.md"
+      ],
+      "attributes": {
+        "scope": "Earlier bounded-query result-disclosure failure; later applicability must be source checked, not presumed",
+        "establishment": "inferred"
+      }
+    },
+    {
+      "id": "rel:store-references-uncited-change-lesson",
+      "subject": "component:knowledge-store",
+      "predicate": "references",
+      "object": "lesson:uncited-change-is-coverage-gap",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py",
+        "file:docs/normal-use/semantic-steward-workspace-impact-2026-10-21.md"
+      ],
+      "attributes": {
+        "scope": "Historical uncited-change finding in query modules; file overlap is not causal effect",
+        "establishment": "inferred"
+      }
+    },
+    {
+      "id": "rel:store-references-provenance-meaning-lesson",
+      "subject": "component:knowledge-store",
+      "predicate": "references",
+      "object": "lesson:distinguish-provenance-content-and-meaning",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_store.py",
+        "file:docs/normal-use/semantic-steward-workspace-impact-2026-10-21.md"
+      ],
+      "attributes": {
+        "scope": "Historical fingerprint-fanout issue; source drift, record drift and changed meaning are distinct",
+        "establishment": "inferred"
+      }
     }
   ]
 }
