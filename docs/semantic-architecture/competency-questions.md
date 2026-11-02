@@ -245,6 +245,25 @@ Introduced with [`prospective-reasoning-ontology.md`](prospective-reasoning-onto
 
 **CQ-102** — Can ordinary bounded work proceed without a mandatory full pre-implementation analysis?
 
+## O. Creative prospective discovery
+
+These questions extend sections M and N for agent-native creative graph use. They do not imply deterministic solutions or additional ontology kinds; see [creative-discovery guidance](../../skills/strategic-repository-analysis/references/creative-prospective-discovery-v1.md).
+
+**CQ-103** -- Which source-grounded capabilities and retained possibilities matter to the desired product outcome without limiting exploration to graph nodes?
+**CQ-104** -- What new valuable capability could emerge through recombination, and which enabling relationship remains hypothetical?
+**CQ-105** -- Which revisable design assumption produces a materially distinct future if changed, and which governing constraints remain?
+**CQ-106** -- Can the agent distinguish a new product outcome from a new architecture for an existing outcome?
+**CQ-107** -- Is a candidate RESTATED, REVISED, NEW or NOT_ASSESSED relative to its closest retained possibility or architecture option?
+**CQ-108** -- Which rejected possibility has a concrete changed rejection premise and deserves renewed consideration?
+**CQ-109** -- Can a consequence-derived opportunity be proposed without promoting a conditional multi-hop chain into causal fact?
+**CQ-110** -- What materially valuable outcome is missing from the represented possibility landscape?
+**CQ-111** -- Can a future agent reconstruct a meaningful new possibility's sources, creative origin, differentiator and assumptions?
+**CQ-112** -- Which evidence scopes or alternative mechanisms remain NOT_ASSESSED rather than proven absent?
+**CQ-113** -- When is additional creative search unlikely to add a material option or alter a comparison?
+**CQ-114** -- Did graph retrieval actually influence creative reasoning in a genuine independent coding-agent session, rather than merely return records?
+
+**Baseline fit:** CQ-103--113 can be explored with current `poss:`/`arch:`/`conseq:` records, source inspection and existing guidance; their reliable independent application is unproven. CQ-114 requires a separate real hosted-agent observation. None currently demonstrates a need for a new schema, automatic generator or query command.
+
 ## Initial priority set
 
 The first implementation experiments should prioritize questions that already recur across existing Skills and Campaigns:

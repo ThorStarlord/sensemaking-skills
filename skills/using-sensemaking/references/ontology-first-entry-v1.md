@@ -93,7 +93,7 @@ Its analysis artifact follows that Skill's template and validator.
 Explore the major systems and cross-system relationships, and consider
 capability expansion, new user experiences, compositions, simplifications,
 alternative boundaries and relevant counterfactual futures. Recall retained
-`poss:` records first. Classify before retaining: product possibilities,
+`poss:` records first. For an explicitly creative outcome or a materially narrow existing landscape, the funnel's optional Creative Prospective Discovery guidance can help explore capabilities and architecture variants beyond stored nodes; those nodes are seeds, not the complete possibility space. Classify before retaining: product possibilities,
 engineering alternatives, architecture options and construction paths are
 different things.
 

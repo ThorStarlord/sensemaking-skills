@@ -57,6 +57,8 @@ For each serious option, identify:
 
 Do not suppress novel options just because the index has no matching node. Hypothetical guidance is not a current architectural obligation.
 
+For an open creative question, use the optional [Creative Prospective Discovery](../../strategic-repository-analysis/references/creative-prospective-discovery-v1.md) method to distinguish new desired product capabilities (`poss:`) from new structures for already-known outcomes (`arch:`). Recombine reviewed leverage, challenge a revisable premise or explore negative space, then check the closest retained idea before treating the candidate as NEW. Existing source relationships are not automatic causal claims.
+
 ## 4. Convergent comparison
 
 Compare material finalists qualitatively against goal fitness, constraints, owned interfaces and consumers, compatibility, migration, dependencies, reversibility, operating cost, failure modes and verification cost. Preserve explicit `observed` / `declared` / `hypothetical` / `contested` / `superseded` / `NOT_ASSESSED` distinctions.
