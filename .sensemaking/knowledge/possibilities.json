@@ -1295,6 +1295,58 @@
       "attributes": {
         "note": "Shared premise of capability-learning-analysis and cross-episode-possibility-synthesis."
       }
+    },
+    {
+      "id": "poss:assumption-aware-opportunity-ecology",
+      "kind": "opportunity",
+      "statement": "For an explicit product outcome, a coding agent explores coherent families of interacting possible capabilities, shared premises, complementary and conflicting alternatives, and assumption-dependent futures, discovering opportunities beyond an isolated retained idea or linear backlog.",
+      "epistemic_status": "hypothetical",
+      "authority_kind": "hypothesis",
+      "authority_ref": "docs/normal-use/2026-11-02-creative-prospective-discovery.md",
+      "evidence_refs": [
+        "file:docs/normal-use/2026-11-02-creative-prospective-discovery.md"
+      ],
+      "attributes": {
+        "concept": "ProductPossibility",
+        "title": "Assumption-aware opportunity ecology",
+        "library_ref": "docs/idea-library.md",
+        "origin": {
+          "ref": "docs/normal-use/2026-11-02-creative-prospective-discovery.md",
+          "date": "2026-11-02",
+          "author": "agent, source-reviewed creative synthesis under user-delegated construction"
+        },
+        "dimensions": {
+          "alignment": {
+            "value": "ALIGNED",
+            "basis": "ADR 0034 makes ontology-grounded prospective understanding the outcome; proposed agent-native relational discovery preserves ADR 0029."
+          },
+          "ambition": {
+            "value": "SUBSTANTIAL",
+            "basis": "Would offer an outcome-centered relational view of interacting possible futures, distinct from isolated synthesis or change notice."
+          },
+          "horizon": {
+            "value": "FORESEEABLE",
+            "basis": "Existing possibility/alternative/consequence records and selective queries supply seeds; a usable independent experience is still unassessed."
+          },
+          "realization": {
+            "value": "NOT_ASSESSED",
+            "establishment": "inferred",
+            "basis": "A same-agent source-reviewed proposal and optional guidance exist; no independent coding agent has demonstrated a coherent opportunity-ecology experience or its benefit."
+          }
+        },
+        "disposition_history": [
+          {
+            "value": "EXPLORATORY",
+            "date": "2026-11-02",
+            "authority": "agent proposal under delegated work, not product-thesis ratification",
+            "source": "docs/normal-use/2026-11-02-creative-prospective-discovery.md",
+            "rationale": "Source-grounded recombination identified a distinct outcome of understanding interconnected future capability families; no construction path selected."
+          }
+        ],
+        "assessed_ref": "bb77dac13fa4212d11f414176c9a37071dcc0a7f",
+        "value_hypothesis": "Future coding-agent explorations expose materially new, coherent option families by relating possibilities and their assumptions rather than merely recalling or ranking ideas.",
+        "revisit_when": "A genuinely fresh coding agent uses the reviewed possibility and premise lineage in an authentic prospective product question; reassess the claimed distinctiveness and value against its actual output."
+      }
     }
   ],
   "relations": [
@@ -2069,6 +2121,78 @@
       ],
       "attributes": {
         "establishment": "ratified"
+      }
+    },
+    {
+      "id": "rel:ecology-derived-cross-episode",
+      "subject": "poss:assumption-aware-opportunity-ecology",
+      "predicate": "derived_from",
+      "object": "poss:cross-episode-possibility-synthesis",
+      "epistemic_status": "hypothetical",
+      "derivation": "authored",
+      "evidence_refs": [
+        "file:docs/normal-use/2026-11-02-creative-prospective-discovery.md"
+      ],
+      "attributes": {
+        "establishment": "hypothesized"
+      }
+    },
+    {
+      "id": "rel:ecology-derived-reconsideration",
+      "subject": "poss:assumption-aware-opportunity-ecology",
+      "predicate": "derived_from",
+      "object": "poss:possibility-reconsideration-from-change",
+      "epistemic_status": "hypothetical",
+      "derivation": "authored",
+      "evidence_refs": [
+        "file:docs/normal-use/2026-11-02-creative-prospective-discovery.md"
+      ],
+      "attributes": {
+        "establishment": "hypothesized"
+      }
+    },
+    {
+      "id": "rel:ecology-complements-decision-memory",
+      "subject": "poss:assumption-aware-opportunity-ecology",
+      "predicate": "references",
+      "object": "poss:repository-local-prospective-decision-memory",
+      "epistemic_status": "hypothetical",
+      "derivation": "authored",
+      "evidence_refs": [
+        "file:docs/normal-use/2026-11-02-creative-prospective-discovery.md"
+      ],
+      "attributes": {
+        "establishment": "hypothesized",
+        "conceptual_relation": "complements"
+      }
+    },
+    {
+      "id": "rel:ecology-needs-possibility-records",
+      "subject": "poss:assumption-aware-opportunity-ecology",
+      "predicate": "requires_capability",
+      "object": "cap:possibility-records",
+      "epistemic_status": "hypothetical",
+      "derivation": "authored",
+      "evidence_refs": [
+        "file:docs/normal-use/2026-11-02-creative-prospective-discovery.md"
+      ],
+      "attributes": {
+        "establishment": "hypothesized",
+        "conceptual_relation": "potentiallyEnabledBy"
+      }
+    },
+    {
+      "id": "rel:ecology-candidate-longterm",
+      "subject": "poss:assumption-aware-opportunity-ecology",
+      "predicate": "candidate_opportunity_for",
+      "object": "goal:compounding-product-knowledge",
+      "epistemic_status": "hypothetical",
+      "derivation": "authored",
+      "evidence_refs": [
+        "file:docs/normal-use/2026-11-02-creative-prospective-discovery.md"
+      ],
+      "attributes": {
+        "establishment": "hypothesized"
       }
     }
   ]
