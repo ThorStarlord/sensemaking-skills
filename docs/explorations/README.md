@@ -14,6 +14,7 @@ This directory makes independent exploratory inquiries **findable, comparable an
 | [Divergent exploration: creative uses of repository knowledge](2026-11-02-divergent-repository-knowledge.md) | First deliberate divergent breadth pass | Ten families, 30 exploratory candidate capabilities, cross-family combinations and unexplored dimensions |
 | [Divergent exploration II: unfamiliar knowledge possibilities](2026-11-02-divergent-repository-knowledge-second-pass.md) | Second, source-reviewed divergent pass; no convergence | Six additional provisional families (K–P), 18 candidates (NX-K1 through NX-P3), dual family membership, novelty comparisons and unexplored domains |
 | [Divergent exploration III: the remaining possibility space](2026-11-02-divergent-remaining-possibility-space.md) | Third, source-reviewed divergent pass; new goal classes and affected worlds | Five additional overlapping families (Q–U), 11 local hypothetical candidates (RP-Q1 through RP-U2), rejected near-duplicates and qualitative coverage reflection |
+| [Coverage and diminishing-returns assessment](2026-11-02-divergent-coverage-assessment.md) | **Coverage assessment only; not another Divergent Exploration or Convergent Evaluation** | Source-grounded map of explored dimensions, cross-pass novelty/redundancy, remaining lenses and a provisional coverage-sufficiency finding without initiating any new mode |
 | [Inquiry method reflection](2026-11-02-inquiry-method-reflection.md) | Method analysis, not a process decision | User-supplied arguments on separated modes, multiple passes, diminishing returns, documentation and supervision; caveats |
 | [Existing source-reviewed creative case](../normal-use/2026-11-02-creative-prospective-discovery.md) | Same-agent real repository-source review | Retained `poss:assumption-aware-opportunity-ecology` with source lineage; not an independent creative-benefit demonstration |
 
@@ -70,6 +71,12 @@ The third pass deliberately varies the **goal, physical/social medium and affect
 
 For cross-family intersections, candidate-by-candidate novelty distinctions, examples **not** retained as new, and qualitative diminishing-returns observations, see [Exploration III's relationships and coverage reflection](2026-11-02-divergent-remaining-possibility-space.md#relationships-variations-and-unrepresented-dimensions) and [qualitative reflection](2026-11-02-divergent-remaining-possibility-space.md#qualitative-reflection-on-divergence-and-diminishing-returns). These are **coverage notes**, not idea-quality evaluations or convergence signals.
 
+## Coverage and diminishing returns (not a mode transition)
+
+The dated [Coverage and Diminishing-Returns Assessment](2026-11-02-divergent-coverage-assessment.md) reviews all three divergent passes, the generative-depth companion, the method reflection, the current knowledge packs and governing product frame. It distinguishes **local repetition of existing creative operations** from **fresh conceptual categories opened by changing the frame**. It also records in-scope and beyond-scope territory that remains underexplored.
+
+**Provisional coverage finding:** *Coverage appears sufficient to consider a separate Convergent Evaluation.* This is a statement about how many **kinds of conceptual territory** are represented, **not** an idea score, global novelty plateau, endorsement of convergence, automatic next phase, or authorization to evaluate, prioritize or build. Further divergence could still uncover meaningful new categories. The assessment [explains the limits and stopping boundary](2026-11-02-divergent-coverage-assessment.md#8-provisional-finding-and-explicit-stop-boundary).
+
 ## How to read candidate identities and statuses
 
 - **GD-A through GD-G:** exploration-local names for provisional families in the generative-depth record.
@@ -85,18 +92,19 @@ For cross-family intersections, candidate-by-candidate novelty distinctions, exa
 
 1. **Exploration record:** preserves the originating inquiry, its conceptual moves, source inspiration, ideas, overlap and gaps. Do not silently rewrite its historical claims after later work; add a later record or dated correction.
 2. **This atlas:** links passes and groups related topics. It can be updated for navigation without treating a topic as strategically important.
-3. **[Curated Idea Library](../idea-library.md):** selectively retains nonduplicative ProductPossibilities with evidence/provenance and disposition history, linked to the reviewed knowledge pack where warranted. No automatic promotion from an exploration ID.
-4. **Decisions, strategic analyses and ADRs:** independently govern selection and authorization. An exploratory possibility is never a construction path, policy update or approval merely because it was documented.
-5. **Method reflection:** preserves observations about reasoning *quality and format*, separately from the creative/product ideas.
+3. **Coverage assessment:** reads across completed passes to distinguish coverage, restatement, novelty and unexplored lenses; it does not create candidates, judge their quality, authorize a transition or set policy.
+4. **[Curated Idea Library](../idea-library.md):** selectively retains nonduplicative ProductPossibilities with evidence/provenance and disposition history, linked to the reviewed knowledge pack where warranted. No automatic promotion from an exploration ID.
+5. **Decisions, strategic analyses and ADRs:** independently govern selection and authorization. An exploratory possibility is never a construction path, policy update or approval merely because it was documented.
+6. **Method reflection:** preserves observations about reasoning *quality and format*, separately from the creative/product ideas.
 
 ## Continuation without a mandatory pipeline
 
 A later agent may begin a new inquiry with a different angle: unrepresented user experiences, alternative assumptions, analogy failure, conceptual contradiction, historical revision, or a deliberately independent first pass before looking at this index. It should compare genuinely distinct additions to previous candidates, preserve original sources, and say which areas remain unexplored. This is an *optional reading convention*, not a new process phase or fixed number of passes.
 
-A divergence-only user request ends with an expanded landscape. Moving toward Convergent Evaluation requires a separately warranted choice to change the inquiry mode; neither saturation, catalog growth nor documentation creates automatic selection authority. Qualitative signs of diminishing new conceptual diversity can inform that conversation, but they are not a scoring rule or automatic trigger.
+A divergence-only user request ends with an expanded landscape. Moving toward Convergent Evaluation requires a separately warranted choice to change the inquiry mode; neither saturation, catalog growth, the new coverage assessment nor documentation creates automatic selection authority. Qualitative signs of diminishing new conceptual diversity can inform that conversation, but they are not a scoring rule or automatic trigger.
 
 ## Evidence and authority ceiling
 
 - Repository facts, historical engineering outcomes and cited code behavior should be checked against their original revision-bound sources.
 - The first 2026-11-02 conversation explorations are conceptual syntheses; the second and third are separate source-reviewed agent-authored divergent passes. None demonstrates independent-host invention, cross-session creative reuse, graph completeness or comparative benefit.
-- The work recorded here is **documentation of possibilities** only. It introduces no Skill, query operation, graph schema, required review gate, automatic ranking or new Level-3/Level-4 commitment.
+- The explorations recorded here document **possibilities**; the dated coverage assessment documents the **breadth of those possibilities**, not their value or a choice of mode. Neither introduces a Skill, query operation, graph schema, required review gate, automatic ranking or new Level-3/Level-4 commitment.
