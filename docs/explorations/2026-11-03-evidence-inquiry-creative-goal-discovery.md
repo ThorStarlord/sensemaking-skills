@@ -104,7 +104,7 @@ This is an **evidence-economy comparison**, not an execution schedule or an expe
 
 **No immediate experiment warrant:** the inspected sources contain no newly offered, genuinely open and prevalidated owner question *for this inquiry* and no ready independent reviewer for it. Replaying the Chess Mentor prompt, Atlas's completed architectural problem, or the hypothetical goals from the Depth Exploration would disclose the answer space and test recall/contamination instead of spontaneous discovery. **Do not choose or invent a target merely to run a trial.** This assessment's only recommended next evidence-producing move is **conditional on a real question arising**, not an instruction to launch anything now.
 
-## 6. Recommended smallest credible inquiry — *conditional, not launched*
+## 6. Smallest credible next inquiry
 
 **Warrant target:** one **local, decision-relevant observation** of whether the retained knowledge surface changes an independent coding agent's *goal hypotheses* in a real product/repository decision, not proof of general creative superiority or a new graph architecture.
 
