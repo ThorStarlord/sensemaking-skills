@@ -505,3 +505,14 @@ The ontology does not define:
 - a requirement that every relation be materialized as a graph node/edge.
 
 Those would require separate evidence and authorization.
+
+### Assessment, consolidation and purpose-relative portfolio roles
+
+The [Possibility Assessment and Prioritization Ontology](possibility-assessment-ontology.md)
+reuses divergent inquiry/landscape identities to describe source-scoped
+coverage, diminished learning under a specified inquiry method,
+provenance-preserving consolidation and qualitative comparison. An
+AssessmentFrame makes the *purpose* explicit; an AssessmentJudgment and
+dated PortfolioSnapshot retain uncertainty, incomparable members and
+reconsideration conditions. These Level-2 documentary roles do not widen
+existing architecture/path preference endpoints or authorize implementation.
