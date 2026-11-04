@@ -1,6 +1,6 @@
 # Possibility Assessment and Prioritization — Optional Record Template
 
-Use only when a substantial retained assessment needs stable references. Compact prose is equally acceptable when it preserves the substantive meanings of the [portable guide](possibility-assessment-v1.md). This is **ordinary Markdown**, not a registered \`artifact_id\`, mandatory sidecar, executable semantic schema or validation contract. Omit irrelevant sections; leave unknowns explicit.
+Use only when a substantial retained assessment needs stable references. Compact prose is equally acceptable when it preserves the substantive meanings of the [portable guide](possibility-assessment-v1.md). This is **ordinary Markdown**, not a registered `artifact_id`, mandatory sidecar, executable semantic schema or validation contract. Omit irrelevant sections; leave unknowns explicit.
 
 ## Assessment and scope
 
@@ -31,7 +31,7 @@ Use only when a substantial retained assessment needs stable references. Compact
 **Purpose and source members:** cite original local identifiers and artifacts, not just the group name.
 **Judgment J2:** restatement, variant, grouping, complement, contextual alternative or synthesis **under which criterion**; author, source/revision, basis and uncertainty.
 **Preserved differences:** what is abstracted away for this view; overlapping memberships, dissent and alternative framings.
-**Identity result:** explicitly state whether there is *any* independently warranted enduring \`poss:\`/\`arch:\` referent. Near duplication or grouping is never automatic sameAs.
+**Identity result:** explicitly state whether there is *any* independently warranted enduring `poss:`/`arch:` referent. Near duplication or grouping is never automatic sameAs.
 
 ## Comparison and priority (when requested)
 
