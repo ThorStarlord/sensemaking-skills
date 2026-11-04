@@ -255,3 +255,26 @@ were outside the evidence available to this review.
 
 These dispositions complete the core plan's conditional decisions. They are
 not an automatically authorized implementation backlog.
+
+## 10. Retrieval after recording the consumer review
+
+The case document's new reconstruction section changed its source bytes, so
+the actual index build and all three section 5 queries were repeated at
+[`38ae7214511147f0a541092048dd3c0d77ee2f34`](https://github.com/ThorStarlord/sensemaking-skills/commit/38ae7214511147f0a541092048dd3c0d77ee2f34),
+which contains the final case text and navigation/status updates.
+
+The temporary-worktree build again returned 202 claims and 208 relations.
+Search recovered the declared candidate-expression definition; its explanation
+returned the case-source reference, and source explanation returned the three
+intended definitions and three references. The returned case-source SHA-256
+matched the actual committed document:
+`e595375c8156f8da18b74c57ed66157ca95c53b4c4ca89be30516bc0e7eb4411`.
+The index digest was
+`7ca7c7bd52ee4c08339557c75e363bfb297bf5f93c9ff2fd772d3946ca315323`.
+Authority, semantic-truth and action-authorization flags remained false.
+
+The three relevant Skill trees were unchanged from the wheel source
+`12e45fab6844eb9e8226f0f259e33a00718b22f6`, so the recorded installed-delivery
+observation still describes their delivered bytes. This refresh verifies the
+changed case source at its named commit; the subsequent observation note and
+completion metadata do not imply another index build or creative invocation.
