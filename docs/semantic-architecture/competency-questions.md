@@ -332,3 +332,10 @@ CQ-073 fresh-context reconstruction
 ```
 
 These questions are intentionally cross-cutting. If the semantic model cannot improve consistency on these, expanding it further is not warranted.
+
+
+Possibility-assessment refinements for coverage, consolidation, qualitative
+ranking and purpose-specific portfolios:
+[PAO-CQ-01..12](possibility-assessment-competency-v1.md). These reuse the
+existing CQ-079..100 and CQ-101/103..114 vocabulary without adding global CQ
+identities or implying a ranking-based implementation authority.
