@@ -208,6 +208,27 @@ The first-place preference for **meaningful owner agency** is narrow and revisab
 
 Strategic attractiveness is assessed separately: **source-grounded prospective reasoning whose judgment improves across sessions** is the assessment's strongest current-thesis synthesis, with substantial unresolved evidence. The report does not impose a universal strategic ranking or an implementation queue. Earlier dated rankings, including the original six-place comparison and the later pairwise architectural preference, remain historical. Recording these recommendations does not execute the proposed inquiries or change strategy, curated knowledge, Skills or implementation.
 
+## Assessment ontology and portfolio interpretation (2026-11-04)
+
+The [Possibility Assessment and Prioritization Ontology](../semantic-architecture/possibility-assessment-ontology.md)
+connects this archive's coverage, diminishing-returns, consolidation and
+comparison judgments to declared assessment purposes, original identities,
+source revisions and historical reconsideration conditions. Its
+[source-pinned reference cases](../semantic-architecture/possibility-assessment-reference-cases-v1.md)
+include bounded sufficiency without saturation, GD-D/DE-F2 near duplication,
+a method-dependent Futures inquiry, Exit/Public outside the common ranking,
+and the distinct scopes of initial/pairwise/later portfolio preferences. The
+[twelve local competency questions](../semantic-architecture/possibility-assessment-competency-v1.md)
+record documentary reconstruction and its evidence ceiling.
+
+The [portable assessment profile](../../skills/strategic-repository-analysis/references/possibility-assessment-v1.md)
+and [optional record template](../../skills/strategic-repository-analysis/references/possibility-assessment-record-template.md)
+are available to an agent when a **separately warranted** assessment needs
+consistent meaning. The ontology does not require a fixed sequence after
+Divergent Exploration; a grouped concept is not a new `poss:` identity, an
+inquiry ranking is not a product ranking, and neither authorizes construction.
+The dated source reports and crosswalk remain unchanged.
+
 ## How to read candidate identities and statuses
 
 - **GD-A through GD-G:** exploration-local names for provisional families in the generative-depth record.
