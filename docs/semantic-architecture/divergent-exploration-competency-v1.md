@@ -76,10 +76,9 @@ not an independent creative-use result.
 | DEO-CQ-09 | Faithful for a reconstructed delta | Q5/F5 distinguish changed ends across N/R; C2/C3 preserve proposed question/beneficiary shifts | No actual execution or historical frame-revision event is fabricated |
 | DEO-CQ-10 | Faithful | C1/T1/J1 preserve source fact, authored account and hypothetical value; C11/J5 preserve authority limits | No adopted goal, new capability or permission follows |
 
-These rows are documentary answers. The planned definition/source knowledge
-pack does not make the individual case relations executable query predicates.
-Package delivery, proposal checking, retrieval and final consumer review must
-be reported separately when performed.
+These rows are documentary answers. The definition/source knowledge pack
+does not make the individual case relations executable query predicates.
+Actual artifact, retrieval and delivery observations are recorded below.
 
 For each subsequent answer retain the exact case/record reference, fit, what
 the reader recovered, whether prose/attributes were needed, and any remaining
@@ -90,3 +89,106 @@ CQ-114 and independent-use claims remain unestablished by historical
 reconstruction. The planned reference cases count as zero fresh qualification
 trials. The [existing qualification readiness record](../normal-use/2026-11-04-independent-inquiry-operation-readiness.md)
 continues to govern that separate inquiry.
+
+## 5. Actual artifact and retrieval observations
+
+**Observed 2026-11-04.** The authored
+[knowledge pack](../../.sensemaking/knowledge/divergent-exploration.json)
+contains eight definition claims, one source claim and three plain
+`references` relations. No existing ID collision or equivalent definition
+was found in the seven pre-existing authored packs. The new relations connect
+the case source to the question, expression and judgment definitions; they
+are not relationships between inquiry instances.
+
+The existing proposal checker returned
+`SEMANTIC_KNOWLEDGE_PROPOSAL_VALID`, `valid: true`, nine claims and three
+relations checked, with both cited source paths inspected. The proposal was
+checked against the current worktree at
+`5b1e01e2dcdb78cd8f7987e6e56854742b3dd7c7` before its commit; the checker
+reported the dirty-worktree scope accurately.
+
+The pack and portable retention guidance were then published at
+[`12e45fab6844eb9e8226f0f259e33a00718b22f6`](https://github.com/ThorStarlord/sensemaking-skills/commit/12e45fab6844eb9e8226f0f259e33a00718b22f6).
+An actual `knowledge-build --temporary-checkout` at that exact commit
+returned `SEMANTIC_KNOWLEDGE_INDEXED`, a temporary worktree source, and a
+bounded repository projection of **202 claims and 208 relations**.
+These totals describe that index, not all repository knowledge.
+
+| Executed operation at that commit | Observed result | Meaning recovered |
+| --- | --- | --- |
+| `search --term candidate-expression` | One matching definition claim | CandidateExpression permits a question/fragment without an enduring identity |
+| `explain --subject domain_concept:candidate-expression` | Definition, case source and their one reference relation | Definition source and a retained artifact demonstrating the distinction |
+| `explain --subject source:divergent-exploration-reference-cases` | Source, three connected definitions and three reference relations | The case record's question/expression/judgment context and legitimate source paths |
+
+The returned definitions remained `declared`; the source claim remained
+`observed` only about the document. Returned evidence references resolved to
+the ontology and case artifact, and their meanings were inspected. The
+responses retained `authority_verified: false`,
+`semantic_truth_established: false` and `action_authorized: false`.
+No speculative archive candidate became an observed product capability.
+
+Reproduce with the existing CLI and an absolute database path outside the
+checkout; `DEO_REF` names the recorded commit, not current HEAD:
+
+```bash
+DEO_REF=12e45fab6844eb9e8226f0f259e33a00718b22f6
+DEO_DB=/tmp/sensemaking-divergent-exploration.sqlite
+sensemaking-skills semantic knowledge-proposal-check --repo . \
+  --proposal .sensemaking/knowledge/divergent-exploration.json --json
+sensemaking-skills semantic knowledge-build --repo . \
+  --repository ThorStarlord/sensemaking-skills --target-ref "$DEO_REF" \
+  --temporary-checkout --db "$DEO_DB" --json
+sensemaking-skills semantic knowledge-query --db "$DEO_DB" \
+  --repository ThorStarlord/sensemaking-skills --target-ref "$DEO_REF" \
+  --operation explain --subject domain_concept:candidate-expression --json
+```
+
+The session executed these operations through `python -m sensemaking_skills.cli`,
+the same existing CLI. The proposal command always checks the current proposal;
+the build/query commands inspect only their exact committed revision.
+
+## 6. Actual package and installed-reference delivery
+
+A wheel was built from a Git archive of that same published commit, installed
+into an isolated package directory, and used to run:
+
+```bash
+python -m sensemaking_skills.cli setup-skills --target claude \
+  --scope project --project-root "$DEO_PROJECT" --profile entrypoint --verbose
+```
+
+`DEO_PROJECT` was a fresh project directory. The installed invocation's
+Python path contained the wheel installation and its dependencies, not
+`repo/src`. Inspection confirmed the imported package's own `skill_trees`
+was selected, so the source-checkout fallback did not supply the result.
+
+Observed output:
+
+- wheel: `sensemaking_skills-1.0.0rc5.dev0-py3-none-any.whl`;
+- wheel SHA-256: `f62efa71bc0dd36ecf9d97c967d3e65e0b2051300bbdc2e360ae371dc907add3`;
+- **19 Skills** installed under the isolated project's `.claude/skills`;
+- `using-sensemaking`, `strategic-repository-analysis` and
+  `repository-semantic-steward` each reported `current` for both
+  canonical-to-wheel and wheel-to-installed tree comparisons;
+- the entrypoint's conditional guide cue, the guide, its template link, the
+  template, and the new retention guidance were present in the installed files.
+
+This establishes actual package content and filesystem delivery for the
+recorded source. Source inspection shows the same whole-tree build/installer
+mechanism and parent Skill membership for `full`; only `entrypoint` was
+installed in this observation. No default, profile membership, manifest or
+installer change was needed. No user-wide installation was modified.
+
+## 7. Evidence ceiling
+
+Source-grounded semantic review, documentary reconstruction, actual proposal
+checking, committed-source retrieval and isolated installed delivery are
+different observations. None alone establishes automatic host discovery,
+a genuine independent divergent invocation, improved creativity, repeatability
+or graph-specific causal advantage.
+
+Local unit and synthetic evidence tests were **NOT_RUN** under this
+repository's current construction policy. Existing hosted CI and release gates
+were preserved. The final consumer reconstruction and completion account
+record any remaining limitations separately; optional schema or qualification
+work does not become a hidden core requirement.
