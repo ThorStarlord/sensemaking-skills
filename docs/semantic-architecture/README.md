@@ -100,6 +100,7 @@ The Strategic Outer Loop is not a semantic router or deterministic planner. It u
 | [`ontology.md`](ontology.md) | Layered Level-2 ontology. |
 | [`product-change-taxonomy.md`](product-change-taxonomy.md) | Product-change taxonomy. |
 | [`prospective-reasoning-ontology.md`](prospective-reasoning-ontology.md) | Conceptual model for proposed architectures, paths, consequences and preferences; reasoning activities versus their products. Vocabulary fit: [`prospective-reasoning-competency-v1.md`](prospective-reasoning-competency-v1.md). |
+| [`divergent-exploration-ontology.md`](divergent-exploration-ontology.md) | Conceptual roles and documentary relationships for inquiry questions, frames, incomplete expressions and attributed judgments. [Competency and representation fit](divergent-exploration-competency-v1.md); no new executable artifact or claim kind. |
 | [`product-possibility-ontology.md`](product-possibility-ontology.md) | Conceptual ProductPossibility model: dimensions, identity, relations, reconsideration. Curated instance: [`../idea-library.md`](../idea-library.md). |
 | [`relations-and-epistemics.md`](relations-and-epistemics.md) | Relationship/evidence/epistemic semantics. |
 | [`reasoning-model.md`](reasoning-model.md) | Evidence-governed reasoning lifecycle. |

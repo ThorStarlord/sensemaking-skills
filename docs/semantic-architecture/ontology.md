@@ -448,6 +448,20 @@ The detailed taxonomy is defined in `product-change-taxonomy.md`. Possibility an
 
 ## Cross-layer relations
 
+### Divergent inquiry roles
+
+The [Divergent Exploration Ontology](divergent-exploration-ontology.md) defines
+ExplorationInquiry, InquiryQuestion, ExplorationFrame, ExplorationLens,
+CandidateExpression, TransformationAccount, PossibilityLandscape and
+ExploratoryJudgment across the existing Work, Intent, Evidence and Knowledge
+layers. An activity, its record, an expression and an enduring prospective
+entity have separate identities. Incomplete expressions remain valid.
+These are conceptual roles and documentary relationships, not new executable
+claim kinds or a change to prospective comparison endpoints. Competency fit:
+[divergent-exploration-competency-v1.md](divergent-exploration-competency-v1.md).
+
+### Existing cross-layer meanings
+
 The ontology becomes useful primarily through cross-layer relations:
 
 ```text

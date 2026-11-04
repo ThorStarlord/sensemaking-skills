@@ -241,6 +241,10 @@ Introduced with [`prospective-reasoning-ontology.md`](prospective-reasoning-onto
 
 **CQ-100** — Can the system distinguish a restated idea, a revised idea, a new synthesis and an already rejected alternative?
 
+Divergent inquiry refinements and the bounded representation baseline:
+[DEO-CQ-01..10](divergent-exploration-competency-v1.md). These retain the global
+questions while making question/frame/expression reconstruction explicit.
+
 **CQ-101** — Can the agent stop deeper exploration when further consequences would not change the decision?
 
 **CQ-102** — Can ordinary bounded work proceed without a mandatory full pre-implementation analysis?
@@ -263,6 +267,10 @@ These questions extend sections M and N for agent-native creative graph use. The
 **CQ-114** -- Did graph retrieval actually influence creative reasoning in a genuine independent coding-agent session, rather than merely return records?
 
 **Baseline fit:** CQ-103--113 can be explored with current `poss:`/`arch:`/`conseq:` records, source inspection and existing guidance; their reliable independent application is unproven. CQ-114 requires a separate real hosted-agent observation. None currently demonstrates a need for a new schema, automatic generator or query command.
+
+The 2026-11-04 [divergent ontology fit matrix](divergent-exploration-competency-v1.md)
+adds local documentary refinements and records implementation observations
+separately. It preserves this earlier baseline and the independent-use ceiling.
 
 ## P. Longitudinal engineering learning
 
