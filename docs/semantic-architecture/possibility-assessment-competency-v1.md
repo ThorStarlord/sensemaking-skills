@@ -57,10 +57,48 @@ A file's **authored revision** and its report's **inspected source baseline** ar
 
 **Source-bound cases:** see [possibility-assessment-reference-cases-v1.md](possibility-assessment-reference-cases-v1.md) for local A/C/J/P qualified examples; those are annotated historical interpretations, not new observations.
 
-**Knowledge pack:** planned selective domain-concept definitions and a case-source claim in `.sensemaking/knowledge/possibility-assessment.json`. Structure must be checked by the existing `knowledge-proposal-check` before calling the pack reviewed. Actual search/explain only proves bounded discoverability under its indexed SHA.
+**Knowledge pack:** `.sensemaking/knowledge/possibility-assessment.json` contains **eight declared concept definitions, one observed case-document source record and four supported `references` relationships**. The [Source-pinned context consumer](https://github.com/ThorStarlord/sensemaking-skills/actions/runs/41930560601/job/126926073771) on PR #735 head `136fb26c99169596fa5a7a6eca112ef1184686f0` completed successfully. It ran `knowledge-proposal-check` over all authored packs and built the exact-commit graph. This establishes structural acceptance and indexing, not semantic truth.
 
-**Installed behavior:** planned isolated wheel + `entrypoint` profile inspection. Successful installation means files were delivered and reachable, not that an external host automatically loaded the new guidance.
+**Real search and explanation:** a [verification-only hosted job](https://github.com/ThorStarlord/sensemaking-skills/actions/runs/41930859773/job/126927065448) at `faef8a8cfc449271c813045dae342f33c6ff05c0` passed. It ran `knowledge-proposal-check`, `knowledge-build`, `knowledge-query search --term AssessmentFrame`, and `explain` on `domain_concept:assessment-frame` and `source:possibility-assessment-reference-cases`. The logged marker is `ASSESSMENT_PROPOSAL_INDEX_SEARCH_EXPLAIN_PASS`. This establishes bounded retrieval, not automatic semantic inference.
 
-**Consumer reconstruction:** planned cold-reader answers to PAO-CQ-01..12 from the installed guide and source-pinned examples. If no independently running reader is available, report author cold-read honestly; historical cases do not count as fresh agent-creative qualification.
+**Installed behavior:** the same job built a real wheel, installed a fresh virtual environment and `entrypoint` profile into a fresh project, then checked four source-vs-installed files with `cmp`. It logged `ASSESSMENT_INSTALLED_REFERENCE_PARITY_PASS`. The initial tested files were byte-identical to published `main@12c5b314b5a2a065c8cf9ffdbe959eab7bf05566`. **The subsequent Markdown escape correction changes three of those portable files**, so exact revised-file parity must be reconfirmed before claiming final delivery verification. [Verification PR #736](https://github.com/ThorStarlord/sensemaking-skills/pull/736) was closed unmerged; no temporary workflow joined `main`.
+
+**Consumer reconstruction:** the implementing author separately reviewed the original source-pinned cases and portable guidance to answer PAO-CQ-01..12 below. There was no independent reader/subagent available. The source-bound cases and author review are not fresh independent-agent qualification.
 
 **Evidence ceiling:** no claim of demonstrated strategic merit, causal graph advantage, independent creative improvement, measured coverage, owner preference, automatic ranking or action authorization follows from this implementation. Actual check results, paths, SHAs, and unresolved issues will be recorded here when performed; placeholders are not PASS.
+
+
+## 5. Documentary competency reconstruction (author self-review)
+
+**Context:** the reference-case annotations use `main@4f732aaf293b5efb52f1a4428da2c65c48b3c72e` for source-file identity, while each original report separately records its *inspected target baseline*. The ontology/guide was first merged on `main@12c5b314b5a2a065c8cf9ffdbe959eab7bf05566`, and the subsequent closure branch repairs Markdown escapes without altering assessed semantic claims. Attribution remains with each historical authoring inquiry; no named reviewer is invented.
+
+| Question | Bounded source-reconstruction answer | Fit and evidence limit |
+| --- | --- | --- |
+| **PAO-CQ-01** | The source table identifies original report and inspected revisions, target and assessor (historical inquiry; named human assessor unknown). | **Faithful** for these cases; other corpora unassessed |
+| **PAO-CQ-02** | C1 distinguishes corpus inspection, conceptual breadth, consequence depth, empirical support and independent perspectives. | **Faithful** descriptive distinctions; no measured exhaustiveness |
+| **PAO-CQ-03** | A judges breadth sufficient *to consider* separate convergence, with omitted lenses; N permits a provisional portfolio without claiming saturation. | **Faithful**; no compulsory next stage |
+| **PAO-CQ-04** | C1/J2 separates historical local repetition, expected learning under a proposed method and relative attention allocation. | **Faithful** meaning; forecast not verified |
+| **PAO-CQ-05** | C2 retains G/GD-D and D/DE-F2 with original IDs and an explicitly scoped experience-rehearsal grouping. | **Faithful** provenance; no merger |
+| **PAO-CQ-06** | C2 distinguishes a separate optionality near-duplicate pair and warns against transitive identity across different criteria. | **Faithful** rule; no global identity engine |
+| **PAO-CQ-07** | C3 distinguishes Q1+M1 (repeated essay) from Q1+M2 (authentic comparison), both separate from the strategic Futures direction and authorized work. | **Faithful**; M2 has not been performed |
+| **PAO-CQ-08** | C4 and the guide distinguish preference, actual tie, conditional, incomparable, unresolved, outside-frame and NOT_ASSESSED. | **Faithful** documentary states; no automatic comparator |
+| **PAO-CQ-09** | C4/P1 has a six-question current-thesis ordering; Exit/Public are retained but outside that common ordering, not ranks 7/8. | **Faithful**; alternate frame possible |
+| **PAO-CQ-10** | C5 identifies H's historical directional ranking, B's local pairwise preference and N's newer specific-question order. | **Faithful** historical distinctions, no new ranking |
+| **PAO-CQ-11** | Shared assumption/complementarity is conditional and source-attributed, without inferring a supported `mayEnable` relation or realized joint benefit. | **Faithful** meaning; outcomes unobserved |
+| **PAO-CQ-12** | No retained grouping or preference changes ADR authority, product adoption, implementation permission or the scope of an existing graph predicate. | **Faithful** authority separation |
+
+**Negative cases checked:** local label counts do not prove global saturation; GD-D/DE-F2 remain separately sourced; an evidence-dependent approach is not the same as another conceptual essay; outside-frame is neither tied nor inferior; a pairwise architectural preference is not a global priority; source/graph retrieval cannot establish new owner-valued outcomes.
+
+## 6. Verification categories and unqualified claims
+
+| Category | Observed evidence |
+| --- | --- |
+| Semantic source review and documentary case reconstruction | Five annotated cases and the twelve responses above; **author self-review**, not independent reviewer |
+| Proposal checker / exact committed graph | **PASS** via hosted Source-pinned context consumer on PR #735 head |
+| Assessment search and explanation | **PASS** in hosted verification-only job at `faef8a8` |
+| Fresh built-wheel install and entrypoint file comparison | **PASS for original installed content** at `faef8a8`; revised content requires a separate parity check |
+| Local unit/synthetic tests | **NOT_RUN** under current repo owner policy |
+| Independent fresh-agent benefit, owner value, causal graph creativity | **NOT_ASSESSED / NOT_ESTABLISHED** |
+| Strategy adoption, automatic host loading and implementation authority | **Not implied by this work** |
+
+**Conditional growth:** a parsed assessment artifact requires an actual consumer/field handoff; a new graph predicate requires a demonstrated lost answer under the existing references/attributes/prose; independent creative benefit needs authentic sessions and review. None follows automatically from a positive documentary fit assessment.
