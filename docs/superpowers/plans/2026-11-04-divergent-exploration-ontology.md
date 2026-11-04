@@ -12,7 +12,7 @@
 
 **Date and baseline:** 2026-11-04; `ThorStarlord/sensemaking-skills@8bd41bdf324e00aa75c1b849e333e076d85648ef`, after PR #724. Refresh applicable sources before implementation.
 
-**Status and scope, 2026-11-04:** the owner subsequently authorized all implementation tasks and delegated bounded decisions. Tasks 1–4 are implemented and merged; the actual reader reconstruction is complete. Tasks 5–6 closure documentation is being integrated below. The final merge/merged-file checks remain unchecked until observed. The original planning baseline remains historical; the implementation began at `a8f390a1b36867c1d71e209af2a72c03cff016a8`. Construction and owner agreement do not establish creative benefit or qualify an inquiry operation.
+**Status and scope, 2026-11-04: IMPLEMENTED.** The owner authorized all implementation tasks and delegated bounded decisions. All six tasks and 41 core steps are complete; the substantive work is integrated through PRs #726, #728, #729, #730 and #731. The final checklist and session receipt record the observed completion. The original planning baseline remains historical; the implementation began at `a8f390a1b36867c1d71e209af2a72c03cff016a8`. Construction and owner agreement do not establish creative benefit or qualify an inquiry operation.
 
 ## Global Constraints
 
@@ -260,8 +260,8 @@ Use a separate `claude/<topic>` branch for each PR, a short source-grounded deci
 - [x] **Step 1: Link the implemented model and examples from existing indexes.** Preserve all dated archive records, 59 local identities, seven GD families, curated possibility counts and prior rankings. An ontology reference is not another exploration pass or a new portfolio decision.
 - [x] **Step 2: Describe the real capability.** State that the model/profile/guidance and selected representation exist, naming any unverified installed or consumer path. Keep improved creativity and independent repeatability unproven unless independently established.
 - [x] **Step 3: Review the complete diff and references.** Check that source-specific examples stay in the framework's case record, portable guidance contains no mandatory framework-only file dependency, no unsupported schema fields/kinds were introduced, and no required CI or authority behavior changed.
-- [ ] **Step 4: Integrate the final bounded changes under current repository policy.** Use the existing source-grounded PR note and merge instructions. Preserve actual GitHub protections. Assess any known consequential failure; do not disable checks or claim pending CI passed.
-- [ ] **Step 5: Verify the merged files and report completion.** Link the model/profile, cases, knowledge representation and actual review results. Clearly identify any optional future work. Finalize applicable receipt state and state persistence truthfully.
+- [x] **Step 4: Integrate the final bounded changes under current repository policy.** Use the existing source-grounded PR note and merge instructions. Preserve actual GitHub protections. Assess any known consequential failure; do not disable checks or claim pending CI passed.
+- [x] **Step 5: Verify the merged files and report completion.** Link the model/profile, cases, knowledge representation and actual review results. Clearly identify any optional future work. Finalize applicable receipt state and state persistence truthfully.
 
 **Acceptance:** the v1 implementation is usable and discoverable through its intended agent-facing surfaces, its retained records are source-bound, and the report describes actual support and limitations. No optional schema or qualification initiative is silently added to the completion definition.
 
@@ -410,8 +410,8 @@ families, 19 curated possibilities and historical rankings remain intact.
 | 2 | Portable profile/template and source-bound cases; [PR #728](https://github.com/ThorStarlord/sensemaking-skills/pull/728), merge `e22bcf1e0805f49425d3581ba0377acd4311853d` | Six source files checked at the containing baseline; historical labels preserved; C12 explicitly illustrative |
 | 3 | Conditional entrypoint/creative/funnel guidance; [PR #729](https://github.com/ThorStarlord/sensemaking-skills/pull/729), merge `5b1e01e2dcdb78cd8f7987e6e56854742b3dd7c7` | Combined final Skill content at `12e45fab6844eb9e8226f0f259e33a00718b22f6` built into a real wheel and installed into an isolated project; 19 Skills; all three relevant trees current |
 | 4 | Existing-schema definitions/source pack and retention guidance; [PR #730](https://github.com/ThorStarlord/sensemaking-skills/pull/730), merge `8c6765de6dd406445f5a1cc67dad70b3bc7fc27e` | Valid 9-claim/3-relation proposal; committed index of 202 claims/208 relations; actual search and two explanations recovered source meanings |
-| 5 | Fresh-context consumer reconstruction completed; closure documentation integration in progress | All ten local questions recovered at the documentary level; CQ-03 illustrative only; no Critical, Important or Minor defect; coverage handoff inspected without a new assessment |
-| 6 | Navigation and capability delta prepared; final integration/merged-file observations pending | Historical portfolios and current strategy retained; final receipt follows the work commit |
+| 5 | Consumer reconstruction and limits retained; [PR #731](https://github.com/ThorStarlord/sensemaking-skills/pull/731), merge `ef90fc4c5dee620375eaa9d06cd5dca780f1b3d1` | All ten local questions recovered at the documentary level; CQ-03 illustrative only; core and closure reviews clean; coverage handoff inspected without a new assessment |
+| 6 | Navigation, capability state and completion integrated in PR #731; this final account and receipt close the record | Merged tree `2ff287bbda933d7a53f14ff6099955503332e163` equals the reviewed published tree; historical portfolios and current strategy retained; receipt committed after the work |
 
 Detailed observations, source revisions, wheel checksum, reproduction commands,
 reader answers and limits live in the
@@ -457,3 +457,35 @@ and installed delivery are established only within the recorded scope.
 Independent use of the new guide, host auto-discovery, improved creativity,
 repeatability and graph-specific causal benefit remain unestablished by this
 work. These optional inquiries do not become an automatic backlog.
+
+
+### Observed integration and final stop
+
+PR #731 was confirmed merged as
+[`ef90fc4c5dee620375eaa9d06cd5dca780f1b3d1`](https://github.com/ThorStarlord/sensemaking-skills/commit/ef90fc4c5dee620375eaa9d06cd5dca780f1b3d1).
+Its complete Git tree matches the reviewed publication, establishing that the
+merged files are the inspected files. The final case, knowledge pack and Skill
+sources are unchanged from the recorded final retrieval source. All original
+exploration records and the curated library remain unchanged from the
+implementation baseline; only their navigation index was extended.
+
+Because the case document gained the actual reconstruction account, retrieval
+was refreshed at `38ae7214511147f0a541092048dd3c0d77ee2f34`: the committed index
+and all three queries again succeeded, and the returned case hash matched its
+committed bytes. The [fit account, section 10](../../semantic-architecture/divergent-exploration-competency-v1.md#10-retrieval-after-recording-the-consumer-review)
+records the exact evidence. The three relevant Skill trees remain identical to
+the actually built and installed wheel source, so no repeat build was needed.
+
+At PR #731's merge observation its eight hosted checks were queued, with no
+known failed check. The nine hosted checks on the earlier PR #730 head had
+already completed successfully, as separately recorded in the fit account.
+These are revision-specific observations; no pending or later CI run is
+represented as passed. Local unit and synthetic evidence tests remain
+**NOT_RUN** under current policy.
+
+The authorized v1 goal is satisfied. No core task remains blocked on owner
+input, a new schema or an independent qualification program. The final
+`sensemaking_session_receipt` preserves the initial manual Skill load, actual
+authority, completed responsibility, evidence pointers and committed
+persistence; it grants no new authority. Further investigation requires its
+own current warrant under the conditional decisions above.
