@@ -132,6 +132,12 @@ It is not an exhaustive architecture catalog.
 
 Perform a divergent pass **before** frontier convergence.
 
+Use the [divergent exploration profile](divergent-exploration-v1.md) when
+question/frame changes, candidate identity or durable continuation matter.
+Preserve emerging expressions and their sources before frontier synthesis.
+Here the landscape belongs to the already warranted Level-3 analysis;
+standalone divergence can use the same reference with its own bounded stop.
+
 ### Within each important system, ask
 
 - What valuable capability is missing or partial?
