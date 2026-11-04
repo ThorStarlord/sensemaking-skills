@@ -537,3 +537,19 @@ provisional preference -> decision
 ```
 
 Skills should surface these boundaries when they materially affect a decision.
+
+### Assessment and portfolio documentary relationships
+
+The [Possibility Assessment Ontology](possibility-assessment-ontology.md#4-relationships-and-endpoint-constraints)
+identifies conceptual relations among an AssessmentActivity, its frame, typed
+original targets, source-attributed judgments, ConsolidatedViews,
+PortfolioSnapshots and later revisions. These relations are **not** new
+executable predicate enums or automatic derivations. Comparability requires
+a stated frame; group membership is not `sameAs`; an unassessed comparison
+is not a tie; source drift does not independently invalidate an old judgment.
+
+Existing prospective `ComparativeJudgment evaluates` and
+`ProvisionalPreference prefers` still target **ArchitectureOption or
+ConstructionPath**. A priority judgment about an inquiry question, product
+future or authorized construction change uses the documentary roles and its
+independent authority context; do not widen existing predicates by analogy.
