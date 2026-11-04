@@ -220,6 +220,13 @@ exploration-only request still ends with the landscape.
 
 ### Possibility coverage assessment
 
+When coverage sufficiency, repetition or a specific alternative lens needs a
+source-bound explanation, apply the relevant **coverage/returns** profile in
+[possibility assessment](possibility-assessment-v1.md). Distinguish the
+inspected corpus, conceptual breadth, consequence depth and empirical support;
+sufficiency for frontier consideration is not universal saturation. This
+reuses the existing Level-3 responsibility and does not start a new stage.
+
 Before frontier synthesis, and before any repository-wide direction is
 selected, judge whether the landscape is broad enough:
 
@@ -373,6 +380,13 @@ candidate. Skip this when the paths do not turn on such a choice.
 Breadth does not require generating construction paths for every candidate.
 
 ## 8. Comparative selection
+
+When explaining relative choices, retain the **purpose and operand type**.
+The [portable assessment profile](possibility-assessment-v1.md) distinguishes
+inquiry priority from product attractiveness and authorized construction,
+allows partial or unresolved comparisons, and preserves source-grounded
+reversal conditions. It does not replace the existing Level-3 strategic
+analysis or select work automatically.
 
 Compare the depth-qualified candidates/path sets using the existing qualitative
 strategic lenses and Value-Producing Action Preference.
