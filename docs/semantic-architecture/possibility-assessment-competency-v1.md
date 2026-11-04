@@ -39,7 +39,7 @@ The statuses above are **baseline readings of inspected source documents**, not 
 | Key | Source and original evidence | Distinctive use |
 | --- | --- | --- |
 | D | [Divergent ontology](divergent-exploration-ontology.md) | Inquiry/activity, expression, frame, landscape, judgment and original identity distinction |
-| P | [Product possibility ontology](product-possibility-ontology.md) | Enduring \`poss:\` identity, disposition and authority |
+| P | [Product possibility ontology](product-possibility-ontology.md) | Enduring `poss:` identity, disposition and authority |
 | R | [Prospective reasoning ontology](prospective-reasoning-ontology.md) | Narrow comparison endpoints, activity/entity split and preference vs decision |
 | A | [2026-11-02 coverage](../explorations/2026-11-02-divergent-coverage-assessment.md) | Sufficiency for convergence, local repetition, unexamined territory |
 | C | [2026-11-03 convergence](../explorations/2026-11-03-convergent-accumulated-creative-possibilities.md) | GD-D/DE-F2, distinct epistemic conditions, eight overlapping homes |
@@ -57,9 +57,9 @@ A file's **authored revision** and its report's **inspected source baseline** ar
 
 **Source-bound cases:** see [possibility-assessment-reference-cases-v1.md](possibility-assessment-reference-cases-v1.md) for local A/C/J/P qualified examples; those are annotated historical interpretations, not new observations.
 
-**Knowledge pack:** planned selective domain-concept definitions and a case-source claim in \`.sensemaking/knowledge/possibility-assessment.json\`. Structure must be checked by the existing \`knowledge-proposal-check\` before calling the pack reviewed. Actual search/explain only proves bounded discoverability under its indexed SHA.
+**Knowledge pack:** planned selective domain-concept definitions and a case-source claim in `.sensemaking/knowledge/possibility-assessment.json`. Structure must be checked by the existing `knowledge-proposal-check` before calling the pack reviewed. Actual search/explain only proves bounded discoverability under its indexed SHA.
 
-**Installed behavior:** planned isolated wheel + \`entrypoint\` profile inspection. Successful installation means files were delivered and reachable, not that an external host automatically loaded the new guidance.
+**Installed behavior:** planned isolated wheel + `entrypoint` profile inspection. Successful installation means files were delivered and reachable, not that an external host automatically loaded the new guidance.
 
 **Consumer reconstruction:** planned cold-reader answers to PAO-CQ-01..12 from the installed guide and source-pinned examples. If no independently running reader is available, report author cold-read honestly; historical cases do not count as fresh agent-creative qualification.
 
