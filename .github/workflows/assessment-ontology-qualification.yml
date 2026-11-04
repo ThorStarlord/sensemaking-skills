@@ -1,0 +1,54 @@
+name: Assessment Ontology Real-Path Verification (temporary)
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/assessment-ontology-qualification.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  real-path:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install exact-source CLI and wheel builder
+        run: python -m pip install -e . build
+      - name: Check proposal and exercise exact-commit search and explanation
+        shell: bash
+        run: |
+          set -euo pipefail
+          REF="$(git rev-parse HEAD)"
+          DB="$RUNNER_TEMP/assessment.sqlite"
+          sensemaking-skills semantic knowledge-proposal-check --repo . --proposal .sensemaking/knowledge/possibility-assessment.json --json > "$RUNNER_TEMP/proposal.json"
+          sensemaking-skills semantic knowledge-build --repo . --repository ThorStarlord/sensemaking-skills --target-ref "$REF" --db "$DB" --json > "$RUNNER_TEMP/build.json"
+          sensemaking-skills semantic knowledge-query --db "$DB" --repository ThorStarlord/sensemaking-skills --target-ref "$REF" --operation search --term "AssessmentFrame" --json > "$RUNNER_TEMP/search.json"
+          sensemaking-skills semantic knowledge-query --db "$DB" --repository ThorStarlord/sensemaking-skills --target-ref "$REF" --operation explain --subject "domain_concept:assessment-frame" --json > "$RUNNER_TEMP/explain.json"
+          sensemaking-skills semantic knowledge-query --db "$DB" --repository ThorStarlord/sensemaking-skills --target-ref "$REF" --operation explain --subject "source:possibility-assessment-reference-cases" --json > "$RUNNER_TEMP/cases.json"
+          grep -F 'domain_concept:assessment-frame' "$RUNNER_TEMP/search.json" > /dev/null
+          grep -F 'domain_concept:assessment-frame' "$RUNNER_TEMP/explain.json" > /dev/null
+          grep -F 'source:possibility-assessment-reference-cases' "$RUNNER_TEMP/cases.json" > /dev/null
+          echo "ASSESSMENT_PROPOSAL_INDEX_SEARCH_EXPLAIN_PASS ref=$REF"
+      - name: Build isolated wheel and compare installed entrypoint references
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m build --wheel --outdir "$RUNNER_TEMP/dist"
+          wheel="$(find "$RUNNER_TEMP/dist" -maxdepth 1 -name '*.whl' -print -quit)"
+          test -n "$wheel"
+          python -m venv "$RUNNER_TEMP/assessment-wheel"
+          "$RUNNER_TEMP/assessment-wheel/bin/python" -m pip install "$wheel"
+          mkdir -p "$RUNNER_TEMP/assessment-target"
+          "$RUNNER_TEMP/assessment-wheel/bin/sensemaking-skills" setup-skills --target claude --scope project --project-root "$RUNNER_TEMP/assessment-target" --profile entrypoint > "$RUNNER_TEMP/install.log"
+          INST="$RUNNER_TEMP/assessment-target/.claude/skills"
+          cmp skills/using-sensemaking/SKILL.md "$INST/using-sensemaking/SKILL.md"
+          cmp skills/strategic-repository-analysis/references/possibility-assessment-v1.md "$INST/strategic-repository-analysis/references/possibility-assessment-v1.md"
+          cmp skills/strategic-repository-analysis/references/possibility-assessment-record-template.md "$INST/strategic-repository-analysis/references/possibility-assessment-record-template.md"
+          cmp skills/repository-semantic-steward/references/knowledge-contract.md "$INST/repository-semantic-steward/references/knowledge-contract.md"
+          echo "ASSESSMENT_INSTALLED_REFERENCE_PARITY_PASS"
