@@ -81,6 +81,10 @@ The version-2 constructs have exact constraints (checked by `knowledge-proposal-
 
 Areas not yet assessed go in the bootstrap coverage report, not in claims. A new type is justified only through [schema evolution](schema-evolution.md).
 
+## Exploration-assessment retention boundary
+
+When the target repository uses the [portable assessment reference](../../strategic-repository-analysis/references/possibility-assessment-v1.md), a coverage judgment, similarity group or provisional inquiry ranking remains a source-grounded **interpretation**, not a new `opportunity`, `decision` or authorization record merely because it was written. Preserve the full dated report and original expression IDs. Selectively retain a checked `source` record or declared `domain_concept` definition when future retrieval needs it; use supported `references` with attributed evidence. An unchecked relation attribute is not an executable ontology predicate. Promote an independently meaningful future only through the existing ProductPossibility curation and authority rules below.
+
 ## Product possibility records
 
 A retained product possibility (a potential future of the product; conceptual model in `docs/semantic-architecture/product-possibility-ontology.md` of the Sensemaking Skills repository) uses existing kinds and predicates:

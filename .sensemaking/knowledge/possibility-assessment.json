@@ -1,0 +1,150 @@
+{
+  "schema_version": 1,
+  "claims": [
+    {
+      "id": "domain_concept:assessment-activity",
+      "kind": "domain_concept",
+      "statement": "An AssessmentActivity is bounded source-grounded reasoning that evaluates identified targets under a declared purpose and may yield judgments, views or an unresolved result; it is not a mandatory workflow stage.",
+      "authority_kind": "document",
+      "authority_ref": "docs/semantic-architecture/possibility-assessment-ontology.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/possibility-assessment-ontology.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "domain_concept:assessment-frame",
+      "kind": "domain_concept",
+      "statement": "An AssessmentFrame is a purpose-relative context that names evaluative question, target kind, beneficiary or end, criteria, source scope, premises, horizon and authority; unknown or contested dimensions remain explicit.",
+      "authority_kind": "document",
+      "authority_ref": "docs/semantic-architecture/possibility-assessment-ontology.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/possibility-assessment-ontology.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "domain_concept:assessment-target-role",
+      "kind": "domain_concept",
+      "statement": "An AssessmentTarget is a typed reference to an existing expression, question plus proposed inquiry, possibility, direction, option, path, relation or authorized change; it does not replace the identity of the referred entity.",
+      "authority_kind": "document",
+      "authority_ref": "docs/semantic-architecture/possibility-assessment-ontology.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/possibility-assessment-ontology.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "domain_concept:assessment-judgment",
+      "kind": "domain_concept",
+      "statement": "An AssessmentJudgment is an attributed, revision-scoped Claim about a typed target under an explicit criterion and frame, with grounds, counterevidence or omissions, uncertainty and reconsideration conditions; it grants no action authority.",
+      "authority_kind": "document",
+      "authority_ref": "docs/semantic-architecture/possibility-assessment-ontology.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/possibility-assessment-ontology.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "domain_concept:consolidated-view",
+      "kind": "domain_concept",
+      "statement": "A ConsolidatedView groups source-qualified expressions under a specified purpose while retaining their original identities, overlapping memberships, disputed classifications and the differences abstracted away by that view.",
+      "authority_kind": "document",
+      "authority_ref": "docs/semantic-architecture/possibility-assessment-ontology.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/possibility-assessment-ontology.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "domain_concept:portfolio-snapshot",
+      "kind": "domain_concept",
+      "statement": "A PortfolioSnapshot is a dated, purpose-relative Artifact retaining member targets and supported comparisons; it can include partial orders, incomparable or outside-frame members and is not an implementation backlog.",
+      "authority_kind": "document",
+      "authority_ref": "docs/semantic-architecture/possibility-assessment-ontology.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/possibility-assessment-ontology.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "domain_concept:proposed-inquiry-approach",
+      "kind": "domain_concept",
+      "statement": "A ProposedInquiryApproach describes how a particular unresolved question might be investigated, including needed source access, evidence prerequisites, anticipated learning and uncertainty; it is distinct from the question and product future.",
+      "authority_kind": "document",
+      "authority_ref": "docs/semantic-architecture/possibility-assessment-ontology.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/possibility-assessment-ontology.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "domain_concept:assessment-revision-account",
+      "kind": "domain_concept",
+      "statement": "An AssessmentRevisionAccount attributes a later reinterpretation to changed evidence, method, question, frame, criteria or authority while preserving the earlier judgment and snapshot as historical records.",
+      "authority_kind": "document",
+      "authority_ref": "docs/semantic-architecture/possibility-assessment-ontology.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/possibility-assessment-ontology.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "source:possibility-assessment-reference-cases",
+      "kind": "source",
+      "statement": "The Possibility Assessment reference-case document reconstructs five pinned historical cases about coverage, grouping, method-dependent inquiry priority, non-comparable portfolio members and historical reassessment; its annotations are not independent qualification trials.",
+      "authority_kind": "document",
+      "authority_ref": "docs/semantic-architecture/possibility-assessment-reference-cases-v1.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/possibility-assessment-reference-cases-v1.md"
+      ],
+      "epistemic_status": "observed"
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel:assessment-cases-reference-assessment-frame",
+      "subject": "source:possibility-assessment-reference-cases",
+      "predicate": "references",
+      "object": "domain_concept:assessment-frame",
+      "epistemic_status": "declared",
+      "derivation": "authored",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/possibility-assessment-reference-cases-v1.md"
+      ]
+    },
+    {
+      "id": "rel:assessment-cases-reference-assessment-judgment",
+      "subject": "source:possibility-assessment-reference-cases",
+      "predicate": "references",
+      "object": "domain_concept:assessment-judgment",
+      "epistemic_status": "declared",
+      "derivation": "authored",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/possibility-assessment-reference-cases-v1.md"
+      ]
+    },
+    {
+      "id": "rel:assessment-cases-reference-portfolio-snapshot",
+      "subject": "source:possibility-assessment-reference-cases",
+      "predicate": "references",
+      "object": "domain_concept:portfolio-snapshot",
+      "epistemic_status": "declared",
+      "derivation": "authored",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/possibility-assessment-reference-cases-v1.md"
+      ]
+    },
+    {
+      "id": "rel:assessment-cases-reference-proposed-inquiry-approach",
+      "subject": "source:possibility-assessment-reference-cases",
+      "predicate": "references",
+      "object": "domain_concept:proposed-inquiry-approach",
+      "epistemic_status": "declared",
+      "derivation": "authored",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/possibility-assessment-reference-cases-v1.md"
+      ]
+    }
+  ]
+}
