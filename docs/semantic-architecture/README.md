@@ -100,7 +100,8 @@ The Strategic Outer Loop is not a semantic router or deterministic planner. It u
 | [`ontology.md`](ontology.md) | Layered Level-2 ontology. |
 | [`product-change-taxonomy.md`](product-change-taxonomy.md) | Product-change taxonomy. |
 | [`prospective-reasoning-ontology.md`](prospective-reasoning-ontology.md) | Conceptual model for proposed architectures, paths, consequences and preferences; reasoning activities versus their products. Vocabulary fit: [`prospective-reasoning-competency-v1.md`](prospective-reasoning-competency-v1.md). |
-| [`divergent-exploration-ontology.md`](divergent-exploration-ontology.md) | Conceptual roles and documentary relationships for inquiry questions, frames, incomplete expressions and attributed judgments. [Competency and representation fit](divergent-exploration-competency-v1.md); no new executable artifact or claim kind. |
+| [`divergent-exploration-ontology.md`](divergent-exploration-ontology.md) | Implemented conceptual roles and documentary relationships for inquiry questions, frames, incomplete expressions and attributed judgments. [Source-bound cases](divergent-exploration-reference-cases-v1.md) and [competency, retrieval and installed-delivery observations](divergent-exploration-competency-v1.md). |
+| [Divergent exploration portable profile](../../skills/strategic-repository-analysis/references/divergent-exploration-v1.md) | Self-contained installed guidance and optional [record template](../../skills/strategic-repository-analysis/references/divergent-exploration-record-template.md), reached conditionally from `using-sensemaking`. |
 | [`product-possibility-ontology.md`](product-possibility-ontology.md) | Conceptual ProductPossibility model: dimensions, identity, relations, reconsideration. Curated instance: [`../idea-library.md`](../idea-library.md). |
 | [`relations-and-epistemics.md`](relations-and-epistemics.md) | Relationship/evidence/epistemic semantics. |
 | [`reasoning-model.md`](reasoning-model.md) | Evidence-governed reasoning lifecycle. |
@@ -139,6 +140,14 @@ Level-3 representation valid != semantic conclusion true
 ```
 
 These formalization levels are separate from the four control levels described above.
+
+**Divergent exploration v1** implements Level-2 conceptual meanings and a
+documentary record profile. Its [reviewed knowledge pack](../../.sensemaking/knowledge/divergent-exploration.json)
+projects eight definitions, one case-source claim and three references through
+the existing version-1 executable knowledge contract. Individual case meanings
+remain source-readable; this is not a new executable inquiry artifact or
+automatic semantic judgment. Actual retrieval, package delivery and consumer
+reconstruction are recorded in its [fit account](divergent-exploration-competency-v1.md).
 
 Phase 9 produced `semantic_reasoning_profile` v1. Phase 10 retained it as an **optional companion** while rejecting mandatory universal embedding. The qualified Phase 15 liveness pilot added a narrow conformance rule over explicit Skill-registry/tree consistency.
 

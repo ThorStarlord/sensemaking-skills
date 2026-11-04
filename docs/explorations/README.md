@@ -6,6 +6,24 @@
 
 This directory makes independent exploratory inquiries **findable, comparable and reusable without promoting their hypotheses to governed architecture**. A chat-derived conceptual candidate is not an observed product capability. Links to repository sources establish its *inspiration*, not its realization or usefulness.
 
+## Representing a divergent inquiry
+
+The implemented [divergent exploration ontology v1](../semantic-architecture/divergent-exploration-ontology.md)
+distinguishes inquiry, question, frame, expression, enduring referent and
+attributed judgment. Its [portable profile](../../skills/strategic-repository-analysis/references/divergent-exploration-v1.md)
+and optional [record template](../../skills/strategic-repository-analysis/references/divergent-exploration-record-template.md)
+support new retained inquiries, including incomplete questions.
+[Annotated source-bound cases](../semantic-architecture/divergent-exploration-reference-cases-v1.md)
+preserve selected original labels and interpretations; the
+[fit and reconstruction account](../semantic-architecture/divergent-exploration-competency-v1.md)
+records actual retrieval and installed delivery, with their limits.
+
+This representation work leaves the dated archive, 59 DE/NX/RP identities,
+seven GD families, 19 curated possibilities and prior rankings intact.
+The annotations are not another exploration pass, a fresh Coverage Assessment
+or a new portfolio decision. The ontology's reference cases and reader review
+do not count as independent creative qualification.
+
 ## Read this archive
 
 | Document | Inquiry and role | What it contains |
