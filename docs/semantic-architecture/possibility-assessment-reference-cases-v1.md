@@ -6,16 +6,16 @@
 
 ## 1. Source identity and attribution
 
-**Annotated source-file snapshot:** \`ThorStarlord/sensemaking-skills@4f732aaf293b5efb52f1a4428da2c65c48b3c72e\` (2026-11-04, before this implementation). These historical files are accessible at the pinned commit. Their internal "source baseline" describes what those inquiries inspected, **not** the first revision at which their reports existed.
+**Annotated source-file snapshot:** `ThorStarlord/sensemaking-skills@4f732aaf293b5efb52f1a4428da2c65c48b3c72e` (2026-11-04, before this implementation). These historical files are accessible at the pinned commit. Their internal "source baseline" describes what those inquiries inspected, **not** the first revision at which their reports existed.
 
 | Key | Retained report at pinned file revision | Report's inspected target baseline |
 | --- | --- | --- |
-| **A — coverage** | [Divergent coverage / diminishing returns](https://github.com/ThorStarlord/sensemaking-skills/blob/4f732aaf293b5efb52f1a4428da2c65c48b3c72e/docs/explorations/2026-11-02-divergent-coverage-assessment.md) | \`eafc5ad414da435e0d66e8b32b6447ce00aa5111\` |
-| **C — convergence** | [Accumulated possibility evaluation](https://github.com/ThorStarlord/sensemaking-skills/blob/4f732aaf293b5efb52f1a4428da2c65c48b3c72e/docs/explorations/2026-11-03-convergent-accumulated-creative-possibilities.md) | \`70d23a8a9fec62f9eb51febfefed17d8a90dc81d\` |
-| **H — initial ranking** | [Depth Exploration prioritization](https://github.com/ThorStarlord/sensemaking-skills/blob/4f732aaf293b5efb52f1a4428da2c65c48b3c72e/docs/explorations/2026-11-03-depth-exploration-prioritization.md) | \`d88243c74b894ff80bae8af2609c6a4ccac253e2\` |
-| **B — pairwise revision** | [Architecture/continuity pairwise reassessment](https://github.com/ThorStarlord/sensemaking-skills/blob/4f732aaf293b5efb52f1a4428da2c65c48b3c72e/docs/explorations/2026-11-03-portfolio-reassessment-architectural-generativity.md) | \`a1b1872a4d212fc9fd6e1576b966fbb71b6da67f\` |
-| **N — later portfolio** | [Coverage, consolidation and ranked inquiry portfolio](https://github.com/ThorStarlord/sensemaking-skills/blob/4f732aaf293b5efb52f1a4428da2c65c48b3c72e/docs/explorations/2026-11-04-coverage-consolidation-inquiry-portfolio.md) | \`206c4cd267033c7d0cce955fbe370d093a5abfa0\` |
-| **F — evidence inquiry** | [Creative-benefit evidence inquiry](https://github.com/ThorStarlord/sensemaking-skills/blob/4f732aaf293b5efb52f1a4428da2c65c48b3c72e/docs/explorations/2026-11-03-evidence-inquiry-creative-goal-discovery.md) | \`5adda5eac1f9dc7d03f7c8c5400dc133382a138f\` |
+| **A — coverage** | [Divergent coverage / diminishing returns](https://github.com/ThorStarlord/sensemaking-skills/blob/4f732aaf293b5efb52f1a4428da2c65c48b3c72e/docs/explorations/2026-11-02-divergent-coverage-assessment.md) | `eafc5ad414da435e0d66e8b32b6447ce00aa5111` |
+| **C — convergence** | [Accumulated possibility evaluation](https://github.com/ThorStarlord/sensemaking-skills/blob/4f732aaf293b5efb52f1a4428da2c65c48b3c72e/docs/explorations/2026-11-03-convergent-accumulated-creative-possibilities.md) | `70d23a8a9fec62f9eb51febfefed17d8a90dc81d` |
+| **H — initial ranking** | [Depth Exploration prioritization](https://github.com/ThorStarlord/sensemaking-skills/blob/4f732aaf293b5efb52f1a4428da2c65c48b3c72e/docs/explorations/2026-11-03-depth-exploration-prioritization.md) | `d88243c74b894ff80bae8af2609c6a4ccac253e2` |
+| **B — pairwise revision** | [Architecture/continuity pairwise reassessment](https://github.com/ThorStarlord/sensemaking-skills/blob/4f732aaf293b5efb52f1a4428da2c65c48b3c72e/docs/explorations/2026-11-03-portfolio-reassessment-architectural-generativity.md) | `a1b1872a4d212fc9fd6e1576b966fbb71b6da67f` |
+| **N — later portfolio** | [Coverage, consolidation and ranked inquiry portfolio](https://github.com/ThorStarlord/sensemaking-skills/blob/4f732aaf293b5efb52f1a4428da2c65c48b3c72e/docs/explorations/2026-11-04-coverage-consolidation-inquiry-portfolio.md) | `206c4cd267033c7d0cce955fbe370d093a5abfa0` |
+| **F — evidence inquiry** | [Creative-benefit evidence inquiry](https://github.com/ThorStarlord/sensemaking-skills/blob/4f732aaf293b5efb52f1a4428da2c65c48b3c72e/docs/explorations/2026-11-03-evidence-inquiry-creative-goal-discovery.md) | `5adda5eac1f9dc7d03f7c8c5400dc133382a138f` |
 | **D — Divergent I** | [Original DE candidate expressions](https://github.com/ThorStarlord/sensemaking-skills/blob/4f732aaf293b5efb52f1a4428da2c65c48b3c72e/docs/explorations/2026-11-02-divergent-repository-knowledge.md) | Source's internal baseline; see report |
 | **G — Generative Depth** | [Original GD family expressions](https://github.com/ThorStarlord/sensemaking-skills/blob/4f732aaf293b5efb52f1a4428da2c65c48b3c72e/docs/explorations/2026-11-02-generative-depth-repository-knowledge.md) | Source's internal baseline; see report |
 
@@ -52,7 +52,7 @@ All explanations labeled "annotation" are interpretations made for this v1 docum
 **Producing comparison:** C section 3, reaffirmed in N section 4.
 **F2 — Assessment frame:** whether these source expressions make **materially different method/outcome units** for a qualitative accumulated-landscape comparison; do not ask whether the original authors made identical token choices.
 
-**J3 — ConsolidationJudgment:** C calls them *near duplicates* because both dramatize hypothetical product experience. This allows one consolidated **method** home under the current comparison while retaining both original authored IDs, dates, source paths and different phrasings. It does **not** assert global \`sameAs\`, authorize retiring an original expression, or establish real user value.
+**J3 — ConsolidationJudgment:** C calls them *near duplicates* because both dramatize hypothetical product experience. This allows one consolidated **method** home under the current comparison while retaining both original authored IDs, dates, source paths and different phrasings. It does **not** assert global `sameAs`, authorize retiring an original expression, or establish real user value.
 
 **C2 view:** G/GD-D and D/DE-F2 belong to a common experience-rehearsal method for this purpose. A view may also group either under human experience, design fiction or creative transformations for another purpose. The view abstracts media/form and local phrasing; source-specific distinctions remain recoverable.
 
@@ -89,7 +89,7 @@ All explanations labeled "annotation" are interpretations made for this v1 docum
 
 **P2 — Parallel frontier:** preserve Exit/Public as analyzable retained opportunities with their own possible entry questions. A future owner-authorized comparison could adopt a frame under which some of their dimensions are comparable; doing so changes the question and does not backfill historical ranks.
 
-**Counterexample:** \`NOT_ASSESSED\` would mean no comparison occurred; **incomparable** means the report actually considered the shared-frame question and judged it unsuitable. These are not synonyms. Similarly, a tie requires an assessed equal-preference conclusion; it is not an empty score field.
+**Counterexample:** `NOT_ASSESSED` would mean no comparison occurred; **incomparable** means the report actually considered the shared-frame question and judged it unsuitable. These are not synonyms. Similarly, a tie requires an assessed equal-preference conclusion; it is not an empty score field.
 
 ## 6. Case C5 — Priority revision without retroactive rank rewrite
 
@@ -112,13 +112,13 @@ All explanations labeled "annotation" are interpretations made for this v1 docum
 
 A later reader should be able to answer the twelve local [PAO-CQ](possibility-assessment-competency-v1.md) questions without relying on private conversation memory. In particular:
 
-- Can the reader identify the **source-file containing revision** (this document's pinned \`4f732...\`) separately from A/C/H/B/N/F's internally inspected revisions?
+- Can the reader identify the **source-file containing revision** (this document's pinned `4f732...`) separately from A/C/H/B/N/F's internally inspected revisions?
 - Can they explain why A was **sufficient for convergence** without claiming all possibilities exhausted?
 - Can they explain why historical repetition, forecast marginal learning and attention allocation are different judgments?
-- Can they recover *both* GD-D and DE-F2, their assessed near-duplicate criterion and no \`sameAs\`?
+- Can they recover *both* GD-D and DE-F2, their assessed near-duplicate criterion and no `sameAs`?
 - Can they distinguish one question using **M1** from the same question using **M2**, and both from the strategic Futures direction?
 - Can they explain why Exit/Public are **retained but outside the comparison** rather than ranked last, tied or simply forgotten?
 - Can they distinguish H's global directional ranking from B's pairwise preference and N's residual-question ordering?
-- Can they state at least one genuine \`NOT_ASSESSED\` issue without inventing a measured user benefit or observed multi-agent result?
+- Can they state at least one genuine `NOT_ASSESSED` issue without inventing a measured user benefit or observed multi-agent result?
 
 **Evidence ceiling:** this artifact reconstructs earlier authors' documented judgments as interpreted by this annotation. It is not a new ranking, a source-only-vs-graph comparison, an independent agent qualification, an endorsement of a product future or a construction directive. Original sources control their own meaning.

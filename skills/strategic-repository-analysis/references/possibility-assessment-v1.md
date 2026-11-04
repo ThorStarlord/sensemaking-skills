@@ -1,6 +1,6 @@
 # Possibility Assessment: Coverage, Consolidation, Comparison and Portfolio v1
 
-**Use:** when the active agent has a separately warranted request to assess coverage/marginal returns, reconcile distinct possibilities, compare alternatives or retain a qualified inquiry portfolio. This portable reference is reachable from existing \`using-sensemaking\` / strategic references. It does **not** start a full Level-3 strategy process, advance to implementation, or introduce a mandatory funnel.
+**Use:** when the active agent has a separately warranted request to assess coverage/marginal returns, reconcile distinct possibilities, compare alternatives or retain a qualified inquiry portfolio. This portable reference is reachable from existing `using-sensemaking` / strategic references. It does **not** start a full Level-3 strategy process, advance to implementation, or introduce a mandatory funnel.
 
 ## Contents
 
@@ -26,7 +26,7 @@ Preserve these meanings where consequential: assessment question and purpose; so
 
 Reuse common context once; attach local differences only where needed. Unknown/contested information stays unknown/contested. Do not write private scratch or claim an attributed explanation proves a hidden cognitive cause. Read the existing [optional record template](possibility-assessment-record-template.md) when a substantial report needs stable local references; compact prose is legitimate.
 
-An **AssessmentJudgment** is an attributed documentary claim, not an executable predicate or an authorization. The target keeps its original \`DE-\`/\`NX-\`/\`RP-\`/\`GD-\`/\`poss:\`/\`arch:\` identity where available. Similarity and preference are criteria-specific.
+An **AssessmentJudgment** is an attributed documentary claim, not an executable predicate or an authorization. The target keeps its original `DE-`/`NX-`/`RP-`/`GD-`/`poss:`/`arch:` identity where available. Similarity and preference are criteria-specific.
 
 ## 3. Coverage and diminishing returns
 
@@ -38,7 +38,7 @@ Assess, separately:
 - **Empirical support:** observations, hypotheses, counterevidence and absent sources.
 - **Perspective coverage:** independent viewpoints, vocabulary differences and source-access boundaries; multiple named lenses do not prove independent framing.
 
-A coverage result may be sufficient **for a named purpose** (e.g., a provisional convergence comparison) while leaving significant unexplored territory. \`NOT_ASSESSED\` means the dimension or comparison was not examined, not that it is globally absent. Counts of candidate names are inventories, not independent novelty, coverage quality or creative yield.
+A coverage result may be sufficient **for a named purpose** (e.g., a provisional convergence comparison) while leaving significant unexplored territory. `NOT_ASSESSED` means the dimension or comparison was not examined, not that it is globally absent. Counts of candidate names are inventories, not independent novelty, coverage quality or creative yield.
 
 Keep *three diminishing-return claims* separate:
 
@@ -103,10 +103,10 @@ The source portfolio retains Exit and Public outside a common six-entry inquiry 
 
 ## 7. Record, stop and retain selectively
 
-A substantial record can use [the optional Markdown profile](possibility-assessment-record-template.md); include only material sections. For target repos without a convention, \`docs/explorations/YYYY-MM-DD-<subject>.md\` is a reasonable durable location when authorized. A read-only analysis may stop in the reply. Existing session receipts can refer to retained reports but do not replace them.
+A substantial record can use [the optional Markdown profile](possibility-assessment-record-template.md); include only material sections. For target repos without a convention, `docs/explorations/YYYY-MM-DD-<subject>.md` is a reasonable durable location when authorized. A read-only analysis may stop in the reply. Existing session receipts can refer to retained reports but do not replace them.
 
 After a bounded assessment, say **what was found**, **for what purpose**, **what was excluded/uncertain**, **why this activity stops**, and **what could justify a different inquiry or later revision**. Recommending another inquiry does not execute it. Do not silently continue into Depth Exploration, strategy adoption or implementation.
 
-Where selectively reviewed semantic memory is useful, follow the target repository's **existing** knowledge contract. Stable concept definitions may be \`domain_concept\`; a published report may be a \`source\`; supported \`references\` can make them discoverable. Do not bulk-convert expression labels or rankings into \`opportunity\`/\`decision\` claims. \`references\` and \`attributes.conceptual_relation\` do not mechanically verify the relation's semantic truth.
+Where selectively reviewed semantic memory is useful, follow the target repository's **existing** knowledge contract. Stable concept definitions may be `domain_concept`; a published report may be a `source`; supported `references` can make them discoverable. Do not bulk-convert expression labels or rankings into `opportunity`/`decision` claims. `references` and `attributes.conceptual_relation` do not mechanically verify the relation's semantic truth.
 
 This reference is self-contained: the target supplies its own governing sources, authority and history, and **does not need** the Sensemaking framework checkout, CLI, SQLite or reference-case repo. The [framework's conceptual ontology](https://github.com/ThorStarlord/sensemaking-skills/blob/main/docs/semantic-architecture/possibility-assessment-ontology.md) and [worked cases](https://github.com/ThorStarlord/sensemaking-skills/blob/main/docs/semantic-architecture/possibility-assessment-reference-cases-v1.md) are optional explanations, not target authority.
