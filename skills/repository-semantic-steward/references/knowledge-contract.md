@@ -107,6 +107,31 @@ Retained architecture options and consequences (conceptual model in `docs/semant
 
 Retain only options and consequences that would change a later decision. Once an option is built, anchor it so file-level `context-for` reaches it (reconciliation reference, prospective records bullet). The comparison itself (option structures, transitions, lenses, the provisional preference and its feedback) belongs in an `architectural_synthesis` artifact ([template](architectural-synthesis-template.md)); records cite it as `analysis_ref`.
 
+## Exploratory records and fragments
+
+Preserve questions, partial frames, candidate expressions and attributed
+judgments in their readable record of origin, including meaningful unknowns
+and original identities. Retaining that record does not curate every fragment.
+
+- When finding the record later would help, use a `source` claim about the
+  document and its scope. An `observed` document claim describes inspected
+  contents; it does not certify the hypotheses within them.
+- Use `domain_concept` claims for reusable definitions, with document
+  authority and `declared` status. A definition of an exploration role is
+  not an instance of that role. Plain `references` can connect a source
+  record to the definitions it uses.
+- Retain a sufficiently coherent future, structural option or conditional
+  effect through the existing `poss:`, `arch:` or `conseq:` conventions
+  above when later reasoning warrants it. A fragment can remain unclassified.
+
+Keep the full narrative and source provenance. Apply the target repository's
+own retention authority and source paths; framework definitions, cases and
+knowledge packs do not become the target's facts. Existing session receipts
+may point to authorized retained records through repository-relative
+`artifact_refs`; this introduces no receipt field or executable artifact kind.
+Specific conceptual meanings stored in attributes still require semantic
+review rather than mechanical certification.
+
 ## Existing CLI
 
 ```bash

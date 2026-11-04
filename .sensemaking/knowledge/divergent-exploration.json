@@ -1,0 +1,139 @@
+{
+  "schema_version": 1,
+  "claims": [
+    {
+      "id": "domain_concept:exploration-inquiry",
+      "kind": "domain_concept",
+      "statement": "An ExplorationInquiry is a bounded reasoning activity opening possibilities around one or more related questions, with a target, source boundary and permitted outcome; its identity is distinct from a session or retained artifact.",
+      "authority_kind": "document",
+      "authority_ref": "docs/semantic-architecture/divergent-exploration-ontology.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/divergent-exploration-ontology.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "domain_concept:inquiry-question",
+      "kind": "domain_concept",
+      "statement": "An InquiryQuestion is a concern whose meaning and revision history matter to exploration; it need not already block a decision, and retaining its wording does not make it a truth-valued Claim.",
+      "authority_kind": "document",
+      "authority_ref": "docs/semantic-architecture/divergent-exploration-ontology.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/divergent-exploration-ontology.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "domain_concept:exploration-frame",
+      "kind": "domain_concept",
+      "statement": "An ExplorationFrame is the beneficiary, desired end, situation, scope, temporal horizon, premises and constraints under which a question or expression is interpreted; partial frames retain unknowns and distinguish governing constraints from revisable interpretations and implementation facts.",
+      "authority_kind": "document",
+      "authority_ref": "docs/semantic-architecture/divergent-exploration-ontology.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/divergent-exploration-ontology.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "domain_concept:exploration-lens",
+      "kind": "domain_concept",
+      "statement": "An ExplorationLens is an explicitly used perspective that makes particular distinctions salient; it describes an activity without requiring a pass or proving that a materially different expression resulted.",
+      "authority_kind": "document",
+      "authority_ref": "docs/semantic-architecture/divergent-exploration-ontology.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/divergent-exploration-ontology.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "domain_concept:candidate-expression",
+      "kind": "domain_concept",
+      "statement": "A CandidateExpression is a source-addressable articulation worth considering, including a question, fragment, outcome sketch, mechanism proposal or combination; it may remain unclassified and need not have an enduring prospective identity.",
+      "authority_kind": "document",
+      "authority_ref": "docs/semantic-architecture/divergent-exploration-ontology.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/divergent-exploration-ontology.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "domain_concept:transformation-account",
+      "kind": "domain_concept",
+      "statement": "A TransformationAccount is an attributed Claim with Provenance connecting identified inputs, an asserted conceptual change and resulting expressions; it preserves a consequential explanation without establishing an internal cognitive trace, deterministic derivation or causal creative improvement.",
+      "authority_kind": "document",
+      "authority_ref": "docs/semantic-architecture/divergent-exploration-ontology.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/divergent-exploration-ontology.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "domain_concept:possibility-landscape",
+      "kind": "domain_concept",
+      "statement": "A PossibilityLandscape is a bounded, revision-scoped view of expressions and asserted relationships under an identified inquiry and frame; overlapping groupings and acknowledged omissions do not imply an inventory of all possible futures.",
+      "authority_kind": "document",
+      "authority_ref": "docs/semantic-architecture/divergent-exploration-ontology.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/divergent-exploration-ontology.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "domain_concept:exploratory-judgment",
+      "kind": "domain_concept",
+      "statement": "An ExploratoryJudgment is an attributed Claim about novelty, similarity, difference, grouping or an inquiry limit, preserving subjects, criterion, comparison basis, source and revision scope, assessor and material uncertainty; it supplies no ranking, selection or action authority.",
+      "authority_kind": "document",
+      "authority_ref": "docs/semantic-architecture/divergent-exploration-ontology.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/divergent-exploration-ontology.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "source:divergent-exploration-reference-cases",
+      "kind": "source",
+      "statement": "The divergent exploration reference-case document contains source-pinned historical annotations and one explicitly illustrative incomplete expression, and labels them as representation work rather than fresh qualification trials.",
+      "authority_kind": "document",
+      "authority_ref": "docs/semantic-architecture/divergent-exploration-reference-cases-v1.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/divergent-exploration-reference-cases-v1.md"
+      ],
+      "epistemic_status": "observed"
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel:divergent-cases-reference-question",
+      "subject": "source:divergent-exploration-reference-cases",
+      "predicate": "references",
+      "object": "domain_concept:inquiry-question",
+      "epistemic_status": "declared",
+      "derivation": "authored",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/divergent-exploration-reference-cases-v1.md"
+      ]
+    },
+    {
+      "id": "rel:divergent-cases-reference-expression",
+      "subject": "source:divergent-exploration-reference-cases",
+      "predicate": "references",
+      "object": "domain_concept:candidate-expression",
+      "epistemic_status": "declared",
+      "derivation": "authored",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/divergent-exploration-reference-cases-v1.md"
+      ]
+    },
+    {
+      "id": "rel:divergent-cases-reference-judgment",
+      "subject": "source:divergent-exploration-reference-cases",
+      "predicate": "references",
+      "object": "domain_concept:exploratory-judgment",
+      "epistemic_status": "declared",
+      "derivation": "authored",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/divergent-exploration-reference-cases-v1.md"
+      ]
+    }
+  ]
+}
