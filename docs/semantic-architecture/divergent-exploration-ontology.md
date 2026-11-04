@@ -213,3 +213,14 @@ the readable record cannot reliably supply. A graph/query extension needs an
 authentic lost distinction or answer and comparison with existing references,
 attributes and prose. Either follows the existing evolution process.
 An unchecked attribute alone does not establish a schema gap.
+
+## 8. Downstream assessments without stage automation
+
+When coverage, diminishing-return assessment, consolidation, comparison or a
+ranked inquiry portfolio is separately warranted, use the
+[Possibility Assessment and Prioritization Ontology](possibility-assessment-ontology.md).
+It reuses this module's original inquiry/question/expression identities and
+ExploratoryJudgment role, while making assessment purpose, proposed inquiry
+method and historical portfolio revision explicit. This does not make those
+activities mandatory after divergence or expand the existing
+ComparativeJudgment/ProvisionalPreference endpoints.
