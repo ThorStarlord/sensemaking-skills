@@ -268,7 +268,49 @@ faithful bounded representation, not exhaustive coverage.
 
 ## 9. Consumer reconstruction observations
 
-The author inspected original identity, attributed judgments, hypothesis
-boundaries and source links while preparing these cases. A separate final
-reader review, actual knowledge retrieval and installed delivery are recorded
-here or in the linked competency matrix only after they occur.
+**Observed 2026-11-04, at source
+`12e45fab6844eb9e8226f0f259e33a00718b22f6`.** A separate reader in a fresh
+review context started from the actual isolated installation of
+`using-sensemaking`, followed its conditional reference to the portable guide
+and template, and then read this record and decisive original passages. The
+reader inspected the real knowledge-query and delivery observations as well.
+This was a consumer review within the implementation, not an independent
+divergent inquiry or a qualification trial.
+
+The reader recovered all ten local competency answers at the documentary
+level. The [competency matrix](divergent-exploration-competency-v1.md#8-actual-later-reader-reconstruction)
+records each answer's references and remaining uncertainty. CQ-03 is faithful
+only as an explicitly illustrative fragment; its generative usefulness is
+unestablished. Detailed case semantics required source prose. The indexed
+definitions and source record supplied discoverability and identity, not
+machine-readable instance or frame-history relationships.
+
+The five Review Focus conditions were preserved:
+
+- C12 remained incomplete, with no invented beneficiary, outcome, mechanism,
+  novelty or historical producing session.
+- C4/C5 retained both GD-D and DE-F2 origins under an attributed near-duplicate
+  judgment; C6–C8 retained different epistemic causes of plurality.
+- C1 distinguished reported host/guest facts, an attributed transformation
+  account and hypothetical player value.
+- C9–C11/Q5/F5 preserved a reconstructed change of end and premise without
+  asserting a historical frame-revision event or changing owner authority.
+- The installed guide/template/retention references were reachable without a
+  framework checkout or a full Level-3 invocation.
+
+The reviewer found no Critical, Important or Minor defect in the reviewed
+14-file core implementation; no corrective semantic change was required.
+The concurrently added DE-A normal-use record was outside this review's
+scope. This review makes no finding about that record's qualification status.
+
+**Coverage Assessment handoff:** the pinned source map, local/original IDs,
+attributed J1–J5 judgments, comparison dimensions and section 8 omissions were
+sufficient for a later assessor to recover what was inspected. No new Coverage
+Assessment, portfolio ranking or claim that unexamined dimensions are absent
+was made. The reviewed record remains a bounded representation of selected
+cases, not an exhaustive account of the archive.
+
+Creative improvement, causal graph advantage, independent repeatability,
+automatic host discovery, current Atlas runtime behavior and portfolio
+desirability were not established by this review. Its observations do not
+change the original sources or their dispositions.

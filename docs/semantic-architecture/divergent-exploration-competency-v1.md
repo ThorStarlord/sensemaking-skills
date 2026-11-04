@@ -86,7 +86,7 @@ limitation. A genuine lost meaning can warrant an extension inquiry; a
 manual-but-faithful answer does not automatically require a new parser.
 
 CQ-114 and independent-use claims remain unestablished by historical
-reconstruction. The planned reference cases count as zero fresh qualification
+reconstruction. These reference cases count as zero fresh qualification
 trials. The [existing qualification readiness record](../normal-use/2026-11-04-independent-inquiry-operation-readiness.md)
 continues to govern that separate inquiry.
 
@@ -189,6 +189,92 @@ or graph-specific causal advantage.
 
 Local unit and synthetic evidence tests were **NOT_RUN** under this
 repository's current construction policy. Existing hosted CI and release gates
-were preserved. The final consumer reconstruction and completion account
-record any remaining limitations separately; optional schema or qualification
-work does not become a hidden core requirement.
+were preserved. Sections 8–9 record the completed consumer reconstruction,
+remaining limitations and conditional dispositions. Optional schema or
+qualification work does not become a hidden core requirement.
+
+Hosted checks were subsequently observed at PR #730 head
+`9f2b3e15d6f920bd1f3d76d9312c2387d4a310d2`: all nine reported check runs
+completed successfully. These comprise the seven-job
+[Product Validation](https://github.com/ThorStarlord/sensemaking-skills/actions/runs/41907852487),
+[Release Candidate Distribution](https://github.com/ThorStarlord/sensemaking-skills/actions/runs/41907852485)
+and [Source-pinned context consumer](https://github.com/ThorStarlord/sensemaking-skills/actions/runs/41907853607).
+This is evidence at that exact source revision, not a claim about an unchecked
+later head, independent creative usefulness or release authorization.
+
+## 8. Actual later-reader reconstruction
+
+**Observed 2026-11-04.** A separate reader with a fresh review context started
+from the installed `using-sensemaking` entrypoint, followed the portable guide
+and template, then inspected the case document and decisive original sources.
+The reviewed core was the 14-file implementation between the baseline above
+and `12e45fab6844eb9e8226f0f259e33a00718b22f6`; concurrent PR #727 was excluded.
+This collaboration is a documentary consumer review within implementation,
+not independent creative-use qualification. No tests were run by the reviewer.
+
+All ten answers were faithful within their stated limits. The following
+observations corroborate the author's section 4 fit; they do not turn the
+original prose-dependent answers into new executable query predicates.
+Case anchors below resolve in the [worked record](divergent-exploration-reference-cases-v1.md),
+whose source table pins A/D/G/N/R/C independently of their inspected targets.
+
+| Question | Answer recovered by the later reader | Decisive case/source | Remaining uncertainty |
+| --- | --- | --- | --- |
+| DEO-CQ-01 | Belonging through contribution without acquiring another player's progression; proposed question collision and beneficiary change | Q1/C1 and Q2/C2/C3; A §§2–4; D DE-A2/DE-B1 | Reconstructed questions are interpretations; no actual third question or player demand established |
+| DEO-CQ-02 | Guest beneficiary, contribution/belonging end and host/guest boundaries; recoverable retention versus exit versus non-collection; a partial frame | F1, Q5/F5/C9–C11 and F6/C12; A/N/R | Horizon and actual value remain unestablished; fragment has no supplied product intent |
+| DEO-CQ-03 | A question can be retained with beneficiary, outcome, mechanism and referent unknown | Q6/C12 and the installed template's compact illustration | Illustration only; generative usefulness and an independently used fragment workflow remain unestablished |
+| DEO-CQ-04 | Original producing inquiry, report, annotation inquiry, local expression and possible enduring referent remain distinct | Case source map, I-ANNOT, C1, C4/C5 and C12 | No global identity registry, C1 `poss:` identity or cognitive trace established |
+| DEO-CQ-05 | Interpretation, conditional applicability and observability are different; recoverable hiding, software exit and non-capture change different ends/premises | J4/J5; C6–C11; N NX-K3/NX-N2/NX-M1; R RP-Q1/RP-Q2 | No working system, measured benefit or complete design follows |
+| DEO-CQ-06 | GD-D/DE-F2 are attributed near duplicates; the plurality trio stays distinct; retention/non-capture can compete within context | J3/J4/J5; C §3 | Neither universal sameness/incompatibility nor a new ranking is established |
+| DEO-CQ-07 | Original novelty/overlap judgments identify the inquiry, named corpus and separate containing/inspected revisions | Source map and J1/J3; A §6; C §§1–3 | No named human assessor, global originality or replication is supplied |
+| DEO-CQ-08 | Both G/GD-D and D/DE-F2 remain recoverable under the near-duplicate judgment | C4/C5/J3; G family table; D DE-F2; C §3 | No canonical identity promotion; GD-D remains a family outside the 59 DE/NX/RP identities |
+| DEO-CQ-09 | Hiding presupposes retention; successful exit changes the end; non-capture challenges collection | Q5/F5/C9–C11/J5; N NX-M1; R RP-Q1/RP-Q2; C §3 | Reconstructed cross-source delta, not a historical revision event or changed retention policy |
+| DEO-CQ-10 | Reported authority/participation facts, hypothetical belonging, archive expression, curated identity, preference and permission remain separate | C1/T1/J1 and C11/J5; A §§2, 5–8; R RP-Q2 | No player validation, adopted product goal, legal right or implementation authorization follows |
+
+The reader followed the actual query result identities into the source
+documents and read the installed references. All five Review Focus conditions
+were preserved; **Critical: none; Important: none; Minor: none**. No correction
+was required. Detailed meanings required prose; the projection established
+discovery and source identity. No necessary meaning was found lost in this
+bounded reconstruction.
+
+The source corpus, case/original IDs, attributed judgments and omissions were
+usable as a **Coverage Assessment handoff**. This observation did not run a
+new assessment, change an earlier ranking, or infer that unexamined territory
+is absent. Current Atlas behavior, host auto-discovery, independent creative
+use, comparative benefit, repeatability and graph-specific causal advantage
+were outside the evidence available to this review.
+
+## 9. Conditional follow-up dispositions
+
+| Follow-up from the implementation plan | Disposition | Basis and reopening condition |
+| --- | --- | --- |
+| C1: machine-readable inquiry artifact | **DEFERRED — no executable consumer requirement** | The actual reader recovered the needed distinctions from the profile and cases. Reopen for a concrete parsed-field or inter-process consumer that the documentary form cannot serve reliably. |
+| C2: shared graph vocabulary or specialized query | **NO CHANGE WARRANTED** | Existing definitions, source references and prose preserved all ten bounded answers. Reopen for an authentic necessary meaning or retrieval requirement that simpler supported representation cannot preserve. |
+| C3: independent creative-use qualification | **SEPARATE PROGRAM; NOT EXECUTED BY THIS IMPLEMENTATION** | These reference cases and this reader exercise count as zero fresh qualification trials. Use the existing readiness program when an authentic independent inquiry is separately warranted; do not infer a finding about concurrent observations. |
+
+These dispositions complete the core plan's conditional decisions. They are
+not an automatically authorized implementation backlog.
+
+## 10. Retrieval after recording the consumer review
+
+The case document's new reconstruction section changed its source bytes, so
+the actual index build and all three section 5 queries were repeated at
+[`38ae7214511147f0a541092048dd3c0d77ee2f34`](https://github.com/ThorStarlord/sensemaking-skills/commit/38ae7214511147f0a541092048dd3c0d77ee2f34),
+which contains the final case text and navigation/status updates.
+
+The temporary-worktree build again returned 202 claims and 208 relations.
+Search recovered the declared candidate-expression definition; its explanation
+returned the case-source reference, and source explanation returned the three
+intended definitions and three references. The returned case-source SHA-256
+matched the actual committed document:
+`e595375c8156f8da18b74c57ed66157ca95c53b4c4ca89be30516bc0e7eb4411`.
+The index digest was
+`7ca7c7bd52ee4c08339557c75e363bfb297bf5f93c9ff2fd772d3946ca315323`.
+Authority, semantic-truth and action-authorization flags remained false.
+
+The three relevant Skill trees were unchanged from the wheel source
+`12e45fab6844eb9e8226f0f259e33a00718b22f6`, so the recorded installed-delivery
+observation still describes their delivered bytes. This refresh verifies the
+changed case source at its named commit; the subsequent observation note and
+completion metadata do not imply another index build or creative invocation.

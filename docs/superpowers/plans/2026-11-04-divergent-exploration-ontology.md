@@ -12,7 +12,7 @@
 
 **Date and baseline:** 2026-11-04; `ThorStarlord/sensemaking-skills@8bd41bdf324e00aa75c1b849e333e076d85648ef`, after PR #724. Refresh applicable sources before implementation.
 
-**Status and scope:** implementation plan requested after the owner accepted the preceding recommendations. The plan and its design basis are documentation deliverables; all implementation checkboxes below are initially unchecked. A later implementation instruction authorizes execution within its scope. Historical exploration, owner agreement with recommendations, and this plan do not establish creative benefit or qualify an inquiry operation.
+**Status and scope, 2026-11-04:** the owner subsequently authorized all implementation tasks and delegated bounded decisions. Tasks 1–4 are implemented and merged; the actual reader reconstruction is complete. Tasks 5–6 closure documentation is being integrated below. The final merge/merged-file checks remain unchecked until observed. The original planning baseline remains historical; the implementation began at `a8f390a1b36867c1d71e209af2a72c03cff016a8`. Construction and owner agreement do not establish creative benefit or qualify an inquiry operation.
 
 ## Global Constraints
 
@@ -133,13 +133,13 @@ Use a separate `claude/<topic>` branch for each PR, a short source-grounded deci
 - Produces: definitions of the eight proposed concepts/roles; the conceptual relationship rows from the design, including inquiry-to-expression and expression-to-question provenance; identity/revision rules; DEO-CQ-01..10 and their mapping to existing global questions.
 - Downstream readers use these meanings, not a new claim-kind enum. The operational profile in Task 2 may summarize them for portability but may not redefine them.
 
-- [ ] **Step 1: Refresh governing sources and record the implementation baseline.** Read current AGENTS/CLAUDE, product strategy, relevant accepted ADRs, semantic model, creative guidance and current work. Confirm the requested scope and local verification policy. Preserve a receipt when using the entrypoint, under its existing authority and persistence rules.
-- [ ] **Step 2: Write the ontology module.** Define the eight roles, map them across evidence/knowledge/work/product layers, and distinguish the activity, its record, a candidate expression and an enduring candidate. Make partial frames and incomplete expressions valid. Do not create a new universal Candidate replacement for ProductPossibility/ArchitectureOption.
-- [ ] **Step 3: Define relation and identity semantics.** For each design relation, specify endpoints, direction, source or attribution requirement and one applicable example. Keep a plain artifact reference distinct from a claim that two expressions mean the same thing. Document how a question/frame revision differs from wording edits and new candidate identity.
-- [ ] **Step 4: Author the local competency matrix.** Use the ten questions in section 6 below. For each, name the source case, current representation and missing or awkward distinction. A baseline answer may be faithful; do not invent a failed question to justify a new schema.
-- [ ] **Step 5: Connect the canonical documentation.** Add concise ontology/relation/README pointers and links from existing CQ-099/100/103..114. Preserve prior baseline assessments as dated history. Introduce no link to an uncreated future file; add those links when its task lands.
-- [ ] **Step 6: Review meanings against the spec and original sources.** Resolve inconsistent use of question, frame, expression, referent and judgment. Check that existing ComparativeJudgment/ProvisionalPreference endpoints are not silently broadened from architecture/path to arbitrary inquiry targets. Use ExploratoryJudgment as a documented Claim role unless a deliberate conceptual extension is separately explained.
-- [ ] **Step 7: Commit and integrate the semantic increment.** Suggested commit: `docs(ontology): define divergent inquiry semantics and competencies`. Report source/diff review and local tests NOT_RUN.
+- [x] **Step 1: Refresh governing sources and record the implementation baseline.** Read current AGENTS/CLAUDE, product strategy, relevant accepted ADRs, semantic model, creative guidance and current work. Confirm the requested scope and local verification policy. Preserve a receipt when using the entrypoint, under its existing authority and persistence rules.
+- [x] **Step 2: Write the ontology module.** Define the eight roles, map them across evidence/knowledge/work/product layers, and distinguish the activity, its record, a candidate expression and an enduring candidate. Make partial frames and incomplete expressions valid. Do not create a new universal Candidate replacement for ProductPossibility/ArchitectureOption.
+- [x] **Step 3: Define relation and identity semantics.** For each design relation, specify endpoints, direction, source or attribution requirement and one applicable example. Keep a plain artifact reference distinct from a claim that two expressions mean the same thing. Document how a question/frame revision differs from wording edits and new candidate identity.
+- [x] **Step 4: Author the local competency matrix.** Use the ten questions in section 6 below. For each, name the source case, current representation and missing or awkward distinction. A baseline answer may be faithful; do not invent a failed question to justify a new schema.
+- [x] **Step 5: Connect the canonical documentation.** Add concise ontology/relation/README pointers and links from existing CQ-099/100/103..114. Preserve prior baseline assessments as dated history. Introduce no link to an uncreated future file; add those links when its task lands.
+- [x] **Step 6: Review meanings against the spec and original sources.** Resolve inconsistent use of question, frame, expression, referent and judgment. Check that existing ComparativeJudgment/ProvisionalPreference endpoints are not silently broadened from architecture/path to arbitrary inquiry targets. Use ExploratoryJudgment as a documented Claim role unless a deliberate conceptual extension is separately explained.
+- [x] **Step 7: Commit and integrate the semantic increment.** Suggested commit: `docs(ontology): define divergent inquiry semantics and competencies`. Report source/diff review and local tests NOT_RUN.
 
 **Acceptance:** a reader can explain each role, distinguish its neighbors, identify its source/evidence meaning, and tell which questions the model is intended to make reconstructible. No executable support or creative improvement is claimed from definitions alone.
 
@@ -158,14 +158,14 @@ Use a separate `claude/<topic>` branch for each PR, a short source-grounded deci
 - Produces: the seven optional template headings named in design section 6; stable local reference conventions; a self-contained portable explanation; bounded case annotations and a fit result per applicable DEO-CQ.
 - Mandatory information is semantic: question/target, source scope, substantive result, material uncertainty/authority and completion. Optional fields must not become empty-form obligations.
 
-- [ ] **Step 1: Write the portable profile.** Explain the user-visible purpose, the minimal meanings needed without framework docs, valid sparse expressions, frame changes, attributed differences and how a later reader resolves sources. Keep the deeper canonical documents as optional provenance.
-- [ ] **Step 2: Write the record template.** Include the headings from the design and mark conditional sections as optional. Offer a compact prose example and an expanded candidate/relationship example. Do not add `artifact_id`, automatic lifecycle statuses, a mandatory JSON sidecar or a new registered schema.
-- [ ] **Step 3: Define concrete local references.** In newly authored records, an explicitly referenced candidate may use a stable heading `### C1` with a separate label; questions/frames/accounts/judgments may use Q/F/T/J prefixes similarly. An old table label is referenced by original file plus label, not a fabricated URL fragment. Record known `poss:`/`arch:` referents separately from expression IDs.
-- [ ] **Step 4: Annotate the bounded authentic cases.** Preserve their original wording or a clearly marked faithful paraphrase, source revision, candidate labels, epistemic limits and original disposition. Add only the interpretation needed to demonstrate the ontology. Every annotation is this implementation's representation assessment, not a retroactive correction of the original inquiry.
-- [ ] **Step 5: Add one incomplete-question illustration.** Mark it explicitly as illustrative, without a historical-session or empirical claim. Demonstrate a partial frame, unknown beneficiary/outcome if appropriate, a stable local expression and a useful open question; do not fill the unknowns merely for completeness.
-- [ ] **Step 6: Fill the vocabulary-fit matrix.** Mark each local question faithful, awkward, lost or not established, with evidence. Distinguish a documentary answer from a machine-queryable relation. Record which proposed distinctions improve explicitness even where the old prose could already carry them.
-- [ ] **Step 7: Inspect the retained record as a reader.** Verify original identities survive, a relationship judgment identifies both operands and its comparison basis, and a fragment is not coerced into a ProductPossibility. Confirm that known gaps do not become a claim of global exhaustion.
-- [ ] **Step 8: Commit and integrate.** Suggested commit: `docs(exploration): add portable record profile and source-bound cases`.
+- [x] **Step 1: Write the portable profile.** Explain the user-visible purpose, the minimal meanings needed without framework docs, valid sparse expressions, frame changes, attributed differences and how a later reader resolves sources. Keep the deeper canonical documents as optional provenance.
+- [x] **Step 2: Write the record template.** Include the headings from the design and mark conditional sections as optional. Offer a compact prose example and an expanded candidate/relationship example. Do not add `artifact_id`, automatic lifecycle statuses, a mandatory JSON sidecar or a new registered schema.
+- [x] **Step 3: Define concrete local references.** In newly authored records, an explicitly referenced candidate may use a stable heading `### C1` with a separate label; questions/frames/accounts/judgments may use Q/F/T/J prefixes similarly. An old table label is referenced by original file plus label, not a fabricated URL fragment. Record known `poss:`/`arch:` referents separately from expression IDs.
+- [x] **Step 4: Annotate the bounded authentic cases.** Preserve their original wording or a clearly marked faithful paraphrase, source revision, candidate labels, epistemic limits and original disposition. Add only the interpretation needed to demonstrate the ontology. Every annotation is this implementation's representation assessment, not a retroactive correction of the original inquiry.
+- [x] **Step 5: Add one incomplete-question illustration.** Mark it explicitly as illustrative, without a historical-session or empirical claim. Demonstrate a partial frame, unknown beneficiary/outcome if appropriate, a stable local expression and a useful open question; do not fill the unknowns merely for completeness.
+- [x] **Step 6: Fill the vocabulary-fit matrix.** Mark each local question faithful, awkward, lost or not established, with evidence. Distinguish a documentary answer from a machine-queryable relation. Record which proposed distinctions improve explicitness even where the old prose could already carry them.
+- [x] **Step 7: Inspect the retained record as a reader.** Verify original identities survive, a relationship judgment identifies both operands and its comparison basis, and a fragment is not coerced into a ProductPossibility. Confirm that known gaps do not become a claim of global exhaustion.
+- [x] **Step 8: Commit and integrate.** Suggested commit: `docs(exploration): add portable record profile and source-bound cases`.
 
 **Acceptance:** both a sparse fragment and a mature candidate can be expressed; the source-to-hypothesis transition, original IDs and changed frames remain recoverable; the profile can be read on its own by an installed agent. Case reconstruction is not counted as a fresh creative trial.
 
@@ -184,13 +184,13 @@ Use a separate `claude/<topic>` branch for each PR, a short source-grounded deci
 - Produces: a discoverable agent-native path from an explicit divergent request to the relevant guidance, plus evidence that its relative reference targets survive installation.
 - The current strategic Skill's output contract remains `strategic_repository_analysis`. Loading its reference does not invoke that whole responsibility.
 
-- [ ] **Step 1: Add one entrypoint cue.** In the reference-loading table, link `../strategic-repository-analysis/references/divergent-exploration-v1.md`. Load it for a bounded divergent inquiry where question/frame/candidate distinctions or durable continuation matter; skip it for a narrow edit or a trivial brainstorm. Explain the decision this cue changes so it earns space in the core.
-- [ ] **Step 2: Amend creative discovery at the expression/material-candidate boundary.** Permit fragments and new questions before mature candidate discrimination. Once a material candidate exists, retain existing source/novelty/authority discipline. Do not turn the model's concepts or the existing creative operators into compulsory passes.
-- [ ] **Step 3: Link the strategic funnel at its existing breadth seam.** When a real strategic analysis uses divergence, it may consume the same profile. Keep its subsequent coverage/frontier responsibilities scoped to that analysis and preserve standalone divergence's stopping boundary.
-- [ ] **Step 4: Inspect discovery and dependency closure.** At the inspected baseline, `entrypoint` includes the referenced strategic and steward Skills, `full` includes every packaged Skill, and both the build hook and installer copy complete Skill trees. Confirm those facts still hold and that both new reference files reach the resulting package. No profile membership change is presently warranted.
-- [ ] **Step 5: Inspect an actual isolated installation or package output when the current setup path is available.** Use an explicitly chosen temporary/project destination and the existing installer; do not overwrite the owner's user-wide installation. Check the entrypoint link and the reference-to-template link in that output. If the installer cannot run in the host, report installed delivery NOT_RUN and preserve the source-inspection result; do not claim distribution verification.
-- [ ] **Step 6: Repair only a concrete delivery defect.** Prefer existing copy/packaging patterns. Do not add a new profile, duplicate the semantic framework inside each Skill, change default installation scope or rewrite the public entrypoint. If no defect exists, leave installer/manifests/registries unchanged.
-- [ ] **Step 7: Commit and integrate.** Suggested commit: `feat(guidance): apply divergent inquiry ontology through the existing entrypoint`. Report exactly whether source inspection, installed-file inspection or an actual invocation was observed.
+- [x] **Step 1: Add one entrypoint cue.** In the reference-loading table, link `../strategic-repository-analysis/references/divergent-exploration-v1.md`. Load it for a bounded divergent inquiry where question/frame/candidate distinctions or durable continuation matter; skip it for a narrow edit or a trivial brainstorm. Explain the decision this cue changes so it earns space in the core.
+- [x] **Step 2: Amend creative discovery at the expression/material-candidate boundary.** Permit fragments and new questions before mature candidate discrimination. Once a material candidate exists, retain existing source/novelty/authority discipline. Do not turn the model's concepts or the existing creative operators into compulsory passes.
+- [x] **Step 3: Link the strategic funnel at its existing breadth seam.** When a real strategic analysis uses divergence, it may consume the same profile. Keep its subsequent coverage/frontier responsibilities scoped to that analysis and preserve standalone divergence's stopping boundary.
+- [x] **Step 4: Inspect discovery and dependency closure.** At the inspected baseline, `entrypoint` includes the referenced strategic and steward Skills, `full` includes every packaged Skill, and both the build hook and installer copy complete Skill trees. Confirm those facts still hold and that both new reference files reach the resulting package. No profile membership change is presently warranted.
+- [x] **Step 5: Inspect an actual isolated installation or package output when the current setup path is available.** Use an explicitly chosen temporary/project destination and the existing installer; do not overwrite the owner's user-wide installation. Check the entrypoint link and the reference-to-template link in that output. If the installer cannot run in the host, report installed delivery NOT_RUN and preserve the source-inspection result; do not claim distribution verification.
+- [x] **Step 6: Repair only a concrete delivery defect.** Prefer existing copy/packaging patterns. Do not add a new profile, duplicate the semantic framework inside each Skill, change default installation scope or rewrite the public entrypoint. If no defect exists, leave installer/manifests/registries unchanged.
+- [x] **Step 7: Commit and integrate.** Suggested commit: `feat(guidance): apply divergent inquiry ontology through the existing entrypoint`. Report exactly whether source inspection, installed-file inspection or an actual invocation was observed.
 
 **Acceptance:** the new model is reachable through the existing public entrypoint and its required portable meanings are delivered with the relevant Skills. No new mandatory orchestrator, runtime mode or framework checkout dependency appears. If actual package/installation inspection could not run, report the guidance as implemented with installed delivery unverified; do not mark that verification step complete.
 
@@ -209,13 +209,13 @@ Use a separate `claude/<topic>` branch for each PR, a short source-grounded deci
 - Produces: an existing-schema JSON pack, definition identities and a source identity as specified in design section 7; existing `search`/`explain` retrieval can reach the model and its source.
 - File envelope is exactly `schema_version`, `claims`, `relations`. Claim fields remain `id`, `kind`, `statement`, `authority_kind`, `authority_ref`, `evidence_refs`, plus supported optional fields. Relationship fields remain `id`, `subject`, `predicate`, `object`, `evidence_refs`, plus supported optional fields.
 
-- [ ] **Step 1: Check existing identities and choose only useful definition/source records.** Use the proposed domain_concept IDs from the design unless an existing claim already expresses that meaning. Record a real equivalence instead of duplicating a definition under a different ID.
-- [ ] **Step 2: Author the version-1 pack.** Definitions use `domain_concept`, document authority and `declared` status. The source claim describes the worked document and its limited purpose. Cite tracked source files. Do not add unsupported `artifact`, `question`, `frame` or `assessment` claim kinds.
-- [ ] **Step 3: Add only source-grounded relationships.** Reuse `references` and, when its actual meaning fits, `derived_from`. Put a more specific documentary meaning in `attributes.conceptual_relation` and explicitly acknowledge its unchecked semantics. Do not use `relates_to` as a generic relation or force questions/fragments into `opportunity`.
-- [ ] **Step 4: Document selective target retention.** Explain how an actual target can preserve a record reference, selected hypotheses or coherent prospective entities under existing authority. Keep its local expressions and full source record. Never copy the framework's knowledge pack or Atlas claims into another target as that target's own knowledge.
-- [ ] **Step 5: Run the existing real-artifact proposal check when available.** Use the command in section 8 against the authored pack and inspect schema, endpoints and cited tracked files. Resolve any concrete defect; do not weaken the checker to accommodate a mistaken representation. Under the existing knowledge contract, an unchecked pack remains a draft. If this operation is unavailable, complete the possible documentation work and leave this acceptance item open rather than claiming reviewed-knowledge delivery.
-- [ ] **Step 6: Commit the reviewed sources, build a source-pinned index and retrieve the actual records when available.** Search for `candidate-expression`, explain `domain_concept:candidate-expression`, and explain `source:divergent-exploration-reference-cases`. Follow the returned source references and assess whether the useful meaning can be recovered. Raw presence in JSON or a nonempty query alone is insufficient.
-- [ ] **Step 7: Record limits and integrate.** State which questions are answered by indexed identity, which require reading source attributes/prose, and which remain unresolved. Suggested commit: `feat(knowledge): retain divergent inquiry definitions and provenance`.
+- [x] **Step 1: Check existing identities and choose only useful definition/source records.** Use the proposed domain_concept IDs from the design unless an existing claim already expresses that meaning. Record a real equivalence instead of duplicating a definition under a different ID.
+- [x] **Step 2: Author the version-1 pack.** Definitions use `domain_concept`, document authority and `declared` status. The source claim describes the worked document and its limited purpose. Cite tracked source files. Do not add unsupported `artifact`, `question`, `frame` or `assessment` claim kinds.
+- [x] **Step 3: Add only source-grounded relationships.** Reuse `references` and, when its actual meaning fits, `derived_from`. Put a more specific documentary meaning in `attributes.conceptual_relation` and explicitly acknowledge its unchecked semantics. Do not use `relates_to` as a generic relation or force questions/fragments into `opportunity`.
+- [x] **Step 4: Document selective target retention.** Explain how an actual target can preserve a record reference, selected hypotheses or coherent prospective entities under existing authority. Keep its local expressions and full source record. Never copy the framework's knowledge pack or Atlas claims into another target as that target's own knowledge.
+- [x] **Step 5: Run the existing real-artifact proposal check when available.** Use the command in section 8 against the authored pack and inspect schema, endpoints and cited tracked files. Resolve any concrete defect; do not weaken the checker to accommodate a mistaken representation. Under the existing knowledge contract, an unchecked pack remains a draft. If this operation is unavailable, complete the possible documentation work and leave this acceptance item open rather than claiming reviewed-knowledge delivery.
+- [x] **Step 6: Commit the reviewed sources, build a source-pinned index and retrieve the actual records when available.** Search for `candidate-expression`, explain `domain_concept:candidate-expression`, and explain `source:divergent-exploration-reference-cases`. Follow the returned source references and assess whether the useful meaning can be recovered. Raw presence in JSON or a nonempty query alone is insufficient.
+- [x] **Step 7: Record limits and integrate.** State which questions are answered by indexed identity, which require reading source attributes/prose, and which remain unresolved. Suggested commit: `feat(knowledge): retain divergent inquiry definitions and provenance`.
 
 **Acceptance:** the retained records have passed the existing proposal checker under the unchanged supported schema and actual retrieval leads a reader to the correct source meanings. Historical speculative candidates remain unpromoted. Unavailable proposal/retrieval checks remain explicit outstanding acceptance items; they cannot be waived by a source-only review. Retrieval evidence does not claim that future agents used the model or became more creative.
 
@@ -233,13 +233,13 @@ Use a separate `claude/<topic>` branch for each PR, a short source-grounded deci
 - Produces: a bounded source-grounded reconstruction, documented remaining limits, and any necessary in-scope correction.
 - The reader's role is to recover meanings and sources, not to score creativity, rank the portfolio or begin a new inquiry stage.
 
-- [ ] **Step 1: Read the completed artifact through the consumer's entry path.** Start from its published navigation or returned source record, then inspect the profile and decisive original sources. A separate reviewer can do this when useful; do not describe collaboration within the implementation as the independent qualification program.
-- [ ] **Step 2: Answer the local competency questions from the retained material.** Recover question, frame, expression, original label, asserted difference, supporting source and uncertainty. Note when source prose is required. Admit an unknown rather than manufacture missing provenance.
-- [ ] **Step 3: Inspect the five Review Focus conditions.** Confirm the fragment survives, near-duplicate IDs remain distinct, different truth conditions stay distinguishable, hypothetical player value stays hypothetical, and a changed frame does not rewrite owner intent.
-- [ ] **Step 4: Check the Coverage Assessment handoff without running a new assessment.** The record should identify its inspected scope, candidate references and known omissions so a later separately requested assessment can use them. It must not represent unexamined dimensions as absent or silently supply rankings.
-- [ ] **Step 5: Fix only the nearest concrete representational or guidance defect.** Distinguish a lost meaning from a slow retrieval, unclear wording, missing reference or lack of empirical evidence. Existing attributes/prose may remain adequate. Record a conditional follow-up when a real machine consumer is needed; do not build it automatically.
-- [ ] **Step 6: Record the actual evidence ceiling.** Separate source fidelity, representation completeness, structural validity, retrieval, installed delivery, observed agent use, independent repeatability and causal benefit. Mark unperformed activities NOT_RUN or NOT_ASSESSED.
-- [ ] **Step 7: Commit the review and corrections.** Suggested commit: `docs(exploration): reconcile divergent ontology reconstruction and limits`.
+- [x] **Step 1: Read the completed artifact through the consumer's entry path.** Start from its published navigation or returned source record, then inspect the profile and decisive original sources. A separate reviewer can do this when useful; do not describe collaboration within the implementation as the independent qualification program.
+- [x] **Step 2: Answer the local competency questions from the retained material.** Recover question, frame, expression, original label, asserted difference, supporting source and uncertainty. Note when source prose is required. Admit an unknown rather than manufacture missing provenance.
+- [x] **Step 3: Inspect the five Review Focus conditions.** Confirm the fragment survives, near-duplicate IDs remain distinct, different truth conditions stay distinguishable, hypothetical player value stays hypothetical, and a changed frame does not rewrite owner intent.
+- [x] **Step 4: Check the Coverage Assessment handoff without running a new assessment.** The record should identify its inspected scope, candidate references and known omissions so a later separately requested assessment can use them. It must not represent unexamined dimensions as absent or silently supply rankings.
+- [x] **Step 5: Fix only the nearest concrete representational or guidance defect.** Distinguish a lost meaning from a slow retrieval, unclear wording, missing reference or lack of empirical evidence. Existing attributes/prose may remain adequate. Record a conditional follow-up when a real machine consumer is needed; do not build it automatically.
+- [x] **Step 6: Record the actual evidence ceiling.** Separate source fidelity, representation completeness, structural validity, retrieval, installed delivery, observed agent use, independent repeatability and causal benefit. Mark unperformed activities NOT_RUN or NOT_ASSESSED.
+- [x] **Step 7: Commit the review and corrections.** Suggested commit: `docs(exploration): reconcile divergent ontology reconstruction and limits`.
 
 **Acceptance:** a reader can reconstruct the intended distinctions from durable material, or the exact remaining limitation is explicit and honestly scoped. No historical example or well-formed artifact is counted as a fresh independent operation trial.
 
@@ -257,9 +257,9 @@ Use a separate `claude/<topic>` branch for each PR, a short source-grounded deci
 - Consumes: completed core tasks, source/diff review and actual verification receipts.
 - Produces: discoverable documentation, accurate current capability statements and a reconstructible stop.
 
-- [ ] **Step 1: Link the implemented model and examples from existing indexes.** Preserve all dated archive records, 59 local identities, seven GD families, curated possibility counts and prior rankings. An ontology reference is not another exploration pass or a new portfolio decision.
-- [ ] **Step 2: Describe the real capability.** State that the model/profile/guidance and selected representation exist, naming any unverified installed or consumer path. Keep improved creativity and independent repeatability unproven unless independently established.
-- [ ] **Step 3: Review the complete diff and references.** Check that source-specific examples stay in the framework's case record, portable guidance contains no mandatory framework-only file dependency, no unsupported schema fields/kinds were introduced, and no required CI or authority behavior changed.
+- [x] **Step 1: Link the implemented model and examples from existing indexes.** Preserve all dated archive records, 59 local identities, seven GD families, curated possibility counts and prior rankings. An ontology reference is not another exploration pass or a new portfolio decision.
+- [x] **Step 2: Describe the real capability.** State that the model/profile/guidance and selected representation exist, naming any unverified installed or consumer path. Keep improved creativity and independent repeatability unproven unless independently established.
+- [x] **Step 3: Review the complete diff and references.** Check that source-specific examples stay in the framework's case record, portable guidance contains no mandatory framework-only file dependency, no unsupported schema fields/kinds were introduced, and no required CI or authority behavior changed.
 - [ ] **Step 4: Integrate the final bounded changes under current repository policy.** Use the existing source-grounded PR note and merge instructions. Preserve actual GitHub protections. Assess any known consequential failure; do not disable checks or claim pending CI passed.
 - [ ] **Step 5: Verify the merged files and report completion.** Link the model/profile, cases, knowledge representation and actual review results. Clearly identify any optional future work. Finalize applicable receipt state and state persistence truthfully.
 
@@ -393,3 +393,67 @@ All core changes are additive documentation, reference integration and a separat
 **Completion report must include:** delivered files and user-visible behavior; the conceptual-to-executable mapping; actual source/diff, artifact, retrieval and installation observations; local tests NOT_RUN; hosted CI status as observed; unresolved limitations; disposition of each conditional follow-up; and exact merged PRs/commits.
 
 The intended result is a usable ontology for divergent inquiry, expressed through the existing agent-native product. It should preserve what changed in the question, frame or candidate and let later inquiry recover that meaning without treating a tidy representation as proof of creativity.
+
+
+## 11. Implementation completion account — 2026-11-04
+
+The owner authorized execution of every core task and delegated routine owner
+choices. The implementation retained the proposed conceptual/documentary
+boundary: eight roles, sparse expressions, qualified local identities,
+source-attributed relationships, portable guidance and selective reviewed
+knowledge. All original exploration files, candidate identities, seven GD
+families, 19 curated possibilities and historical rankings remain intact.
+
+| Task | Delivered result and integration | Actual evidence |
+| --- | --- | --- |
+| 1 | Semantic module and local competencies; [PR #726](https://github.com/ThorStarlord/sensemaking-skills/pull/726), merge `635d9b0d560ad5160b73b72eee1e8c1672bdded9` | Definitions, relation endpoints, identity/epistemic boundaries and source/diff review |
+| 2 | Portable profile/template and source-bound cases; [PR #728](https://github.com/ThorStarlord/sensemaking-skills/pull/728), merge `e22bcf1e0805f49425d3581ba0377acd4311853d` | Six source files checked at the containing baseline; historical labels preserved; C12 explicitly illustrative |
+| 3 | Conditional entrypoint/creative/funnel guidance; [PR #729](https://github.com/ThorStarlord/sensemaking-skills/pull/729), merge `5b1e01e2dcdb78cd8f7987e6e56854742b3dd7c7` | Combined final Skill content at `12e45fab6844eb9e8226f0f259e33a00718b22f6` built into a real wheel and installed into an isolated project; 19 Skills; all three relevant trees current |
+| 4 | Existing-schema definitions/source pack and retention guidance; [PR #730](https://github.com/ThorStarlord/sensemaking-skills/pull/730), merge `8c6765de6dd406445f5a1cc67dad70b3bc7fc27e` | Valid 9-claim/3-relation proposal; committed index of 202 claims/208 relations; actual search and two explanations recovered source meanings |
+| 5 | Fresh-context consumer reconstruction completed; closure documentation integration in progress | All ten local questions recovered at the documentary level; CQ-03 illustrative only; no Critical, Important or Minor defect; coverage handoff inspected without a new assessment |
+| 6 | Navigation and capability delta prepared; final integration/merged-file observations pending | Historical portfolios and current strategy retained; final receipt follows the work commit |
+
+Detailed observations, source revisions, wheel checksum, reproduction commands,
+reader answers and limits live in the
+[competency and representation account](../../semantic-architecture/divergent-exploration-competency-v1.md).
+The [case record](../../semantic-architecture/divergent-exploration-reference-cases-v1.md)
+retains the actual reader reconstruction boundary.
+
+### Bounded decisions and costs
+
+- Use a conceptual ontology plus documentary profile under the existing
+  executable knowledge contract. This preserves all ten examined meanings;
+  detailed instance comparisons remain prose-dependent.
+- Keep questions/fragments partial and preserve local/original identity.
+  More structured material candidates can use existing prospective concepts
+  when warranted; retention does not itself promote them.
+- Use the current entrypoint and whole-tree packaging mechanism. No new Skill,
+  profile, default, registry, parser, query or installer change was needed.
+  User-wide installations receive updates through their normal update path.
+- Check the combined portable content after the retention guidance landed.
+  The real wheel/install observation completes Task 3's previously pending
+  delivery acceptance without duplicating an immediately superseded build.
+- Follow current source/diff and real-artifact verification policy. Local unit
+  and synthetic evidence tests were **NOT_RUN**; hosted CI and release gates
+  were preserved. A merge is not a statement that pending CI passed.
+
+### Conditional decisions
+
+- **C1 — DEFERRED: no executable consumer requirement.** The actual reader
+  recovered the needed meanings. A parsed artifact needs a concrete consumer
+  and an identified documentary failure before it becomes warranted.
+- **C2 — NO CHANGE WARRANTED.** Existing definitions, references and source
+  reading preserved the bounded answers; no shared vocabulary or specialized
+  query extension is required for v1 completion.
+- **C3 — SEPARATE PROGRAM; NOT EXECUTED BY THIS IMPLEMENTATION.** The retained
+  cases and reader exercise count as zero fresh qualification trials. The
+  concurrently added [DE-A normal-use record](../../normal-use/2026-11-04-de-a-atlas-divergent-exploration.md)
+  is a separate source-based inquiry with its own independence and installed
+  version-equivalence limits; this implementation neither qualifies it nor
+  claims it used the newly delivered guide.
+
+Source fidelity, documentary reconstruction, structural validity, retrieval
+and installed delivery are established only within the recorded scope.
+Independent use of the new guide, host auto-discovery, improved creativity,
+repeatability and graph-specific causal benefit remain unestablished by this
+work. These optional inquiries do not become an automatic backlog.
