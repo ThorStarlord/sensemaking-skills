@@ -435,6 +435,20 @@ These connect proposed structures, paths and consequences ([`prospective-reasoni
 
 ## Temporal and scope rules
 
+### Divergent inquiry relationships
+
+[Divergent Exploration Ontology v1, section 3](divergent-exploration-ontology.md#3-relationship-meanings)
+owns the documentary meanings, endpoints and source requirements for inquiry,
+question, frame, lens, expression, transformation, landscape and judgment
+relations. Each material assertion preserves its attribution, comparison basis,
+scope and uncertainty. An observed source passage establishes what it says;
+interpreting that passage or asserting candidate identity still needs a
+semantic basis. Neither near duplication nor grouping destroys source identity.
+These names add no executable predicate, and ExploratoryJudgment remains a
+Claim role rather than widening architecture-specific ComparativeJudgment.
+
+### General temporal rules
+
 A material repository relation should be interpreted as:
 
 ```text
