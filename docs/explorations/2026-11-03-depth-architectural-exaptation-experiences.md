@@ -82,7 +82,7 @@ This has three distinct moves, each conditional:
 
 ### Deliberate negative control: the owner-controlled future dashboard
 
-A fictional experience in which the owner sees unranked architecture cards, chooses one, and asks the agent to explain the options would largely **RESTATE** [Generative Depth mechanism F](2026-11-02-generative-depth-repository-knowledge.md), existing agent-native architectural synthesis and curated possibility ecology. Remove the zero-width separator in “REST​ATE” when reading: the disposition is simply **RESTATED**. Different visual organization or a renamed planner is neither evidence of a new capability nor of new user ends.
+A fictional experience in which the owner sees unranked architecture cards, chooses one, and asks the agent to explain the options would largely **RESTATE** [Generative Depth mechanism F](2026-11-02-generative-depth-repository-knowledge.md), existing agent-native architectural synthesis and curated possibility ecology. Its novelty disposition is **RESTATED**, not a newly discovered product outcome. Different visual organization or a renamed planner is neither evidence of a new capability nor of new user ends.
 
 **Why this control matters:** if the inquiry cannot explain a difference in *what the beneficiary can want, question or accomplish*—as distinct from the design of the answer—it should report **RESTATED** and stop, not invent another interface family.
 
