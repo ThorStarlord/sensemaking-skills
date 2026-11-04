@@ -198,6 +198,11 @@ meanings and use the target's own sources and retention conventions.
 
 ## 7. Competency and growth boundary
 
+Use the [portable guide](../../skills/strategic-repository-analysis/references/divergent-exploration-v1.md)
+and optional [record template](../../skills/strategic-repository-analysis/references/divergent-exploration-record-template.md)
+to apply the model. The [reference cases](divergent-exploration-reference-cases-v1.md)
+preserve real archive labels and scoped judgments alongside a labeled fragment.
+
 The [local competency matrix](divergent-exploration-competency-v1.md) maps
 these meanings to existing CQ-099/100 and CQ-103..114. Source fidelity,
 documentary reconstruction, structural validity, retrieval, installed delivery,
