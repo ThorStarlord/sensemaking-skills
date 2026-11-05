@@ -2,8 +2,8 @@ artifact_id: sensemaking_session_receipt
 schema_version: 1
 session_ref: 2026-11-05-strategic-evolution-learning-ontology-implementation
 state: final
-created_at: '2026-11-05T05:52:42.068Z'
-updated_at: '2026-11-05T05:53:15.548Z'
+created_at: '2026-11-05T05:52:42Z'
+updated_at: '2026-11-05T05:53:15Z'
 target_repository: ThorStarlord/sensemaking-skills
 source_identity:
   start_ref: 095ae3fdaec229bb5d2d49e7fe5a95969f8ab22e
