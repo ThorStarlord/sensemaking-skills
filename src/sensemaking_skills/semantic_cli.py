@@ -288,6 +288,103 @@ def register_semantic_commands(root_cli: click.Group) -> None:
         payload["code"] = "SEMANTIC_KNOWLEDGE_QUERY"
         _emit(payload, output_json=output_json)
 
+    @semantic_group.command(name="knowledge-view-export")
+    @click.option("--db", "db_path", required=True, type=click.Path(exists=True, dir_okay=False, path_type=Path))
+    @click.option("--repository", "repository_id", required=True)
+    @click.option("--target-ref", required=True, help="Exact indexed Git revision; not the active worktree")
+    @click.option("--focus-ref", required=True, help="Existing claim ID in the indexed snapshot")
+    @click.option("--question", default="Inspect source-qualified relationships")
+    @click.option("--depth", type=click.IntRange(1, 4), default=1,
+                  help="Explicit-edge traversal depth; 1 uses the direct explain neighborhood")
+    @click.option("--max-nodes", type=click.IntRange(1, 250), default=80)
+    @click.option("--max-edges", type=click.IntRange(0, 250), default=160)
+    @click.option("--format", "format_name", type=click.Choice(["json", "html"]), default="json")
+    @click.option("--output", "output_path", required=True, type=click.Path(dir_okay=False, path_type=Path))
+    @click.option("--json", "output_json", is_flag=True)
+    def semantic_knowledge_view_export(
+        db_path: Path, repository_id: str, target_ref: str, focus_ref: str,
+        question: str, depth: int, max_nodes: int, max_edges: int,
+        format_name: str, output_path: Path, output_json: bool,
+    ) -> None:
+        """Export a bounded read-only graph view, not a new canonical knowledge record."""
+        from .semantic_architecture.knowledge_view import (
+            build_graph_exploration_view, render_graph_view_html,
+        )
+
+        try:
+            if not output_path.parent.is_dir() or output_path.exists() or output_path.is_symlink():
+                raise ValueError("output parent must exist and output file must not already exist")
+            if output_path.resolve() == db_path.resolve():
+                raise ValueError("cannot overwrite the knowledge index")
+            output_parts = output_path.resolve().parts
+            if any(output_parts[i:i + 2] == (".sensemaking", "knowledge")
+                   for i in range(len(output_parts) - 1)):
+                raise ValueError("graph views must not be written into reviewed knowledge")
+            if output_path.suffix.lower() != (".html" if format_name == "html" else ".json"):
+                raise ValueError("output file suffix must match --format")
+            query = query_knowledge(
+                db_path,
+                repository=repository_id, target_ref=target_ref,
+                operation="explain" if depth == 1 else "impact",
+                subject=focus_ref, limit=250, depth=depth,
+            )
+            view = build_graph_exploration_view(
+                query, question=question, focus_ref=focus_ref,
+                max_nodes=max_nodes, max_edges=max_edges,
+            )
+            contents = (
+                render_graph_view_html(view)
+                if format_name == "html"
+                else json.dumps(view, ensure_ascii=True, sort_keys=True, indent=2) + "\n"
+            )
+            output_path.write_text(contents, encoding="utf-8")
+        except (ValueError, OSError, UnicodeError, KeyError, TypeError) as exc:
+            raise click.ClickException(str(exc)) from exc
+        _emit({
+            "code": "SEMANTIC_GRAPH_VIEW_EXPORTED",
+            "repository": view["repository"], "target_ref": view["target_ref"],
+            "focus_ref": view["focus_ref"], "format": format_name,
+            "output": str(output_path), "nodes": len(view["nodes"]),
+            "edges": len(view["edges"]), "coverage": view["coverage"],
+            "semantic_truth_established": False, "action_authorized": False,
+        }, output_json=output_json)
+
+    @semantic_group.command(name="knowledge-view-render")
+    @click.option("--input", "input_path", required=True, type=click.Path(exists=True, dir_okay=False, path_type=Path))
+    @click.option("--output", "output_path", required=True, type=click.Path(dir_okay=False, path_type=Path))
+    @click.option("--json", "output_json", is_flag=True)
+    def semantic_knowledge_view_render(
+        input_path: Path, output_path: Path, output_json: bool,
+    ) -> None:
+        """Render a checked-format source-attributed view; original semantic truth unverified."""
+        from .semantic_architecture.knowledge_view import (
+            render_graph_view_html, validate_graph_exploration_view,
+        )
+
+        try:
+            if input_path.stat().st_size > 4_000_000:
+                raise ValueError("graph view input exceeds 4 MB")
+            if not output_path.parent.is_dir() or output_path.exists() or output_path.is_symlink():
+                raise ValueError("output parent must exist and output file must not already exist")
+            if output_path.suffix.lower() != ".html":
+                raise ValueError("render output must be .html")
+            output_parts = output_path.resolve().parts
+            if any(output_parts[i:i + 2] == (".sensemaking", "knowledge")
+                   for i in range(len(output_parts) - 1)):
+                raise ValueError("graph views must not be written into reviewed knowledge")
+            data = json.loads(input_path.read_text(encoding="utf-8"))
+            view = validate_graph_exploration_view(data)
+            html = render_graph_view_html(view)
+            output_path.write_text(html, encoding="utf-8")
+        except (ValueError, OSError, UnicodeError, KeyError, TypeError, json.JSONDecodeError) as exc:
+            raise click.ClickException(str(exc)) from exc
+        _emit({
+            "code": "SEMANTIC_GRAPH_VIEW_RENDERED",
+            "repository": view["repository"], "target_ref": view["target_ref"],
+            "focus_ref": view["focus_ref"], "output": str(output_path),
+            "source_truth_verified": False, "action_authorized": False,
+        }, output_json=output_json)
+
     @semantic_group.command(name="knowledge-audit")
     @click.option("--db", "db_path", required=True, type=click.Path(exists=True, dir_okay=False, path_type=Path))
     @click.option("--repo", "repo_root", required=True, type=click.Path(exists=True, file_okay=False, path_type=Path))
