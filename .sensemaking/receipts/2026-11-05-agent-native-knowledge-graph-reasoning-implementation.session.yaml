@@ -54,7 +54,7 @@ responsibilities:
     responsibility: Qualify expressive/query expansion against an actual historical consumer and preserve no-go decisions
     capability: ordinary_coding
     status: completed
-    reason: PR 760 source-first reentry reconstructed ASSUMPTION-1 REVISE, ASSUMPTION-2 CONFIRM and PATH-1 CONTINUE/REAFFIRM. No source-checked consumer defect warranted new schema, a premise-context query or a duplicated reviewed knowledge pack; all three were NO_GO.
+    reason: PR 760 reconstructed revised and confirmed assumptions with PATH-1 reaffirmed. No real consumer gap warranted new schema, query, or reviewed knowledge pack (NO_GO).
     artifact_refs:
       - docs/normal-use/2026-11-05-premise-sensitive-reconsideration-first-use.md
       - docs/semantic-architecture/premise-sensitive-reconsideration-contract-v1.md
@@ -67,7 +67,7 @@ responsibilities:
     responsibility: Implement a bounded exact-SHA read-only graph projection and an optional offline visual inspector
     capability: ordinary_coding
     status: completed
-    reason: PR 761 merged a source-pinned GraphExplorationView v1 projection, optional JSON/HTML CLI exports, a structurally checked source-attributed render command, a bundled offline SVG/HTML inspection UI, temporary hypothetical premise scenario and copy-ready coding-agent follow-up. The graph is not an automatic semantic reasoner and the UI never writes reviewed knowledge.
+    reason: PR 761 merged a bounded source-pinned JSON/HTML view, offline graph inspector, scenario overlay, and manual agent copy-back. No semantic inference or reviewed-knowledge writes.
     artifact_refs:
       - src/sensemaking_skills/semantic_architecture/knowledge_view.py
       - src/sensemaking_skills/semantic_architecture/view_assets/graph_view.html
@@ -90,7 +90,7 @@ responsibilities:
     responsibility: Integrate user guidance, reconcile hosted validation and preserve strategic authority
     capability: ordinary_coding
     status: completed
-    reason: Repository docs and plan record agent-primary/graph-secondary usage, explicit source-only fallback, no schema migration or new product thesis, and the independent benefit ceiling. A bounded older receipt enum mismatch identified by hosted CI was corrected without changing its original NO_NEW_KNOWLEDGE_PACK disposition.
+    reason: Docs preserve the primary coding agent, optional graph, and unchanged strategy. An older receipt validation-enum defect was repaired without changing its NO_NEW_KNOWLEDGE_PACK decision.
     artifact_refs:
       - docs/semantic-architecture/agent-native-graph-viewer-v1.md
       - docs/superpowers/plans/2026-11-05-agent-native-knowledge-graph-reasoning.md
@@ -145,10 +145,10 @@ open_questions:
     durable_ref: docs/semantic-architecture/agent-native-graph-viewer-v1.md
 stop:
   disposition: GOAL_SATISFIED
-  reason: Bounded source-level agent guidance, conditional ontology decision and the optional graph export/viewer are merged or included in final integration. The user-visible primary agent interface remains canonical; live browser/independent advantage are not claimed.
+  reason: Agent-first guidance and optional source-bound graph viewer are implemented. Local live-browser and independent-agent benefit remain unverified.
 next:
   warranted_responsibility: null
   blocked_on: []
 persistence: committed
-claim_ceiling: Source and hosted distribution evidence support a bounded initial implementation, not a run-through of a local browser, an independent hosted coding-agent inquiry, verified causal graph inference, strategic change or a validated new product goal. Local unit/synthetic tests were NOT_RUN.
+claim_ceiling: Source and hosted distribution evidence support initial implementation, not browser use, independent agent benefit, causal inference, strategy change or validated new product goals. Local unit/synthetic tests NOT_RUN.
 action_authorized_by_receipt: false
