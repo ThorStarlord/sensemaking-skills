@@ -129,3 +129,20 @@ The [CDS-CQ-01..14 questions](convergent-direction-selection-competency-v1.md) a
 Historical examples distinguish the **November 3 unselected convergent report**, **November 4 recommended owner-agency inquiry**, **owner-ratified ADR 0034**, **provisional architecture feedback**, and **normative NO_SELECTION/OPTION_SET_INCOMPLETE** without inventing independent trials.
 
 **The acceptance ceiling is documentary reconstruction and usable installed guidance.** Better independent agent choice quality, user satisfaction, causal graph advantage, automatic continuation/host loading, and empirical creative benefit remain unqualified. The ontology does not itself choose a direction.
+
+## 9. Reconsideration through connected inquiry, not automatic reselection
+
+A [Connected Prospective Inquiry](connected-prospective-inquiry-ontology.md)
+can expose a new conditional consequence, a changed premise or an adversarial
+challenge to a `CandidateWarrant`, `ConvergenceRationale` or actually sourced
+`Decision`. The **Convergent Reassessment** profile uses existing
+`AssessmentRevisionAccount` semantics to preserve the original actor, purpose,
+option identities and date. A recommendation may narrow or change without a
+new `ScopedDirectionSelection`. Reopening an adopted selection needs the
+real selecting actor/authority and decision-specific warrant; no source
+or graph change triggers it automatically.
+
+Product-and-technical `DesignRationaleView` is a proposal, not a selected
+`ArchitectureOption` or canonical PRD. These distinctions are exercised in
+[source-pinned cases](connected-prospective-inquiry-reference-cases-v1.md)
+without widening existing `evaluates`, `prefers` or `selects` endpoints.
