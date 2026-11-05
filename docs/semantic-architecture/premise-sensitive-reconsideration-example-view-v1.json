@@ -1,0 +1,227 @@
+{
+  "view_version": 1,
+  "repository": "ThorStarlord/sensemaking-skills",
+  "target_ref": "1f7d4edc432dae5b7526675217cc798adf4e425e",
+  "indexed_ref": null,
+  "assessed_ref": "aa13f40115b52f9e7687d742cbc8430d5a9a4a25",
+  "question": "If the separate-session knowledge-retrieval premise is qualified, what should we reconsider and what remains unchanged?",
+  "focus_ref": "historical:20261023:assumption1",
+  "provenance": "SOURCE_INTERPRETED",
+  "source_scope": [
+    "artifacts/history/2026-10-23-strategic-repository-analysis.md",
+    "artifacts/history/2026-10-24-strategic-reconciliation.md",
+    "docs/semantic-architecture/strategic-evolution-learning-reference-cases-v1.md"
+  ],
+  "explicit_limits": [
+    "Manually source-interpreted display of two historical strategic artifacts; not stored in the executable indexed graph.",
+    "The 2026-10-23 strategic analysis assessed aa13f40; 2026-10-24 reconciliation assessed b5fc389. Display target_ref is source inspection baseline, not original analyzed world.",
+    "Source-declared view-only relation names below are for inspection; they are not new executable knowledge predicates.",
+    "A historical Level-3 path selection is not permission to build, merge, deploy or change Level-4 intent."
+  ],
+  "nodes": [
+    {
+      "id": "historical:20261023:assumption1",
+      "kind": "hypothesis",
+      "label": "ASSUMPTION-1: later separate sessions will query reviewed knowledge when relevant.",
+      "epistemic_status": "declared",
+      "authority_kind": "document",
+      "authority_ref": "artifacts/history/2026-10-23-strategic-repository-analysis.md",
+      "establishment": "SOURCE_DECLARED",
+      "source_ref": "artifacts/history/2026-10-23-strategic-repository-analysis.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-23-strategic-repository-analysis.md"
+      ]
+    },
+    {
+      "id": "historical:20261023:assumption2",
+      "kind": "hypothesis",
+      "label": "ASSUMPTION-2: auto-loaded context continues to carry core source/contract constraints.",
+      "epistemic_status": "declared",
+      "authority_kind": "document",
+      "authority_ref": "artifacts/history/2026-10-23-strategic-repository-analysis.md",
+      "establishment": "SOURCE_DECLARED",
+      "source_ref": "artifacts/history/2026-10-23-strategic-repository-analysis.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-23-strategic-repository-analysis.md"
+      ]
+    },
+    {
+      "id": "historical:20261023:path1",
+      "kind": "alternative",
+      "label": "PATH-1: accrete useful reviewed knowledge through genuine engineering responsibilities; selected in original analysis.",
+      "epistemic_status": "declared",
+      "authority_kind": "document",
+      "authority_ref": "artifacts/history/2026-10-23-strategic-repository-analysis.md",
+      "establishment": "SOURCE_DECLARED",
+      "source_ref": "artifacts/history/2026-10-23-strategic-repository-analysis.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-23-strategic-repository-analysis.md"
+      ]
+    },
+    {
+      "id": "historical:20261023:path2",
+      "kind": "alternative",
+      "label": "PATH-2: bounded product-core bootstrap before accreting; considered but not selected.",
+      "epistemic_status": "declared",
+      "authority_kind": "document",
+      "authority_ref": "artifacts/history/2026-10-23-strategic-repository-analysis.md",
+      "establishment": "SOURCE_DECLARED",
+      "source_ref": "artifacts/history/2026-10-23-strategic-repository-analysis.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-23-strategic-repository-analysis.md"
+      ]
+    },
+    {
+      "id": "historical:20261024:assumption1-revision",
+      "kind": "observation",
+      "label": "2026-10-24: REVISE ASSUMPTION-1; sessions can only query reviewed knowledge that they can reach through a host/pointer.",
+      "epistemic_status": "declared",
+      "authority_kind": "document",
+      "authority_ref": "artifacts/history/2026-10-24-strategic-reconciliation.md",
+      "establishment": "SOURCE_DECLARED",
+      "source_ref": "artifacts/history/2026-10-24-strategic-reconciliation.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-24-strategic-reconciliation.md"
+      ]
+    },
+    {
+      "id": "historical:20261024:assumption2-confirm",
+      "kind": "observation",
+      "label": "2026-10-24: CONFIRM ASSUMPTION-2 regarding auto-loaded instruction contracts.",
+      "epistemic_status": "declared",
+      "authority_kind": "document",
+      "authority_ref": "artifacts/history/2026-10-24-strategic-reconciliation.md",
+      "establishment": "SOURCE_DECLARED",
+      "source_ref": "artifacts/history/2026-10-24-strategic-reconciliation.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-24-strategic-reconciliation.md"
+      ]
+    },
+    {
+      "id": "historical:20261024:strategic-result",
+      "kind": "decision",
+      "label": "2026-10-24: CONTINUE PATH-1, transition PARTIAL, strategic implication REAFFIRM; no new product thesis.",
+      "epistemic_status": "declared",
+      "authority_kind": "document",
+      "authority_ref": "artifacts/history/2026-10-24-strategic-reconciliation.md",
+      "establishment": "SOURCE_DECLARED",
+      "source_ref": "artifacts/history/2026-10-24-strategic-reconciliation.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-24-strategic-reconciliation.md"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": "historicalrel:01",
+      "subject": "historical:20261023:path1",
+      "object": "historical:20261023:assumption1",
+      "predicate": "lists_assumption",
+      "role": "SUPPORTING",
+      "establishment": "SOURCE_DECLARED",
+      "epistemic_status": "declared",
+      "source_ref": "artifacts/history/2026-10-23-strategic-repository-analysis.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-23-strategic-repository-analysis.md"
+      ],
+      "scenario_only": false,
+      "view_only": true
+    },
+    {
+      "id": "historicalrel:02",
+      "subject": "historical:20261023:path1",
+      "object": "historical:20261023:assumption2",
+      "predicate": "lists_assumption",
+      "role": "SUPPORTING",
+      "establishment": "SOURCE_DECLARED",
+      "epistemic_status": "declared",
+      "source_ref": "artifacts/history/2026-10-23-strategic-repository-analysis.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-23-strategic-repository-analysis.md"
+      ],
+      "scenario_only": false,
+      "view_only": true
+    },
+    {
+      "id": "historicalrel:03",
+      "subject": "historical:20261023:path2",
+      "object": "historical:20261023:assumption2",
+      "predicate": "lists_assumption",
+      "role": "SUPPORTING",
+      "establishment": "SOURCE_DECLARED",
+      "epistemic_status": "declared",
+      "source_ref": "artifacts/history/2026-10-23-strategic-repository-analysis.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-23-strategic-repository-analysis.md"
+      ],
+      "scenario_only": false,
+      "view_only": true
+    },
+    {
+      "id": "historicalrel:04",
+      "subject": "historical:20261024:assumption1-revision",
+      "object": "historical:20261023:assumption1",
+      "predicate": "revises_interpretation_of",
+      "role": "CONTEXT_ONLY",
+      "establishment": "SOURCE_DECLARED",
+      "epistemic_status": "declared",
+      "source_ref": "artifacts/history/2026-10-24-strategic-reconciliation.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-24-strategic-reconciliation.md"
+      ],
+      "scenario_only": false,
+      "view_only": true
+    },
+    {
+      "id": "historicalrel:05",
+      "subject": "historical:20261024:assumption2-confirm",
+      "object": "historical:20261023:assumption2",
+      "predicate": "confirms_historical_premise",
+      "role": "CONTEXT_ONLY",
+      "establishment": "SOURCE_DECLARED",
+      "epistemic_status": "declared",
+      "source_ref": "artifacts/history/2026-10-24-strategic-reconciliation.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-24-strategic-reconciliation.md"
+      ],
+      "scenario_only": false,
+      "view_only": true
+    },
+    {
+      "id": "historicalrel:06",
+      "subject": "historical:20261024:strategic-result",
+      "object": "historical:20261023:path1",
+      "predicate": "reaffirms_prior_path",
+      "role": "CONTEXT_ONLY",
+      "establishment": "SOURCE_DECLARED",
+      "epistemic_status": "declared",
+      "source_ref": "artifacts/history/2026-10-24-strategic-reconciliation.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-24-strategic-reconciliation.md"
+      ],
+      "scenario_only": false,
+      "view_only": true
+    }
+  ],
+  "comparisons": [
+    {
+      "id": "historicalcomparison:20261023to20261024",
+      "before_ref": "aa13f40115b52f9e7687d742cbc8430d5a9a4a25",
+      "after_ref": "b5fc38960491655ffa5d01547c281485a4d59c00",
+      "source_ref": "artifacts/history/2026-10-24-strategic-reconciliation.md",
+      "summary": "ASSUMPTION-1: REVISE (reachability prerequisite); ASSUMPTION-2: CONFIRM; PATH-1: CONTINUE; PATH-1/T1: PARTIAL; Level-3 direction: REAFFIRM. No automatic strategy reversal."
+    }
+  ],
+  "scenarios": [],
+  "coverage": {
+    "omitted_nodes": 0,
+    "omitted_edges": 0,
+    "truncated": false,
+    "source_truncated": false,
+    "unassessed": [
+      "This is a source-interpreted historical view, not automatically validated machine semantic edges."
+    ]
+  },
+  "semantic_truth_established": false,
+  "action_authorized": false
+}
