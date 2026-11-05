@@ -433,6 +433,24 @@ These connect proposed structures, paths and consequences ([`prospective-reasoni
 **Meaning:** a provisional preference, attributed to whoever formed it, favors an option or path.  
 **Prohibited inference:** `prefers` is not `selects`, and `selects` is not authorization to execute, merge or release.
 
+### Connected prospective inquiry relations (documentary, not predicates)
+
+The [Connected Prospective Inquiry Ontology](connected-prospective-inquiry-ontology.md#3-conceptual-relationship-crosswalk-documentary-only)
+uses explanatory relations within dated reports: a consequence view *examines*
+a typed premise and *describes* conditional effects; an existing
+`AssessmentRevisionAccount` *reconsiders* a historical judgment *because of*
+new consequences/evidence; a challenge *targets* an exact claim and *answers*
+with supported rebuttal, scoped revision or acknowledged residual; a design
+rationale *connects* desired outcomes/requirements to proposed components and
+contracts. Each must preserve author, source, assessed revision, epistemic
+status, beneficiary and applicability where material.
+
+These verbs do **not** add machine predicates or composition rules. In
+particular, `mayProduce` and `mayEnable` are non-transitive hypotheses;
+`evaluates`, `prefers` and `selects` keep their existing architecture/path
+endpoints; a response is not a verified repair; a proposed technical element
+is not implemented by appearing in a spec.
+
 ## Temporal and scope rules
 
 ### Divergent inquiry relationships
