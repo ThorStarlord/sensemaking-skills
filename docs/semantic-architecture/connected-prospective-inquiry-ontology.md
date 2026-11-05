@@ -168,6 +168,19 @@ For each consequential proposed design element, state **goal/requirement -> stru
 
 **Negative design case.** A technically detailed graph-injection runtime spec with no product beneficiary, contractual consumer or authority to impose it is not an authorized coherent solution. If an option is merely preferred in an `architectural_synthesis`, presenting it as "approved final architecture" is a factual authority error. Even a well-grounded, internally consistent PRD/design is **not** implemented code.
 
+### Interface to broader Strategic Evolution and Learning
+
+The [Strategic Evolution & Learning Ontology](strategic-evolution-learning-ontology.md)
+asks a **wider** pair of questions: what system future is desirable under
+current governing purpose, and what source-attributed understanding changed.
+This section's **Convergent Reassessment** still targets one *dated,
+purpose-relative* `AssessmentJudgment`/`PortfolioSnapshot`; a general
+`LearningAccount` may instead correct an existing capability interpretation,
+qualify a lesson, leave `NO_MODEL_CHANGE`, or return evidence to a canonical
+`strategic_reconciliation` **only when** a prior Level-3 analysis is affected.
+No second judgment-revision producer, automatic strategy reopening or
+mandatory two-profile stage is implied.
+
 ## 8. Feedback, stop and source preservation
 
 A possible substantive feedback pattern—not a workflow:
