@@ -61,8 +61,8 @@ responsibilities:
         result: PASS
       - command: Hosted PR 755 Product Validation and Release Candidate Distribution
         result: PASS
-      - command: Independent new-agent strategic or creative benefit trial
-        result: NOT_ASSESSED
+      - command: Independent new-agent strategic or creative benefit trial (benefit NOT_ASSESSED)
+        result: NOT_RUN
   - id: R-3
     responsibility: Provide target-portable conditional guidance and source navigation without creating a new public Skill
     capability: ordinary_coding
