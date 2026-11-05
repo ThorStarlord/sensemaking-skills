@@ -47,17 +47,53 @@ No new ontology role is necessary solely to assign an ID to a question. A consum
 
 The [reference-case annotations](convergent-direction-selection-reference-cases-v1.md) pin the historical file-containing revision separately from inspected target baselines. Examples of policy dispositions are **normative**, not fabricated real agent observations.
 
-## 4. Verification record — initial implementation state
+## 4. Implemented-source verification and documentary reconstruction
 
-This document begins with conceptual/baseline interpretation. At initial publication, the case annotations, installed profile and reviewed-knowledge pack are **planned**. Their existence is not inferred from planned paths. Update this section after actual implementation and verification.
+**Source boundary:** The six reference-case annotations are pinned to *report-containing* repository snapshot `ad223927e533268b2867d07851f1993860ace647`. Original November 3/4 reports and ADR 0034 also name their historically inspected target baselines, which do **not** become the date or revision of the containing report. The implemented ontology and portable guide were merged as [PR #742](https://github.com/ThorStarlord/sensemaking-skills/pull/742) at `d1d77a29034cede7ec2d1676c061ab1fbcd09217`; integration and knowledge as [PR #743](https://github.com/ThorStarlord/sensemaking-skills/pull/743) at `a3914b736cc82314833b27d30be8481b9f0a3c6a`. Source integrity and authority boundaries are documented in the [cases](convergent-direction-selection-reference-cases-v1.md).
 
-| Category | Current evidence at creation | Meaning |
+### Hosted real-artifact checks
+
+| Check | Performed result | Claim ceiling |
 | --- | --- | --- |
-| Conceptual definitions and local questions | Drafted in the authored ontology and this matrix | Documentary meaning only |
-| Historical cases | Planned source-pinned annotations | Not yet independent review |
-| Knowledge proposal check and index | **NOT_RUN** at initial publication | Authored source does not imply accepted graph |
-| Fresh installed wheel/reference parity | **NOT_RUN** at initial publication | Package delivery not yet checked |
-| Independent reader / real choice-quality benefit | **NOT_ASSESSED** | No improvement claim |
-| Local unit/synthetic tests | **NOT_RUN** per currently applicable local construction instructions | Not a global rule for other repositories |
+| Authored pack proposal check and exact-commit index | **PASS** in [Source-pinned context consumer on PR #743](https://github.com/ThorStarlord/sensemaking-skills/actions/runs/41945851917/job/126977729220). Pack has **8 declared concepts, 1 source-case claim, 5 supported `references` relations**. | Accepted shape, tracked source paths and constructed index, not semantic truth or enacted selection. |
+| Specific search and explain | **PASS** in [hosted real-path job](https://github.com/ThorStarlord/sensemaking-skills/actions/runs/41945927998/job/126977985070) at exact head `262bdb1975bf8fd2dcfe886bc1509ccecde4f8b5`; queried `ScopedDirectionSelection`, explained `domain_concept:scoped-direction-selection` and `source:convergent-direction-selection-cases`. Log: `CONVERGENCE_PROPOSAL_INDEX_SEARCH_EXPLAIN_PASS`. | Discoverability/explanation of authored concepts and source, not effective comparative judgment. |
+| Built wheel / fresh installed profile | **PASS**, same hosted job built a wheel, installed a new venv and `entrypoint` profile in an isolated project, compared `using-sensemaking/SKILL.md`, portable guide/template and Steward contract byte-for-byte. Log: `CONVERGENCE_INSTALLED_REFERENCE_PARITY_PASS`. | Actual files delivered, not automatic host invocation. |
+| Tested vs merged implementation bytes | **PASS**: selected Skill, knowledge pack and reference-case file blob SHAs on verification head match merged `main@a3914b7`. | The verification-only branch added just a temporary CI workflow. |
+| Temporary workflow persistence | [Verification PR #744](https://github.com/ThorStarlord/sensemaking-skills/pull/744) **closed unmerged**. | No temporary workflow on main. |
+| Local unit / synthetic evidence tests | **NOT_RUN** under repository's then-current owner construction policy. | Not claimed as passed. |
+| Independent reader or real-world choice-quality gain | **NOT_ASSESSED**; only the author's source-bound documentary review below. | No independent agent or causal advantage claim. |
 
-Completion requires a separate revision stating performed checks, exact commit evidence, case reconstruction and remaining limits. A checked document is not an actual owner `Decision`.
+### Author documentary review of fourteen competency questions
+
+The implementer inspected source-cited history and the portable guide to answer each question. This is **author self-review**, not an independent cold-start agent or a user outcome trial.
+
+| Question | Reconstruction from sources and guidance | Documentary fit and limit |
+| --- | --- | --- |
+| **CDS-CQ-01** | S3/ADR 0034 names owner, date, Level-4 choice and authority; S2 names an inquiry recommendation without an adopting actor. | **Faithful** for these cases; no invented owner. |
+| **CDS-CQ-02** | S1 retains multiple outcome alternatives; S5/O1 explains inadequate option sets without a manufactured alternative. | **Faithful** as documented; universal set completeness not measured. |
+| **CDS-CQ-03** | Guide §3 and S5 separate prerequisite warrant from A's relative appeal over B. | **Faithful**; hypothetical A/B is not a historical trial. |
+| **CDS-CQ-04** | S2 identifies owner-agency inquiry rationale, contrary cases and reversal conditions under one purpose. | **Faithful** source interpretation; no measured owner value. |
+| **CDS-CQ-05** | S1 = evaluated but unselected; S2 = recommended only; S3 = actual owner-ratified adoption; S4 = provisional architecture preference. | **Faithful** status separation. |
+| **CDS-CQ-06** | Source-qualified inquiry + method, `poss:`, `arch:`, path, or authorized work remain original targets in ontology/template; no replacement `selected:<copy>` identity. | **Faithful** documentary reference, not new machine identity. |
+| **CDS-CQ-07** | S3 lists adopted product identity/entrypoint, explicit preserved ADR limits and optional construction; S2's proposed intellectual inquiry settles no product thesis. | **Faithful** scope boundary. |
+| **CDS-CQ-08** | S1/S2 retain original alternatives; examples distinguish deferred, declined-for-purpose, complementary, outside-frame and unassessed. | **Faithful** as labels, not normalized graph enum. |
+| **CDS-CQ-09** | Warrant policy's currentness rule and S2's reversal conditions identify when a fresh source-grounded reconsideration is needed. | **Faithful** explanation; no automatic trigger engine. |
+| **CDS-CQ-10** | S6 distinguishes an attractive Futures+Continuity synthesis from a separately justified new combined end and adopted decision. | **Faithful** negative control; combined value unobserved. |
+| **CDS-CQ-11** | S5's normative NO_SELECTION, MORE_EVIDENCE_REQUIRED and OPTION_SET_INCOMPLETE examples show valid outcomes without a forced winner. | **Faithful** policy meaning; no case claiming an observed no-selection episode. |
+| **CDS-CQ-12** | Ontology §6 / guide §5 state later agent inherits the settled question within authority, rechecks decision-critical prerequisites and cannot auto-execute. | **Faithful** intended semantics; autonomous normal-use not qualified. |
+| **CDS-CQ-13** | S1/S2 distinguish containing source revision `ad223927`, their inspected baselines and authoring dates; S3 records historical owner ratification on 2026-10-28. | **Faithful**, with original sources controlling attribution. |
+| **CDS-CQ-14** | Graph proposal/index/search and wheel parity establish structure and delivery; ADR authority and historical source interpretations are separate. | **Faithful** negative boundary; owner benefits unqualified. |
+
+### Adversarial meaning checks and remaining limits
+
+- **Do not** convert November 4's top inquiry to a new owner-adopted direction.
+- **Do not** convert ADR 0034's product-thesis adoption into permission to execute unrelated work.
+- **Do not** infer selection merely because an alternative is preferable to another; target warrant may be missing.
+- **Do not** delete or universally reject nonselected original ideas, force a binary from an incomplete set, or promote untested Futures+Continuity benefits to observed causality.
+- **Do not** treat source drift as automatic strategic reopening, or existing `Decision selects` architecture/path endpoint constraints as broadened graph schema.
+
+**Not established:** independent agent selection quality, effective automatic Skill loading, improved owner agency, causal benefit of structured knowledge, semantic correctness of every historical claim, actual relative value of product futures or authorization for new work.
+
+**Conditional growth only:** formal parsed decision records require a named consumer and demonstrated field handoff; new graph predicates require a real lost scope/reference query under existing mechanisms; independent benefit needs authentic open tasks and appropriate review, not recycled source cases.
+
+The [implementation plan](../superpowers/plans/2026-11-04-convergent-evaluation-direction-selection-ontology.md) and final session receipt report what was actually completed and verified; they cannot make an owner selection by their existence.
