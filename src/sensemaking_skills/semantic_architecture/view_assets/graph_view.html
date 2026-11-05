@@ -61,6 +61,7 @@
     .badge { font-size:10px; display:inline-block; padding:2px 7px; border:1px solid #536f82; border-radius:10px; color:var(--accent); letter-spacing:.03em; }
     .links { display:flex; flex-direction:column; gap:6px; padding-left:17px; margin:6px 0; }
     .links li { color:var(--muted); overflow-wrap:anywhere; font-size:12px; }
+    .links li button { text-align:left; font-size:12px; white-space:normal; width:100%; }
     .questionBox { width:100%; padding:11px; min-height:60px; resize:vertical; }
     .copyarea { width:100%; resize:vertical; padding:10px; min-height:155px; color:var(--muted); font:12px/1.5 ui-monospace, Menlo, Consolas, monospace; }
     .minor { color:var(--soft); font-size:11px; }
@@ -131,6 +132,10 @@
         <div class="panelHead"><h2>Selected record &amp; sources</h2><span class="badge" id="selectedKind"></span></div>
         <div id="inspector" aria-live="polite"></div>
         <div class="sourceLimit">
+          <h3>Historical comparison (if supplied)</h3>
+          <ul id="comparisonList" class="links"></ul>
+        </div>
+        <div class="sourceLimit">
           <details><summary>View limitations, omissions, and original query boundaries</summary>
           <ul id="limitations" class="links"></ul>
           </details>
@@ -175,7 +180,7 @@
   const nodes = Array.isArray(view.nodes) ? view.nodes.slice() : [];
   const edges = Array.isArray(view.edges) ? view.edges.slice() : [];
   const nodeById = new Map(nodes.map(n => [n.id, n]));
-  const ui = { selected: view.focus_ref, scenario: null };
+  const ui = { selected: view.focus_ref, selectedEdge: null, scenario: null };
   const svgNS = "http://www.w3.org/2000/svg";
   const text = (id, value) => { $(id).textContent = String(value ?? "NOT_ASSESSED"); };
   const clip = (value, max) => String(value ?? "").length > max ? String(value).slice(0, max - 1) + "..." : String(value ?? "");
@@ -202,6 +207,15 @@
     ...ids(view.explicit_limits), ...ids(view.source_scope).map(x => "Scope: " + x),
     ...omissions, "Index/currentness does not prove semantic truth. Browser scenarios do not write source."
   ];
+  const comparisons = Array.isArray(view.comparisons) ? view.comparisons : [];
+  if (!comparisons.length) {
+    const li=document.createElement("li");li.textContent="NOT_ASSESSED — no comparison supplied in this view.";$("comparisonList").appendChild(li);
+  }
+  for (const c of comparisons.slice(0,30)) {
+    const li=document.createElement("li");
+    li.textContent=String(c.before_ref || "unknown")+" -> "+String(c.after_ref || "unknown")+": "+String(c.summary || "No summary")+" (source: "+String(c.source_ref || "NOT_ASSESSED")+")";
+    $("comparisonList").appendChild(li);
+  }
   for (const item of limitations) {
     const li = document.createElement("li");
     li.textContent = item;
@@ -228,6 +242,15 @@
   function mark(nodeId) {
     if (!nodeById.has(nodeId)) return;
     ui.selected = nodeId;
+    ui.selectedEdge = null;
+    render();
+  }
+
+  function inspectEdge(edgeId) {
+    const e=edges.find(x=>x.id===edgeId);
+    if(!e)return;
+    ui.selectedEdge=edgeId;
+    ui.selected=e.subject;
     render();
   }
 
@@ -263,7 +286,10 @@
       line.setAttribute("class","edge"); line.setAttribute("aria-label",clip(edge.predicate+" "+edge.role,150));
       const tooltip=document.createElementNS(svgNS,"title");
       tooltip.textContent=edge.id + ": " + edge.subject+" -> "+edge.object+" ("+edge.predicate+"; "+edge.role+")";
-      line.appendChild(tooltip); svg.appendChild(line);
+      line.appendChild(tooltip);
+      line.style.cursor="pointer";
+      line.addEventListener("click",()=>inspectEdge(edge.id));
+      svg.appendChild(line);
     }
 
     for (const node of keep) {
@@ -309,6 +335,19 @@
     infoRow(table,"Source",node.source_ref);
     infoRow(table,"Evidence",ids(node.evidence_refs).join("\n") || "NOT_ASSESSED");
     root.appendChild(table);
+    const focusedEdge=edges.find(e=>e.id===ui.selectedEdge);
+    if(focusedEdge){
+      const eh=document.createElement("h3");eh.textContent="Selected relationship";root.appendChild(eh);
+      const et=document.createElement("table");et.className="infoTable";
+      infoRow(et,"Original ID",focusedEdge.id);
+      infoRow(et,"Endpoints",focusedEdge.subject+" -> "+focusedEdge.object);
+      infoRow(et,"Predicate",focusedEdge.predicate);
+      infoRow(et,"Argument role",focusedEdge.role+" (verify source; adjacency is not necessity)");
+      infoRow(et,"Establishment",focusedEdge.establishment);
+      infoRow(et,"Source",focusedEdge.source_ref);
+      infoRow(et,"Evidence",ids(focusedEdge.evidence_refs).join("\n") || "NOT_ASSESSED");
+      root.appendChild(et);
+    }
     const related=edges.filter(e=>e.subject===node.id||e.object===node.id);
     const heading=document.createElement("h3");heading.textContent="Explicit links ("+related.length+")";root.appendChild(heading);
     if (!related.length) {
@@ -318,9 +357,11 @@
       const ul=document.createElement("ul");ul.className="links";
       for (const e of related.slice(0,25)) {
         const li=document.createElement("li");
-        li.textContent=e.predicate+" / "+e.role+" / "+e.establishment+
+        const btn=document.createElement("button");btn.type="button";
+        btn.textContent=e.predicate+" / "+e.role+" / "+e.establishment+
           ": "+e.subject+" -> "+e.object+" | "+e.source_ref;
-        ul.appendChild(li);
+        btn.addEventListener("click",()=>inspectEdge(e.id));
+        li.appendChild(btn);ul.appendChild(li);
       }
       root.appendChild(ul);
       if (related.length>25) {const p=document.createElement("p");p.className="minor";p.textContent="Inspector lists first 25; view JSON retains all exported links.";root.appendChild(p);}
@@ -367,6 +408,7 @@
 
   function prepare() {
     const node=selectedNode();
+    const selectedEdge=edges.find(e=>e.id===ui.selectedEdge);
     const follow=$("followQuestion").value.trim().slice(0,400);
     const parts=[
       "Please continue this source-grounded inquiry in the primary coding-agent conversation.",
@@ -376,6 +418,7 @@
       "Historical assessed revision: "+(view.assessed_ref || "NOT_ASSESSED"),
       "Selected node: "+(node ? node.id+" ("+node.kind+")" : "NOT_ASSESSED"),
       "Selected original evidence: "+(node ? ids(node.evidence_refs).join("; ") : "NOT_ASSESSED"),
+      "Selected relationship: "+(selectedEdge ? selectedEdge.id+" / "+selectedEdge.predicate+" / "+selectedEdge.role+" / "+selectedEdge.source_ref : "None"),
       "Scenario (UNCOMMITTED / HYPOTHETICAL): "+(ui.scenario ?
          "Investigate if premise "+ui.scenario.premise_id+" does not hold." : "None"),
       "Coverage: "+JSON.stringify(view.coverage || {}),
