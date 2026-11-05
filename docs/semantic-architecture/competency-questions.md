@@ -355,3 +355,14 @@ cover consequence mechanisms/forks, targeted judgment revision, challenge
 response, coherent product-and-technical design and their epistemic/authority
 limits. A documentary answer does not establish independent-agent benefit,
 causal proof, automatic selection or PRD/implementation approval.
+
+
+Strategic future-direction and changed-understanding refinements (without new
+global CQ numbers): [SEL-CQ-01..20](strategic-evolution-learning-competency-v1.md).
+The [two-profile conceptual ontology](strategic-evolution-learning-ontology.md)
+and [source-pinned historical/normative cases](strategic-evolution-learning-reference-cases-v1.md)
+connect future value, path rationale, omitted options, world-versus-interpretation-
+versus-owner change, lesson applicability, strategic reconciliation and
+nonselection. This *extends* but does not claim independent qualification of
+global longitudinal learning CQ-115..130; source-read documentary fit does
+not establish better strategic choices, agent use or cross-repository learning.

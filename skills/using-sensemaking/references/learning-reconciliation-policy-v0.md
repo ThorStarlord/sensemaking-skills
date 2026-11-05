@@ -373,6 +373,23 @@ If the new episode falsifies or limits the old lesson, preserve the historical i
 
 **Worked boundary:** An earlier agent learned that a bounded historical query falsely reported completeness. A later agent editing a different query consumer may use that precedent to check its own omitted-entry semantics, may find the current consumer already correct, or may reject the analogy because the result is an exhaustive enumeration. Only the later decision and its evidence establish which outcome occurred.
 
+### Optional strategic evolution and learning conceptual account
+
+When consequential new evidence or source interpretation needs to remain
+intelligible across agents/contexts, the [portable Strategic Evolution &
+Learning guide](../../strategic-repository-analysis/references/strategic-evolution-learning-v1.md)
+provides an optional `LearningAccount` view distinguishing **WORLD_CHANGED**
+(repository behavior), **UNDERSTANDING_CHANGED** (source/decision-model
+interpretation), and **GOVERNING_INTENT_CHANGED** (actual owner/authority
+choice). They are *documentary lenses, not policy dispositions or schema
+fields*. The guide also describes a `StrategicEvolutionRationale` when a
+material future-direction question is genuinely open; learning alone does
+not force it. Keep current Learning/Reconciliation dispositions, existing
+`strategic_reconciliation` producer, original history, lesson-applicability
+and cross-episode doctrine thresholds unchanged. A valid `NO_MODEL_CHANGE`
+or rejection of an inapplicable historical lesson need not produce a new
+artifact, new priority, new Skill or thesis reopening.
+
 ## 14. Compact use
 
 After a consequential result, ask:
