@@ -56,6 +56,12 @@ units and state the evaluative purpose. Use the conditional reference in
 section 9; the resulting inquiry portfolio is not a strategy decision or
 construction queue.
 
+**Convergent direction selection.** When the actual question is which direction
+should guide the next bounded work, distinguish candidate-specific warrant from
+comparative preference and an actual authority-scoped Decision. A justified
+NO_SELECTION or owner decision handoff is valid. Use the conditional selection
+reference in section 9; selection is not automatic implementation.
+
 - **First engagement** (a repository-level request and no adequate semantic
   model): establish source-grounded domain and architecture knowledge before
   any repository-wide selection, then explore possibilities broadly before
@@ -607,6 +613,7 @@ already stated above, so skipping a file never loses the rule.
 | `references/ontology-first-entry-v1.md` | repository-level understanding, possibility coverage or a consequential final recommendation | a narrow task | understanding before selection; substantive justification |
 | `../strategic-repository-analysis/references/divergent-exploration-v1.md` | a bounded divergent inquiry with material question/frame changes, uncertain candidate identity or durable continuation | a narrow edit or a trivial brainstorm | expression identity stays separate from enduring possibility; standalone divergence keeps its scope |
 | `../strategic-repository-analysis/references/possibility-assessment-v1.md` | a bounded coverage, consolidation, comparison or inquiry-portfolio assessment is warranted | a divergent-only inquiry or direct authorized construction | attributed purposes, method-sensitive inquiry priority and non-comparable entries remain distinct from decisions and work |
+| `../strategic-repository-analysis/references/convergent-direction-selection-v1.md` | the agent must justify selecting a direction or a source-grounded nonselection for an explicit decision question | a comparison-only request, a provisional ranking or an already authorized obvious repair | candidate warrant != comparative preference != adopted scoped decision != action authorization |
 | `references/ontology-first-entry-v1.md` section 4 (longitudinal evidence) | a question asks whether earlier knowledge, receipts or findings were reused, helped or changed a decision | a narrow task that does not turn on earlier records | retention != use; a handover note != independence |
 | `references/decision-observability-v1.md` | maximum decision transparency or detailed Skill-selection audit requested | ordinary proportional explanation | self-reported rationale != observed execution or causal proof |
 | `references/adaptive-skill-composition-v1.md` | choosing, sequencing or interpreting specialist reasoning, or a specialist has returned | the next action is a single obvious step | specialist result != controller decision |
