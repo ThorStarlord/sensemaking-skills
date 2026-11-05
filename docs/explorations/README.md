@@ -229,6 +229,26 @@ Divergent Exploration; a grouped concept is not a new `poss:` identity, an
 inquiry ranking is not a product ranking, and neither authorizes construction.
 The dated source reports and crosswalk remain unchanged.
 
+## Convergent evaluation versus actually selected direction (2026-11-04)
+
+The [Convergent Direction Selection Ontology](../semantic-architecture/convergent-direction-selection-ontology.md)
+makes the bridge from comparative assessment to a **source-attributable,
+scope-limited choice** explicit, without creating a selection engine. Its
+[source-pinned cases](../semantic-architecture/convergent-direction-selection-reference-cases-v1.md)
+show the differences between the November 3 **unselected** convergent
+exploration, the November 4 **recommended** owner-agency inquiry, and the
+actual **owner-ratified Level-4** product identity in ADR 0034. A provisional
+architecture preference, normative NO_SELECTION, an incomplete option set,
+and an attractive-but-unratified synthesis are distinct again.
+The [fourteen competencies](../semantic-architecture/convergent-direction-selection-competency-v1.md)
+document these distinctions and their evidence limits.
+
+The [portable selection guide](../../skills/strategic-repository-analysis/references/convergent-direction-selection-v1.md)
+is conditional on the **actual choice question**. Do not infer owner adoption
+from an inquiry portfolio, grant implementation permission from a decision,
+or remove original unselected expressions and their dispositions. The
+historical sources remain intact.
+
 ## How to read candidate identities and statuses
 
 - **GD-A through GD-G:** exploration-local names for provisional families in the generative-depth record.
