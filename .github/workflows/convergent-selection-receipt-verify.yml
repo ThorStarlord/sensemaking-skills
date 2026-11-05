@@ -1,0 +1,28 @@
+name: Convergent Selection Receipt Validator (temporary)
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/convergent-selection-receipt-verify.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  receipt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate actual retained session receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install pyyaml
+          python scripts/validate-receipt.py .sensemaking/receipts/2026-11-04-convergent-direction-selection-ontology-implementation.session.yaml --target-repo . > "$RUNNER_TEMP/receipt-check.txt"
+          cat "$RUNNER_TEMP/receipt-check.txt"
+          grep -Fx 'RECEIPT_VALID' "$RUNNER_TEMP/receipt-check.txt"
