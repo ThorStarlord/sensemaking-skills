@@ -388,6 +388,17 @@ candidate. Skip this when the paths do not turn on such a choice.
 
 Breadth does not require generating construction paths for every candidate.
 
+**Optional future-direction rationale.** When the decision is not just
+which architecture/path mechanism to compare but *where the system should
+evolve and why*, use the [Strategic Evolution & Learning guide](strategic-evolution-learning-v1.md)
+selectively. Its `StrategicEvolutionRationale` distinguishes genuinely new
+beneficiary ends from enabling capabilities, architecture mechanisms, local
+repairs and simplification; it also preserves omission/deferral risks and
+purpose-relative conditions for revisiting the preference. A returned lesson
+may instead warrant a limited `LearningAccount` with unchanged strategy. This
+is **not** a new Funnel stage or permission to reopen settled Level 3; the
+canonical `strategic_repository_analysis` remains the producer.
+
 ## 8. Comparative selection
 
 A comparison is not yet an **adopted direction**. When the current
