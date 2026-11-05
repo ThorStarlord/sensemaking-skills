@@ -1,0 +1,190 @@
+{
+  "schema_version": 2,
+  "claims": [
+    {
+      "id": "cap:source-pinned-graph-view",
+      "kind": "capability",
+      "statement": "Optional secondary local graph viewer: knowledge-view-export projects one exact-revision explain or impact neighborhood into a bounded JSON or offline HTML view, knowledge-view-render displays a separately attributed view JSON, and the HTML page lets a person inspect records and edges, try a temporary hypothetical premise, and copy a question back to the primary coding-agent conversation.",
+      "authority_kind": "document",
+      "authority_ref": "docs/semantic-architecture/agent-native-graph-viewer-v1.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/agent-native-graph-viewer-v1.md",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:STATUS.md"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "decision_changed": "Whether a task needs the viewer at all: the agent can answer from sources without an index or browser, so reach for a view only when visual inspection of a bounded neighborhood helps.",
+        "claim_ceiling": "Documented role of merged source (PR #761); browser use and agent benefit not established."
+      }
+    },
+    {
+      "id": "component:graph-view-projection",
+      "kind": "component",
+      "statement": "knowledge_view.py projects, structurally validates and renders a GraphExplorationView v1 envelope from query records or curated JSON, using the packaged offline graph_view.html asset. The CLI commands that invoke it live in semantic_cli.py, owned by component:semantic-cli.",
+      "authority_kind": "code",
+      "authority_ref": "src/sensemaking_skills/semantic_architecture/knowledge_view.py",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_view.py",
+        "file:src/sensemaking_skills/semantic_architecture/view_assets/graph_view.html",
+        "file:docs/semantic-architecture/premise-sensitive-reconsideration-contract-v1.md"
+      ],
+      "epistemic_status": "observed",
+      "attributes": {
+        "owned_paths": [
+          "src/sensemaking_skills/semantic_architecture/knowledge_view.py",
+          "src/sensemaking_skills/semantic_architecture/view_assets/graph_view.html"
+        ],
+        "claim_ceiling": "Source inspected at 6f54a4a; nothing was executed."
+      }
+    },
+    {
+      "id": "con:graph-view-secondary-read-only",
+      "kind": "constraint",
+      "statement": "The graph viewer stays secondary and without authority. The coding-agent conversation is the primary interface and needs no browser or index. A view is a bounded presentation, not reviewed knowledge: the browser does not fetch remote content, authenticate, update the reviewed graph, edit strategy, run agents, change source evidence or transmit a message. A hypothetical scenario or copied question only invites investigation; a changed assumption is not a proven change in any linked judgment, a plain references edge is not a necessary premise, and a graph miss is NOT_ASSESSED. Durable knowledge changes go through the normal reviewed process.",
+      "authority_kind": "document",
+      "authority_ref": "docs/semantic-architecture/agent-native-graph-viewer-v1.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/agent-native-graph-viewer-v1.md",
+        "file:docs/semantic-architecture/premise-sensitive-reconsideration-contract-v1.md",
+        "file:docs/superpowers/specs/2026-11-05-agent-native-knowledge-graph-reasoning-design.md",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "decision_changed": "Rejects changes that make the viewer a required step, a graph-authoring surface, a host-integrated action trigger or evidence for a conclusion.",
+        "authority_note": "The design reports owner agreement in conversation on 2026-11-05; no separate owner record or ADR for the viewer was inspected, so this is recorded as document authority, not owner authority."
+      }
+    },
+    {
+      "id": "observation:graph-view-boundaries-in-source",
+      "kind": "observation",
+      "statement": "At 6f54a4a, the view code enforces only mechanical boundaries. The builder and validator reject any view or query whose semantic_truth_established or action_authorized is not false; export and render are create-only and refuse output under .sensemaking/knowledge; edge role is CONTEXT_ONLY for references and contained_in and UNKNOWN otherwise; the HTML asset has no fetch, XMLHttpRequest, remote script or innerHTML use, and scenario and copy state live only in page memory. Validation does not check that a cited source entails an interpretation, and a non-mechanical, non-lexical indexed record is labelled SOURCE_DECLARED without an original-source check.",
+      "authority_kind": "code",
+      "authority_ref": "src/sensemaking_skills/semantic_architecture/knowledge_view.py",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_view.py",
+        "file:src/sensemaking_skills/semantic_architecture/view_assets/graph_view.html",
+        "file:src/sensemaking_skills/semantic_cli.py"
+      ],
+      "epistemic_status": "observed",
+      "attributes": {
+        "claim_ceiling": "Source reading and text search only; browser behavior was not run.",
+        "staleness_condition": "Re-inspect when knowledge_view.py, graph_view.html or the knowledge-view commands in semantic_cli.py change."
+      }
+    },
+    {
+      "id": "observation:graph-view-evidence-ceiling",
+      "kind": "observation",
+      "statement": "At 6f54a4a, the repository records for the viewer that PR #761 head 37809b7 passed hosted Release Candidate Distribution and Semantic Context Re-entry, while Product Validation reported 3,634 passed and one failed, attributed to an older receipt enum. Local unit and synthetic tests, browser interaction, an isolated installed-wheel CLI run, independent later-agent use and comparative creative benefit remain NOT_RUN or NOT_ASSESSED. A text search of tests/, .github/ and scripts/ finds no reference to knowledge_view or knowledge-view; indirect coverage is not assessed.",
+      "authority_kind": "document",
+      "authority_ref": "STATUS.md",
+      "evidence_refs": [
+        "file:STATUS.md",
+        "file:docs/semantic-architecture/agent-native-graph-viewer-v1.md"
+      ],
+      "epistemic_status": "observed",
+      "attributes": {
+        "claim_ceiling": "Records what the documents state; the hosted run logs were not inspected.",
+        "staleness_condition": "Supersede when a browser, installed-wheel or independent-agent run is recorded."
+      }
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel:graph-view-implemented-by-projection",
+      "subject": "cap:source-pinned-graph-view",
+      "predicate": "implemented_by",
+      "object": "component:graph-view-projection",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/agent-native-graph-viewer-v1.md",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_view.py"
+      ]
+    },
+    {
+      "id": "rel:graph-view-implemented-by-semantic-cli",
+      "subject": "cap:source-pinned-graph-view",
+      "predicate": "implemented_by",
+      "object": "component:semantic-cli",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_cli.py"
+      ],
+      "attributes": {
+        "scope": "Only the knowledge-view-export and knowledge-view-render commands"
+      }
+    },
+    {
+      "id": "rel:graph-view-requires-semantic-queries",
+      "subject": "cap:source-pinned-graph-view",
+      "predicate": "requires_capability",
+      "object": "cap:semantic-queries",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:docs/semantic-architecture/agent-native-graph-viewer-v1.md"
+      ],
+      "attributes": {
+        "scope": "knowledge-view-export calls query_knowledge; knowledge-view-render reads a supplied view JSON and does not need an index"
+      }
+    },
+    {
+      "id": "rel:graph-view-constrained-by-secondary-read-only",
+      "subject": "cap:source-pinned-graph-view",
+      "predicate": "constrained_by",
+      "object": "con:graph-view-secondary-read-only",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/agent-native-graph-viewer-v1.md"
+      ]
+    },
+    {
+      "id": "rel:graph-view-constrained-by-agent-control",
+      "subject": "cap:source-pinned-graph-view",
+      "predicate": "constrained_by",
+      "object": "con:agent-owns-semantic-control",
+      "evidence_refs": [
+        "file:docs/superpowers/specs/2026-11-05-agent-native-knowledge-graph-reasoning-design.md"
+      ],
+      "attributes": {
+        "scope": "The design names ADR 0029 as governing: no deterministic planner or authority expansion, and the UI is not a master interface"
+      }
+    },
+    {
+      "id": "rel:graph-view-references-ontology-first",
+      "subject": "cap:source-pinned-graph-view",
+      "predicate": "references",
+      "object": "decision:ontology-first-adaptive-sensemaking",
+      "evidence_refs": [
+        "file:docs/superpowers/specs/2026-11-05-agent-native-knowledge-graph-reasoning-design.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "governedBy",
+        "establishment": "the design cites ADR 0034 as governing product; ADR 0034 itself does not mention the viewer, so this is not decided_by"
+      }
+    },
+    {
+      "id": "rel:graph-view-references-boundaries-in-source",
+      "subject": "cap:source-pinned-graph-view",
+      "predicate": "references",
+      "object": "observation:graph-view-boundaries-in-source",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_view.py"
+      ],
+      "attributes": {
+        "role": "implementation_evidence",
+        "establishment": "pointer to observed claim"
+      }
+    },
+    {
+      "id": "rel:graph-view-references-evidence-ceiling",
+      "subject": "cap:source-pinned-graph-view",
+      "predicate": "references",
+      "object": "observation:graph-view-evidence-ceiling",
+      "evidence_refs": [
+        "file:STATUS.md"
+      ],
+      "attributes": {
+        "role": "evidence_ceiling",
+        "establishment": "pointer to observed claim"
+      }
+    }
+  ]
+}

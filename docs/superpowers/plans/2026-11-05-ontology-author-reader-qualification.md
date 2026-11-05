@@ -8,6 +8,8 @@
 
 **Tech Stack:** Existing `using-sensemaking` and `repository-semantic-steward` guidance; Git and one available coding-agent host with fresh session creation; Python >=3.11 and Sensemaking's existing Click CLI (`knowledge-proposal-check`, `knowledge-build`, `knowledge-query`) and SQLite index. No new code, test harness, schema migration, web UI, external service or graph dependency.
 
+**Executed result:** one run, `PARTIAL`; see the [first-use readout](../../normal-use/2026-11-05-ontology-author-reader-first-use.md).
+
 **Spec:** [Ontology Author → Persist → Fresh Reader Qualification Design](../specs/2026-11-05-ontology-author-reader-qualification-design.md).
 
 **Inspected planning baseline:** `ThorStarlord/sensemaking-skills@1efb0f249b23c782f6f16a00155d86159de94a2a` (2026-11-05). Pin an actual source revision again immediately before execution; do not use moving `main` as a hidden input.
