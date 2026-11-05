@@ -339,3 +339,9 @@ ranking and purpose-specific portfolios:
 [PAO-CQ-01..12](possibility-assessment-competency-v1.md). These reuse the
 existing CQ-079..100 and CQ-101/103..114 vocabulary without adding global CQ
 identities or implying a ranking-based implementation authority.
+
+Convergent selection and decision-handoff refinements (without new global
+CQ numbers): [CDS-CQ-01..14](convergent-direction-selection-competency-v1.md).
+They reuse the existing CQ-079..102 and
+[PAO-CQ](possibility-assessment-competency-v1.md) vocabulary while separating
+comparison, recommendation, actual selection, reserved authority and action.
