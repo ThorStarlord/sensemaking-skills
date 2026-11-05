@@ -46,3 +46,8 @@ A product future uses `poss:`, a structural realization uses `arch:`, a conditio
 Separate **retrieved**, **source-checked**, **materially used in generating/revising an option**, **genuinely new compared to the inspected landscape**, and **reused in an independent later session**. A same-context source review or mechanical CI query cannot establish independent-agent creative benefit. Use normal authentic work when available; no mandatory synthetic experiment or second controller.
 
 **Exit:** a useful, source-scoped possibility landscape with meaningful alternatives, novelty distinctions, material unknowns and a warranted stop; no idea quotas, automatic ranking or forced construction.
+
+
+## Optional premise-sensitive re-entry
+
+When a changed assumption or historical comparison itself becomes decision-relevant, consult [Premise-Sensitive Reconsideration](premise-sensitive-reconsideration-v1.md) for source-checked necessary/supporting/context-only distinctions, changed-versus-unchanged judgments, and an optional read-only graph view. It is not a mandatory phase or a new schema; source-only work remains valid.
