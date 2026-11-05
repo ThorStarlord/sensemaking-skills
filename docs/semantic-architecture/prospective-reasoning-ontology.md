@@ -215,3 +215,21 @@ It is a documentary specialization only. Existing `evaluates`, `prefers`
 and `selects` architecture-option/construction-path endpoints remain
 unchanged; `InquiryQuestion` and `ProductPossibility` are *not* added as
 new executable operands by analogy.
+
+## 12. Connected consequence-to-design inquiry, no new entity endpoints
+
+The [Connected Prospective Inquiry Ontology](connected-prospective-inquiry-ontology.md)
+reuses this ontology's activity/entity split and conditional
+`ConsequenceHypothesis` to explain **Focused Depth Exploration**, later
+**Convergent Reassessment**, exact-target **Adversarial Review**, and
+product/technical **Architecture Synthesis**. A `ConsequenceStructure` is a
+dated documentary view, not a new `arch:` or `conseq:` type. A general
+non-architecture premise can be explored in prose without inventing a new
+`mayProduce` endpoint.
+
+The profile links a later `AssessmentRevisionAccount` to affected *historical*
+judgments and a `DesignRationaleView` to requirements and proposed technical
+responsibilities. Neither changes `ComparativeJudgment evaluates`,
+`ProvisionalPreference prefers` or `Decision selects` endpoint constraints.
+See the [source-pinned cases](connected-prospective-inquiry-reference-cases-v1.md)
+and [CPI-CQ-01..16](connected-prospective-inquiry-competency-v1.md).
