@@ -1,0 +1,161 @@
+{
+  "schema_version": 1,
+  "claims": [
+    {
+      "id": "domain_concept:choice-question",
+      "kind": "domain_concept",
+      "statement": "A ChoiceQuestion names the bounded decision purpose, typed target domain, beneficiary or end, horizon and decision authority to be settled; it is a documentary refinement of InquiryQuestion and AssessmentFrame, not a universal selector.",
+      "authority_kind": "document",
+      "authority_ref": "docs/semantic-architecture/convergent-direction-selection-ontology.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/convergent-direction-selection-ontology.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "domain_concept:considered-choice-set",
+      "kind": "domain_concept",
+      "statement": "A ConsideredChoiceSet preserves source-qualified credible alternatives and their omissions under one decision frame; nonselected, overlapping, status quo and incomparable members remain distinct.",
+      "authority_kind": "document",
+      "authority_ref": "docs/semantic-architecture/convergent-direction-selection-ontology.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/convergent-direction-selection-ontology.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "domain_concept:candidate-warrant",
+      "kind": "domain_concept",
+      "statement": "CandidateWarrant is an attributed, defeasible argument for pursuing one typed target at all, naming prerequisites, supporting and defeating evidence, currentness, consequences and authority; being preferred is insufficient.",
+      "authority_kind": "document",
+      "authority_ref": "docs/semantic-architecture/convergent-direction-selection-ontology.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/convergent-direction-selection-ontology.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "domain_concept:convergence-rationale",
+      "kind": "domain_concept",
+      "statement": "ConvergenceRationale explains why a candidate with sufficient warrant better serves the declared choice question than credible alternatives, with qualitative tradeoffs, counterevidence and reconsideration conditions.",
+      "authority_kind": "document",
+      "authority_ref": "docs/semantic-architecture/convergent-direction-selection-ontology.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/convergent-direction-selection-ontology.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "domain_concept:scoped-direction-selection",
+      "kind": "domain_concept",
+      "statement": "ScopedDirectionSelection denotes the role of an actual actor- and authority-backed Decision selecting an existing typed target within an explicit scope; it is not a copied target, mere recommendation, automatic product adoption or execution permission.",
+      "authority_kind": "document",
+      "authority_ref": "docs/semantic-architecture/convergent-direction-selection-ontology.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/convergent-direction-selection-ontology.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "domain_concept:alternative-disposition-account",
+      "kind": "domain_concept",
+      "statement": "AlternativeDispositionAccount explains what happened to each considered nonselected target within a scoped choice: deferred, declined for that purpose, complementary, outside-frame, superseded, defeated or not assessed; original identity persists.",
+      "authority_kind": "document",
+      "authority_ref": "docs/semantic-architecture/convergent-direction-selection-ontology.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/convergent-direction-selection-ontology.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "domain_concept:selection-reconsideration-boundary",
+      "kind": "domain_concept",
+      "statement": "SelectionReconsiderationBoundary identifies changes in decisive prerequisites, evidence, owner intention, currentness or consequences warranting a new assessment of a historical selection, without automatically undoing that selection.",
+      "authority_kind": "document",
+      "authority_ref": "docs/semantic-architecture/convergent-direction-selection-ontology.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/convergent-direction-selection-ontology.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "domain_concept:selection-handoff",
+      "kind": "domain_concept",
+      "statement": "SelectionHandoff is a bounded documentary continuation reference recording a selected target, authority, accepted constraints, unsettled questions and prerequisites that later agents should recheck; it is not an executable task or new artifact requirement.",
+      "authority_kind": "document",
+      "authority_ref": "docs/semantic-architecture/convergent-direction-selection-ontology.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/convergent-direction-selection-ontology.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "source:convergent-direction-selection-cases",
+      "kind": "source",
+      "statement": "The Convergent Direction Selection reference cases distinguish unselected Convergent Evaluation, a recommended inquiry, the owner-ratified ADR 0034 choice, provisional architecture preference, normative no-selection, and an unratified composite future.",
+      "authority_kind": "document",
+      "authority_ref": "docs/semantic-architecture/convergent-direction-selection-reference-cases-v1.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/convergent-direction-selection-reference-cases-v1.md"
+      ],
+      "epistemic_status": "observed"
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel:convergence-cases-reference-candidate-warrant",
+      "subject": "source:convergent-direction-selection-cases",
+      "predicate": "references",
+      "object": "domain_concept:candidate-warrant",
+      "epistemic_status": "declared",
+      "derivation": "authored",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/convergent-direction-selection-reference-cases-v1.md"
+      ]
+    },
+    {
+      "id": "rel:convergence-cases-reference-convergence-rationale",
+      "subject": "source:convergent-direction-selection-cases",
+      "predicate": "references",
+      "object": "domain_concept:convergence-rationale",
+      "epistemic_status": "declared",
+      "derivation": "authored",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/convergent-direction-selection-reference-cases-v1.md"
+      ]
+    },
+    {
+      "id": "rel:convergence-cases-reference-scoped-direction-selection",
+      "subject": "source:convergent-direction-selection-cases",
+      "predicate": "references",
+      "object": "domain_concept:scoped-direction-selection",
+      "epistemic_status": "declared",
+      "derivation": "authored",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/convergent-direction-selection-reference-cases-v1.md"
+      ]
+    },
+    {
+      "id": "rel:convergence-cases-reference-alternative-disposition-account",
+      "subject": "source:convergent-direction-selection-cases",
+      "predicate": "references",
+      "object": "domain_concept:alternative-disposition-account",
+      "epistemic_status": "declared",
+      "derivation": "authored",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/convergent-direction-selection-reference-cases-v1.md"
+      ]
+    },
+    {
+      "id": "rel:convergence-cases-reference-selection-handoff",
+      "subject": "source:convergent-direction-selection-cases",
+      "predicate": "references",
+      "object": "domain_concept:selection-handoff",
+      "epistemic_status": "declared",
+      "derivation": "authored",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/convergent-direction-selection-reference-cases-v1.md"
+      ]
+    }
+  ]
+}

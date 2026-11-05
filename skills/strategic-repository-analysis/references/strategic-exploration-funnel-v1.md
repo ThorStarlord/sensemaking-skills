@@ -381,6 +381,15 @@ Breadth does not require generating construction paths for every candidate.
 
 ## 8. Comparative selection
 
+A comparison is not yet an **adopted direction**. When the current
+responsibility involves an actual choice, consult the [portable Convergent
+Direction Selection profile](convergent-direction-selection-v1.md): verify each
+candidate's independent warrant, compare only under a shared purpose, and
+attribute the selecting actor, target and scope. A justified NO_SELECTION,
+missing-option return, or owner-reserved handoff is a complete bounded result.
+This guidance does not require a whole Level-3 Strategic Frontier analysis for
+a standalone inquiry decision and never authorizes automatic construction.
+
 When explaining relative choices, retain the **purpose and operand type**.
 The [portable assessment profile](possibility-assessment-v1.md) distinguishes
 inquiry priority from product attractiveness and authorized construction,

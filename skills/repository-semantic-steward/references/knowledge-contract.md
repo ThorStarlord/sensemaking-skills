@@ -83,6 +83,14 @@ Areas not yet assessed go in the bootstrap coverage report, not in claims. A new
 
 ## Exploration-assessment retention boundary
 
+Selection-specific retention: a top-ranked portfolio item or convergence
+recommendation is **not** a `decision` claim. A genuinely adopted direction
+requires an actual actor, authority, typed original target and scope in its
+governing source. Reuse [portable convergent-selection guidance](../../strategic-repository-analysis/references/convergent-direction-selection-v1.md)
+for that interpretation. Prefer selective `domain_concept` and `source`
+references for the ontology; do not invent executable `selects` predicates
+or bulk-promote historical inquiry preferences.
+
 When the target repository uses the [portable assessment reference](../../strategic-repository-analysis/references/possibility-assessment-v1.md), a coverage judgment, similarity group or provisional inquiry ranking remains a source-grounded **interpretation**, not a new `opportunity`, `decision` or authorization record merely because it was written. Preserve the full dated report and original expression IDs. Selectively retain a checked `source` record or declared `domain_concept` definition when future retrieval needs it; use supported `references` with attributed evidence. An unchecked relation attribute is not an executable ontology predicate. Promote an independently meaningful future only through the existing ProductPossibility curation and authority rules below.
 
 ## Product possibility records
