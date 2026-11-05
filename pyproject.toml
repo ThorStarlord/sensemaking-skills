@@ -62,4 +62,4 @@ exclude = [
 ]
 
 [tool.setuptools.package-data]
-sensemaking_skills = ["skills/**/*", "skill_trees/**/*", "examples/**/*", "docs/**/*", "defaults/*.yaml"]
+sensemaking_skills = ["skills/**/*", "skill_trees/**/*", "examples/**/*", "docs/**/*", "defaults/*.yaml", "semantic_architecture/view_assets/*.html"]
