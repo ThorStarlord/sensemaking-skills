@@ -341,6 +341,15 @@ material finalist
 -> depth drill
 ```
 
+For a *specific* finalist premise whose downstream effects can change this
+comparison, use the [connected prospective inquiry profile](connected-prospective-inquiry-v1.md)
+selectively: it distinguishes conditional consequence chains from causal
+proof, dated **Convergent Reassessment** from global reranking, targeted
+**Adversarial Review** from automatic veto, and product/technical
+**Architecture Synthesis** from adopted design. Each profile is optional;
+it can conclude no change or insufficient evidence. Do not expand a Level-3
+depth drill into a mandatory four-stage process or new machine artifact.
+
 ## 7. Construction path synthesis
 
 Only after a frontier candidate survives enough depth analysis should the agent

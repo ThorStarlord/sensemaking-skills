@@ -407,6 +407,19 @@ A retained representation of a potential future product state, capability, produ
 
 Proposed, not observed, structures and effects that connect possibilities to architecture, strategy and consequences: **ArchitectureOption** (a proposed coherent structural realization), **TargetArchitectureState** and **ArchitecturalTransition** (embedded in an option), **FutureCapabilityState** (a construction path's `future_state`), **ConsequenceHypothesis** (a conditional predicted effect; a Layer-4 Hypothesis), **ComparativeJudgment** and **ProvisionalPreference** (attributed, never a Decision). A proposed component or contract is never an observed one. Defined in [`prospective-reasoning-ontology.md`](prospective-reasoning-ontology.md).
 
+### Connected prospective inquiry documentary roles
+
+[Connected Prospective Inquiry Ontology v1](connected-prospective-inquiry-ontology.md)
+links four conditional reasoning profiles without adding Layer-6 entity kinds or
+changing any relation endpoints: `ConsequenceStructure` (bounded direct,
+downstream, systemic and counterfactual consequence view), the **existing**
+`AssessmentRevisionAccount` (attributed reconsideration of a prior judgment),
+`ChallengeResponseAccount` (target, objection, response and residual risk), and
+`DesignRationaleView` (product outcome/requirement -> proposed technical
+responsibility). These are report/view roles, not executable graph predicates,
+mandatory artifacts or strategic/owner decisions. Original source-qualified
+`poss:`, `arch:`, `conseq:`, `Decision` and requirements retain their identity.
+
 ### Product relations
 
 ```text

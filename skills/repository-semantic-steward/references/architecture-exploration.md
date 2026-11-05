@@ -81,6 +81,17 @@ For a consequential preferred option, search for:
 
 Use `contradictions` and original source review only as needed. Challenge returns counterevidence and `NOT_ASSESSED` gaps, not a new veto or automatic selection.
 
+**Optional connected inquiry view.** If one architectural choice turns on
+a multi-step consequence mechanism, genuinely changed prior preference,
+exact-target objection/response, or source-to-requirement technical proposal,
+consult the [portable connected inquiry guide](../../strategic-repository-analysis/references/connected-prospective-inquiry-v1.md)
+for those **documentary** distinctions only. The current
+`architectural_synthesis` contract still owns durable multi-option comparison,
+`architectural-review` keeps its input contract, and `to-prd` remains the
+canonical PRD capability where available. A hypothetical challenge or new
+`DesignRationaleView` is not a runtime stage, a PRD, an adopted direction or
+a verified implementation.
+
 ## 6. Handoff, authority and memory
 
 Return the smallest decision packet to the controller: user outcome, genuinely different options, source-pinned evidence, material tradeoffs/risks, uncertainty, disconfirming evidence, and a recommendation **only when selection was requested and authorized**. Exploration-only ends at possibilities and questions. An architectural option does not silently become a Strategic Frontier or construction path.

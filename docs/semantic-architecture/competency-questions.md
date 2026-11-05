@@ -345,3 +345,13 @@ CQ numbers): [CDS-CQ-01..14](convergent-direction-selection-competency-v1.md).
 They reuse the existing CQ-079..102 and
 [PAO-CQ](possibility-assessment-competency-v1.md) vocabulary while separating
 comparison, recommendation, actual selection, reserved authority and action.
+
+
+Connected consequence-to-design reasoning refinements (without new global CQ
+numbers): [CPI-CQ-01..16](connected-prospective-inquiry-competency-v1.md).
+The [connected ontology](connected-prospective-inquiry-ontology.md) and
+[source-pinned cases](connected-prospective-inquiry-reference-cases-v1.md)
+cover consequence mechanisms/forks, targeted judgment revision, challenge
+response, coherent product-and-technical design and their epistemic/authority
+limits. A documentary answer does not establish independent-agent benefit,
+causal proof, automatic selection or PRD/implementation approval.
