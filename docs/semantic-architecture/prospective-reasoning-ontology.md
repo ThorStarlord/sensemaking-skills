@@ -204,3 +204,14 @@ resolution establishes truth or action authority.
 | Preference, selection and authority (sections 6 and 8) | CQ-098 |
 | Persistence policy and identity across operations (sections 3 and 5) | CQ-099, CQ-100 |
 | Conditional loop, no mandatory phase (section 7) | CQ-102 |
+
+## 11. Convergent selection handoff without new endpoints
+
+The [Convergent Direction Selection Ontology](convergent-direction-selection-ontology.md)
+clarifies how an agent distinguishes **target-specific warrant**, a
+`ProvisionalPreference` and a sourced, authority-scoped `Decision`, and
+how a later session may inherit that choice without automatic execution.
+It is a documentary specialization only. Existing `evaluates`, `prefers`
+and `selects` architecture-option/construction-path endpoints remain
+unchanged; `InquiryQuestion` and `ProductPossibility` are *not* added as
+new executable operands by analogy.
