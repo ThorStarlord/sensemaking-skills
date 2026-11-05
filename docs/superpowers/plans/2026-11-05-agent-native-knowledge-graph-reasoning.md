@@ -57,7 +57,7 @@ Before any code edit, the implementing agent must read `AGENTS.md`, `CLAUDE.md`,
 | Existing stored cases | `docs/semantic-architecture/strategic-evolution-learning-reference-cases-v1.md`, historical 2026-10-23/24 analysis/reconciliation, `docs/normal-use/2026-11-02-creative-prospective-discovery.md` |
 | Deferred test owners if construction exception lifts | `tests/test_semantic_knowledge.py`, `tests/test_semantic_cli.py`, `tests/test_architecture_queries.py` and narrowly scoped new test modules |
 
-**Bounded product demonstration:** The agent receives "Source reachability assumptions changed; what does that mean for PATH-1 and alternatives?" The right answer rechecks ``ASSUMPTION-1``, preserves ``ASSUMPTION-2`` and original strategic choice, distinguishes changed source/interpretation from changed governing purpose and may identify further *inquiry* without promoting a new selected strategy. The viewer shows the *small* source-qualified network behind that answer.
+**Bounded product demonstration:** The agent receives "Source reachability assumptions changed; what does that mean for PATH-1 and alternatives?" The right answer rechecks `ASSUMPTION-1`, preserves `ASSUMPTION-2` and original strategic choice, distinguishes changed source/interpretation from changed governing purpose and may identify further *inquiry* without promoting a new selected strategy. The viewer shows the *small* source-qualified network behind that answer.
 
 ### Task 1: Source-pinned user question, negative cases and reference output
 
@@ -70,11 +70,11 @@ Before any code edit, the implementing agent must read `AGENTS.md`, `CLAUDE.md`,
 - Consumes: source artifacts with original IDs, actual analyzed revisions and original actor/conclusion.
 - Produces: `CASE-P1` (positive revised assumption without strategy reversal), `CASE-N1` (adjacent but nondecisive), `CASE-N2` (unknown graph), `CASE-N3` (unchanged intent and real authority), `CASE-O1` (new *hypothetical* beneficiary outcome vs mechanism). Source pointers and exact expected distinctions, no fabricated event.
 
-- [ ] Step 1: Read original A/B strategic sources and verify which ``ASSUMPTION-1``, ``ASSUMPTION-2``, ``PATH-1`` and ``PATH-2`` conclusions were actually authored at which inspected revisions; note anything not reconstructible from original source.
-- [ ] Step 2: Write the five source-qualified cases with a minimal exemplar *agent answer*: affected premise, exact affected judgment, unaffected choice, competing interpretation, no-change/unknown and optional new question. Label any normative comparator **NOT HISTORICAL**.
-- [ ] Step 3: Specify deferred tests: `test_premise_context_missing_or_stale_ref` and `test_premise_context_does_not_infer_necessity_from_references` against exact known inputs; tests must reject "graph miss => absence" and "changed premise => PATH-1 invalid".
-- [ ] Step 4: Review all source links, revision identities and original choice scope. **STOP** rather than invent a historical owner ratification or new `poss:`. Source/diff inspection is current verification; local tests `NOT_RUN` under current exception.
-- [ ] Step 5: Commit a small docs-only change and open an attributable PR; a reviewer can reject this case/expected answer without any schema or viewer change.
+- [x] Step 1: Read original A/B strategic sources and verify which `ASSUMPTION-1`, `ASSUMPTION-2`, `PATH-1` and `PATH-2` conclusions were actually authored at which inspected revisions; note anything not reconstructible from original source.
+- [x] Step 2: Write the five source-qualified cases with a minimal exemplar *agent answer*: affected premise, exact affected judgment, unaffected choice, competing interpretation, no-change/unknown and optional new question. Label any normative comparator **NOT HISTORICAL**.
+- [x] Step 3: Specify deferred tests: `test_premise_context_missing_or_stale_ref` and `test_premise_context_does_not_infer_necessity_from_references` against exact known inputs; tests must reject "graph miss => absence" and "changed premise => PATH-1 invalid".
+- [x] Step 4: Review all source links, revision identities and original choice scope. **STOP** rather than invent a historical owner ratification or new `poss:`. Source/diff inspection is current verification; local tests `NOT_RUN` under current exception.
+- [x] Step 5: Commit a small docs-only change and open an attributable PR; a reviewer can reject this case/expected answer without any schema or viewer change.
 
 **Acceptance:** A new agent reading the cases can correctly distinguish a revised interpretation of a premise from reversal of a choice and can state what is **NOT_ASSESSED**.
 
@@ -90,12 +90,12 @@ Before any code edit, the implementing agent must read `AGENTS.md`, `CLAUDE.md`,
 - Consumes: Task 1 source cases and existing `knowledge-query` `search/explain/why/history/changes/context-for` and source-only reading.
 - Produces: optional guide for **question -> selective source neighborhood -> decisive premise/contrary source -> conditional reconsideration -> meaningful alternative/no change -> answer/re-entry**; no registered artifact and no invocation by a new runtime controller.
 
-- [ ] Step 1: Document the activation trigger as a genuinely consequential assumption, comparison or strategic-learning question; skip routine coding and no-material-change work.
-- [ ] Step 2: Describe the exact source-only route (original prior analysis/assumptions and newer source) and optional graph route (candidate links, omission/currentness check). Both reach equivalent evidence/authority ceilings; graph gaps are not negative existential evidence.
-- [ ] Step 3: Add the "decisive, supporting, context-only, defeater, unknown" interpretation check with negative case from Task 1. For new possibilities, explicitly compare the closest `poss:`/`arch:` and distinguish new desired end vs mechanism.
-- [ ] Step 4: Provide a compact answer format: question, prior source identity and assessed SHA, actual current source, supported delta, affected/unaffected judgments, counterevidence, hypothetical opportunity, authority/stop, optional graph.
-- [ ] Step 5: Add only conditional links in the two existing reference files, not `using-sensemaking/SKILL.md` or a new public Skill. Verify relative paths remain within packaged `strategic-repository-analysis` Skill tree. Source/diff review; tests `NOT_RUN` per current policy.
-- [ ] Step 6: Commit/PR and merge only within the owner's actual document-update authority.
+- [x] Step 1: Document the activation trigger as a genuinely consequential assumption, comparison or strategic-learning question; skip routine coding and no-material-change work.
+- [x] Step 2: Describe the exact source-only route (original prior analysis/assumptions and newer source) and optional graph route (candidate links, omission/currentness check). Both reach equivalent evidence/authority ceilings; graph gaps are not negative existential evidence.
+- [x] Step 3: Add the "decisive, supporting, context-only, defeater, unknown" interpretation check with negative case from Task 1. For new possibilities, explicitly compare the closest `poss:`/`arch:` and distinguish new desired end vs mechanism.
+- [x] Step 4: Provide a compact answer format: question, prior source identity and assessed SHA, actual current source, supported delta, affected/unaffected judgments, counterevidence, hypothetical opportunity, authority/stop, optional graph.
+- [x] Step 5: Add only conditional links in the two existing reference files, not `using-sensemaking/SKILL.md` or a new public Skill. Verify relative paths remain within packaged `strategic-repository-analysis` Skill tree. Source/diff review; tests `NOT_RUN` per current policy.
+- [x] Step 6: Commit/PR and merge only within the owner's actual document-update authority.
 
 **Acceptance:** The coding agent can perform the complete inquiry even without any index, browser, graph export, host API or new typed predicate.
 
@@ -110,12 +110,12 @@ Before any code edit, the implementing agent must read `AGENTS.md`, `CLAUDE.md`,
 - Consumes: Task 1 cases and Task 2 agent answer requirements.
 - Produces: `PremiseInquiryView v1` and ``GraphExplorationView v1`` *presentation* contracts, explicit role/epistemic/provenance semantics and a written **GO / NO_GO** decision on whether current kinds/predicates/attributes can preserve the specific missing distinction. These are not registered artifact IDs and do not revise existing indexed snapshot schema.
 
-- [ ] Step 1: Inventory existing `hypothesis`, `decision`, `alternative`, `references`, `requires_capability`, `contradicts` and `derived_from` support for the Task 1 case; inspect original IDs. Evaluate the exact question that fails without richer semantics.
-- [ ] Step 2: Specify if/when an association is **NECESSARY**, **SUPPORTING**, **DEFEATER**, **CONTEXT_ONLY**, **UNKNOWN**, or **SCENARIO_ONLY**, and its actual source/actor/assessed revision/target. Do not make a generic `references` edge necessary by label.
-- [ ] Step 3: Specify `PremiseInquiryView v1` fields: `repository`, `target_ref`, `premise_id`, `focus_question`, `candidates[]` (original target ID, declaration role, evidence, original/currents, reason, status, no automatic change), `gaps[]`, `omissions`, ``semantic_truth_established:false``, ``action_authorized:false``.
-- [ ] Step 4: Specify `GraphExplorationView v1` fields: `view_version:1`, `repository`, `target_ref`, optional `indexed_ref`/`assessed_ref`, `question`, `focus_ref`, `nodes[]` (original IDs, kind, label, source refs, epistemic/authority/establishment), `edges[]` (original endpoints, explicit role/basis, source refs, scenario flag), `coverage`, `comparisons[]`/`scenarios[]` optional, false truth/authority flags. Make output stable/deterministic and bounded.
-- [ ] Step 5: Write the **schema-extension decision** with 3 options: source-only documentary; existing kinds + validated optional metadata; new validated kind/predicate only with qualified failing consumer and owner authority. Keep decision `NO_NEW_SCHEMA` until real failure shows the second/third option is needed; do not create graph types for ease of diagramming.
-- [ ] Step 6: Specify downstream consumer that motivates each new field and actual test/review criteria, including migration/backward-compatible old indexed records and absence handling. Commit as a documentation-only contract decision.
+- [x] Step 1: Inventory existing `hypothesis`, `decision`, `alternative`, `references`, `requires_capability`, `contradicts` and `derived_from` support for the Task 1 case; inspect original IDs. Evaluate the exact question that fails without richer semantics.
+- [x] Step 2: Specify if/when an association is **NECESSARY**, **SUPPORTING**, **DEFEATER**, **CONTEXT_ONLY**, **UNKNOWN**, or **SCENARIO_ONLY**, and its actual source/actor/assessed revision/target. Do not make a generic `references` edge necessary by label.
+- [x] Step 3: Specify `PremiseInquiryView v1` fields: `repository`, `target_ref`, `premise_id`, `focus_question`, `candidates[]` (original target ID, declaration role, evidence, original/currents, reason, status, no automatic change), `gaps[]`, `omissions`, ``semantic_truth_established:false``, ``action_authorized:false``.
+- [x] Step 4: Specify `GraphExplorationView v1` fields: `view_version:1`, `repository`, `target_ref`, optional `indexed_ref`/`assessed_ref`, `question`, `focus_ref`, `nodes[]` (original IDs, kind, label, source refs, epistemic/authority/establishment), `edges[]` (original endpoints, explicit role/basis, source refs, scenario flag), `coverage`, `comparisons[]`/`scenarios[]` optional, false truth/authority flags. Make output stable/deterministic and bounded.
+- [x] Step 5: Write the **schema-extension decision** with 3 options: source-only documentary; existing kinds + validated optional metadata; new validated kind/predicate only with qualified failing consumer and owner authority. Keep decision `NO_NEW_SCHEMA` until real failure shows the second/third option is needed; do not create graph types for ease of diagramming.
+- [x] Step 6: Specify downstream consumer that motivates each new field and actual test/review criteria, including migration/backward-compatible old indexed records and absence handling. Commit as a documentation-only contract decision.
 
 **Acceptance:** Another implementer can distinguish durable reviewed meaning, agent interpretation and scenario-only modifications, and can implement without inventing schema authority. A documentary-only `NO_GO` is a correct completion if no consumer gap exists.
 
@@ -131,7 +131,7 @@ Before any code edit, the implementing agent must read `AGENTS.md`, `CLAUDE.md`,
 - Consumes: `premise_context(claims, relations, *, premise_id, limit)` as a pure function over indexed `dict` records from existing SQLite store; `premise_id` must exist in **exact** selected snapshot; never consult mutable working tree during query.
 - Produces: `query_knowledge(db_path, *, repository, target_ref, operation="premise-context", subject=premise_id, limit=50) -> dict` with the established top-level query envelope + `premise_context` defined in Task 3. Original query shape/operations remain backward-compatible.
 
-- [ ] Step 1: If Task 3 can answer the actual user question just as faithfully through existing queries/source read, record `NO_NEW_QUERY` and **skip this Task's code/files**. Do not create a "generic graph query" merely because available.
+- [x] Step 1: If Task 3 can answer the actual user question just as faithfully through existing queries/source read, record `NO_NEW_QUERY` and **skip this Task's code/files**. Do not create a "generic graph query" merely because available.
 - [ ] Step 2 (if GO): Specify deferred `test_premise_context_does_not_infer_necessity_from_references`: a `references` edge may locate a judgment but `relation_role` must remain `CONTEXT_ONLY`/`UNKNOWN` absent source-qualified explicit role. Specify `test_premise_context_missing_or_stale_ref`: unknown indexed `premise_id` cannot silently fall back to current unindexed files.
 - [ ] Step 3 (if GO): Implement `premise_context(claims: Mapping[str, dict], relations: Iterable[dict], *, premise_id: str, limit: int) -> dict` with exact endpoints, stable order, bounded truncation and explicit uncertainty. It must not infer transitive proof/automatic selection. Pure function remains importable without SQLite.
 - [ ] Step 4 (if GO): Add the narrow `premise-context` branch to `query_knowledge` and CLI `knowledge-query --operation`; reuse existing subject/limit validation and return fixed `semantic_truth_established:false` and `action_authorized:false`.
@@ -152,7 +152,7 @@ Before any code edit, the implementing agent must read `AGENTS.md`, `CLAUDE.md`,
 - Consumes: existing `KnowledgeClaim`/`KnowledgeRelation`, original source IDs and `schema_version:2` parser. Proposed *optional*, opt-in existing-kind metadata only: `attributes["reasoning_premises"]` on a reviewed `decision`/`alternative`/`hypothesis` claim, list entries `{premise_id, role, evidence_ref, assessed_ref}`, where `role` is `necessary|supporting|defeater|context_only`. This is a **candidate shape subject to Task 3**, not automatically authorized new schema.
 - Produces: source-supported explicit role only for the specific reviewed claim; no automatic truth, no legacy migration, no new graph predicate by default.
 
-- [ ] Step 1: Prove a source/consumer case where plain `references` + original source/agent source-check cannot preserve a necessary/supporting distinction for later independent retrieval. If absent or owner/contract authority inadequate, record `NO_NEW_REVIEWED_PACK / NO_SCHEMA_CHANGE` and skip this entire task.
+- [x] Step 1: Prove a source/consumer case where plain `references` + original source/agent source-check cannot preserve a necessary/supporting distinction for later independent retrieval. If absent or owner/contract authority inadequate, record `NO_NEW_REVIEWED_PACK / NO_SCHEMA_CHANGE` and skip this entire task.
 - [ ] Step 2 (if GO): Document why the optional `reasoning_premises` shape wins over prose/source-only or new predicate, strict relationship endpoint kinds, source attribution and original assessed revision. Explicit `UNSUPPORTED` when source claims necessity without evidence.
 - [ ] Step 3 (if GO): Before code, specify deferred `test_schema_v1_snapshots_still_build` and `test_reasoning_premises_requires_source_and_known_endpoint` with exact invalid/valid shapes; ensure existing versionless/v1 authored records and SQLite store version remain unchanged.
 - [ ] Step 4 (if GO): Update `validate_v2_attributes` and `validate_snapshot` with strict metadata validation/known IDs only for opted-in records; avoid checking unmodified legacy records as though new required fields exist.
@@ -172,12 +172,12 @@ Before any code edit, the implementing agent must read `AGENTS.md`, `CLAUDE.md`,
 - Consumes: Task 1 source reference case, Task 2 agent guide, existing graph or Task 4 query if GO.
 - Produces: one *genuine source-read* agent answer with exact cited predecessor/changed premise, unchanged decision, missed relationships, role of graph (retrieved vs agent-added), feasible follow-up and honest stopping conditions. Not a fresh independent agent or compared outcome.
 
-- [ ] Step 1: Reconstruct the actual historical ``ASSUMPTION-1`` revision through the agent's source-first flow, using installed graph if available, otherwise original reviewed JSON and sources. Track where material source-only reading was still needed.
-- [ ] Step 2: Attempt one **separate meaningful** new outcome/reframing question using existing product possibilities and show the closest existing `poss:`, why proposal is `RESTATED`/`REVISED`/`NEW`/`NOT_ASSESSED`; do not fabricate new historical `poss:`.
-- [ ] Step 3: Review two negative controls: a relation merely navigational, and a real source change that does not change owner strategy. Record whether the agent correctly refused premature reversal or product promotion.
-- [ ] Step 4: Compare the observed reading burden/coverage to direct original-source reading **qualitatively**; attribute graph vs retained knowledge vs prompt guidance. Do not claim comparative creative superiority without an actually comparable independent agent.
-- [ ] Step 5: Record what the graph was missing/where the guide was misleading, whether it warrants Task 4/5 GO or NO_GO, and what can remain source-only. Publish normal-use note within authorized PR review.
-- [ ] Step 6: Check the agent answer contains exact assessed SHA, current source SHA, status, counterevidence, no-change outcome and optional new hypothesis. This is a **meaningful product behavior review**, not a synthetic benchmark or independent-agent trial.
+- [x] Step 1: Reconstruct the actual historical `ASSUMPTION-1` revision through the agent's source-first flow, using installed graph if available, otherwise original reviewed JSON and sources. Track where material source-only reading was still needed.
+- [x] Step 2: Attempt one **separate meaningful** new outcome/reframing question using existing product possibilities and show the closest existing `poss:`, why proposal is `RESTATED`/`REVISED`/`NEW`/`NOT_ASSESSED`; do not fabricate new historical `poss:`.
+- [x] Step 3: Review two negative controls: a relation merely navigational, and a real source change that does not change owner strategy. Record whether the agent correctly refused premature reversal or product promotion.
+- [x] Step 4: Compare the observed reading burden/coverage to direct original-source reading **qualitatively**; attribute graph vs retained knowledge vs prompt guidance. Do not claim comparative creative superiority without an actually comparable independent agent.
+- [x] Step 5: Record what the graph was missing/where the guide was misleading, whether it warrants Task 4/5 GO or NO_GO, and what can remain source-only. Publish normal-use note within authorized PR review.
+- [x] Step 6: Check the agent answer contains exact assessed SHA, current source SHA, status, counterevidence, no-change outcome and optional new hypothesis. This is a **meaningful product behavior review**, not a synthetic benchmark or independent-agent trial.
 
 **Acceptance:** A convincing agent-facing result is available now, including justified **NO_CHANGE** and evidence of what was and was not materially retrieved by the graph.
 
@@ -193,13 +193,13 @@ Before any code edit, the implementing agent must read `AGENTS.md`, `CLAUDE.md`,
 - Produces: `GraphExplorationView v1` with `view_version`, `repository`, `target_ref`, `indexed_ref`/`assessed_ref` when known, `nodes[]`, `edges[]`, source scope, `coverage: {omitted_nodes, omitted_edges, truncated, unassessed}` and `semantic_truth_established:false/action_authorized:false`.
 - CLI (proposed): `sensemaking-skills semantic knowledge-view-export --db DB --repository ID --target-ref SHA --focus-ref ID --output PATH --format json --json`; source-only inquiry may also export a separately checked source-bound view input. Do not invent a new auto-discovering repo identifier.
 
-- [ ] Step 1: Specify deferred `test_view_bounded_omissions` (e.g. >80 node or >160 edge candidates -> exact omitted counts and `truncated:true`) and `test_view_does_not_mix_revisions_or_repositories` (exact repository/SHA preserved and mixed input rejected).
-- [ ] Step 2: Implement pure `build_graph_exploration_view`, stable sorting/deduplication, known source/epistemic and plain recorded-edge role; missing links omitted with visible `NOT_ASSESSED`. No causal/semantic closure or inference from an ordinary `references` edge.
-- [ ] Step 3: Add narrow `knowledge-view-export` Click command initially supporting ``--format json``. Output path is outside canonical reviewed knowledge and never treated as new source authority. Explicit guard against accidental same-root overwrite of tracked reviewed JSON/SQLite.
-- [ ] Step 4: Distinguish **declared edge**, **agent interpretation** (only when explicitly provided and labeled with its source), **scenario-only** (unpersisted), **unknown**, and **mechanical observation**. Never set `RATIFIED` solely because a source file exists.
-- [ ] Step 5: Ensure output includes original source refs and actual source/assessed revision not just current HEAD; don't present index insertion order as Git ancestry. Deferred regression command: `pytest tests/test_semantic_graph_view.py tests/test_semantic_cli.py -q` **only if** local-test policy later allows.
-- [ ] Step 6: Source-review export from real Task 1 case with bounded source display. If viewer requires metadata not in the source, show unassessed instead of silently extending machine schema.
-- [ ] Step 7: Open/merge separate PR with exact data example, acceptance bounds and package/source verification. **Do not** claim HTML UI already exists.
+- [x] Step 1: Specify deferred `test_view_bounded_omissions` (e.g. >80 node or >160 edge candidates -> exact omitted counts and `truncated:true`) and `test_view_does_not_mix_revisions_or_repositories` (exact repository/SHA preserved and mixed input rejected).
+- [x] Step 2: Implement pure `build_graph_exploration_view`, stable sorting/deduplication, known source/epistemic and plain recorded-edge role; missing links omitted with visible `NOT_ASSESSED`. No causal/semantic closure or inference from an ordinary `references` edge.
+- [x] Step 3: Add narrow `knowledge-view-export` Click command initially supporting ``--format json``. Output path is outside canonical reviewed knowledge and never treated as new source authority. Explicit guard against accidental same-root overwrite of tracked reviewed JSON/SQLite.
+- [x] Step 4: Distinguish **declared edge**, **agent interpretation** (only when explicitly provided and labeled with its source), **scenario-only** (unpersisted), **unknown**, and **mechanical observation**. Never set `RATIFIED` solely because a source file exists.
+- [x] Step 5: Ensure output includes original source refs and actual source/assessed revision not just current HEAD; don't present index insertion order as Git ancestry. Deferred regression command: `pytest tests/test_semantic_graph_view.py tests/test_semantic_cli.py -q` **only if** local-test policy later allows.
+- [x] Step 6: Source-review export from real Task 1 case with bounded source display. If viewer requires metadata not in the source, show unassessed instead of silently extending machine schema.
+- [x] Step 7: Open/merge separate PR with exact data example, acceptance bounds and package/source verification. **Do not** claim HTML UI already exists.
 
 **Acceptance:** A deterministic compact JSON projection can support both coding-agent citation text and any later UI. It is read-only and source-pinned even without new graph predicates.
 
@@ -216,13 +216,13 @@ Before any code edit, the implementing agent must read `AGENTS.md`, `CLAUDE.md`,
 - Consumes: Task 7 `GraphExplorationView v1`; no live backend/index/credential access inside browser.
 - Produces: offline single-file HTML view with source-specific labels, node-kind/epistemic status/edge role, keyboard navigable companion list, a provenance inspector, focus filtering and visibly omitted/unassessed items. The original source metadata is unchanged.
 
-- [ ] Step 1: Specify deferred `test_view_export_escapes_untrusted_labels`: content including `<script>`, quotation marks, Unicode separators and malicious URI-like evidence remains inert text; no executable injection, no remote fetch, no untrusted `innerHTML`.
-- [ ] Step 2: Create a bounded deterministic left-to-right SVG relationship layout by role (premise/judgment/alternatives/evidence) or use compact list when graph density exceeds bound; preserve all surviving source IDs. Avoid an unneeded force simulation/library.
-- [ ] Step 3: Add keyboard-focusable node/list selection and clear textual legend for `SOURCE_DECLARED`, `AGENT_INFERRED`, `SCENARIO`, `UNKNOWN`; do not rely on colors alone. Each selected item shows exact source/revision, kind, status, authority and role.
-- [ ] Step 4: Implement `render_graph_view_html(view: dict) -> str` with safely embedded JSON; avoid HTML/script-end injection via escaped `<`, `>`, `&`. Only explicitly selected/reviewed source references are exposed. For large data show truncation, not silent disappearance.
-- [ ] Step 5: Add explicit HTML export; verify output can be opened from `file://` without a development server or network. Check HTML asset inclusion in actual wheel source path, not just checkout-local success.
+- [x] Step 1: Specify deferred `test_view_export_escapes_untrusted_labels`: content including `<script>`, quotation marks, Unicode separators and malicious URI-like evidence remains inert text; no executable injection, no remote fetch, no untrusted `innerHTML`.
+- [x] Step 2: Create a bounded deterministic left-to-right SVG relationship layout by role (premise/judgment/alternatives/evidence) or use compact list when graph density exceeds bound; preserve all surviving source IDs. Avoid an unneeded force simulation/library.
+- [x] Step 3: Add keyboard-focusable node/list selection and clear textual legend for `SOURCE_DECLARED`, `AGENT_INFERRED`, `SCENARIO`, `UNKNOWN`; do not rely on colors alone. Each selected item shows exact source/revision, kind, status, authority and role.
+- [x] Step 4: Implement `render_graph_view_html(view: dict) -> str` with safely embedded JSON; avoid HTML/script-end injection via escaped `<`, `>`, `&`. Only explicitly selected/reviewed source references are exposed. For large data show truncation, not silent disappearance.
+- [x] Step 5: Add explicit HTML export; verify output can be opened from `file://` without a development server or network. Check HTML asset inclusion in actual wheel source path, not just checkout-local success.
 - [ ] Step 6: Manually inspect the real Task 1 case in browser if available (mouse, keyboard, narrower viewport, no JS fallback). If browser unavailable, report `NOT_RUN` rather than claim visual/keyboard qualification.
-- [ ] Step 7: Specify deferred no-injection, packaging and deterministic-serialization tests; local tests remain `NOT_RUN` in current construction exception. PR/diff review with exact host/browser evidence ceiling.
+- [x] Step 7: Specify deferred no-injection, packaging and deterministic-serialization tests; local tests remain `NOT_RUN` in current construction exception. PR/diff review with exact host/browser evidence ceiling.
 
 **Acceptance:** The secondary UI gives a useful inspectable picture of **one** real inquiry, with no source mutation and no external frontend dependency. This is not a new primary app.
 
@@ -237,13 +237,13 @@ Before any code edit, the implementing agent must read `AGENTS.md`, `CLAUDE.md`,
 - Consumes: selected baseline node/edge, viewer original source identity, explicit user scenario changes and optional question text.
 - Produces: read-only `ScenarioOverlay` **client state**, plus copy-ready Markdown instruction: question, selected original IDs, indexed/assessed refs, temporary counterfactual, known gaps and "do not treat scenario as owner ratification". Copy is user-triggered; no automatic agent API execution.
 
-- [ ] Step 1: Define one scenario operation: mark one sourced **premise** as counterfactually absent or alternate, without editing baseline truth/authority/edges. Visible banner `HYPOTHETICAL — NOT COMMITTED` persists while the scenario view is active.
-- [ ] Step 2: Show scenario-associated "candidate impacted" nodes only when the source explicitly qualifies relevance; otherwise show a *question to investigate*, not a simulated proved strategy reversal.
-- [ ] Step 3: Add "Ask agent" user-action copy containing original view/ref, selected IDs, scenario text and `NOT_ASSESSED`/truncation flags. If the browser clipboard API is unavailable, provide selectable text for manual copy.
-- [ ] Step 4: Add "Reset scenario" that restores **exact baseline view** and removes any scenario-only styling/annotations. Do not modify index files, graph source JSON, private filesystem, external apps or owner policy.
-- [ ] Step 5: Specify deferred `test_scenario_overlay_never_rewrites_baseline` and `test_selection_handoff_includes_source_identity_and_limits`. Source/JS review for no hidden navigation, fetch, publication or automatic action.
+- [x] Step 1: Define one scenario operation: mark one sourced **premise** as counterfactually absent or alternate, without editing baseline truth/authority/edges. Visible banner `HYPOTHETICAL — NOT COMMITTED` persists while the scenario view is active.
+- [x] Step 2: Show scenario-associated "candidate impacted" nodes only when the source explicitly qualifies relevance; otherwise show a *question to investigate*, not a simulated proved strategy reversal.
+- [x] Step 3: Add "Ask agent" user-action copy containing original view/ref, selected IDs, scenario text and `NOT_ASSESSED`/truncation flags. If the browser clipboard API is unavailable, provide selectable text for manual copy.
+- [x] Step 4: Add "Reset scenario" that restores **exact baseline view** and removes any scenario-only styling/annotations. Do not modify index files, graph source JSON, private filesystem, external apps or owner policy.
+- [x] Step 5: Specify deferred `test_scenario_overlay_never_rewrites_baseline` and `test_selection_handoff_includes_source_identity_and_limits`. Source/JS review for no hidden navigation, fetch, publication or automatic action.
 - [ ] Step 6: Real manual inspect/copy one source-grounded Task 1 scenario and demonstrate the agent can continue from copied context **only if the current coding harness supports an honest foreground agent turn**; otherwise preserve manual copy-only fallback and report no host integration.
-- [ ] Step 7: PR independently of backend scope expansion; do not invent direct Codex/Archon API integration.
+- [x] Step 7: PR independently of backend scope expansion; do not invent direct Codex/Archon API integration.
 
 **Acceptance:** Graph interaction is meaningful and reversible, while all actual reasoning/commit authority remains with the primary agent and user.
 
@@ -260,12 +260,12 @@ Before any code edit, the implementing agent must read `AGENTS.md`, `CLAUDE.md`,
 - Consumes: actual shipped Task 2, and conditional Tasks 4/5/7/8/9 output.
 - Produces: documented entry examples showing agent-primary path, optional `knowledge-view-export`, source-only and no-index fallback, exact original and current SHA, and realistic claim ceiling.
 
-- [ ] Step 1: Inspect actual primary entrypoint and reference-loading paths. Add a short optional trigger only where discoverability changes decision; avoid `using-sensemaking/SKILL.md` text churn if existing references suffice.
-- [ ] Step 2: Document two user journeys: agent-only source-grounded reconsideration; same inquiry with explicit secondary viewer and copied scenario back to agent.
-- [ ] Step 3: Verify source links resolve and packaged reference assets match the selected `entrypoint` profile. Use existing `setup.py` and `setup_skills.py`, avoid installer redesign or unrelated skill installs.
-- [ ] Step 4: For any new CLI command verify documented exact flags match `--help` through real package source; record Windows ASCII stdout invariant. If not runnable in current host, state source-level verification only.
-- [ ] Step 5: Check the view and guide can be omitted in a normal narrow code edit. This remains an optional capability, not a universal mandatory graph-phase.
-- [ ] Step 6: Record legacy status/version implications and untouched strategic/thesis source; PR with bounded files and source-grounded note.
+- [x] Step 1: Inspect actual primary entrypoint and reference-loading paths. Add a short optional trigger only where discoverability changes decision; avoid `using-sensemaking/SKILL.md` text churn if existing references suffice.
+- [x] Step 2: Document two user journeys: agent-only source-grounded reconsideration; same inquiry with explicit secondary viewer and copied scenario back to agent.
+- [x] Step 3: Verify source links resolve and packaged reference assets match the selected `entrypoint` profile. Use existing `setup.py` and `setup_skills.py`, avoid installer redesign or unrelated skill installs.
+- [x] Step 4: For any new CLI command verify documented exact flags match `--help` through real package source; record Windows ASCII stdout invariant. If not runnable in current host, state source-level verification only.
+- [x] Step 5: Check the view and guide can be omitted in a normal narrow code edit. This remains an optional capability, not a universal mandatory graph-phase.
+- [x] Step 6: Record legacy status/version implications and untouched strategic/thesis source; PR with bounded files and source-grounded note.
 
 **Acceptance:** A coding agent can discover the appropriate guide and optional viewer without requiring a second public entrypoint, new service or manual schema configuration.
 
@@ -281,15 +281,15 @@ Before any code edit, the implementing agent must read `AGENTS.md`, `CLAUDE.md`,
 - Consumes: Task 1–10 specific PR heads and source/host observation; not planned tests treated as run.
 - Produces: source-linked factual closure ``IMPLEMENTED``/`DOCUMENTARY_ONLY`/`PARTIAL`/`NO_GO`, preserved original history, action/authority boundary and independently unqualified agent benefit.
 
-- [ ] Step 1: List every PR's exact files and source revision; compare diff against intended ownership. Confirm no secret source exports, no index/checkpoint commits or out-of-scope mutations.
-- [ ] Step 2: Verify original A/B source and all negative-case interpretations; a reconsideration candidate must not be called a confirmed strategy reversal.
+- [x] Step 1: List every PR's exact files and source revision; compare diff against intended ownership. Confirm no secret source exports, no index/checkpoint commits or out-of-scope mutations.
+- [x] Step 2: Verify original A/B source and all negative-case interpretations; a reconsideration candidate must not be called a confirmed strategy reversal.
 - [ ] Step 3: Check CLI query & view output on one real exact-commit source where runnable, look for limits, malformed/missing IDs and output encoding. File-level/source checks cannot be called a successful native-harness user workflow.
-- [ ] Step 4: Inspect hosted CI results at the exact PR heads. Preserve `PASS`, `PENDING`, `FAILED`, `NOT_RUN` separately; repair material failures as bounded responsibilities rather than calling them acceptable.
-- [ ] Step 5: Apply the current owner local verification exception exactly: do not add/run local unit/synthetic tests during construction; when exception changes, use each task's named deferred tests (and the real e2e path) to guard behavior before asserting test PASS.
-- [ ] Step 6: Confirm the primary agent can answer a source-only version, the projection is optional and the graph UI can only propose a hypothetical branch/copy follow-up.
-- [ ] Step 7: Reconcile `STATUS.md`, canonical strategy, authored knowledge and historical source only where actual meaningful facts changed. Preserve valid `NO_MODEL_CHANGE` and no new knowledge pack if unneeded.
-- [ ] Step 8: Write one receipt with source identity, actual skill/host availability, responsibility, actual testing/CI, claim ceiling and stop/next warranted responsibility. Stop at owner/Level-4/external boundaries and report uncertainties.
-- [ ] Step 9: Mark **GOAL_SATISFIED** only if the agreed agent-primary vertical slice and genuinely secondary inspectable view exist and are source/contract-verified at their claimed scope; otherwise report precisely partial and what is missing.
+- [x] Step 4: Inspect hosted CI results at the exact PR heads. Preserve `PASS`, `PENDING`, `FAILED`, `NOT_RUN` separately; repair material failures as bounded responsibilities rather than calling them acceptable.
+- [x] Step 5: Apply the current owner local verification exception exactly: do not add/run local unit/synthetic tests during construction; when exception changes, use each task's named deferred tests (and the real e2e path) to guard behavior before asserting test PASS.
+- [x] Step 6: Confirm the primary agent can answer a source-only version, the projection is optional and the graph UI can only propose a hypothetical branch/copy follow-up.
+- [x] Step 7: Reconcile `STATUS.md`, canonical strategy, authored knowledge and historical source only where actual meaningful facts changed. Preserve valid `NO_MODEL_CHANGE` and no new knowledge pack if unneeded.
+- [x] Step 8: Write one receipt with source identity, actual skill/host availability, responsibility, actual testing/CI, claim ceiling and stop/next warranted responsibility. Stop at owner/Level-4/external boundaries and report uncertainties.
+- [x] Step 9: Mark **GOAL_SATISFIED** only if the agreed agent-primary vertical slice and genuinely secondary inspectable view exist and are source/contract-verified at their claimed scope; otherwise report precisely partial and what is missing.
 
 **Acceptance:** Accurate product status, no fantasy qualification and no unearned new authority. A design/plan/PR merge alone never satisfies this implementation task.
 
@@ -362,3 +362,22 @@ The following **names are design-time expected behaviors, not existing passing t
 **Anti-goal check:** A beautifully rendered canvas, 30 new predicates, or an extra public Skill with no material effect on agent decisions does not satisfy the product goal.
 
 **End state:** a source-bound, optional, inspectable reasoning experience where the coding agent can explain *what changed, what did not, which alternative may now be plausible and what remains hypothetical*. The next agent can reuse that explanation without confusing source history, graphical presentation or speculation with truth and authority.
+
+
+## 16. Source-level implementation and closeout record — 2026-11-05
+
+**Result:** **SOURCE_IMPLEMENTED / LIVE-UI AND INDEPENDENT BENEFIT NOT_ASSESSED.** The coding agent remains the primary interface; the graph is an optional, read-only secondary inspection and scenario surface. No additional global graph predicate, schema version, semantic planner, public Skill, new owner-selected strategic path, implementation authorization or Level-3/4 thesis change resulted from this construction.
+
+**Merged vertical slices:**
+- [PR #759](https://github.com/ThorStarlord/sensemaking-skills/pull/759), merge `537c3f4ecc50e82fcccb56b7e07146e2941cc043`: dated source/negative cases, source-only agent guide, display contract and conditional Skill references.
+- [PR #760](https://github.com/ThorStarlord/sensemaking-skills/pull/760), merge `74e8303d2697d39fb3d6af7f3b52d8c5734366a2`: same-agent source reconstruction and explicit query/schema/pack no-go.
+- [PR #761](https://github.com/ThorStarlord/sensemaking-skills/pull/761), merge `e38b41562068d96cf1ac6c00388fd04c338c9912`: exact-revision, bounded `GraphExplorationView v1`; read-only `knowledge-view-export` and `knowledge-view-render`; standalone bundled offline HTML/SVG with source/edge inspection, filterable nodes, dated comparison text, hypothetical premise inversion and copy-ready agent question; historical source-only view example and package asset inclusion.
+- Final integration increment: [offline viewer guide](../../semantic-architecture/agent-native-graph-viewer-v1.md), README/CLI links, source-qualified STATUS and [session receipt](../../../.sensemaking/receipts/2026-11-05-agent-native-knowledge-graph-reasoning-implementation.session.yaml). It also repairs an earlier receipt validation enum without revising its substantive knowledge-pack NO_GO.
+
+**Owner decisions made:** **NO_NEW_SCHEMA / NO_NEW_PREMISE_QUERY / NO_NEW_REVIEWED_PACK**. The 2026-10-23/24 source itself supports `ASSUMPTION-1 REVISE`, `ASSUMPTION-2 CONFIRM` and `PATH-1 CONTINUE/REAFFIRM`; it does not establish logical necessity or require reauthoring the history as new global graph entities. Existing `explain`/`impact` supports the bounded visual presentation. The proposed PR-C and PR-D were combined because the renderer's offline HTML template must ship with the view export.
+
+**Checklist:** 58 checked implementation/source-review items and 16 unchecked conditional or unexercised items, **74 actionable items total** (the header's literal checkbox example is not a step). Unchecked means ten optional Task 4/5 code steps not triggered by the schema/query gates, two manual browser/host exercises not available (Tasks 8/9), one local CLI/browser end-to-end exercise unavailable (Task 11), and three separate future independent/comparative qualifications (Section 12). No unavailable check was marked PASS.
+
+**Hosted evidence:** The initial PR #761 release static quality failed for an unused import, corrected before the merge. Its corrected head `37809b7cf6d41ff3b913c8a48350b80e6c70b001` passed [Release Candidate Distribution #41996212144](https://github.com/ThorStarlord/sensemaking-skills/actions/runs/41996212144) and [Semantic Context Re-entry #41996212110](https://github.com/ThorStarlord/sensemaking-skills/actions/runs/41996212110). [Product Validation #41996212049](https://github.com/ThorStarlord/sensemaking-skills/actions/runs/41996212049) reported 3,634 passed and one failed: a *preexisting* Strategic Evolution & Learning receipt contained two invalid validation-result values (NO_NEW_KNOWLEDGE_PACK and NOT_ASSESSED). The integration increment moved the original dispositions into the corresponding validation-command descriptions and used the supported result enums PASS and NOT_RUN. A clean full-suite result is not claimed until hosted checks on that amended head confirm it.
+
+**Claim ceiling:** Local unit and synthetic tests were neither added nor run, under this repository's current `CLAUDE.md` construction exception. A fresh installed-wheel CLI/browser hands-on interaction, keyboard/clipboard visual QA, independent later coding-agent creative discovery and credible source-only comparative advantage were **NOT_RUN / NOT_ASSESSED** in this environment. The source-implemented viewer is not a causal/semantic inference engine, nor evidence of new owner intent. Use the separately warranted genuine next inquiry—not an automatic Level-3 reopen or knowledge schema expansion—if these questions become material.
