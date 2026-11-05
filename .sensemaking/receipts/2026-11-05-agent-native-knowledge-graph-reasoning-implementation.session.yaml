@@ -2,6 +2,7 @@ artifact_id: sensemaking_session_receipt
 schema_version: 1
 session_ref: 2026-11-05-agent-native-knowledge-graph-reasoning-implementation
 state: final
+immutable: true
 created_at: '2026-11-05T08:46:35.668Z'
 updated_at: '2026-11-05T08:46:35.668Z'
 target_repository: ThorStarlord/sensemaking-skills
