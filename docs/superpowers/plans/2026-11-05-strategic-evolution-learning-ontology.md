@@ -1,6 +1,6 @@
 # Strategic Evolution & Learning Ontology v1 — Detailed Implementation Plan
 
-> **For a subsequent implementing agent:** Load the current installed `using-sensemaking` Skill, refresh the repository/authority baseline and perform only work authorized at that time. **This is an implementation planning proposal based on the owner's approved design direction, not an authorization to execute it, an implementation receipt, a built ontology, a strategy decision or permission to mutate product thesis.**
+> **For a subsequent implementing agent:** Load the current installed `using-sensemaking` Skill, refresh the repository/authority baseline and perform only work authorized at that time. **Implementation record:** The owner separately authorized execution of all tasks on 2026-11-05. The checklist and closeout section below distinguish completed documentary implementation from optional NO_GO actions, actual validation, and outcomes requiring independent later-agent evidence. This record does not grant reusable thesis, merge, publication or deployment authority.
 
 **Goal:** Connect two distinctive responsibilities through one source-preserving, portable Level-2 conceptual ontology: **Strategic Evolution Analysis** ("Where should this system evolve, and why?") and **Learning & Reassessment** ("What did we learn, and what changes—if anything?"). Preserve past judgments and accepted authority while making future opportunity, source-grounded reasoning, knowledge delta and decision consequences reconstructible.
 
@@ -8,7 +8,7 @@
 
 **Design:** [Strategic Evolution & Learning Ontology — Design Basis](../specs/2026-11-05-strategic-evolution-learning-ontology-design.md).  
 **Planning baseline:** `ThorStarlord/sensemaking-skills@32562d3364fe90c8f53317ea75eb96db3ba7d635` (2026-11-05, after integrated Connected Prospective Inquiry v1).  
-**Plan status:** **PLANNED / NOT IMPLEMENTED**. All checkboxes below are prospective tasks. This planning PR creates the design and the plan only.  
+**Plan status:** **IMPLEMENTED (documentary conceptual v1) — 2026-11-05**, via PRs **#754 (shared ontology), #755 (historical cases and SEL competencies), #756 (portable guidance and conditional integration)**; closeout recorded here. Task 9 ended **NO_NEW_KNOWLEDGE_PACK**, not a partial attempt to create JSON. The 20 questions have documentary source-fit judgments, not independent agent qualification. Current hosted checks and intentionally unrun local validation are recorded in Section I.  
 **Technology and representations:** repository Markdown/Skill references, existing strategy/learning/ontology contracts and `schema_version: 1` reviewed knowledge **only if a real retrieval need warrants it**. No runtime dependency, new public Skill, new strategic artifact ID, stage controller, graph predicate or automatic ranking engine.
 
 ## A. Decisions taken for the plan
@@ -94,14 +94,14 @@ The shared conceptual module is one file with two distinct internally labeled pr
 
 **Input:** implementing HEAD, planning design, actual owner delegation. **Output:** short evidence/consumer inventory in implementation PR note or ontology provenance; no redundant permanent audit document by default.
 
-- [ ] Read current `AGENTS.md`, `CLAUDE.md`, `CONTEXT.md`, product strategy, `STATUS.md` and ADRs 0029/0031/0034; record execution and original assessed revisions separately.
-- [ ] Confirm current Level-3 strategic authority, active PATH-1 and exact owner-reserved Level-4 commitments.
-- [ ] Inspect strategic analysis v1 semantics, canonical current v2 `strategic_repository_analysis`, Strategic State Contract, Strategic Continuity, and `strategy compare/drift/history/graph` claim ceiling.
-- [ ] Inspect Learning / Reconciliation Policy, existing strategic-reconciliation Skill and exact current `strategic_reconciliation` producer/consumer and field contract.
-- [ ] Inspect current layered ontology, product-possibility ontology, assessment, connected-inquiry profiles, CQ-115..130 and capability-learning research model; identify genuinely distinct versus overlapping meanings.
-- [ ] Confirm source availability and old analyzed revisions for cases A–E (H-A/B/C nomenclature from older ontology is not reused as new canonical identity).
-- [ ] Check whether planned files/reference links already exist or have been moved; adapt to actual current source.
-- [ ] Record precise source-grounded choice: conceptual crosswalk warranted; no new parsed ontology, self-modifying learning engine, universal learning artifact or extra public Skill.
+- [x] Read current `AGENTS.md`, `CLAUDE.md`, `CONTEXT.md`, product strategy, `STATUS.md` and ADRs 0029/0031/0034; record execution and original assessed revisions separately.
+- [x] Confirm current Level-3 strategic authority, active PATH-1 and exact owner-reserved Level-4 commitments.
+- [x] Inspect strategic analysis v1 semantics, canonical current v2 `strategic_repository_analysis`, Strategic State Contract, Strategic Continuity, and `strategy compare/drift/history/graph` claim ceiling.
+- [x] Inspect Learning / Reconciliation Policy, existing strategic-reconciliation Skill and exact current `strategic_reconciliation` producer/consumer and field contract.
+- [x] Inspect current layered ontology, product-possibility ontology, assessment, connected-inquiry profiles, CQ-115..130 and capability-learning research model; identify genuinely distinct versus overlapping meanings.
+- [x] Confirm source availability and old analyzed revisions for cases A–E (H-A/B/C nomenclature from older ontology is not reused as new canonical identity).
+- [x] Check whether planned files/reference links already exist or have been moved; adapt to actual current source.
+- [x] Record precise source-grounded choice: conceptual crosswalk warranted; no new parsed ontology, self-modifying learning engine, universal learning artifact or extra public Skill.
 
 **Done when:** existing owners/types, source-of-truth boundaries and actual deliverable gaps are distinguishable from mere terminology gaps.
 
@@ -109,14 +109,14 @@ The shared conceptual module is one file with two distinct internally labeled pr
 
 **Prerequisite:** Task 0. **Deliverable:** `strategic-evolution-learning-ontology.md` sections for purpose, identity, evidence and authority.
 
-- [ ] Define the same source-preserving frame for both profiles: actor, date, purpose, beneficiary, original target/reference, governing revision, assessed target revision, constraints, evidence class, alternatives, decision affected, consequence and stop/re-entry.
-- [ ] Distinguish reasoning activities from original entities and durable current/history projections; no `sameAs` across a proposal, present capability, path, historical decision or lesson interpretation.
-- [ ] Define `StrategicEvolutionRationale` and `LearningAccount` as optional *documentary roles*; reuse the named existing canonical strategy/reconciliation artifacts and `AssessmentRevisionAccount`.
-- [ ] Define the three orthogonal axes: **learning scope** (episode/repository/doctrine), **change object** (world/model/governing intent), **evidence class** (observed/derived/inferred/hypothesized/evaluated/ratified).
-- [ ] Define documentary associations (`groundedIn`, `supportsFuture`, `motivatesReconsideration`, `updatesUnderstandingOf`, `mayOpenPossibility`) with source/target meaning and non-executable warning.
-- [ ] Record why source-change detection and valid graph references do **not** imply semantic invalidation, causal inference, strategic selection or lesson correctness.
-- [ ] Include small proportional record policy: prose/section when cheap; existing canonical artifact when needed; avoid duplicate universal record and multi-phase ceremony.
-- [ ] Record accepted owner/product scope and Level-3/Level-4 boundary without treating this planning authority as owner revision.
+- [x] Define the same source-preserving frame for both profiles: actor, date, purpose, beneficiary, original target/reference, governing revision, assessed target revision, constraints, evidence class, alternatives, decision affected, consequence and stop/re-entry.
+- [x] Distinguish reasoning activities from original entities and durable current/history projections; no `sameAs` across a proposal, present capability, path, historical decision or lesson interpretation.
+- [x] Define `StrategicEvolutionRationale` and `LearningAccount` as optional *documentary roles*; reuse the named existing canonical strategy/reconciliation artifacts and `AssessmentRevisionAccount`.
+- [x] Define the three orthogonal axes: **learning scope** (episode/repository/doctrine), **change object** (world/model/governing intent), **evidence class** (observed/derived/inferred/hypothesized/evaluated/ratified).
+- [x] Define documentary associations (`groundedIn`, `supportsFuture`, `motivatesReconsideration`, `updatesUnderstandingOf`, `mayOpenPossibility`) with source/target meaning and non-executable warning.
+- [x] Record why source-change detection and valid graph references do **not** imply semantic invalidation, causal inference, strategic selection or lesson correctness.
+- [x] Include small proportional record policy: prose/section when cheap; existing canonical artifact when needed; avoid duplicate universal record and multi-phase ceremony.
+- [x] Record accepted owner/product scope and Level-3/Level-4 boundary without treating this planning authority as owner revision.
 
 **Done when:** a future agent can answer which original object, sourced assertion, comparison and actual authority a learning or evolution claim concerns without inventing new data kinds.
 
@@ -124,15 +124,15 @@ The shared conceptual module is one file with two distinct internally labeled pr
 
 **Prerequisite:** Task 1. **Deliverable:** its bounded conceptual ontology section.
 
-- [ ] Specify trigger: an open material system/product future-direction question rather than a localized known edit, ordinary implementation or generic possibility-only inquiry.
-- [ ] Define capability-state/limitation baseline, governing outcome and original owner intent with assessed revision/claim ceiling.
-- [ ] Distinguish *new desirable end*, *new ability serving existing end*, *new architecture mechanism*, *simplification/retirement*, *maintenance repair* and *strategy-thesis review*; prevent conflating an end and one possible means.
-- [ ] Reuse `Strategic Frontier`, `ProductPossibility`, `ConstructionPath`, `FutureCapabilityState`, `ArchitectureOption` and current path/strategic hypotheses with unchanged identity and producer.
-- [ ] Explain opportunity plausibility through current capabilities/relationships/constraints, mechanisms, prerequisites and conditional consequences; avoid undocumented success/feasibility claims.
-- [ ] Require purpose-relative qualitative comparison including commission risk, **omission/deferral cost**, reversibility, uncertainties and alternatives not selected; no numeric score, candidate quota or universal ranking.
-- [ ] Allow no path, one path, multiple paths or `NO_CHANGE` after grounded inquiry; retain a meaningful absence/authority/stop conclusion.
-- [ ] Preserve recommendation vs source-attributed selected path vs action authorization; Level-4 tension must go through actual owner review.
-- [ ] Record specific decision-changing assumptions and the evidence/owner-change conditions that would justify future reassessment.
+- [x] Specify trigger: an open material system/product future-direction question rather than a localized known edit, ordinary implementation or generic possibility-only inquiry.
+- [x] Define capability-state/limitation baseline, governing outcome and original owner intent with assessed revision/claim ceiling.
+- [x] Distinguish *new desirable end*, *new ability serving existing end*, *new architecture mechanism*, *simplification/retirement*, *maintenance repair* and *strategy-thesis review*; prevent conflating an end and one possible means.
+- [x] Reuse `Strategic Frontier`, `ProductPossibility`, `ConstructionPath`, `FutureCapabilityState`, `ArchitectureOption` and current path/strategic hypotheses with unchanged identity and producer.
+- [x] Explain opportunity plausibility through current capabilities/relationships/constraints, mechanisms, prerequisites and conditional consequences; avoid undocumented success/feasibility claims.
+- [x] Require purpose-relative qualitative comparison including commission risk, **omission/deferral cost**, reversibility, uncertainties and alternatives not selected; no numeric score, candidate quota or universal ranking.
+- [x] Allow no path, one path, multiple paths or `NO_CHANGE` after grounded inquiry; retain a meaningful absence/authority/stop conclusion.
+- [x] Preserve recommendation vs source-attributed selected path vs action authorization; Level-4 tension must go through actual owner review.
+- [x] Record specific decision-changing assumptions and the evidence/owner-change conditions that would justify future reassessment.
 
 **Done when:** the profile can articulate a credible strategic future, a better simplification alternative, an unfounded/mechanism-only option and a warranted no-selection outcome without creating new canonical artifacts.
 
@@ -140,16 +140,16 @@ The shared conceptual module is one file with two distinct internally labeled pr
 
 **Prerequisite:** Task 1. **Deliverable:** its bounded conceptual ontology section.
 
-- [ ] State the minimum unit: previous explicit attributed claim/assumption/judgment/lesson, exact new source/revision, assessed applicability and decision-relevance question.
-- [ ] Distinguish **repository changed**, **understanding changed**, and **governing intent changed** with at least one case of different implications and multiple simultaneous deltas allowed.
-- [ ] Reuse current Learning/Reconciliation dispositions without inventing machine enums or a second policy; `NO_MODEL_CHANGE` is a valid end.
-- [ ] Separate observed evidence, interpretive inference, conditional effect, speculative opportunity, comparison, owner instruction and verified product outcome.
-- [ ] State which previous facts remain historically correct, what interpretation was revised, which uncertainty resolved/opened, and how another context can verify source relevance.
-- [ ] Distinguish retained, retrieved, source-checked, decision-informing, outcome-supported, independently reused and comparatively beneficial lesson evidence **without** making new parsed stage fields.
-- [ ] Describe positive, negative and inapplicable precedent: a later reader can challenge or reject a retained lesson when current conditions differ.
-- [ ] Describe new possible futures exposed by a corrected frame without automatically promoting/choosing a ProductPossibility or reopening Level 3.
-- [ ] Define local `CHANGE_RESPONSIBILITY` versus proper `strategic_reconciliation`/`REOPEN_STRATEGY`/Level-4 review; owner change remains owner authority.
-- [ ] Describe cross-episode capability doctrine candidate: specific multi-episode evidence, contextual commonality/differences, counterexample, proposed smallest reusable target, qualification need, retained vs applied value and no automatic Skill edit.
+- [x] State the minimum unit: previous explicit attributed claim/assumption/judgment/lesson, exact new source/revision, assessed applicability and decision-relevance question.
+- [x] Distinguish **repository changed**, **understanding changed**, and **governing intent changed** with at least one case of different implications and multiple simultaneous deltas allowed.
+- [x] Reuse current Learning/Reconciliation dispositions without inventing machine enums or a second policy; `NO_MODEL_CHANGE` is a valid end.
+- [x] Separate observed evidence, interpretive inference, conditional effect, speculative opportunity, comparison, owner instruction and verified product outcome.
+- [x] State which previous facts remain historically correct, what interpretation was revised, which uncertainty resolved/opened, and how another context can verify source relevance.
+- [x] Distinguish retained, retrieved, source-checked, decision-informing, outcome-supported, independently reused and comparatively beneficial lesson evidence **without** making new parsed stage fields.
+- [x] Describe positive, negative and inapplicable precedent: a later reader can challenge or reject a retained lesson when current conditions differ.
+- [x] Describe new possible futures exposed by a corrected frame without automatically promoting/choosing a ProductPossibility or reopening Level 3.
+- [x] Define local `CHANGE_RESPONSIBILITY` versus proper `strategic_reconciliation`/`REOPEN_STRATEGY`/Level-4 review; owner change remains owner authority.
+- [x] Describe cross-episode capability doctrine candidate: specific multi-episode evidence, contextual commonality/differences, counterexample, proposed smallest reusable target, qualification need, retained vs applied value and no automatic Skill edit.
 
 **Done when:** a learning account can explain an altered claim with unchanged strategy, an applicable vs inapplicable lesson, an actually changed source, a conceptual reframe and a separately authorized product-purpose change.
 
@@ -157,13 +157,13 @@ The shared conceptual module is one file with two distinct internally labeled pr
 
 **Prerequisites:** Tasks 2–3. **Deliverable:** explicit crosswalk/feedback section and identified no-duplicate producer boundary.
 
-- [ ] Distinguish **Strategic Evolution Analysis** (Level-3 direction synthesis) from **Strategic Reconciliation** (returned Level-3 evidence versus an earlier strategic artifact).
-- [ ] Distinguish **Learning & Reassessment** (meaning/interpretation delta for any qualified scope) from **Convergent Reassessment** (particular dated judgment under a purpose-relative frame).
-- [ ] Crosswalk to connected Depth/Adversarial/Architecture Synthesis profiles as optional input/output evidence, never as required stage order.
-- [ ] Crosswalk `strategic_repository_analysis` v2 grounding (frontier refs, capability refs, `why_plausible`, assumptions and path IDs) and `strategic_reconciliation` without redefining their machine fields or validators.
-- [ ] Explain distinct roles of `Strategic Continuity` authored lineage versus `strategy compare/drift` mechanical observation versus Learning/Reconciliation semantic judgment.
-- [ ] Define safe re-entry patterns: explanation changes with same direction; choice narrows; source invalidates current path; owner changes purpose; retained lesson is rejected; new creative question opens while strategy remains stable.
-- [ ] Explicitly support `NO_MODEL_CHANGE`, `NO_SELECTION`, `NOT_ASSESSED`, `REOPEN_STRATEGY` and `THESIS_REVIEW_REQUIRED` at existing owning boundaries; do not invent a new mandatory control enum.
+- [x] Distinguish **Strategic Evolution Analysis** (Level-3 direction synthesis) from **Strategic Reconciliation** (returned Level-3 evidence versus an earlier strategic artifact).
+- [x] Distinguish **Learning & Reassessment** (meaning/interpretation delta for any qualified scope) from **Convergent Reassessment** (particular dated judgment under a purpose-relative frame).
+- [x] Crosswalk to connected Depth/Adversarial/Architecture Synthesis profiles as optional input/output evidence, never as required stage order.
+- [x] Crosswalk `strategic_repository_analysis` v2 grounding (frontier refs, capability refs, `why_plausible`, assumptions and path IDs) and `strategic_reconciliation` without redefining their machine fields or validators.
+- [x] Explain distinct roles of `Strategic Continuity` authored lineage versus `strategy compare/drift` mechanical observation versus Learning/Reconciliation semantic judgment.
+- [x] Define safe re-entry patterns: explanation changes with same direction; choice narrows; source invalidates current path; owner changes purpose; retained lesson is rejected; new creative question opens while strategy remains stable.
+- [x] Explicitly support `NO_MODEL_CHANGE`, `NO_SELECTION`, `NOT_ASSESSED`, `REOPEN_STRATEGY` and `THESIS_REVIEW_REQUIRED` at existing owning boundaries; do not invent a new mandatory control enum.
 
 **Done when:** no profile competes with an existing producer and a reader cannot mistake changed source, comparison, instruction or artifact validity for adopted strategy.
 
@@ -171,15 +171,15 @@ The shared conceptual module is one file with two distinct internally labeled pr
 
 **Prerequisite:** Tasks 2–4. **Deliverable:** `strategic-evolution-learning-reference-cases-v1.md`.
 
-- [ ] Pin this report's repository source snapshot and each original historical artifact's *own* analyzed revision, actor/status/authority.
-- [ ] **A: 2026-10-23 Strategic Repository Analysis** — reconstruct PATH-1 vs PATH-2 opportunity, actual decision frame, assumptions, costs, alternatives and legitimate Build/selection boundary.
-- [ ] **B: 2026-10-24 Strategic Reconciliation** — reconstruct `ASSUMPTION-1` revised for source reachability, `ASSUMPTION-2` confirmed, `PATH-1` reaffirmed and transition partially achieved, without rewriting original strategy.
-- [ ] **C: 2026-11-02 cross-episode source re-entry** — explain exact missing-anchor mechanisms across PRs #691/#697/#701/#704 and counterexample #696; show why plausible generalization is currently repository-local.
-- [ ] **D: 2026-11-03 pairwise portfolio update** — distinguish next *inquiry* preference from strategic attractiveness and work authorization, preserving original full portfolio.
-- [ ] **E: 2026-11-05 Connected Prospective Inquiry implementation** — contrast documentary capability/source distribution PASS with independent agent-value NOT_ASSESSED and Level-3 `NO_MODEL_CHANGE`.
-- [ ] **F: normative comparator** — distinguish observed code change, new interpretation of unchanged code, and actual owner-adopted governing intent; label every constructed input/outcome **illustrative, not historical**.
-- [ ] Include negative cases: repository diff as proof of strategy invalidity, feature absence as strategic priority, speculative goal as validated demand, lesson storage as applied benefit, pairwise inquiry reorder as global product preference, one anecdote as universal Skill law, expected future effect as observed, and planning PR as implementation.
-- [ ] Preserve exact original IDs, unaffected past judgments, source attribution, counterevidence, alternative mechanisms and stopping conditions.
+- [x] Pin this report's repository source snapshot and each original historical artifact's *own* analyzed revision, actor/status/authority.
+- [x] **A: 2026-10-23 Strategic Repository Analysis** — reconstruct PATH-1 vs PATH-2 opportunity, actual decision frame, assumptions, costs, alternatives and legitimate Build/selection boundary.
+- [x] **B: 2026-10-24 Strategic Reconciliation** — reconstruct `ASSUMPTION-1` revised for source reachability, `ASSUMPTION-2` confirmed, `PATH-1` reaffirmed and transition partially achieved, without rewriting original strategy.
+- [x] **C: 2026-11-02 cross-episode source re-entry** — explain exact missing-anchor mechanisms across PRs #691/#697/#701/#704 and counterexample #696; show why plausible generalization is currently repository-local.
+- [x] **D: 2026-11-03 pairwise portfolio update** — distinguish next *inquiry* preference from strategic attractiveness and work authorization, preserving original full portfolio.
+- [x] **E: 2026-11-05 Connected Prospective Inquiry implementation** — contrast documentary capability/source distribution PASS with independent agent-value NOT_ASSESSED and Level-3 `NO_MODEL_CHANGE`.
+- [x] **F: normative comparator** — distinguish observed code change, new interpretation of unchanged code, and actual owner-adopted governing intent; label every constructed input/outcome **illustrative, not historical**.
+- [x] Include negative cases: repository diff as proof of strategy invalidity, feature absence as strategic priority, speculative goal as validated demand, lesson storage as applied benefit, pairwise inquiry reorder as global product preference, one anecdote as universal Skill law, expected future effect as observed, and planning PR as implementation.
+- [x] Preserve exact original IDs, unaffected past judgments, source attribution, counterevidence, alternative mechanisms and stopping conditions.
 
 **Done when:** each profile has at least two source-grounded positive examples and each high-risk semantic error has a source-based or clearly labeled normative counterexample.
 
@@ -187,12 +187,12 @@ The shared conceptual module is one file with two distinct internally labeled pr
 
 **Prerequisite:** Task 5. **Deliverable:** `strategic-evolution-learning-competency-v1.md`.
 
-- [ ] Author `SEL-CQ-01..10` for strategic evolution: intent/identity, outcome/mechanism distinction, grounded hypothetical future, alternative distinctness, value/beneficiary, omission/simplification, qualitative purpose-relative comparison, authority/Level3–4, reconsideration hinge, warranted no-selection.
-- [ ] Author `SEL-CQ-11..20` for learning/reassessment: predecessor and new source, world/model/owner delta, evidence category and claim ceiling, changed/unchanged state, lesson applicability and rejection, retained-vs-applied-vs-beneficial, discovery/reframing of new questions, local vs strategic reconciliation, cross-repo doctrine threshold, stop/reopen/authority.
-- [ ] Cross-reference existing global CQ-115..130 and local CPI-CQ in current connected ontology; do not duplicate numbers or claim their empirical answers have changed.
-- [ ] Map every local question to exact A–F source location, source-qualified expected answer, contrary/negative interpretation and a fit result (`ANSWERABLE`, `PARTIAL`, `NOT_ASSESSED`).
-- [ ] Explicitly mark independent agent-use/better strategy quality, cross-repository generalization and automated re-entry as **not assessed**, not PASS merely because the conceptual account is valid.
-- [ ] Correct any role that cannot be distinguished from existing canonical concepts; remove redundant roles or scope claims rather than adding arbitrary fields.
+- [x] Author `SEL-CQ-01..10` for strategic evolution: intent/identity, outcome/mechanism distinction, grounded hypothetical future, alternative distinctness, value/beneficiary, omission/simplification, qualitative purpose-relative comparison, authority/Level3–4, reconsideration hinge, warranted no-selection.
+- [x] Author `SEL-CQ-11..20` for learning/reassessment: predecessor and new source, world/model/owner delta, evidence category and claim ceiling, changed/unchanged state, lesson applicability and rejection, retained-vs-applied-vs-beneficial, discovery/reframing of new questions, local vs strategic reconciliation, cross-repo doctrine threshold, stop/reopen/authority.
+- [x] Cross-reference existing global CQ-115..130 and local CPI-CQ in current connected ontology; do not duplicate numbers or claim their empirical answers have changed.
+- [x] Map every local question to exact A–F source location, source-qualified expected answer, contrary/negative interpretation and a fit result (`ANSWERABLE`, `PARTIAL`, `NOT_ASSESSED`).
+- [x] Explicitly mark independent agent-use/better strategy quality, cross-repository generalization and automated re-entry as **not assessed**, not PASS merely because the conceptual account is valid.
+- [x] Correct any role that cannot be distinguished from existing canonical concepts; remove redundant roles or scope claims rather than adding arbitrary fields.
 
 **Done when:** another source-literate reviewer can reconstruct and challenge the authors' claims without conversation context, and unproven hypotheses remain visibly unproven.
 
@@ -200,14 +200,14 @@ The shared conceptual module is one file with two distinct internally labeled pr
 
 **Prerequisite:** Tasks 1–6. **Deliverables:** one installed source reference and one optional sparse template.
 
-- [ ] Create a self-contained conditional `strategic-evolution-learning-v1.md` usable in target repositories without this source repo's `CONTEXT.md`, ADRs, history, graph, or its CLI.
-- [ ] Explain each profile's trigger, bounded question, evidence/source inspection, minimal meaningful output, legitimate negative result, common drift and stopping condition.
-- [ ] Include explicit decision of **when** a pure creative inquiry is not a Level-3 restart, when a local lesson does not need a strategic reconciliation artifact, and when an actual owner-intent change requires true authority.
-- [ ] Include conceptual difference from Connected Prospective Inquiry and existing `Strategic Exploration Funnel` guidance; do not reprint their whole procedures.
-- [ ] Include cross-repository doctrine promotion only as *conditional reasoning* subject to evidence/authority; warn that `installed != loaded != invoked != applied`.
-- [ ] Create one optional `strategic-evolution-learning-record-template.md` with shared envelope plus either/both profile sections; omit empty boilerplate and keep existing canonical artifacts authoritative.
-- [ ] Include one small worked counterexample of `NO_MODEL_CHANGE` and one of rejecting an inapplicable past lesson; no claim that a new agent actually performed them.
-- [ ] Keep file references packaged within the same installed Skill tree and free of source-repo-relative dependencies that fail in target installations.
+- [x] Create a self-contained conditional `strategic-evolution-learning-v1.md` usable in target repositories without this source repo's `CONTEXT.md`, ADRs, history, graph, or its CLI.
+- [x] Explain each profile's trigger, bounded question, evidence/source inspection, minimal meaningful output, legitimate negative result, common drift and stopping condition.
+- [x] Include explicit decision of **when** a pure creative inquiry is not a Level-3 restart, when a local lesson does not need a strategic reconciliation artifact, and when an actual owner-intent change requires true authority.
+- [x] Include conceptual difference from Connected Prospective Inquiry and existing `Strategic Exploration Funnel` guidance; do not reprint their whole procedures.
+- [x] Include cross-repository doctrine promotion only as *conditional reasoning* subject to evidence/authority; warn that `installed != loaded != invoked != applied`.
+- [x] Create one optional `strategic-evolution-learning-record-template.md` with shared envelope plus either/both profile sections; omit empty boilerplate and keep existing canonical artifacts authoritative.
+- [x] Include one small worked counterexample of `NO_MODEL_CHANGE` and one of rejecting an inapplicable past lesson; no claim that a new agent actually performed them.
+- [x] Keep file references packaged within the same installed Skill tree and free of source-repo-relative dependencies that fail in target installations.
 
 **Done when:** a fresh target agent reading the installed guide can recognize the relevant question without knowing this chat, and the template is clearly not a new schema or mandatory output.
 
@@ -215,15 +215,15 @@ The shared conceptual module is one file with two distinct internally labeled pr
 
 **Prerequisite:** Task 7. **Deliverables:** only source refs shown necessary by actual reading path.
 
-- [ ] Link ontology, local competencies, source cases and installed guide from `docs/semantic-architecture/README.md`, with no duplicate conceptual index.
-- [ ] Add one bounded conceptual link to `docs/semantic-architecture/ontology.md` and local `competency-questions.md`; no typed graph predicate or global CQ allocation.
-- [ ] Clarify in `connected-prospective-inquiry-ontology.md` that Convergent Reassessment is *judgment-specific* while Learning & Reassessment may change understanding at other scopes; avoid two competing `AssessmentRevisionAccount` producers.
-- [ ] Provide conditional guide link in `strategic-exploration-funnel-v1.md` at strategic future-direction reasoning, without creating a mandatory restart or next stage.
-- [ ] Provide conditional guide link in the **existing** Learning/Reconciliation Policy at material durable delta/cross-episode scope, without replacing its dispositions or generating a universal learning artifact.
-- [ ] Add first-load pointer to `strategic-repository-analysis/SKILL.md` / `using-sensemaking/SKILL.md` **only if** a concrete responsibility-selection decision cannot be made from existing first-load policy/pointers. Otherwise avoid core Skill churn.
-- [ ] Review `docs/strategic-repository-sensemaking-v1.md`, `strategic-continuity-v1.md`, `capability-learning-loop-v0.md` for minimal source-reference need; leave unchanged where no reader need is demonstrated.
-- [ ] Confirm via installed-profile and packaging source that the guide lives in the selected entrypoint Skill directory; check exact-commit wheel profile path where feasible, distinguish packaging from actual host invocation.
-- [ ] Leave `strategic-repository-reconciliation/SKILL.md`, canonical contracts, runtime and default public Skill names unchanged absent a demonstrated consumer ambiguity.
+- [x] Link ontology, local competencies, source cases and installed guide from `docs/semantic-architecture/README.md`, with no duplicate conceptual index.
+- [x] Add one bounded conceptual link to `docs/semantic-architecture/ontology.md` and local `competency-questions.md`; no typed graph predicate or global CQ allocation.
+- [x] Clarify in `connected-prospective-inquiry-ontology.md` that Convergent Reassessment is *judgment-specific* while Learning & Reassessment may change understanding at other scopes; avoid two competing `AssessmentRevisionAccount` producers.
+- [x] Provide conditional guide link in `strategic-exploration-funnel-v1.md` at strategic future-direction reasoning, without creating a mandatory restart or next stage.
+- [x] Provide conditional guide link in the **existing** Learning/Reconciliation Policy at material durable delta/cross-episode scope, without replacing its dispositions or generating a universal learning artifact.
+- [x] Add first-load pointer to `strategic-repository-analysis/SKILL.md` / `using-sensemaking/SKILL.md` **only if** a concrete responsibility-selection decision cannot be made from existing first-load policy/pointers. Otherwise avoid core Skill churn.
+- [x] Review `docs/strategic-repository-sensemaking-v1.md`, `strategic-continuity-v1.md`, `capability-learning-loop-v0.md` for minimal source-reference need; leave unchanged where no reader need is demonstrated.
+- [x] Confirm via installed-profile and packaging source that the guide lives in the selected entrypoint Skill directory; check exact-commit wheel profile path where feasible, distinguish packaging from actual host invocation.
+- [x] Leave `strategic-repository-reconciliation/SKILL.md`, canonical contracts, runtime and default public Skill names unchanged absent a demonstrated consumer ambiguity.
 
 **Done when:** existing Skills can find the relevant guide *selectively* and no expanded stage, required form, duplicated authority or broken installed link is introduced.
 
@@ -231,13 +231,13 @@ The shared conceptual module is one file with two distinct internally labeled pr
 
 **Prerequisite:** Tasks 5–8. **Output:** justified `NO_NEW_KNOWLEDGE_PACK` in closeout *or* minimally justified, valid existing-schema pack (and separately bounded PR).
 
-- [ ] Identify one precise future agent query/re-entry need not adequately answerable by current strategic files, retained history, source links, optional guide and already-indexed knowledge.
-- [ ] If no gap is material, record **`NO_NEW_KNOWLEDGE_PACK`** and leave `.sensemaking/knowledge/` untouched. **This completes Task 9.**
+- [x] Identify one precise future agent query/re-entry need not adequately answerable by current strategic files, retained history, source links, optional guide and already-indexed knowledge.
+- [x] If no gap is material, record **`NO_NEW_KNOWLEDGE_PACK`** and leave `.sensemaking/knowledge/` untouched. **This completes Task 9.**
 - [ ] **Only if GO:** inspect supported `schema_version: 1` kinds, allowable relations, provenance and current archived records; choose an existing legal kind rather than inventing `LearningAccount` or `StrategicEvolutionRationale` as parsed kinds.
 - [ ] **Only if GO:** add the smallest source-grounded reviewed definition or cross-reference needed for an actual `search/explain/context-for` consumer, preserving each historical report revision and identity.
 - [ ] **Only if GO:** inspect index and actual retrieval behavior at the candidate commit; check missing-source and omission semantics; do not treat successful graph navigation as causal truth or agent benefit.
 - [ ] **Only if GO:** if required meaning cannot be expressed by current schema safely, stop and prepare **separately justified compatibility/schema discussion**, not silent evolution of v1.
-- [ ] Keep all generic experiment infrastructure, automatic doctrine promotion, semantic scores, history rewriting and universal memory files out of scope.
+- [x] Keep all generic experiment infrastructure, automatic doctrine promotion, semantic scores, history rewriting and universal memory files out of scope.
 
 **Done when:** a justified source-only/guide-only NO-GO exists, or a minimal useful existing-schema consumer projection is actually checked; no optional pack is necessary to claim documentary ontology completion.
 
@@ -245,17 +245,17 @@ The shared conceptual module is one file with two distinct internally labeled pr
 
 **Prerequisite:** Tasks 0–9, where Task 9 NO-GO is a legitimate result.
 
-- [ ] Review implementation PR diffs and ensure edits are confined to intended ontology, portable guide, optional case/knowledge and minimal navigation paths; no unexpected product/ADR, schema, runtime or status authority change.
-- [ ] Review historical A–E against original source artifacts, recorded analyzed revisions and negative-case interpretations; F remains labeled normative.
-- [ ] Verify local `SEL-CQ` expected answers against source; record `ANSWERABLE`/`PARTIAL`/`NOT_ASSESSED` without conflating documentary fitness with autonomous agent qualification.
-- [ ] Check actual relevant file links, source IDs, original typed entities and assessed vs report revisions; if linked files are missing, repair the documentation without inventing identities.
-- [ ] Verify no altered semantics/validators of `strategic_repository_analysis`, `strategic_reconciliation`, Strategic Continuity, Knowledge Schema v1, Connected Prospective Inquiry or core Warrant/Choice/Policy Hierarchy.
-- [ ] Inspect actual installed guide packaging path and existing hosted checks. Use source/diff and relevant non-test mechanical checks per current `CLAUDE.md`; record any local unit/synthetic test as `NOT_RUN` unless policy changes.
-- [ ] Make short source-grounded decision note and exact file list for each PR; follow current owner-directed branch/merge policy after clean review, preserving protections and actual pending/failed CI states.
+- [x] Review implementation PR diffs and ensure edits are confined to intended ontology, portable guide, optional case/knowledge and minimal navigation paths; no unexpected product/ADR, schema, runtime or status authority change.
+- [x] Review historical A–E against original source artifacts, recorded analyzed revisions and negative-case interpretations; F remains labeled normative.
+- [x] Verify local `SEL-CQ` expected answers against source; record `ANSWERABLE`/`PARTIAL`/`NOT_ASSESSED` without conflating documentary fitness with autonomous agent qualification.
+- [x] Check actual relevant file links, source IDs, original typed entities and assessed vs report revisions; if linked files are missing, repair the documentation without inventing identities.
+- [x] Verify no altered semantics/validators of `strategic_repository_analysis`, `strategic_reconciliation`, Strategic Continuity, Knowledge Schema v1, Connected Prospective Inquiry or core Warrant/Choice/Policy Hierarchy.
+- [x] Inspect actual installed guide packaging path and existing hosted checks. Use source/diff and relevant non-test mechanical checks per current `CLAUDE.md`; record any local unit/synthetic test as `NOT_RUN` unless policy changes.
+- [x] Make short source-grounded decision note and exact file list for each PR; follow current owner-directed branch/merge policy after clean review, preserving protections and actual pending/failed CI states.
 - [ ] If post-merge hosted CI identifies a material failure, assess/repair that original failure as a bounded follow-up before claiming completion.
-- [ ] Update `STATUS.md` only if a material implemented capability changed; do not replace current PATH-1 strategic responsibility merely because the ontology exists.
-- [ ] Produce a final existing `sensemaking_session_receipt` only for actual implementation, exact source/authority/review evidence, NO_GO decisions, current status and unqualified later-agent value.
-- [ ] Conclude `GOAL_SATISFIED` (documentary implementation), a real source/authority blocker, or a specific unresolved gap. Do not proceed into empirical trials, machine causal models or self-updating strategy absent an independently warranted responsibility.
+- [x] Update `STATUS.md` only if a material implemented capability changed; do not replace current PATH-1 strategic responsibility merely because the ontology exists.
+- [x] Produce a final existing `sensemaking_session_receipt` only for actual implementation, exact source/authority/review evidence, NO_GO decisions, current status and unqualified later-agent value.
+- [x] Conclude `GOAL_SATISFIED` (documentary implementation), a real source/authority blocker, or a specific unresolved gap. Do not proceed into empirical trials, machine causal models or self-updating strategy absent an independently warranted responsibility.
 
 **Done when:** the shared conceptual model, two profiles, cases, competencies, portable conditional guidance, evidence/authority ceilings and implementation history are reconstructible; appropriate source/packaging checks are honestly qualified.
 
@@ -329,3 +329,48 @@ Merge low-risk adjacent increments if this produces a clearer smaller diff and p
 **Specifically not proved:** higher-quality real strategic choices, greater independent creative novelty, causal direction from a graph, real user desire for a new future, cross-repository transfer success, host invocation, a self-updating learning system, a valid owner thesis change, changed product-market value, new automatic work authorization or improved AI weights.
 
 **Possible later independent question:** When a capable coding agent faces a genuinely new repository evolution or learning/reassessment decision, does this new guidance actually change the sourced rationale, application of historical evidence or selection compared with a source-only agent, while preserving owner authority? Only a separate authentic task and observation can support an answer. Do not manufacture that study as a dependency for the documentary v1 ontology.
+
+
+## I. Implementation, knowledge-retention decision and review reconciliation — 2026-11-05
+
+**Owner authorization:** explicit request after merged planning PR #753: implement all tasks, proceed without further input, choose repository-answerable intermediate decisions. Authority covers the bounded conceptual/Skill-reference changes and ordinary repository PR merges under current `CLAUDE.md`; it does not ratify new product theses, owner preferences, external publication or release/deployment.
+
+### Merged increments and actual artifacts
+
+| PR | Merged change and evidence scope |
+| --- | --- |
+| [#754](https://github.com/ThorStarlord/sensemaking-skills/pull/754), merge `6f97cdeb79e9777967c9f3029dd1f13768367b17` | [Conceptual Strategic Evolution & Learning ontology](../../semantic-architecture/strategic-evolution-learning-ontology.md), two shared documentary roles and source/evidence/authority spine, with distinct future end versus mechanism and world/interpretation/owner delta. Six conceptual sections, source references reviewed; no schema, strategic authority or new artifact producer. Hosted Product Validation **PASS** and Release Candidate Distribution **PASS** (PR head `0be1b1745133ad242ce5fd640444b0b44b30ad57`). |
+| [#755](https://github.com/ThorStarlord/sensemaking-skills/pull/755), merge `f4750260ebc14a34f3c6bf14b1fdddab0516f5d4` | [Reference cases](../../semantic-architecture/strategic-evolution-learning-reference-cases-v1.md) A–E (original dated reports) plus F (**NORMATIVE**), source-qualifying [SEL-CQ-01–20](../../semantic-architecture/strategic-evolution-learning-competency-v1.md) and 12 negative controls. Original source revision and current report snapshot differentiated; no historical rank/product claim changed. Hosted Product Validation **PASS** and Release Candidate Distribution **PASS** (PR head `954b1f8797e674ae00e8ae9934c77596fbbdb107`). |
+| [#756](https://github.com/ThorStarlord/sensemaking-skills/pull/756), merge `c356afaff29a3363ac5a5ffb9356e0e98df5eee1` | [Portable conditional guide](../../../skills/strategic-repository-analysis/references/strategic-evolution-learning-v1.md), [optional sparse record](../../../skills/strategic-repository-analysis/references/strategic-evolution-learning-record-template.md) and six minimal source index/Skill-reference crosslinks. Existing `using-sensemaking` core/strategic reconciliation producer left unchanged. Hosted Semantic Context Re-entry **PASS** at PR head `ab241bf22cf8733fce9f53b4a02d5d3772fbc195`; Product Validation / Release Candidate Distribution **IN_PROGRESS at last check**, not claimed passing before completion. |
+
+### Task 9 — explicit retained knowledge NO-GO
+
+**Decision: `NO_NEW_KNOWLEDGE_PACK`.**
+
+**Consumer question assessed:** Can an agent recover a strategy's accepted end, source-current capability basis, conditional PATH-1/PATH-2 preference, subsequent source-qualified `ASSUMPTION-1` learning delta, distinct cross-episode lesson mechanisms, and the scope/authority of a newly delivered documentary capability using the existing strategic sources plus an installed guide? **Yes at the source-documentary level.** The six source-annotated cases, 20 local competency answers, current `strategic_repository_analysis` and `strategic_reconciliation` contracts, and the installed reference provide those meanings without inventing graph type IDs.
+
+No observed `search/explain/context-for` consumer failure or material re-entry gap specifically requires mirroring the new conceptual role labels and historical interpretations as `.sensemaking/knowledge/strategic-evolution-learning.json`. Duplicating the same source claims would increase maintenance/currentness burden without established semantic or retrieval benefit. Retaining documentary account names as JSON predicates would falsely enlarge schema-v1 authority. Thus **no knowledge pack, index build, new queries, parser, validator, migration or knowledge promotion** was introduced. The four "Only if GO" actions stay unchecked **intentionally and legitimately not applicable**, not failed attempts.
+
+A future real source/agent retrieval miss with source-cited consumer need may warrant a separate existing-schema patch under current source/authority rules, but this implementation does not manufacture one.
+
+### Task 10 — review evidence and claim ceilings
+
+| Check | Actual result |
+| --- | --- |
+| Governing and source baseline | **SOURCE_REVIEW_COMPLETE:** `AGENTS.md`, `CLAUDE.md`, `CONTEXT.md`, `docs/product-strategy.md`, `STATUS.md`, ADR/product intent context and planned source/strategic/learning ontology contracts were reviewed at `main@095ae3fdaec229bb5d2d49e7fe5a95969f8ab22e` before the first construction PR. Original historical reports carry separate analyzed target revisions. |
+| Canonical machine producers and authority | **SOURCE_REVIEW_COMPLETE:** current `strategic_repository_analysis` v2, `strategic_reconciliation`, Strategic Continuity, existing Learning/Reconciliation and connected-inquiry semantics retained. No production code, validator, schema, Knowledge v1, Level-3 PATH-1, ADR or Level-4 product strategy changed by the three implementation PRs. |
+| Historical source cases/competency author review | **DOCUMENTARY_FIT:** A–E source-bound, F labeled normative, SEL-CQ-01..20 with explicit `ANSWERABLE`, `PARTIAL` and `NOT_ASSESSED` claims. No independent model/agent experiment conducted; no novel user demand or cross-repository doctrine benefit established. |
+| Changed-file/diff review | **PASS (source inspection):** PR #754 one new ontology file; #755 two new semantic-architecture files; #756 two portable reference files plus six existing documentation/reference pointers, exactly the bounded planned paths. All source-link target paths explicitly checked where material; unbounded link crawl and independent host loading were not demonstrated. |
+| Source packaging/profile path | **PASS (source inspection):** `src/sensemaking_skills/defaults/install-profiles.yaml` entrypoint includes `using-sensemaking` and `strategic-repository-analysis`. `setup.py` copies canonical `skills/` to packaged `skill_trees`; `setup_skills.py` installs selected Skill directories whole. New guide and optional record live in that tree. |
+| Separate isolated exact-commit local wheel install | **NOT_RUN**. Source packaging and hosted distribution are distinct; neither proves the active host loaded or used the reference. |
+| Local unit/synthetic evidence tests | **NOT_RUN** under current repository owner-directed `CLAUDE.md` construction exception. No local tests created or added, and existing hosted CI/protections were preserved. |
+| Hosted PR #754 | **PASS** Product Validation and Release Candidate Distribution at exact PR head; PR merged after source/diff review. |
+| Hosted PR #755 | **PASS** Product Validation and Release Candidate Distribution at exact PR head; PR merged after source/diff review. |
+| Hosted PR #756 | Semantic Context Re-entry **PASS**; Product Validation and Release Candidate Distribution **PENDING at closeout authorship**, pending results should be checked later and any material failure handled as a separate warranted repair. Do not report PASS before observed. |
+| Independent later-agent reasoning, capability learning or user/product value | **NOT_ASSESSED**. Historical source reconstruction, source-profile reachability and CI do not prove agent-guidance invocation/application, better strategic choices, owner-valued product ends, causal semantic graphs or transferable doctrine. |
+
+**Result:** ``SOURCE_DOCUMENTARY_GOAL_SATISFIED`: the conceptual two-profile ontology, full source cases and 20 competencies, portable conditional guide, optional template and no-duplicate producer/authority boundaries exist on `main`. No Level-3/Level-4 strategy reopening or doctrine mutation is warranted solely because the ontology was added. ``NO_MODEL_CHANGE` to accepted strategic PATH-1. This closeout is not a new product-thesis decision, an empirical qualification certificate, or automatic authorization to run future inquiries.
+
+**Explicit stop / re-entry:** stop now after documenting the actual receipts and qualification ceiling. If a later genuinely independent agent fails to recover/apply the guide, source context changes materially, or repeated counterexamples defeat the semantics, return through normal Sensemaking responsibility selection and source-grounded learning; do not blindly rerun the whole ontology program.
+
+**Post-merge CI conditional:** the "If post-merge hosted CI identifies a material failure" item remains open while checks on #756 are pending; it is not a blocker to merging this documentation under the active source-review-first repo policy. A later material failure warrants finding-specific repair; no hypothetical successful check is invented.
