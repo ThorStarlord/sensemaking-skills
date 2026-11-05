@@ -8,6 +8,7 @@ include release-v1.0.yaml
 include pytest.ini
 include docs/release-v1.0-contract.md
 recursive-include src/sensemaking_skills/defaults *
+recursive-include src/sensemaking_skills/semantic_architecture/view_assets *.html
 recursive-include templates *
 recursive-include skills *
 recursive-include scripts *
