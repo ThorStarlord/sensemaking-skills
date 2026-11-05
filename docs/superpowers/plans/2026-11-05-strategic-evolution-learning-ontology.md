@@ -1,6 +1,6 @@
 # Strategic Evolution & Learning Ontology v1 — Detailed Implementation Plan
 
-> **For a subsequent implementing agent:** Load the current installed `using-sensemaking` Skill, refresh the repository/authority baseline and perform only work authorized at that time. **This document is an approved implementation plan, not an implementation receipt, built ontology, strategy decision or permission to mutate product thesis.**
+> **For a subsequent implementing agent:** Load the current installed `using-sensemaking` Skill, refresh the repository/authority baseline and perform only work authorized at that time. **This is an implementation planning proposal based on the owner's approved design direction, not an authorization to execute it, an implementation receipt, a built ontology, a strategy decision or permission to mutate product thesis.**
 
 **Goal:** Connect two distinctive responsibilities through one source-preserving, portable Level-2 conceptual ontology: **Strategic Evolution Analysis** ("Where should this system evolve, and why?") and **Learning & Reassessment** ("What did we learn, and what changes—if anything?"). Preserve past judgments and accepted authority while making future opportunity, source-grounded reasoning, knowledge delta and decision consequences reconstructible.
 
