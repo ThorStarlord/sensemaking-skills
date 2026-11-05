@@ -8,7 +8,6 @@ A local browser may display the same envelope without becoming a knowledge store
 from __future__ import annotations
 
 import json
-import re
 from importlib import resources
 from typing import Any
 
