@@ -420,6 +420,20 @@ responsibility). These are report/view roles, not executable graph predicates,
 mandatory artifacts or strategic/owner decisions. Original source-qualified
 `poss:`, `arch:`, `conseq:`, `Decision` and requirements retain their identity.
 
+### Strategic evolution and learning documentary roles
+
+The [Strategic Evolution & Learning Ontology v1](strategic-evolution-learning-ontology.md)
+links **Strategic Evolution Analysis** (current capability and accepted purpose ->
+credible future ends, paths, tradeoffs and conditional strategy rationale) with
+**Learning & Reassessment** (historical explicit understanding + new evidence ->
+correctly scoped changed/unchanged claims, lessons and decisions). The
+`StrategicEvolutionRationale` and `LearningAccount` are **documentary views**,
+not new Layer-6 entities, graph predicates, Level-3 state, artifact IDs or
+self-mutating beliefs. Existing `ProductPossibility`, `ConstructionPath`,
+`AssessmentRevisionAccount`, `Decision`, `strategic_repository_analysis` and
+`strategic_reconciliation` retain their producers, typed relations, source
+revision, semantic authority and historical identity.
+
 ### Product relations
 
 ```text
