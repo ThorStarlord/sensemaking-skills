@@ -139,3 +139,14 @@ The [local competency matrix](possibility-assessment-competency-v1.md) contains 
 The product's value thesis is improved source-grounded agent reasoning. Document reconstruction can establish that a reader found and understood the asserted reasons; it cannot establish that an independent agent performs more creative work, that a new ranking serves the owner, or that a graph rather than the original documents caused the result. An installed reference proves package delivery, not host invocation.
 
 This module is a **Level-2 conceptual ontology and documentary profile**. A small checked projection into the existing Level-3 knowledge system does not elevate the whole module into a new executable assessment contract.
+
+## 9. Conditional transition from assessment to selection
+
+The [Convergent Direction Selection Ontology](convergent-direction-selection-ontology.md)
+specifies what additional evidence and real actor/authority would be necessary
+to treat a comparative assessment as an **adopted scoped choice**. A
+`PortfolioSnapshot`, `AssessmentJudgment`, comparative preference or
+recommended inquiry does not itself instantiate a `Decision`. The target must
+remain typed, credible unselected alternatives preserved, and the decision's
+settled/open distinction stated. `NO_SELECTION` is a valid result.
+These meanings add no mandatory next activity or executable predicate.

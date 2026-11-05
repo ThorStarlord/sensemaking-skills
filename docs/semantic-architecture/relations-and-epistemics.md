@@ -553,3 +553,13 @@ Existing prospective `ComparativeJudgment evaluates` and
 ConstructionPath**. A priority judgment about an inquiry question, product
 future or authorized construction change uses the documentary roles and its
 independent authority context; do not widen existing predicates by analogy.
+
+### Scoped convergence and selection relationship meanings
+
+The [Convergent Direction Selection Ontology](convergent-direction-selection-ontology.md#4-relationship-semantics-without-predicate-expansion)
+describes documentary links between a `ChoiceQuestion`, original typed
+targets, `CandidateWarrant`, `ConvergenceRationale`, a real
+`ScopedDirectionSelection`, alternatives and a bounded handoff. Such links
+must cite actor, purpose, evidence, source revision and authority. They
+**are not newly executable graph predicates**. A `references` link to a
+decision report does not prove that decision's correctness or authorization.

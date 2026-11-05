@@ -516,3 +516,13 @@ AssessmentFrame makes the *purpose* explicit; an AssessmentJudgment and
 dated PortfolioSnapshot retain uncertainty, incomparable members and
 reconsideration conditions. These Level-2 documentary roles do not widen
 existing architecture/path preference endpoints or authorize implementation.
+
+### Convergent evaluation and scoped direction selection
+
+The [Convergent Direction Selection Ontology](convergent-direction-selection-ontology.md)
+connects source-bound assessment, target-specific warrant, actual attributable
+`Decision`, nonselected alternatives and bounded continuation. It clarifies
+**what a choice settles** without assigning new identities to selected targets,
+widening architecture/path relation endpoints, or creating implementation
+authority. [Local competencies](convergent-direction-selection-competency-v1.md)
+assess that documentary distinction.
