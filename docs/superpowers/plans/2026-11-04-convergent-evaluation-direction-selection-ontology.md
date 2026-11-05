@@ -12,7 +12,7 @@
 
 **Planning baseline:** `ThorStarlord/sensemaking-skills@4ef254cd6251e515910e2187de22195d0e49401d` (2026-11-04). Refresh HEAD, governing docs, local instructions and source identities at execution.
 
-**Status:** **PLANNED**. All implementation boxes are intentionally unchecked. Only the design and plan are being authored now. The owner's approval of this plan is not implementation authority for arbitrary downstream selected directions.
+**Status:** **IMPLEMENTED (core v1) — 2026-11-04.** Seven bounded tasks / fifty checkable steps were completed under the explicit owner implementation request, with substantive implementation merged in PRs #742, #743 and #745. The final administrative closeout records the validated receipt. No future product direction was selected or authorized by this ontology implementation.
 
 ## Global constraints
 
@@ -92,14 +92,14 @@ Suggested sequence (bounded PRs, not a mandatory pipeline): **A. conceptual foun
 **Consumes:** accepted design spec and current Layered/Divergent/Assessment/Prospective models plus Warrant / Choice policy.
 **Produces:** stable documentary roles/relationship meanings for cases and the portable profile.
 
-- [ ] **1.1 Pin source and authority:** record exact HEAD, current local instructions, accepted ADRs and existing `Decision`/`ComparativeJudgment` endpoints. Explain which roles can reuse existing concepts and which are new descriptive specializations.
-- [ ] **1.2 Define choice objects:** ChoiceQuestion, ConsideredChoiceSet and typed target references including `InquiryQuestion+ProposedInquiryApproach`, product future, architecture/path, and separately authorized work; preserve original identities.
-- [ ] **1.3 Define justification and rationale:** distinguish CandidateWarrant from ConvergenceRationale; include evidence, defeaters, currentness, rejected/conditional premises and meaningful alternative comparators.
-- [ ] **1.4 Define ScopedDirectionSelection:** require an actual attributable selecting actor/authority, selected target, choice question, scope, what is settled/open, date and reconsideration; explicitly distinguish recommendation, preference, adoption and implementation permission.
-- [ ] **1.5 Define nonselection and history:** AlternativeDispositionAccount, SelectionReconsiderationBoundary, SelectionHandoff; allow no-selection, underdeveloped options, owner-reserved and revised choices without forced ranking or silent historical overwrite.
-- [ ] **1.6 Write local semantic relationship/endpoints crosswalk:** explain all relationships as documentary, reuse existing Decision/Claim meanings, preserve architecture/path `evaluates`/`prefers`/`selects` restrictions and do not create executable predicates.
-- [ ] **1.7 Draft local competency matrix:** map each question in §3 below to existing global CQ/PAO-CQ sources; record baseline faithful/awkward/lost/not established from actual sources without presenting examples as independent trials.
-- [ ] **1.8 Review and commit the semantic increment:** inspect source/diff, local links, contradictions and the five Review Focus failures; stop at a genuine product-thesis/ontology-authority conflict rather than silently extending authority.
+- [x] **1.1 Pin source and authority:** record exact HEAD, current local instructions, accepted ADRs and existing `Decision`/`ComparativeJudgment` endpoints. Explain which roles can reuse existing concepts and which are new descriptive specializations.
+- [x] **1.2 Define choice objects:** ChoiceQuestion, ConsideredChoiceSet and typed target references including `InquiryQuestion+ProposedInquiryApproach`, product future, architecture/path, and separately authorized work; preserve original identities.
+- [x] **1.3 Define justification and rationale:** distinguish CandidateWarrant from ConvergenceRationale; include evidence, defeaters, currentness, rejected/conditional premises and meaningful alternative comparators.
+- [x] **1.4 Define ScopedDirectionSelection:** require an actual attributable selecting actor/authority, selected target, choice question, scope, what is settled/open, date and reconsideration; explicitly distinguish recommendation, preference, adoption and implementation permission.
+- [x] **1.5 Define nonselection and history:** AlternativeDispositionAccount, SelectionReconsiderationBoundary, SelectionHandoff; allow no-selection, underdeveloped options, owner-reserved and revised choices without forced ranking or silent historical overwrite.
+- [x] **1.6 Write local semantic relationship/endpoints crosswalk:** explain all relationships as documentary, reuse existing Decision/Claim meanings, preserve architecture/path `evaluates`/`prefers`/`selects` restrictions and do not create executable predicates.
+- [x] **1.7 Draft local competency matrix:** map each question in §3 below to existing global CQ/PAO-CQ sources; record baseline faithful/awkward/lost/not established from actual sources without presenting examples as independent trials.
+- [x] **1.8 Review and commit the semantic increment:** inspect source/diff, local links, contradictions and the five Review Focus failures; stop at a genuine product-thesis/ontology-authority conflict rather than silently extending authority.
 
 **Acceptance:** a reader can describe what a choice settles, why selection is more than comparison, what `NO_SELECTION` means and why "selected inquiry" cannot mutate accepted strategy. No new runtime/typed graph endpoint.
 
@@ -112,14 +112,14 @@ Suggested sequence (bounded PRs, not a mandatory pipeline): **A. conceptual foun
 **Consumes:** Task 1 roles; ADR 0034; November 3/4 convergence/portfolio reports; prospective and Warrant policy sources.
 **Produces:** trustworthy annotated cases, including a genuinely ratified decision and genuine nonselection.
 
-- [ ] **2.1 Pin all containing file revisions:** identify source files, actual revisions containing judgments, earlier source baselines they inspected, author vs owner attribution, and quotation/interpretation boundaries.
-- [ ] **2.2 Case S1 — no selected direction:** reconstruct November 3 nonbinding convergence and its qualified directions for separate depth; explain why it is not a `ScopedDirectionSelection`.
-- [ ] **2.3 Case S2 — recommendation versus adoption:** reconstruct November 4 owner-agency **recommended inquiry**, its reasons/reversal conditions and distinct strategic Futures+Continuity synthesis without inventing owner selection.
-- [ ] **2.4 Case S3 — actual adopted selection:** reconstruct ADR 0034's owner-ratified Level-4 product direction, authority, adopted scope, boundaries and continuing prior ADRs; never label it fresh empirical validation.
-- [ ] **2.5 Case S4 — architectural preference and feedback:** use prospective ontology's architecture option/conditional feedback source to explain `ProvisionalPreference`, reopened consequences and need for separate `Decision`/action authority.
-- [ ] **2.6 Case S5 — no-selection / option-set incomplete:** use Warrant / Choice and owner-decision-capsule policy as **normative/illustrative** cases; do not present them as a historical observation that an agent actually made this choice.
-- [ ] **2.7 Case S6 — synthesis versus adoption:** document why a composite future needs separately assessed benefits/costs/assumptions and cannot be called selected merely because November 4 found the synthesis attractive.
-- [ ] **2.8 Source and counterexample review:** preserve original candidate IDs, missing authority, decline/defer/retained-alternative meanings, case labels and links; correct a source conflict rather than fabricate a more dramatic selection.
+- [x] **2.1 Pin all containing file revisions:** identify source files, actual revisions containing judgments, earlier source baselines they inspected, author vs owner attribution, and quotation/interpretation boundaries.
+- [x] **2.2 Case S1 — no selected direction:** reconstruct November 3 nonbinding convergence and its qualified directions for separate depth; explain why it is not a `ScopedDirectionSelection`.
+- [x] **2.3 Case S2 — recommendation versus adoption:** reconstruct November 4 owner-agency **recommended inquiry**, its reasons/reversal conditions and distinct strategic Futures+Continuity synthesis without inventing owner selection.
+- [x] **2.4 Case S3 — actual adopted selection:** reconstruct ADR 0034's owner-ratified Level-4 product direction, authority, adopted scope, boundaries and continuing prior ADRs; never label it fresh empirical validation.
+- [x] **2.5 Case S4 — architectural preference and feedback:** use prospective ontology's architecture option/conditional feedback source to explain `ProvisionalPreference`, reopened consequences and need for separate `Decision`/action authority.
+- [x] **2.6 Case S5 — no-selection / option-set incomplete:** use Warrant / Choice and owner-decision-capsule policy as **normative/illustrative** cases; do not present them as a historical observation that an agent actually made this choice.
+- [x] **2.7 Case S6 — synthesis versus adoption:** document why a composite future needs separately assessed benefits/costs/assumptions and cannot be called selected merely because November 4 found the synthesis attractive.
+- [x] **2.8 Source and counterexample review:** preserve original candidate IDs, missing authority, decline/defer/retained-alternative meanings, case labels and links; correct a source conflict rather than fabricate a more dramatic selection.
 
 **Acceptance:** the source record distinguishes **recommended**, **owner-ratified**, **provisional**, **no selection**, **option-set incomplete**, and **hypothetical synthesis**; all original reports remain unchanged.
 
@@ -132,13 +132,13 @@ Suggested sequence (bounded PRs, not a mandatory pipeline): **A. conceptual foun
 **Consumes:** Task 1 definitions and Task 2 historical cases.
 **Produces:** self-contained guidance for the active agent and durable records for a future reader.
 
-- [ ] **3.1 Write standalone scope/warrant guidance:** use a current goal, current sources, existing assessment and governing authority; select a bounded convergent responsibility only when the decision is actually open.
-- [ ] **3.2 Explain adequacy of considered set and target-specific warrant:** check missing options and decisive prerequisites before picking, with clear `NO_SELECTION`, `MORE_EVIDENCE_REQUIRED`, `OWNER_DECISION_REQUIRED` and `OPTION_SET_INCOMPLETE` interpretation anchored to existing policies.
-- [ ] **3.3 Explain comparative preference versus choice:** present why a target warrants pursuit at all **and** why it better addresses the choice question than alternatives. Allow uncertainty, conditional preferences, ties, credible complements and different beneficiary frames.
-- [ ] **3.4 Define choice-scope guidance:** what is settled, left open, decision actor and delegated authority, accepted costs, consequences, and an explicit "what later agents may inherit" boundary; no automatic Skill transition or execution.
-- [ ] **3.5 Write optional sparse Markdown record:** date, source/revisions, typed targets, purpose/authority, available alternatives, warrant/defeaters, rationale, *actual status* (recommendation / selection / nonselection), alternatives' dispositions, handoff/reopen triggers and stop.
-- [ ] **3.6 Add compact worked distinctions:** no-selection despite preference, inquiry selection versus product thesis, declined alternative versus out-of-frame, conditional synthesis and owner-reserved escalation; explicitly mark illustrations.
-- [ ] **3.7 Portability review and commit:** the installed reference must be usable without the framework checkout or target `CLAUDE.md`. Require neither a new mandatory form nor full Level-3 Strategic Analysis for a bounded choice.
+- [x] **3.1 Write standalone scope/warrant guidance:** use a current goal, current sources, existing assessment and governing authority; select a bounded convergent responsibility only when the decision is actually open.
+- [x] **3.2 Explain adequacy of considered set and target-specific warrant:** check missing options and decisive prerequisites before picking, with clear `NO_SELECTION`, `MORE_EVIDENCE_REQUIRED`, `OWNER_DECISION_REQUIRED` and `OPTION_SET_INCOMPLETE` interpretation anchored to existing policies.
+- [x] **3.3 Explain comparative preference versus choice:** present why a target warrants pursuit at all **and** why it better addresses the choice question than alternatives. Allow uncertainty, conditional preferences, ties, credible complements and different beneficiary frames.
+- [x] **3.4 Define choice-scope guidance:** what is settled, left open, decision actor and delegated authority, accepted costs, consequences, and an explicit "what later agents may inherit" boundary; no automatic Skill transition or execution.
+- [x] **3.5 Write optional sparse Markdown record:** date, source/revisions, typed targets, purpose/authority, available alternatives, warrant/defeaters, rationale, *actual status* (recommendation / selection / nonselection), alternatives' dispositions, handoff/reopen triggers and stop.
+- [x] **3.6 Add compact worked distinctions:** no-selection despite preference, inquiry selection versus product thesis, declined alternative versus out-of-frame, conditional synthesis and owner-reserved escalation; explicitly mark illustrations.
+- [x] **3.7 Portability review and commit:** the installed reference must be usable without the framework checkout or target `CLAUDE.md`. Require neither a new mandatory form nor full Level-3 Strategic Analysis for a bounded choice.
 
 **Acceptance:** a fresh agent can read the installed guide and produce a meaningful selected-or-not-selected outcome without false authority; a short low-stakes decision need not become an eight-section artifact.
 
@@ -152,12 +152,12 @@ Suggested sequence (bounded PRs, not a mandatory pipeline): **A. conceptual foun
 **Consumes:** stable portable path from Task 3.
 **Produces:** discoverable guidance without changing controller ownership.
 
-- [ ] **4.1 Inspect actual entrypoint trigger semantics:** determine whether current first-load references already cover a standalone "which direction should guide further work?" request; record justification for each edit.
-- [ ] **4.2 Add the smallest conditional cue:** point to `convergent-direction-selection-v1.md` only when a warranted selection/nonselection question is material; avoid loading for every divergent or comparative assessment.
-- [ ] **4.3 Clarify existing strategic funnel:** a Level-3 selection may consume assessed directions and Warrant/Choice, while a standalone Convergent Evaluation may stop without Level-3 frontier/path or implementation.
-- [ ] **4.4 Preserve ownership of choice and evidence return:** specialist recommendation goes back to active agent; an owner-reserved selection goes to the existing decision-capsule path; no specialist-to-specialist automatic execution.
-- [ ] **4.5 Check reference/package reachability:** the current `entrypoint` profile must contain all needed Skill paths; no new public Skill, install profile, parser or workflow change.
-- [ ] **4.6 Review minimal integration diff:** check negative cases (portfolio recommendation not accepted decision; selected direction not execution; no policy-disposition changes); commit with an exact source-grounded PR note.
+- [x] **4.1 Inspect actual entrypoint trigger semantics:** determine whether current first-load references already cover a standalone "which direction should guide further work?" request; record justification for each edit.
+- [x] **4.2 Add the smallest conditional cue:** point to `convergent-direction-selection-v1.md` only when a warranted selection/nonselection question is material; avoid loading for every divergent or comparative assessment.
+- [x] **4.3 Clarify existing strategic funnel:** a Level-3 selection may consume assessed directions and Warrant/Choice, while a standalone Convergent Evaluation may stop without Level-3 frontier/path or implementation.
+- [x] **4.4 Preserve ownership of choice and evidence return:** specialist recommendation goes back to active agent; an owner-reserved selection goes to the existing decision-capsule path; no specialist-to-specialist automatic execution.
+- [x] **4.5 Check reference/package reachability:** the current `entrypoint` profile must contain all needed Skill paths; no new public Skill, install profile, parser or workflow change.
+- [x] **4.6 Review minimal integration diff:** check negative cases (portfolio recommendation not accepted decision; selected direction not execution; no policy-disposition changes); commit with an exact source-grounded PR note.
 
 **Acceptance:** a first-load agent can find the profile for an explicit selection responsibility, but ordinary bounded comparisons and already-authorized repairs remain light.
 
@@ -170,12 +170,12 @@ Suggested sequence (bounded PRs, not a mandatory pipeline): **A. conceptual foun
 **Consumes:** Task 1 concept definitions, Task 2 source-case document, existing knowledge contract and CLI.
 **Produces:** source-linked discoverability using accepted v1 shapes, or an evidenced decision that no pack is needed.
 
-- [ ] **5.1 Inspect current `knowledge-contract.md` and parser:** record allowed kinds/statuses/predicates and source-reference rules, including whether `domain_concept`, `source`, and `references` suffice. Do not infer attributes from prior reports.
-- [ ] **5.2 Decide selective knowledge scope:** add only durable shared concept definitions and a dated case-source reference if they materially assist recall; **do not** ingest all ranked directions or claim an enacted Decision from policy/examples.
-- [ ] **5.3 If warranted, author existing-schema JSON:** choose distinct IDs from the current knowledge pack, correct tracked source paths and epistemic statuses; relations use only supported predicates, with no new endpoint semantics.
-- [ ] **5.4 Validate the authored proposal:** run `python -m sensemaking_skills.cli semantic knowledge-proposal-check --repo . --proposal .sensemaking/knowledge/convergent-direction-selection.json --json` from a checkout with the CLI; expected accepted records without source/schema errors. If no pack was warranted, mark this check `NOT_APPLICABLE` in prose, **not** PASS.
-- [ ] **5.5 Reconcile any checker failures from source and contract:** correct actual errors without weakening validation; a failed/unrun pack remains draft and is not described as reviewed.
-- [ ] **5.6 Commit the selective pack or recorded no-change decision:** no archive rewrites, no pseudo-canonical selected-direction graph nodes, no invented endorsement.
+- [x] **5.1 Inspect current `knowledge-contract.md` and parser:** record allowed kinds/statuses/predicates and source-reference rules, including whether `domain_concept`, `source`, and `references` suffice. Do not infer attributes from prior reports.
+- [x] **5.2 Decide selective knowledge scope:** add only durable shared concept definitions and a dated case-source reference if they materially assist recall; **do not** ingest all ranked directions or claim an enacted Decision from policy/examples.
+- [x] **5.3 If warranted, author existing-schema JSON:** choose distinct IDs from the current knowledge pack, correct tracked source paths and epistemic statuses; relations use only supported predicates, with no new endpoint semantics.
+- [x] **5.4 Validate the authored proposal:** run `python -m sensemaking_skills.cli semantic knowledge-proposal-check --repo . --proposal .sensemaking/knowledge/convergent-direction-selection.json --json` from a checkout with the CLI; expected accepted records without source/schema errors. If no pack was warranted, mark this check `NOT_APPLICABLE` in prose, **not** PASS.
+- [x] **5.5 Reconcile any checker failures from source and contract:** correct actual errors without weakening validation; a failed/unrun pack remains draft and is not described as reviewed.
+- [x] **5.6 Commit the selective pack or recorded no-change decision:** no archive rewrites, no pseudo-canonical selected-direction graph nodes, no invented endorsement.
 
 **Acceptance:** retained knowledge is structurally checked, traceable and clearly distinct from decisions; or its omission is justified because existing source records already provide sufficient recovery.
 
@@ -188,13 +188,13 @@ Suggested sequence (bounded PRs, not a mandatory pipeline): **A. conceptual foun
 **Consumes:** committed Tasks 1–5 at an identified revision.
 **Produces:** specific evidence for delivered meanings, without claiming independent performance.
 
-- [ ] **6.1 Inspect source integrity:** verify changed Markdown links, source-file revisions, case labels and original intended decision status (provisional/recommendation/owner decision); preserve original archive documents.
-- [ ] **6.2 Check actual retained-knowledge/index when applicable:** build an exact-commit index using current `sensemaking-skills semantic knowledge-build --repo . --repository ThorStarlord/sensemaking-skills --target-ref <HEAD_SHA> --db <TEMP_SQLITE> --json`; record actual result and source revision. If no pack, use source-only evidence without misreporting retrieval.
-- [ ] **6.3 Search and explain source-scoped concepts when applicable:** use `sensemaking-skills semantic knowledge-query --db <TEMP_SQLITE> --repository ThorStarlord/sensemaking-skills --target-ref <HEAD_SHA> --operation search --term "ScopedDirectionSelection" --json` plus `--operation explain --subject <ACTUAL_ID> --json`; inspect paths, actual claim status, exact source hashes and absence of asserted authority.
-- [ ] **6.4 Build an actual wheel and install entrypoint:** use current documented wheel mechanism in an isolated environment, run `sensemaking-skills setup-skills --target claude --scope project --project-root <TEMP_PROJECT> --profile entrypoint`, and compare installed and source reference trees, including the new guide/template.
-- [ ] **6.5 Perform a source-only cold-reader reconstruction:** a genuinely fresh reader if available, otherwise an explicitly labeled author cold-read, answers the local competency questions without using unseen conversation memory.
-- [ ] **6.6 Challenge the five Review Focus failures:** verify the reader rejects owner adoption from portfolio recommendation, refuses a forced winner/forced merge, preserves original alternatives, distinguishes strategy choice from selected inquiry, and cannot turn a scope-limited choice into build authority.
-- [ ] **6.7 Log evidence ceilings and actual status:** record source SHA, command/results or absence, qualitative fit per question, CI jobs, `NOT_RUN` local tests and lack of independent creative-benefit observation. Repair a concrete documented failure before final closure.
+- [x] **6.1 Inspect source integrity:** verify changed Markdown links, source-file revisions, case labels and original intended decision status (provisional/recommendation/owner decision); preserve original archive documents.
+- [x] **6.2 Check actual retained-knowledge/index when applicable:** build an exact-commit index using current `sensemaking-skills semantic knowledge-build --repo . --repository ThorStarlord/sensemaking-skills --target-ref <HEAD_SHA> --db <TEMP_SQLITE> --json`; record actual result and source revision. If no pack, use source-only evidence without misreporting retrieval.
+- [x] **6.3 Search and explain source-scoped concepts when applicable:** use `sensemaking-skills semantic knowledge-query --db <TEMP_SQLITE> --repository ThorStarlord/sensemaking-skills --target-ref <HEAD_SHA> --operation search --term "ScopedDirectionSelection" --json` plus `--operation explain --subject <ACTUAL_ID> --json`; inspect paths, actual claim status, exact source hashes and absence of asserted authority.
+- [x] **6.4 Build an actual wheel and install entrypoint:** use current documented wheel mechanism in an isolated environment, run `sensemaking-skills setup-skills --target claude --scope project --project-root <TEMP_PROJECT> --profile entrypoint`, and compare installed and source reference trees, including the new guide/template.
+- [x] **6.5 Perform a source-only cold-reader reconstruction:** a genuinely fresh reader if available, otherwise an explicitly labeled author cold-read, answers the local competency questions without using unseen conversation memory.
+- [x] **6.6 Challenge the five Review Focus failures:** verify the reader rejects owner adoption from portfolio recommendation, refuses a forced winner/forced merge, preserves original alternatives, distinguishes strategy choice from selected inquiry, and cannot turn a scope-limited choice into build authority.
+- [x] **6.7 Log evidence ceilings and actual status:** record source SHA, command/results or absence, qualitative fit per question, CI jobs, `NOT_RUN` local tests and lack of independent creative-benefit observation. Repair a concrete documented failure before final closure.
 
 **Acceptance:** all decision-critical meanings are recoverable with inspected sources and valid installed guidance, or an honest unresolved defect with a justified stop; delivery does not falsely imply semantic truth or authorization.
 
@@ -209,14 +209,14 @@ Suggested sequence (bounded PRs, not a mandatory pipeline): **A. conceptual foun
 **Consumes:** source-reviewed merged increments and verification evidence from Task 6.
 **Produces:** an accurate durable record of what was implemented and what remains outside this scope.
 
-- [ ] **7.1 Add semantic architecture navigation:** link ontology, cases, competencies and installed profile; distinguish conceptual Level-2 semantics from any selective Level-3 checked knowledge.
-- [ ] **7.2 Add historical exploration navigation:** show that the archive contains unselected evaluations, recommendations, provisional preferences and an actual owner-ratified ADR in different authority contexts; do not reinterpret the reports.
-- [ ] **7.3 Review cross-layer authority and history:** verify no changed ADR, historical candidate disposition, accepted strategic commitment, execution contract or new router; no future direction automatically becomes selected because the ontology exists.
-- [ ] **7.4 Reconcile actual construction evidence:** update status only for material capability; record merged PRs, exact heads, source-vs-installed parity, uncertainties, test `NOT_RUN` and conditional schema/empirical follow-ups.
-- [ ] **7.5 Complete this checklist honestly:** mark only performed steps after relevant merges; record separate disposition for any conditional unexecuted action. Do not write a success claim for an unchecked knowledge pack or absent reader observation.
-- [ ] **7.6 Persist and validate the existing receipt when warranted:** use the actual `sensemaking_session_receipt` contract, source/skill/goal/authority, completed responsibilities, real validation and stop; a receipt never confers authority. Validate through `scripts/validate-receipt.py` when runtime is available.
-- [ ] **7.7 Final source/diff review and merge within current policy:** include source-grounded decision notes, preserve protected branch rules and hosted CI; inspect canonical `main` file identity and report pending runs accurately.
-- [ ] **7.8 Stop at the bounded v1 goal:** do not automatically implement a direction selected by a *future* Convergent Evaluation or launch independent creative qualification. Record genuine follow-ups separately.
+- [x] **7.1 Add semantic architecture navigation:** link ontology, cases, competencies and installed profile; distinguish conceptual Level-2 semantics from any selective Level-3 checked knowledge.
+- [x] **7.2 Add historical exploration navigation:** show that the archive contains unselected evaluations, recommendations, provisional preferences and an actual owner-ratified ADR in different authority contexts; do not reinterpret the reports.
+- [x] **7.3 Review cross-layer authority and history:** verify no changed ADR, historical candidate disposition, accepted strategic commitment, execution contract or new router; no future direction automatically becomes selected because the ontology exists.
+- [x] **7.4 Reconcile actual construction evidence:** update status only for material capability; record merged PRs, exact heads, source-vs-installed parity, uncertainties, test `NOT_RUN` and conditional schema/empirical follow-ups.
+- [x] **7.5 Complete this checklist honestly:** mark only performed steps after relevant merges; record separate disposition for any conditional unexecuted action. Do not write a success claim for an unchecked knowledge pack or absent reader observation.
+- [x] **7.6 Persist and validate the existing receipt when warranted:** use the actual `sensemaking_session_receipt` contract, source/skill/goal/authority, completed responsibilities, real validation and stop; a receipt never confers authority. Validate through `scripts/validate-receipt.py` when runtime is available.
+- [x] **7.7 Final source/diff review and merge within current policy:** include source-grounded decision notes, preserve protected branch rules and hosted CI; inspect canonical `main` file identity and report pending runs accurately.
+- [x] **7.8 Stop at the bounded v1 goal:** do not automatically implement a direction selected by a *future* Convergent Evaluation or launch independent creative qualification. Record genuine follow-ups separately.
 
 **Acceptance:** canonical repo has the reviewed ontology, portable guide, source cases and checkable completion evidence; historical choice and authority meanings are preserved. No unfinished core task is hidden by a generic "done" claim.
 
@@ -268,4 +268,50 @@ Assess as `faithful`, `awkward`, `lost` or `not established` **at documentary re
 
 **Handoff:** Future executor reads the spec and plan, checks HEAD/current authority, performs the bounded tasks, uses fresh reviewers if genuinely available, and stops at the selection-ontology boundary. Plan creation alone does not implement or ratify its contents.
 
-**Current disposition:** **PLAN READY FOR REVIEW**. No ontology implementation task has been completed by this planning PR.
+**Current disposition:** **CORE IMPLEMENTATION COMPLETE.** This remains a documentary/conceptual capability. Conditional parsed artifacts, graph schema extensions and independent quality qualification are separate, presently unwarranted responsibilities.
+
+
+## 6. Implementation completion account — 2026-11-04
+
+**Owner authorization:** The owner explicitly requested that the agent implement all tasks without intermediate approval, make bounded implementation decisions, and continue until the plan's completion boundary. The owner did **not** separately ratify the example product directions discussed in the historical reference cases.
+
+**Implemented architecture:** focused conceptual `Convergent Evaluation and Direction Selection` ontology built on existing Possibility Assessment, Prospective Reasoning and Warrant / Choice meanings. One optional portable guide/record, source-pinned documentary examples, a selective v1 knowledge pack, and conditional entrypoint navigation. It changes neither the active-agent controller, strategic authority, nor any executable ranking/selection contract.
+
+| Task | Result | Actual integration / evidence |
+| --- | --- | --- |
+| **1 — Ontology and competencies** | Choice question/set, CandidateWarrant, ConvergenceRationale, ScopedDirectionSelection, AlternativeDispositionAccount, reconsideration/handoff, and 14 local competency questions, with narrow predicate endpoints retained | [PR #742](https://github.com/ThorStarlord/sensemaking-skills/pull/742) merged at `d1d77a29034cede7ec2d1676c061ab1fbcd09217`; [ontology](../../semantic-architecture/convergent-direction-selection-ontology.md) and [competencies](../../semantic-architecture/convergent-direction-selection-competency-v1.md) reviewed. |
+| **2 — Source-bound cases** | Six sections preserving Nov 3 unselected convergence, Nov 4 recommendation, owner-selected ADR 0034, provisional architecture preference, policy NO_SELECTION/incomplete options, and hypothetical synthesis | [Source-pinned cases](../../semantic-architecture/convergent-direction-selection-reference-cases-v1.md) inspect the **containing source snapshot** `ad223927e533268b2867d07851f1993860ace647` separately from historical inspected baselines. Cases S5 and parts of S6 are explicitly normative/illustrative. |
+| **3 — Portable profile** | Self-contained [guide](../../../skills/strategic-repository-analysis/references/convergent-direction-selection-v1.md) and [optional Markdown record](../../../skills/strategic-repository-analysis/references/convergent-direction-selection-record-template.md) | Merged in #742; the actual installed copies were compared byte-for-byte to source in the hosted wheel check. |
+| **4 — Conditional integration** | One conditional first-load `using-sensemaking` entry, Level-3 funnel clarification, and selective-retention crosswalk in Steward reference | [PR #743](https://github.com/ThorStarlord/sensemaking-skills/pull/743) merged at `a3914b736cc82314833b27d30be8481b9f0a3c6a`. The other controller/policy references already preserved specialist-return and owner boundaries and required no additional edit. |
+| **5 — Reviewed knowledge** | `schema_version:1` source-authored pack containing **8 declared concept definitions, 1 observed case-document claim and 5 supported `references`** | Existing [Source-pinned context consumer](https://github.com/ThorStarlord/sensemaking-skills/actions/runs/41945851917/job/126977729220) on #743 head `b10cb3f348084707470935dc786aecadc9a82db4` ran proposal checks and exact-commit graph build: **PASS**. No proposed Decision instances or new predicates. |
+| **6 — Real retrieval, installed delivery and source reconstruction** | Actual `ScopedDirectionSelection` search/explain and case-source explain; built wheel, isolated `entrypoint` install, comparison with source, fourteen-question author reconstruction | Hosted [real-path job](https://github.com/ThorStarlord/sensemaking-skills/actions/runs/41945927998/job/126977985070) at `262bdb1975bf8fd2dcfe886bc1509ccecde4f8b5` logged **`CONVERGENCE_PROPOSAL_INDEX_SEARCH_EXPLAIN_PASS`** and **`CONVERGENCE_INSTALLED_REFERENCE_PARITY_PASS`**; all job steps passed. The six tested substantive file blobs matched published `main@a3914b7`. |
+| **7 — Reconciliation** | Semantic navigation, Exploration Atlas, status, actual evidence ceilings, completed checklist and immutable session receipt | [PR #745](https://github.com/ThorStarlord/sensemaking-skills/pull/745) merged at `b82f9ffecd363867f23044ad047d459b211e35a0`. Canonical receipt [validator job](https://github.com/ThorStarlord/sensemaking-skills/actions/runs/41946305671/job/126979250896) returned **`RECEIPT_VALID`**. This final administrative increment publishes the plan/receipt together. |
+
+### Review and consequential rulings
+
+- The meaningful increment is **choice transition semantics**, not a second assessment framework: a target may be comparatively first yet **not warranted** at all; a recommendation is not a ratified Decision.
+- `ScopedDirectionSelection` is a **role of a sourced existing Decision**, not a new global selected-target identity or machine kind. The same `poss:`, `arch:`, inquiry+approach and path referents persist.
+- Actual owner decision is sourced by ADR 0034. The November 3 convergence and November 4 inquiry portfolio contain **no equivalent owner adoption**. No historical source, ADR, candidate disposition or portfolio rank was rewritten.
+- The current `Warrant / Choice Policy`, `owner-decision-capsule` and active-agent controller already cover legitimate no-selection, option-set incompleteness, reserved decisions and premise checks. No alternative selection engine, fixed stage machine, numeric score, public Skill or workflow profile was added.
+- The current v1 graph record needs only checked `domain_concept`/`source`/`references`. No identified consumer or unrecoverable decision-scope distinction justified adding a new parsed artifact, predicate, `Decision selects` target kind, mandatory handoff or bulk knowledge migration.
+- A successful ontology record does not provide owner ratification or permission to build, merge, deploy or conduct an external empirical investigation.
+
+### Verification performed and boundaries
+
+**PASS:** source/diff and historical identity review; six pinned case interpretations; new code-span/source link inspections; checked v1 knowledge proposal and exact committed index; query/search and explain for a defined selection concept and case-source claim; actual wheel built and installed into a fresh project; byte-for-byte parity of source and four installed references; canonical receipt validation.
+
+**NOT_RUN:** local unit tests and synthetic evidence tests under this repository's then-current owner construction policy. Existing hosted CI/protections were preserved.
+
+**NOT_ASSESSED:** genuinely independent fresh-reader reasoning, independent choice-quality improvement, owner satisfaction, incremental effect of typed graph relationships, automatic host loading, or causal source-only versus memory benefit. The fourteen-question source reconstruction was conducted by the **author**, not a separately commissioned agent. Source fidelity is not an empirical user outcome.
+
+**Temporary verification CI:** [PR #744](https://github.com/ThorStarlord/sensemaking-skills/pull/744) (real graph/wheel) and [PR #746](https://github.com/ThorStarlord/sensemaking-skills/pull/746) (receipt validator) were **closed without merge**. No temporary GitHub Actions workflow was added to main.
+
+### Conditional research, not leftover core tasks
+
+- **C-A parsed artifact:** only after a named producer/consumer demonstrates a stable field handoff missing from readable source decisions.
+- **C-B graph/query evolution:** only after an authentic retrieval question loses a necessary scoped-selection relationship under existing claims, source links and accepted artifact contracts.
+- **C-C independent benefit:** only through separately warranted authentic inquiries and review; historical examples and author reconstruction count as zero independent qualification trials.
+- **C-D product adoption or construction:** must follow the existing owner/strategic/implementation authority. No ontology implementation automatically selects an actual product future.
+
+**Stop:** the seven authorized tasks have bounded deliverables, verified retrieval/installed distribution, source-reconstructible semantics and a completed receipt. The final [receipt](../../../.sensemaking/receipts/2026-11-04-convergent-direction-selection-ontology-implementation.session.yaml) records `GOAL_SATISFIED` without inflating the claim ceiling.
+
