@@ -154,3 +154,8 @@ The [optional record template](strategic-evolution-learning-record-template.md) 
 When a later agent uses this guide, it should identify original source/assessed revision, relevant authority, exact strategy or learning target, current evidence, what remains hypothetical, and a reasoned stop/change. A valid recorded reason can be **NO_CHANGE**. Prefer the original source and existing reviewed index over copy-pasted interpretations where currentness matters.
 
 **Evidence ceiling:** authored guide exists != installed in particular host != loaded by host != read/invoked != correctly applied != useful for independent later decisions. Hosted distribution may show installability but not semantic benefit. A successful source-linked analysis is not a proof that graph knowledge improves creativity or strategic selection over a capable source-only agent. Never claim new user end ratification, deployment or protected action from this guidance.
+
+
+## Optional premise-focused source re-entry
+
+For a particular historical premise whose applicability may have changed, use [Premise-Sensitive Reconsideration](premise-sensitive-reconsideration-v1.md) when material. It preserves the existing strategic reconciliation/learning owner and distinguishes navigation links from decision-bearing grounds. A missing graph or viewer is not an obstacle to a source-grounded answer.
