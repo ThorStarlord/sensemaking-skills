@@ -517,6 +517,12 @@ knowledge. The sequence adds no Skill, planner or mandatory onboarding step.
 
 No mandatory indexing stage is required for routine local coding. The index is a product capability for recurring long-horizon understanding, not a second source of truth or automatic authorization plane.
 
+## Optional source-pinned graph view export (2026-11-05)
+
+The existing `knowledge-query` operations remain authoritative *retrieval contracts*, not semantic truth engines. For an explicitly selected and source-checked inquiry, `knowledge-view-export` projects an **existing exact-revision** `explain` (depth 1) or `impact` neighborhood (depth 2–4) as a bounded JSON view or a self-contained offline HTML page. `knowledge-view-render` displays an explicitly source-attributed view JSON without indexing it as factual graph knowledge. Both exports are read-only, create-only and never permitted to write into `.sensemaking/knowledge/`.
+
+The [Agent-Native Graph Viewer guide](agent-native-graph-viewer-v1.md) gives complete CLI examples, source-only demonstration, view provenance, omissions, security, browser scenario/copy-back behavior, and installation caveats. The [premise-reconsideration contract](premise-sensitive-reconsideration-contract-v1.md) records the `NO_NEW_SCHEMA` / `NO_NEW_PREMISE_QUERY` gate: a plain `references` edge is navigation, not proven premise necessity, and historical `PATH-1` identifiers are scoped to their dated strategic artifact. A hypothetical local scenario **cannot** change indexed truth or authorize agent work. The coding agent remains primary; no browser or graph index is required for ordinary source-grounded reasoning.
+
 ## Qualification boundaries
 
 Machine tests can establish schema integrity, deterministic reconstruction, exact source revision binding and query behavior. The subsequent [query-integrity Episode A](../normal-use/semantic-stewardship-episode-a-2026-10-15.md) records an actual bounded development responsibility and a Git-authored lesson; it is NOT an independent-agent longitudinal success. The real-repository exact-head worktree smoke test establishes only source reconstruction and retrieval, NOT a fresh independent model's reuse of prior lessons. Genuine longitudinal compounding and incremental architectural benefit remain future evidence questions under ADR 0031.

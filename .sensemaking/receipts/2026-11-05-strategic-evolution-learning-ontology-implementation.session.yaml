@@ -61,8 +61,8 @@ responsibilities:
         result: PASS
       - command: Hosted PR 755 Product Validation and Release Candidate Distribution
         result: PASS
-      - command: Independent new-agent strategic or creative benefit trial
-        result: NOT_ASSESSED
+      - command: Independent new-agent strategic or creative benefit trial (benefit NOT_ASSESSED)
+        result: NOT_RUN
   - id: R-3
     responsibility: Provide target-portable conditional guidance and source navigation without creating a new public Skill
     capability: ordinary_coding
@@ -93,8 +93,8 @@ responsibilities:
       - docs/superpowers/plans/2026-11-05-strategic-evolution-learning-ontology.md
       - STATUS.md
     validation:
-      - command: Knowledge consumer need and existing source/reference sufficiency assessment
-        result: NO_NEW_KNOWLEDGE_PACK
+      - command: Knowledge consumer need and existing source/reference sufficiency assessment (disposition NO_NEW_KNOWLEDGE_PACK)
+        result: PASS
       - command: Local unit and synthetic evidence tests excluded by repository construction policy
         result: NOT_RUN
       - command: PR source/diff review and changed file boundary inspection

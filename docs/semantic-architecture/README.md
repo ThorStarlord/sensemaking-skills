@@ -22,6 +22,8 @@ cross-session reasoning or architectural decisions. Skills remain
 responsible for reasoning; active agents own judgment and protected
 actions remain externally authorized.
 
+**Agent-native reasoning + optional visual inspection (2026-11-05):** [Premise-sensitive source-reconsideration](premise-sensitive-reconsideration-contract-v1.md) preserves historical decision and assumption distinctions without new graph kinds or inferred causal links. [Local graph viewer v1](agent-native-graph-viewer-v1.md) documents a source-pinned JSON/HTML export and a secondary offline inspector with hypothetical, copy-back agent questions. The coding agent remains the primary interface and controller; the browser is never a source of truth or action authority. The initial export implements no new graph predicate, independent creativity qualification, or automatic source interpretation.
+
 ## Purpose
 
 Sensemaking needs a shared semantic model so different Skills can reason about repositories with consistent meanings for repository structure, evidence, claims, uncertainty, responsibility, capability, authority, change, and validation.
