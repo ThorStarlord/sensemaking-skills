@@ -150,3 +150,19 @@ recommended inquiry does not itself instantiate a `Decision`. The target must
 remain typed, credible unselected alternatives preserved, and the decision's
 settled/open distinction stated. `NO_SELECTION` is a valid result.
 These meanings add no mandatory next activity or executable predicate.
+
+## 10. Consequence-informed reassessment remains purpose-relative
+
+The [Connected Prospective Inquiry Ontology](connected-prospective-inquiry-ontology.md#5-convergent-reassessment-change-or-reaffirm-attributable-judgment)
+uses the **existing `AssessmentRevisionAccount`** to say which new consequence,
+evidence, premise or beneficiary frame changes an identifiable earlier
+`AssessmentJudgment` or `PortfolioSnapshot`, and why. A later interpretation
+preserves the former report's source identity, unchanged members and criteria.
+Documentary outcomes include **reasoned no change**, revised grounds with the
+same preference, narrowed applicability, local pairwise changes,
+incomparability or unresolved evidence.
+
+The [2026-11-03 pairwise reassessment case](connected-prospective-inquiry-reference-cases-v1.md#4-c-real-portfolio-reassessment-is-local-and-purpose-specific)
+does not rewrite historical global ranks or convert inquiry priority into
+strategy or implementation. The [local CPI competencies](connected-prospective-inquiry-competency-v1.md)
+make this boundary explicit. No automatic reranking or mandatory next stage.
