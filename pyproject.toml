@@ -63,3 +63,9 @@ exclude = [
 
 [tool.setuptools.package-data]
 sensemaking_skills = ["skills/**/*", "skill_trees/**/*", "examples/**/*", "docs/**/*", "defaults/*.yaml", "semantic_architecture/view_assets/*.html"]
+
+[tool.ruff.lint]
+# The rule set run by the CI "Shipped-source static quality" step (validation.yml,
+# release-candidate.yml, which also pass --select explicitly). Without this, a bare
+# local `ruff check` uses ruff's default rule set, which is not this one.
+select = ["E4", "E7", "E9", "F"]
