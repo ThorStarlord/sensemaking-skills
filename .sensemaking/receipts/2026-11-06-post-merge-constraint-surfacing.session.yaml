@@ -1,0 +1,102 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-11-06-post-merge-constraint-surfacing
+state: final
+created_at: "2026-11-06T06:01:00Z"
+updated_at: "2026-11-06T06:01:55Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: af5786e242c3453ec3db3bf405b0f0598be31648
+  end_ref: fc04dea481ea22a6eb47b3571b38eda72501b30f
+  worktree_clean_at_end: true
+skill_identity:
+  load_mode: harness_discovered
+  sensemaking_source_ref: null
+goal:
+  statement: Incorporate the post-merge checks of PR 773 into the verification lineage without rerunning assessments, then select and execute one authentic, currently valuable product responsibility instead of knowledge-coverage work.
+  source: owner_message
+  source_ref: pasted owner message in this session (acceptance of PR 773 and next-responsibility direction)
+delegation:
+  granted: [read, local_write, run_local_commands, commit, push, open_pr, merge]
+  withheld: [knowledge_edit, release, deploy, external_publication, tracker_write]
+continuity:
+  resumes: 2026-11-06-harness-maturity-verification
+  campaign_ref: null
+  resolves_questions: ["2026-11-06-harness-maturity-verification#Q-1"]
+responsibilities:
+  - id: R-1
+    responsibility: Record PR 773 post-merge evidence in the verification lineage without rerunning assessments
+    capability: ordinary_coding
+    status: completed
+    reason: Read-only GitHub queries show PR 773 MERGED at af5786e2; eight check jobs passed across runs 42170147897 and 42170147917. Assessments not rerun; the prior verification receipt is immutable and untouched.
+    artifact_refs: [.sensemaking/receipts/2026-11-06-harness-maturity-verification.session.yaml]
+    validation:
+      - command: gh pr view 773 and gh pr checks 773 (read-only)
+        result: PASS
+  - id: R-2
+    responsibility: Select the next responsibility from product strategy and STATUS rather than from knowledge coverage
+    capability: using-sensemaking
+    status: completed
+    reason: PATH-1 with the owner preference for authentic product work. Considered and not chosen - Trial 002 on external Chess-Mentor-Engine #101 (credit-blocked and outward-facing); #552 and #554 independent qualification (owner deprioritised); ADR 0032 and the receipt contract (owner kept PROPOSED, contract unchanged); ownership coverage of about 125 of 147 Python modules (coverage optimisation); the README PyPI skills gap (release-owner decision). Selected the retrieval omission recorded as F-4 of the 2026-11-06 value-directed resume, because it bears on the product hypothesis that a typed model preserves constraint relationships in fresh contexts (product-strategy section 9).
+    artifact_refs: [STATUS.md, docs/product-strategy.md, docs/value-directed-continuous-construction.md, .sensemaking/receipts/2026-11-06-value-directed-construction-resume.session.yaml]
+    validation: []
+  - id: R-3
+    responsibility: Surface constrained_by invariants reached through a linked decision in context-for
+    capability: repository-semantic-steward
+    status: completed
+    reason: Before, context-for on worktree_context.py returned decision:index-from-temporary-worktree but not its constrained_by invariant. After, a labelled constraints category returns it. Additive; no schema, graph, ADR or contract change.
+    artifact_refs: [src/sensemaking_skills/semantic_architecture/knowledge_architecture.py, src/sensemaking_skills/semantic_architecture/knowledge_store.py, docs/semantic-architecture/persistent-knowledge-cli.md]
+    validation:
+      - command: python -m py_compile and ruff check --select E4,E7,E9,F on the two changed modules; scripts/validate-docs-currentness.py --repo-root .
+        result: PASS
+      - command: knowledge-build at af5786e2 and at fc04dea4, then context-for on worktree_context.py and stewardship_validation.py; invariant present only after the change
+        result: PASS
+      - command: local unit and synthetic tests (construction exception under CLAUDE.md)
+        result: NOT_RUN
+findings:
+  - id: F-1
+    statement: PR 773 is merged at af5786e2 and all eight post-merge check runs passed. Observed through read-only GitHub queries; the assessments were not rerun.
+    epistemic_status: OBSERVED
+    evidence_refs:
+      - .sensemaking/receipts/2026-11-06-harness-maturity-verification.session.yaml
+    disposition: resolved
+  - id: F-2
+    statement: The owner accepted the Ruff rule set, deferred dependency locking, preserved historical experiment files and kept ADR 0032 PROPOSED without a receipt-contract change. Q-1 of the verification record is answered; platform gating on main remains open.
+    epistemic_status: OBSERVED
+    evidence_refs:
+      - .sensemaking/receipts/2026-11-06-harness-maturity-verification.session.yaml
+    disposition: resolved
+  - id: F-3
+    statement: context-for omitted constrained_by invariants reached through a linked decision. The constraints category now surfaces them at fc04dea4, verified by an index comparison. Agent use and decision benefit are not observed.
+    epistemic_status: DERIVED
+    evidence_refs:
+      - src/sensemaking_skills/semantic_architecture/knowledge_architecture.py
+      - .sensemaking/knowledge/stewardship.json
+    disposition: resolved
+  - id: F-4
+    statement: The local main checkout at H:/GithubRepositories/sensemaking-skills is 315 commits behind origin/main and has 54 modified or untracked entries that predate this session. This session did not reconcile or modify them and worked in a dedicated worktree.
+    epistemic_status: OBSERVED
+    evidence_refs:
+      - .sensemaking/receipts/2026-11-06-harness-maturity-reconciliation.session.yaml
+    disposition: handed_off
+open_questions:
+  - id: Q-1
+    question: Accept main with no branch protection or rulesets under the 2026-10-26 merge policy, or add gating?
+    source: owner_intent
+    blocking: false
+    options:
+      - option: Accept the platform risk under the current policy
+        consequence: Merges stay governed by owner policy and agent discipline, with no required check.
+      - option: Add required checks
+        consequence: Gating conflicts with the rule to merge without waiting for hosted CI, which must then be revised.
+    durable_ref: null
+stop:
+  disposition: GOAL_SATISFIED
+  reason: Post-merge evidence is recorded, one authentic responsibility is executed and verified mechanically at the exact commit, and the next responsibility is named but not started.
+next:
+  warranted_responsibility: Let the next real engineering edit in a shipped knowledge-plane module (for example worktree_context.py or stewardship_validation.py) decide what else context-for must carry. Do not run RELATE on absence claims unless a decision depends on them.
+  blocked_on: []
+persistence: committed
+claim_ceiling: Verifies PR 773 checks by read-only query and the context-for before/after change at fc04dea4 by index build and CLI query. Unit and synthetic tests NOT_RUN. No agent-use or decision-benefit claim; no knowledge edit.
+action_authorized_by_receipt: false
+immutable: true
