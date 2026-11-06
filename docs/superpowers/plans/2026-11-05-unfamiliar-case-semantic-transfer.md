@@ -9,7 +9,7 @@
 ## Global constraints
 
 - The only claims this procedure can support are the three in spec section 1, each with its ceiling. Nothing here establishes product usefulness.
-- An observation changes no Sensemaking product code, schema, Skill or test, and no Atlas file. A knowledge proposal stays unmerged unless the normal knowledge review path accepts it.
+- An observation records what happened during the work; it does not itself change Sensemaking product code, schema, Skill, test or any Atlas file, and it does not restrict legitimate engineering work to create cleaner evidence. An ordinary engineering task may modify authorized repository files. A disposable, unmerged knowledge candidate may be created only inside an authorized authoring diagnostic (Task 2). Canonical knowledge and product authority change only through the normal knowledge review path.
 - Operator notes and any answer-bearing material stay outside checkouts that agents work in, and out of prompts, *when a diagnostic depends on that exclusion*.
 - Use an isolated environment when a CLI is needed. Do not modify the global CLI or installed Skills.
 - Label any prompted reading as prompted. Keep negative and failed results.
@@ -20,7 +20,7 @@
 ## Task 0 - Decide what evidence the decision needs
 
 1. Name the claim (A, B or C, spec section 1) and the decision it would inform. If no plausible result would change that decision, stop with `NO_FURTHER_INQUIRY`.
-2. For a normal-use episode, confirm a real goal and record the selection rule before work starts.
+2. For a normal-use episode, confirm a real goal and record the selection rule before work starts. The goal is chosen for its product value, evidence, constraints and authorization, not for its usefulness as an evaluation case (spec section 3).
 3. For a diagnostic (spec section 5), confirm its trigger. If the arrangement it needs is unavailable, record that diagnostic as `NOT_RUN` and carry on with normal use. Do not substitute a weaker arrangement and report it as the same test.
 
 **Acceptance:** one line naming the claim, the decision and the selected evidence form.
@@ -85,4 +85,4 @@
 ## Current disposition (this revision)
 
 - No episode or diagnostic was run. Disposition: `NO_FURTHER_INQUIRY` for the isolated unfamiliar-case run.
-- Next ordinary responsibility: take up the next authentic repository task that retained knowledge bears on, and record a Task 1 note for it.
+- Next responsibility: whichever engineering work product value, evidence, constraints and authorization select (spec section 3, responsibility selection). Retained knowledge may inform that choice but must not be the reason for it. Record a Task 1 note only if such work is done.
