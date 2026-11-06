@@ -98,10 +98,12 @@ This intentionally omits a host-specific Codex/Archon browser API, direct worksp
 
 The first PR's corrected commit passed Hosted Release Candidate Distribution and Semantic Context Re-entry. Under the repository's current `CLAUDE.md` owner construction rule, **no local unit/synthetic tests were added or run**. Independent later-agent consumption, comparative creative superiority and universal cross-repository benefit are **NOT_RUN / NOT_ASSESSED** unless separately verified and recorded with exact evidence. Hosted CI passing at one revision is evidence for its checked scope, not a global product-quality proof.
 
-The premise-eligibility repair was exercised once, with the viewer asset from commit `9d2b37d` installed in an isolated environment. Five views were exported or rendered from it: four indexed at `96f7794`, and the curated example.
+The premise-eligibility repair was exercised once, with the package from commit `fbe1c9a` installed by `uv pip` into an isolated environment. Five views were exported or rendered from it: four indexed at `96f7794`, and the curated example. A separately built wheel artifact was not inspected.
 
-- **Observed in a Chromium-based browser pane, served from loopback:** the control activated, showed its banner and reset for an indexed `hypothesis`, an indexed `constraint` and the curated `ASSUMPTION-1`. The prepared follow-up named the selected premise and its hypothetical status. Records whose IDs merely mention an assumption stayed ineligible, and a selected `references` edge showed `CONTEXT_ONLY`. The server logged only page and favicon requests, and the index file hash was unchanged.
-- **Not run:** `file://` pages, an actual clipboard write, keyboard-only operation, SVG node and edge clicks, other browsers, and a curated record of kind `assumption` or `premise` (no such view exists in this repository; that branch was checked by source reading only).
+- **Observed with pointer clicks in a Chromium-based browser pane, served from loopback:** the control activated, showed its banner and reset for an indexed `hypothesis`, an indexed `constraint` and the curated `ASSUMPTION-1`. The prepared follow-up named the selected record and its hypothetical status, and a selected `references` edge showed `CONTEXT_ONLY`.
+- **Observed with scripted clicks through the node list:** the eligible and ineligible state of every record in three views, including records whose IDs merely mention an assumption, which stayed ineligible.
+- **Also observed:** the server logged only page and favicon requests, and the index file hash was unchanged.
+- **Not run:** `file://` pages, an actual clipboard write, keyboard-only operation, SVG node and edge clicks, kind and establishment filters, other browsers, and a curated record of kind `assumption` or `premise` (no such view exists in this repository; that branch was checked by source reading only). Anything not listed here is `NOT_ASSESSED`.
 
 Selecting another record leaves the follow-up text unchanged until **Prepare follow-up** or **Copy for coding agent** regenerates it.
 
