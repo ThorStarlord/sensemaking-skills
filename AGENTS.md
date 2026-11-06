@@ -22,6 +22,9 @@
 6. **Flag material uncertainty explicitly.** State uncertainty that could
    change the next responsibility, claim, or authority decision. Do not turn
    unresolved hypotheses into confident claims.
+7. **Keep sensitive data out of records.** Never write credentials, tokens,
+   private keys or private content into tracked artifacts, receipts, knowledge
+   records or PR text. See [SECURITY.md](SECURITY.md#sensitive-data).
 
 ## Current construction orientation
 
