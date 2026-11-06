@@ -100,3 +100,49 @@
 - [ ] **Step 7: Freeze the source-checked answer.** Record B's original source paths actually opened, corrected claims and unsupported inferences, differences from pass 1, and whether it improperly promoted a source pointer into necessity or owner authority. Capture command and session evidence; record the model and host version.
 
 **Acceptance:** Two independently timestamped, source-attributed B accounts with a verifiable boundary, or a precise `PARTIAL` / `NOT_OBSERVED` / `INVALID_SETUP` result. This run is **PROMPTED_REPRESENTATION**, not proof of natural unprompted discovery.
+
+
+---
+
+## Task 5 — Reviewer C independently adjudicates the five claims
+
+**Files:** Create only private `<OPERATOR_ROOT>/review/C-verdict.md` plus referenceable source/trace excerpts. Do not change participant material or code.
+
+**Interfaces:** Consumes the frozen criteria, A candidate/trace, exact index outputs, B's two frozen answers/traces and the original Atlas sources. Produces one source-grounded verdict with five distinct axes and explicit claim ceiling.
+
+- [ ] **Step 1: Launch genuinely fresh reviewer C.** Record C's separate session and scratchpad IDs. C receives the frozen evaluator rubric, actual candidate, A/B frozen traces and the original target repo at the exact source/candidate revision; C does not retroactively revise the participant instructions.
+- [ ] **Step 2: Check author fidelity record by record.** Inspect decisive Atlas decision, implementation, migration and code sources at their exact revision; distinguish declared design, historical package status, current as-built behavior and tests that were written but not executed. For each material claim and relation, classify source support, scope, epistemic/authority classification, missing nuance and contradiction.
+- [ ] **Step 3: Reproduce the mechanical handoff.** Independently compare candidate content hash, parent/commit SHA, target index key/digest, search and explain record IDs and relation roles. Reject a wrong-revision index or noncandidate-only query result as a pass.
+- [ ] **Step 4: Audit independence and order.** Inspect A/B host IDs, scratchpad visibility, inherited memory, candidate discovery, first-source-read timestamp and first-answer timestamp. Distinguish intentional first-pass knowledge prompting from a purported spontaneous discovery. An early original-source read excludes `OBSERVED` pre-source interpretation.
+- [ ] **Step 5: Compare the three meanings without conflation.** Judge (a) **what A actually encoded**, (b) **what B said the candidate meant before sources**, and (c) **what the original sources support**. A false candidate that B accurately paraphrases is a faithful *reading of an error*, not a successful transfer of true repository meaning.
+- [ ] **Step 6: Check all five negative controls.** Record concrete evidence on historical-vs-current status, `references`/necessity, declared-vs-observed authority, missing-as-`NOT_ASSESSED` and premature source exposure. Do not turn any mechanically valid record into verified source truth.
+- [ ] **Step 7: Assign the frozen disposition.** Mark author fidelity, mechanical write/index, candidate consumption, pre-source interpretation and independent source review separately. Use overall `OBSERVED_SEMANTIC_TRANSFER_IN_ONE_CASE` only if all five pass and session isolation is intact; otherwise identify `PARTIAL`, `FAIL`, `INCONCLUSIVE` or `NOT_RUN/BLOCKED` and the causal/measurement layer. No numeric score or claim of creative advantage.
+
+**Acceptance:** A reviewer-verifiable verdict that could reject the author or reader, grounded in original evidence and complete observation chronology. C's approval is not a license to merge the candidate.
+
+## Task 6 — Preserve a narrow readout, close the experiment and stop
+
+**Files:** If Task 5 actually ran, create a new `docs/normal-use/<ACTUAL-DATE>-unfamiliar-case-semantic-transfer.md` on a separate **Sensemaking documentation branch**. Optionally create a small redacted `...-evidence/` directory with only indispensable provenance and tool-call excerpts. Do **not** add the raw transcripts if they contain private inherited memory. Do not edit historical readouts to improve their verdict.
+
+**Interfaces:** Consumes Task 5's frozen verdict and private traces. Produces a concise durable record sufficient for a later agent to reconstruct exactly what was observed and what was not; leaves no product/model work authorized implicitly.
+
+- [ ] **Step 1: Prepare privacy-safe evidence.** Preserve private unedited raw A/B/C traces in the operator workspace. Extract only decisive session/command chronology, record IDs, source paths, source-verification differences and digest evidence for publication. Redact secrets and unrelated project memory; disclose any gap preventing independent audit of line references.
+- [ ] **Step 2: Write the evidence-bounded readout.** Record exact Atlas/Sensemaking SHAs, candidate checksum, agent-session/Skill/CLI identities, source paths, observed commands/exit codes, B's two accounts, C's five-axis verdict, contamination, negative results, and explicit `NOT_RUN` items. Distinguish native semantic meaning from reviewer inference.
+- [ ] **Step 3: Retain candidate without promoting it.** Confirm the Atlas proposed JSON exists only on a disposable local branch and has no remote PR or `main` merge. Do not repair A's candidate in place. A separately warranted real knowledge proposal may use a future reviewed path, not this evidence cell.
+- [ ] **Step 4: Complete documentation PR if authorized.** Review source/diff for only the readout and necessary sanitized evidence, follow Sensemaking's `CLAUDE.md` PR and hosted-CI rules, merge if allowed and verify the merged SHA. A readout is not proof that the target knowledge became canonical.
+- [ ] **Step 5: Reconcile learning without expanding scope.** State whether the observed limit belongs to **authoring fidelity**, **mechanical indexing**, **reader interpretation**, **source verification**, **isolation**, or a **real ontology expressiveness gap**. Prefer `NO_MODEL_CHANGE` unless a concrete, independently warranted model change emerges; do not implement one as part of this task.
+- [ ] **Step 6: Stop at one observation.** Deliver the disposition, evidence links, limitations and the smallest justified follow-up. Do not rerun for a favorable result, initiate a source-only creative comparison, broaden to a benchmark, or claim cross-repository generality without a separately selected responsibility.
+
+**Acceptance:** One honest, reproducible-in-scope observation (or a documented readiness blocker), with no unauthorized Atlas/product mutation. The user's request for this **plan** is satisfied before any such execution.
+
+## Frozen participant handoff boundaries (execution operator only)
+
+- **A receives:** target repo/SHA, normal installed Skill guidance and the neutral authoring question. No reviewer expectation or target record ID.
+- **B receives:** target repo at candidate SHA, first-pass knowledge-only instruction, normal available CLI/DB and neutral question. No A transcript, candidate filename/IDs, `case-criteria.md`, prior analysis answer or source hints. B receives the source-verification request **only after** pass 1 is frozen.
+- **C receives:** original Atlas sources, frozen criteria, candidate A actually authored, exact CLI outputs and A/B immutable traces. C must identify unsupported source claims and possible test invalidity, not merely agree with A/B.
+
+## Evidence ceiling and handoff
+
+This plan is deliberately one-case and does not build a statistical comparison, new orchestration runtime, new knowledge graph representation, automatic source gate, or general assessment infrastructure. If the host cannot provide distinct sessions and traceable pre-source interpretation, **STOP `NOT_RUN/BLOCKED`** and retain the readiness evidence. One observed success would justify the **case-level semantic-transfer claim only**; it would not demonstrate that accumulated knowledge improves new product-goal discovery or architecture decisions.
+
+**Planning deliverables:** this plan and its linked design spec. **Empirical execution:** `NOT_RUN` until an external coding-agent host actually completes the tasks above.
