@@ -27,19 +27,20 @@ The requested responsibility is to improve *application* of current reasoning me
 - [Ontology author-to-reader first use, 2026-11-05](2026-11-05-ontology-author-reader-first-use.md) received PARTIAL. A fresh-context reader accessed the authored candidate alongside originals and later corrected two overstatements. The record does **not** isolate knowledge-caused understanding, prove reliable semantic interpretation before source checking, or qualify creative performance.
 - [Divergent Exploration competency](../semantic-architecture/divergent-exploration-competency-v1.md) finds many documentary distinctions recoverable and explicitly states that local reference reconstructions count as zero fresh creative qualification trials.
 - [Inquiry Process Reconciliation](../explorations/2026-11-03-inquiry-process-reconciliation.md) finds a distributed but substantive contract. Its identified precision/depth gaps are bounded to historical inquiry records, not proof that every future agent repeats them.
+- [Local Build Loop, observed 2026-10-27 scope failure](../agents/build-loop.md#observed-repository-only-discovery-miss-2026-10-27) recounts an owner-supplied coding-agent transcript in which a repository-wide Sensemaking request was narrowed to investigation of the invoked Skill component and closed as NO_FURTHER_WARRANT. Its reported receipt named the repository but did not establish repository-wide examination. This is **one related, actual scope/orientation failure**, not evidence of repeated divergence failures or proof that absent ontology loading caused it. The original transcript is not independently reconstructed in this baseline.
 
 ## Competing diagnoses
 
 | Hypothesis | Current disposition | What would discriminate it |
 | --- | --- | --- |
 | H1: Relevant methodology not loaded | **UNRESOLVED**, plausible; install parity and repo source cannot establish a host load | Actual host tool invocation or visible source/read record in an authentic session |
-| H2: Task misoriented toward local engineering instead of divergent possibilities | **UNRESOLVED** as a repeated failure; method allows either when scope warrants | A divergent-scoped prompt, loaded guide and output that prematurely selects or implements |
+| H2: Task misoriented toward local engineering instead of divergent possibilities | **RELATED SINGLE EPISODE OBSERVED:** the 2026-10-27 method/target scope failure; no demonstrated recurrent divergent-exploration rate or causal link to ontology loading | A divergent-scoped prompt, actual guide load and output that prematurely narrows, selects or implements |
 | H3: Retrieval occurs without substantive knowledge-to-expression transformation | **UNRESOLVED** as a general failure; current guide already requires a transformation account where material | Compare output claims against original sources and actual transformation differences |
 | H4: Agent fails to revisit product end/beneficiary when stuck locally | **CONCEPTUAL INTEGRATION OPPORTUNITY**, not observed systematic defect | Authentic case where a broadened frame yields a materially different question or demonstrates that local focus was right |
 | H5: Agent fails to regulate repetitive or premature work | **UNRESOLVED**; policies already specify EXPLORE and RESTART | An iterative inquiry with a source-bounded record of attempted frames and a meaningful change/stop decision |
 | H6: Existing behavior is adequate for its actual scoped task | **LIVE ALTERNATIVE**, must not be excluded to justify changes | A source-grounded narrow task or justified no-new-expression result |
 
-The user's experience motivates the inquiry but is not a captured coding-agent trace. No diagnosis is promoted to a verified host/runtime defect.
+The user's reported recurring experience is not a supplied execution trace. The local build-loop record does document one related scope error, but its mechanism remains uncertain. No general host/runtime defect or repeated cognitive failure is inferred.
 
 ## Warranted bounded action
 
