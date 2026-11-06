@@ -66,3 +66,37 @@
 - [ ] **Step 5: Freeze uncorrected A output.** Record candidate SHA-256, A session ID, source reads, choices, uncertainties, discarded alternatives and proposal-check result. Do not edit the candidate to match reviewer expectations, and do not pass A's trace/answer to B.
 
 **Acceptance:** A legitimate independently authored candidate or an attributable concrete authoring failure. Do not promote either to a product-model decision.
+
+
+---
+
+## Task 3 — Commit candidate, reproduce exact-commit indexing and prove candidate retrieval
+
+**Files:** Modify only the disposable Atlas candidate worktree to commit the single new file. Create `<OPERATOR_ROOT>/index/<CANDIDATE_SHA>.sqlite` and `<OPERATOR_ROOT>/mechanics/` outside both Git checkouts. Do not publish or merge the candidate branch.
+
+**Interfaces:** Consumes frozen candidate bytes and pinned CLI from Tasks 1–2. Produces exact candidate Git SHA, digest, valid index/query outputs and an operator-to-B handoff containing only **repo identity, target commit, neutral question and ordinary CLI/DB access**, not answer/record IDs.
+
+- [ ] **Step 1: Check diff and provenance.** Confirm the candidate branch is based on the frozen Atlas SHA, and the only changed tracked file is `.sensemaking/knowledge/companion-continuity.json`. Record `git diff --name-status <BASE_SHA>` and candidate file checksum. Ensure no source file or existing reviewed pack was modified.
+- [ ] **Step 2: Commit candidate with ordinary neutral metadata.** Commit only the JSON file with a descriptive, non-experimental subject such as `docs(knowledge): propose companion continuity representation`. Record full commit SHA, parent SHA, branch and clean status. Do not use `probe`, `test`, `expected answer`, `disposable` or qualification language in participant-visible commit subject/filename.
+- [ ] **Step 3: Build exact committed snapshot.** Run `sensemaking-skills semantic knowledge-build --repo . --repository ThorStarlord/atlas-midgard --target-ref <CANDIDATE_SHA> --db <OUTSIDE_DB_PATH> --include-repository-structure --json` from a checkout at the exact clean commit (or use the supported `--temporary-checkout`). Capture process exit, full JSON, digest, claim/edge totals and target revision. Never put SQLite in the repository.
+- [ ] **Step 4: Prove search retrieves the candidate.** Run `sensemaking-skills semantic knowledge-query --db <OUTSIDE_DB_PATH> --repository ThorStarlord/atlas-midgard --target-ref <CANDIDATE_SHA> --operation search --term "Shared Memory" --json`. Record actual candidate claim IDs returned. A generic source-only match that does not include the candidate is not a pass.
+- [ ] **Step 5: Prove explicit relation retrieval.** Run `sensemaking-skills semantic knowledge-query --db <OUTSIDE_DB_PATH> --repository ThorStarlord/atlas-midgard --target-ref <CANDIDATE_SHA> --operation explain --subject <REAL_RESULT_ID> --json`, using an ID **actually returned by Step 4**. Confirm cited source paths, relation IDs, record status, truncation and limits are present as advertised. No mechanical operation establishes source entailment.
+- [ ] **Step 6: Freeze a non-leading B handoff.** Provide only repository identity, exact candidate SHA, neutral question, installed ordinary guidance and supported CLI/DB location. Do not include A's trace, candidate filename, record IDs, index search hits, source-oracle notes or prior output. Record a hash of the handoff and the exact candidate bytes.
+
+**Acceptance:** Same candidate bytes are committed, indexed and queryable at the same exact revision, with no canonical Atlas mutation or semantic-approval claim. A failed build or inconsistent SHA is a **mechanical** finding and blocks B.
+
+## Task 4 — Fresh Reader B: freeze meaning before revealing original sources
+
+**Files:** Create only private operator artifacts: `<OPERATOR_ROOT>/reader/B-pass1.md`, `B-pass1-trace`, `B-pass2.md`, `B-pass2-trace` and metadata. B must leave the target checkout unchanged.
+
+**Interfaces:** Consumes Task 3 non-leading handoff; produces independently observed candidate use, **pre-source** interpretation and a separate source-verification account. No additional answer key or A summary is permitted.
+
+- [ ] **Step 1: Launch a genuinely new session B.** Verify a distinct host/session ID, worktree identity and scratchpad from A. Capture the exact initial task prompt and inherited memory/instructions. If B can see A's scratchpad, author transcript, qualification specification or reviewer expected conclusions, stop `INVALID_SETUP` rather than silently overlooking the leak.
+- [ ] **Step 2: Establish source-read boundary.** Prefer a host permission gate or source-occluded, read-only first-pass workspace with the existing query data. If this is unavailable, instruct B explicitly not to open any original source document or code until the second turn, capture **all** tool calls and reject pre-source claims if a source read happens. Do not fabricate a boundary through a drafted transcript.
+- [ ] **Step 3: Issue exactly one knowledge-first question.** “Using the repository's authored semantic knowledge at the supplied exact revision, explain how Atlas companion Shared Memory relates to canonical Saga History and durable progression. Before inspecting original documents or code, identify the explicit claims and relationships, their source references, statuses, and what the knowledge does not establish. Stop after this account.” No file name, claim ID, expected conclusion, source-oracle snippet, test label or checklist of desired findings.
+- [ ] **Step 4: Freeze the first interpretation and trace.** Record B's actual retrieved candidate record IDs/relations and the order of queries/file opens; preserve its full answer **before** any source-authorization prompt. Judge whether its statements faithfully represent *the candidate*, including provenance, necessary versus contextual edges, declared versus observed facts and explicit uncertainty. If candidate was never consumed, record `CANDIDATE_USE_NOT_DEMONSTRATED` regardless of plausibility.
+- [ ] **Step 5: Handle an early source read transparently.** If the trace shows original docs/code were accessed before the first answer, classify the interpretation axis `NOT_OBSERVED/CONTAMINATED`. Preserve the first run; do not retry that same evidence cell for a cleaner-looking outcome. A separate future attempt must be labeled new evidence.
+- [ ] **Step 6: Unlock source inspection in the same B session.** Only after the first answer is frozen, request: “Now inspect the original current and historical sources at the exact revision. For each consequential representation, classify `SUPPORTED`, `CONTRADICTED`, `UNSUPPORTED` or `NOT_ASSESSED` and explain any correction, including authority/time scope.” Do not give B the evaluator's oracle or tell it which claims are wrong.
+- [ ] **Step 7: Freeze the source-checked answer.** Record B's original source paths actually opened, corrected claims and unsupported inferences, differences from pass 1, and whether it improperly promoted a source pointer into necessity or owner authority. Capture command and session evidence; record the model and host version.
+
+**Acceptance:** Two independently timestamped, source-attributed B accounts with a verifiable boundary, or a precise `PARTIAL` / `NOT_OBSERVED` / `INVALID_SETUP` result. This run is **PROMPTED_REPRESENTATION**, not proof of natural unprompted discovery.
