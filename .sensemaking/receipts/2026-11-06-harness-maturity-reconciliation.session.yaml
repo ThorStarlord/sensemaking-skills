@@ -1,0 +1,139 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-11-06-harness-maturity-reconciliation
+state: final
+created_at: "2026-11-06T04:26:56Z"
+updated_at: "2026-11-06T04:34:30Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: db254989bd6ccfa3670348328ad335c067b05816
+  end_ref: f9100553d396407eab1287b2a1a9527e4f013583
+  worktree_clean_at_end: true
+skill_identity:
+  load_mode: harness_discovered
+  sensemaking_source_ref: null
+goal:
+  statement: Review and reconcile the four-framework harness maturity assessment, correct unsupported conclusions, implement small warranted improvements, and identify the next valuable Sensemaking product responsibility.
+  source: owner_message
+  source_ref: null
+delegation:
+  granted: [read, local_write, run_local_commands, commit, push, open_pr, merge]
+  withheld: [release, deploy, external_publication, tracker_write, knowledge_edit]
+continuity:
+  resumes: null
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: correct maturity assessment report (A1-A6)
+    capability: ordinary_coding
+    status: completed
+    reason: Verified original evidence against origin/main and annotated the isolated assessment report, preserving original numbers. The report lives outside this repository (harness-models/sensemaking-eval), so it has no artifact reference here.
+    artifact_refs: []
+    validation: []
+  - id: R-2
+    responsibility: security documentation (B)
+    capability: ordinary_coding
+    status: completed
+    reason: Added SECURITY.md and AGENTS.md rule 7 after confirming no security policy on main and private vulnerability reporting disabled. Merged via PR 770 (merge f9100553).
+    artifact_refs: [SECURITY.md, AGENTS.md]
+    validation:
+      - command: python scripts/validate-docs-currentness.py --repo-root .
+        result: PASS
+      - command: python scripts/validate-contract-authority.py --repo-root .
+        result: PASS
+      - command: python scripts/validate-product-boundary.py
+        result: PASS
+  - id: R-3
+    responsibility: dependency, ADR 0032, scratch-file and lint dispositions (C1-C4)
+    capability: ordinary_coding
+    status: completed
+    reason: C1 and C4 deferred with evidence. C2 packaged as an owner decision and not ratified. C3 retained as historical evidence (experiment 0008 manifest). No further repository change was warranted.
+    artifact_refs: []
+    validation: []
+  - id: R-4
+    responsibility: next product responsibility from current evidence (D)
+    capability: ordinary_coding
+    status: completed
+    reason: Recommended one normal-use Steward episode testing RECALL and RELATE on the corrected absence claims. Recommendation only; knowledge_edit withheld.
+    artifact_refs: []
+    validation: []
+findings:
+  - id: F-1
+    statement: Harness Score baseline L1 56/105 becomes L2 65/105 when the same skills sit in a recognised path. The change reflects scanner recognition, not a reasoning change.
+    epistemic_status: OBSERVED
+    evidence_refs: [skills/using-sensemaking/SKILL.md]
+    disposition: no_action
+  - id: F-2
+    statement: main has no branch protection or rulesets (GitHub API, 2026-11-06). Merges are gated only by owner policy and agent discipline.
+    epistemic_status: OBSERVED
+    evidence_refs: [CLAUDE.md:202]
+    disposition: handed_off
+  - id: F-3
+    statement: The 2026-10-26 merge rule is owner-ratified and consistent with AGENTS.md. The earlier internal-contradiction claim was incorrect.
+    epistemic_status: RATIFIED
+    evidence_refs: [AGENTS.md:38]
+    disposition: resolved
+  - id: F-4
+    statement: Attempt ceilings are documented in accepted ADR 0023 and enforced by campaign accounting. The original no-bounds claim was wrong.
+    epistemic_status: RATIFIED
+    evidence_refs: [docs/adr/0023-two-lane-experiment-authorization.md, src/sensemaking_skills/campaign_accounting/reservation.py]
+    disposition: resolved
+  - id: F-5
+    statement: SECURITY.md was absent before PR 770 and is now present, with a sensitive-data boundary that does not claim enforcement.
+    epistemic_status: OBSERVED
+    evidence_refs: [SECURITY.md]
+    disposition: resolved
+  - id: F-6
+    statement: ADR 0032 drifts from the Skill. The ADR requires the reader at session start, the Skill makes it optional, and the field lists differ.
+    epistemic_status: OBSERVED
+    evidence_refs: [docs/adr/0032-session-and-query-receipts.md, skills/using-sensemaking/SKILL.md]
+    disposition: handed_off
+  - id: F-7
+    statement: The 15 files under .claude/temp are listed in experiment 0008 pre-run manifest, so they are historical evidence and are retained.
+    epistemic_status: OBSERVED
+    evidence_refs: [experiments/evidence/0008-standalone-clone-step2-proof/pre-run-manifest.txt]
+    disposition: resolved
+  - id: F-8
+    statement: No knowledge claim in the seven knowledge files covers retry, attempt budgets or secret handling, so the reviewed knowledge plane has a suspected coverage gap in runtime governance bounds.
+    epistemic_status: INFERRED
+    evidence_refs: [.sensemaking/knowledge/stewardship.json]
+    disposition: handed_off
+  - id: F-9
+    statement: The AEH L3 claim is architecturally consistent but operationally under-evidenced. STATUS records the 2026-10-29 qualification as a weak reuse signal that did not replicate.
+    epistemic_status: OBSERVED
+    evidence_refs: [STATUS.md]
+    disposition: resolved
+open_questions:
+  - id: Q-1
+    question: Ratify ADR 0032 as amended, ratify it as written, or keep it PROPOSED?
+    source: owner_intent
+    blocking: false
+    options:
+      - option: Ratify amended (reader optional, field list matching the schema)
+        consequence: Matches current behaviour and the owner's 2026-10-27 instruction; ADR status changes.
+      - option: Ratify as written (session-start reader required)
+        consequence: The Skill must change to run the reader at every session start.
+      - option: Keep PROPOSED
+        consequence: The dated Skill instruction remains operative; the ADR drift stays.
+    durable_ref: null
+  - id: Q-2
+    question: Accept the platform-level gap on main (no branch protection or rulesets), or add required gating?
+    source: owner_intent
+    blocking: false
+    options:
+      - option: Keep the current policy with no platform gate
+        consequence: Merges proceed on review and discipline; no platform block on failing CI.
+      - option: Add required checks on main
+        consequence: Adds platform gating, which conflicts with the 2026-10-26 merge rule until that rule changes.
+    durable_ref: null
+stop:
+  disposition: GOAL_SATISFIED
+  reason: Completion criteria met. Open owner questions Q-1 and Q-2 are not blocking. Knowledge edits and product implementation were not authorized in this session.
+next:
+  warranted_responsibility: One authentic normal-use episode where the Steward RECALL and RELATE govern the absence claims corrected here (retry and attempt bounds; sensitive-data handling), recording misses and whether the verdicts change the conclusion.
+  blocked_on: ["authority:knowledge_edit"]
+persistence: committed
+claim_ceiling: Establishes only the reconciliation performed here. No product outcome, reuse or agent-benefit claim is made; corrections rest on source reading and API observations on 2026-11-06.
+action_authorized_by_receipt: false
+immutable: true
