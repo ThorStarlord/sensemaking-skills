@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "claims": [
     {
       "id": "cap:repository-orientation",
@@ -25,6 +25,9 @@
         "file:src/sensemaking_skills/semantic_architecture/repository_bootstrap.py"
       ],
       "attributes": {
+        "owned_paths": [
+          "src/sensemaking_skills/semantic_architecture/repository_bootstrap.py"
+        ],
         "claim_ceiling": "Observed source implementation, not architecture completeness"
       }
     },

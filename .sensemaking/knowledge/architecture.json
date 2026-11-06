@@ -78,14 +78,18 @@
         "file:src/sensemaking_skills/semantic_architecture/knowledge_store.py",
         "file:src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py",
         "file:src/sensemaking_skills/semantic_architecture/knowledge_sources.py",
-        "file:src/sensemaking_skills/semantic_architecture/knowledge_architecture.py"
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_architecture.py",
+        "file:src/sensemaking_skills/semantic_architecture/stewardship_validation.py",
+        "file:src/sensemaking_skills/semantic_architecture/worktree_context.py"
       ],
       "epistemic_status": "declared",
       "attributes": {
         "owned_paths": [
           "src/sensemaking_skills/semantic_architecture/knowledge.py",
           "src/sensemaking_skills/semantic_architecture/knowledge_sources.py",
-          "src/sensemaking_skills/semantic_architecture/knowledge_architecture.py"
+          "src/sensemaking_skills/semantic_architecture/knowledge_architecture.py",
+          "src/sensemaking_skills/semantic_architecture/stewardship_validation.py",
+          "src/sensemaking_skills/semantic_architecture/worktree_context.py"
         ]
       }
     },
@@ -310,6 +314,45 @@
         "file:tests/test_architecture_queries.py"
       ],
       "epistemic_status": "declared"
+    },
+    {
+      "id": "component:knowledge-view",
+      "kind": "component",
+      "statement": "The knowledge view projects one exact-revision knowledge neighborhood into a bounded presentation, and its offline HTML inspector renders that projection as a secondary, read-only local interface.",
+      "authority_kind": "code",
+      "authority_ref": "src/sensemaking_skills/semantic_architecture/knowledge_view.py",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_view.py",
+        "file:src/sensemaking_skills/semantic_architecture/view_assets/graph_view.html",
+        "file:docs/semantic-architecture/agent-native-graph-viewer-v1.md"
+      ],
+      "epistemic_status": "observed",
+      "attributes": {
+        "owned_paths": [
+          "src/sensemaking_skills/semantic_architecture/knowledge_view.py",
+          "src/sensemaking_skills/semantic_architecture/view_assets/graph_view.html"
+        ],
+        "claim_ceiling": "Observed source projection and offline inspector at this revision; no user benefit, semantic validity or repository test coverage is established (no test file references it)"
+      }
+    },
+    {
+      "id": "rule:knowledge-view-secondary-read-only",
+      "kind": "architecture_rule",
+      "statement": "The knowledge viewer is an optional, secondary, read-only presentation: it must not fetch remote content, authenticate, update the Git-reviewed graph, edit strategy, run agents, change source evidence, transmit a message, or treat a plain references relationship as a NECESSARY premise.",
+      "authority_kind": "document",
+      "authority_ref": "docs/semantic-architecture/agent-native-graph-viewer-v1.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/agent-native-graph-viewer-v1.md"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "rule_type": "convention",
+        "severity": "warning",
+        "applies_to": [
+          "src/sensemaking_skills/semantic_architecture/knowledge_view.py",
+          "src/sensemaking_skills/semantic_architecture/view_assets/**"
+        ]
+      }
     },
     {
       "id": "rule:stable-core-no-lab-imports",
@@ -1036,6 +1079,36 @@
     }
   ],
   "relations": [
+    {
+      "id": "rel:knowledge-view-knowledge-plane",
+      "subject": "component:knowledge-view",
+      "predicate": "belongs_to",
+      "object": "layer:knowledge-plane",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/agent-native-graph-viewer-v1.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:knowledge-view-context",
+      "subject": "component:knowledge-view",
+      "predicate": "belongs_to",
+      "object": "bounded_context:knowledge-stewardship",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/agent-native-graph-viewer-v1.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:knowledge-view-model-import",
+      "subject": "component:knowledge-view",
+      "predicate": "references",
+      "object": "component:semantic-knowledge-plane",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_view.py"
+      ],
+      "epistemic_status": "observed"
+    },
     {
       "id": "rel:knowledge-plane-layer",
       "subject": "component:semantic-knowledge-plane",
