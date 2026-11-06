@@ -43,6 +43,8 @@ A user requests a narrow, source-established validator repair, with no materiall
 
 ## 4. Source-grounded abductive and divergent work
 
+**Specialized composition (2026-11-06):** [Evidence-Grounded Abductive and Divergent Reasoning Ontology v1](evidence-grounded-abductive-divergent-ontology-v1.md) now distinguishes rival explanations of the *same* observation, explanation-specific grounds/counterevidence, assumption-sensitive discriminators and historical explanation revisions from open-ended creative expression. Its [fit assessment](evidence-grounded-abductive-divergent-competency-v1.md) finds these meanings representable with existing types, while the [conditional agent guide](../../skills/strategic-repository-analysis/references/evidence-grounded-abductive-inquiry-v1.md) addresses their previous methodological dispersion. This reference does not make abductive diagnosis a required preliminary step to divergence or establish improved agent performance.
+
 Abduction here means proposing an explicitly uncertain explanatory or prospective hypothesis that makes sense of observations. Divergence means opening meaningfully different questions, frames, ends and expressions rather than selecting the most familiar solution. Neither is proof of demand or a required list of cognitive steps.
 
 A useful *attributed account* may contain:

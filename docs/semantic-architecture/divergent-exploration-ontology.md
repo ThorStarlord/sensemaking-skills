@@ -22,6 +22,8 @@ The active agent uses these meanings when they help the requested inquiry.
 The model supplies no automatic sequence, closed set of lenses, candidate
 quota, creativity score, ranking or construction authority.
 
+**Neighboring explanatory responsibility (2026-11-06):** when an inquiry must distinguish *why the same observed result occurred* before pursuing an alternative future, consult the [Evidence-Grounded Abductive & Divergent Reasoning Ontology](evidence-grounded-abductive-divergent-ontology-v1.md). It composes this module's InquiryQuestion/TransformationAccount with existing Hypothesis/Evidence semantics; it neither changes the identities below nor makes abduction a mandatory Divergent Exploration pass.
+
 ## 2. Concepts and neighboring meanings
 
 ### ExplorationInquiry
