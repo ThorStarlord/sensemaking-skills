@@ -149,7 +149,7 @@
           <button type="button" id="invertPremise">Explore selected premise as absent</button>
           <button type="button" id="resetScenario">Reset scenario</button>
         </div>
-        <p class="minor" id="scenarioHelp">Select a hypothesis/assumption node to explore its absence.</p>
+        <p class="minor" id="scenarioHelp">Select a hypothesis, constraint or assumption record to explore its absence.</p>
       </div>
       <div class="panel">
         <h2>Ask the coding agent</h2>
@@ -382,8 +382,12 @@
     }
   }
 
+  // Eligibility comes from the record's kind, never from ID wording or graph
+  // adjacency. "assumption" and "premise" are not indexed kinds; only a curated
+  // view can use them. Eligible means "may be explored", not "is a premise of".
+  const premiseKinds = new Set(["hypothesis", "constraint", "assumption", "premise"]);
   function isPremise(node) {
-    return !!node && /(^hypothesis$|^constraint$|assumption|premise)/i.test(node.kind+" "+node.id);
+    return !!node && premiseKinds.has(String(node.kind).trim().toLowerCase());
   }
 
   function render() {
@@ -394,8 +398,8 @@
     renderInspector(node);
     $("invertPremise").disabled=!isPremise(node);
     text("scenarioHelp",isPremise(node)?
-      "Explore this source-attributed premise as absent; the agent must still evaluate consequences.":
-      "Choose an assumption/hypothesis/constraint record; ordinary links do not prove dependencies.");
+      "Explore this record as an absent premise. Eligibility comes from its kind, not from a recorded dependency; the agent must still evaluate consequences.":
+      "Choose a hypothesis, constraint or assumption record. ID wording and ordinary links do not make a record a premise.");
     if (ui.scenario) {
       $("scenarioBanner").classList.remove("hidden");
       $("scenarioPanel").classList.add("scenarioActive");
