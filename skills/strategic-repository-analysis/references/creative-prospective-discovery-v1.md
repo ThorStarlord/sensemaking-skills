@@ -27,6 +27,14 @@ only if it could change the meaning of the answer. Do not widen an
 intentionally narrow inquiry or promote an exploratory end into owner intent.
 
 
+When a source tension has several plausible explanations and the creative
+direction would differ depending on which is true, use the optional
+[evidence-grounded abductive inquiry](evidence-grounded-abductive-inquiry-v1.md)
+to preserve the common observation, competing hypotheses and a genuinely
+discriminating source question. Do not require a diagnostic detour for
+ordinary product divergence or treat a guessed root cause as a new product
+goal.
+
 For meaningful question/frame changes, uncertain candidate identity or durable
 continuation, use the [divergent exploration profile](divergent-exploration-v1.md).
 Retain emerging questions and fragments before applying the material-candidate
