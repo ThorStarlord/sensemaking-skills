@@ -50,6 +50,14 @@ divergent inquiry, the conditional reference in section 9 supplies those
 distinctions directly; loading it does not invoke a full Level-3 strategic
 analysis. Keep later coverage, comparison and construction separately scoped.
 
+For a substantive divergent inquiry, orient to the **invoked method versus the
+actual target repository**, the owner's requested outcome/scope, and what is
+still an open product end. Load the portable divergent reference even when
+question/frame shifts have not yet been observed: identifying those shifts may
+be part of the work. Use source-grounded knowledge to change the questions and
+possibilities considered, not merely to decorate familiar suggestions with
+citations. A narrow brainstorm or clear local edit does not need this ceremony.
+
 **Assessments and portfolios.** If asked to assess coverage, diminishing
 returns, consolidate ideas or compare/rank inquiries, preserve the original
 units and state the evaluative purpose. Use the conditional reference in
@@ -303,6 +311,42 @@ name through the host's Skill mechanism when one exists, so its own
 its reference files directly skips that contract. Activity owners, when each is
 warranted, feedback moves and the return convention:
 `references/adaptive-skill-composition-v1.md`.
+
+### Inquiry orientation and global-local scope integrity
+
+When substantive discovery or a consequential repository-level decision is
+warranted, keep three intellectual responsibilities distinct:
+
+- **Orient:** establish the actual target, scope, question and intellectual
+  operation. The invoked Sensemaking Skill is the *method*, not automatically
+  the target. Recover governing intent and relevant source relationships,
+  keeping accepted constraints separate from revisable assumptions and open
+  user/product ends.
+- **Transform:** use those relationships, tensions and changed premises to
+  reframe questions or propose materially different outcomes. A new mechanism
+  for an existing goal is not automatically a new product goal. Source material
+  supplies grounded seeds, not a closed list of allowed futures.
+- **Regulate:** if work repeatedly refines one local mechanism while the
+  requested product question remains open, consider another beneficiary,
+  experience, cross-system relationship or assumption. Use existing
+  Metareasoning/Exploration guidance to broaden, challenge, restart or stop
+  *when warranted*, not after every expression.
+
+**Scope-at-closure backstop:** compare the original requested target and
+outcome with the systems/relationships actually inspected and the final
+claim. A source-grounded result about one component does not establish that
+a repository-wide inquiry was completed. Report unexamined territory and
+continue within authorization when its omission could change the result.
+Conversely, do not force global exploration into an already narrow, resolved
+task. An accepted product thesis constrains authority, but a hypothetical new
+end may still be explored without being ratified.
+
+The [Cognitive Orientation Crosswalk](../../docs/semantic-architecture/cognitive-orientation-crosswalk-v1.md)
+documents the underlying ontology relationships in the source repository.
+Portable use depends on the distinctions summarized here and in the
+conditional reference, **not** on a checkout of those framework docs. Keep
+orientation lightweight; a declared mode or a source citation does not prove
+that the agent reasoned well.
 
 **Optional maximum decision transparency.** When the user requests detailed
 Skill-selection explanations or maximum transparency, load
@@ -611,7 +655,7 @@ already stated above, so skipping a file never loses the rule.
 | Reference | Load when | Skip when | Protects |
 | --- | --- | --- | --- |
 | `references/ontology-first-entry-v1.md` | repository-level understanding, possibility coverage or a consequential final recommendation | a narrow task | understanding before selection; substantive justification |
-| `../strategic-repository-analysis/references/divergent-exploration-v1.md` | a bounded divergent inquiry with material question/frame changes, uncertain candidate identity or durable continuation | a narrow edit or a trivial brainstorm | expression identity stays separate from enduring possibility; standalone divergence keeps its scope |
+| `../strategic-repository-analysis/references/divergent-exploration-v1.md` | substantive bounded divergent inquiry, including when questions/frames might change, differences matter, or durable continuation is needed | a narrow edit or a trivial brainstorm | orient to the target and possible ends; use source relationships to reframe; expression identity stays distinct from enduring possibility and divergence keeps its scope |
 | `../strategic-repository-analysis/references/possibility-assessment-v1.md` | a bounded coverage, consolidation, comparison or inquiry-portfolio assessment is warranted | a divergent-only inquiry or direct authorized construction | attributed purposes, method-sensitive inquiry priority and non-comparable entries remain distinct from decisions and work |
 | `../strategic-repository-analysis/references/convergent-direction-selection-v1.md` | the agent must justify selecting a direction or a source-grounded nonselection for an explicit decision question | a comparison-only request, a provisional ranking or an already authorized obvious repair | candidate warrant != comparative preference != adopted scoped decision != action authorization |
 | `../strategic-repository-analysis/references/connected-prospective-inquiry-v1.md` | a material consequence chain, reconsideration of a dated judgment, grounded adversarial challenge or coherent product-and-technical design question is the current responsibility | direct bounded work or a comparison/selection already covered without those questions | speculative effect != causal proof; revised preference != selected direction; objection != verified defect; coherent proposal != PRD/build authority |

@@ -39,6 +39,23 @@ implementation choices as revisable where authority permits; distinguish them
 from governing constraints. If a beneficiary or end is unsettled, make that
 uncertainty part of the inquiry.
 
+**Lightweight inquiry orientation.** Before substantial exploration, distinguish
+(1) invoked reasoning method from the actual target, (2) owner's governing
+product intent from this inquiry's tentative end, (3) the open intellectual
+question from an implementation task, and (4) governing constraints from
+revisable assumptions or observed implementation choices. Identify the
+relevant *source relationships* as well as individual facts. Do not invent a
+known beneficiary or user demand when it is the object of discovery.
+
+**Global-local coherence.** A source-accurate local improvement is not
+necessarily a meaningful answer to the broader inquiry. When expressions
+repeat one subsystem's mechanism, ask whether a different beneficiary,
+desired experience, premise, time horizon or cross-system interaction would
+change the *question or outcome* rather than merely refine the solution.
+Move back to a local mechanism when the wider end is settled or this is the
+user's intended scope. Global perspective does not demand a repository-wide
+inventory or permit silent product-thesis change.
+
 Use the model when it changes what you notice:
 
 - Repeated wording changes with the same end suggest restatement; ask which
@@ -63,6 +80,21 @@ dimension, inspected corpus/revision, assessor and uncertainty. Separate new
 wording, a changed realization, a different end and a changed question.
 An unexamined dimension is NOT_ASSESSED. Retrieval alone establishes neither
 originality nor absence of an idea.
+
+**From knowledge to expression:** where the change is material, make legible
+which source-grounded decision, capability, tension, changed premise or
+relationship informed the expression, what conceptual difference is proposed,
+and how it differs from the nearest known outcome. This is an *attributed
+TransformationAccount*, not an internal thought trace or evidence of causal
+creativity. An expression can remain a question or incomplete fragment.
+
+**Reflective regulation:** repeated local variants, one unexamined premise or
+premature selection may justify another lens, an assumption challenge, a
+restart from a different frame, or a return to the product-level question.
+Consult the existing Metareasoning/Exploration policies when allocating the
+next reasoning move is genuinely consequential; do not invoke them after
+each candidate. A strong local focus may be correct when the inquiry is
+intentionally narrow. A justified no-new-expression result is valid.
 
 ## 3. Retain a readable result
 
@@ -101,6 +133,15 @@ End standalone divergence with a useful bounded landscape, material unknowns
 and a justified stop or recommendation. Consider another lens when it could
 change a question or material candidate; repeated cosmetic variants can
 justify stopping. State what was inspected and what remains unexamined.
+
+**Calibrate the work, not the label.** Distinguish (a) orientation fidelity:
+did the inquiry use the requested target, scope, sources, and divergent
+operation? from (b) generative effectiveness: do the resulting expressions
+show materially different, source-grounded conceptual work? Correctly
+reciting the mode proves neither. On authentic use, inspect relevant
+source use, substantive transformation, global-local coherence, appropriate
+change/stop, and epistemic limits. One successful artifact does not prove
+independent repeatability or benefit caused by this guidance.
 
 Leave coverage assessment, consolidation, comparative ranking, depth,
 strategic adoption and implementation to separately warranted responsibilities.
