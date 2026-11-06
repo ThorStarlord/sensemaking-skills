@@ -58,6 +58,13 @@ be part of the work. Use source-grounded knowledge to change the questions and
 possibilities considered, not merely to decorate familiar suggestions with
 citations. A narrow brainstorm or clear local edit does not need this ceremony.
 
+**Abductive explanation.** When the live question is *why an observed result
+occurred*, and competing source-compatible explanations could change what to
+do next, distinguish the common observation, rival hypotheses, evidence for
+and against each, and a possible discriminating observation. Use the
+conditional abductive reference in section 9; a plausible explanation is
+not an established cause or a new product possibility.
+
 **Assessments and portfolios.** If asked to assess coverage, diminishing
 returns, consolidate ideas or compare/rank inquiries, preserve the original
 units and state the evaluative purpose. Use the conditional reference in
@@ -656,6 +663,7 @@ already stated above, so skipping a file never loses the rule.
 | --- | --- | --- | --- |
 | `references/ontology-first-entry-v1.md` | repository-level understanding, possibility coverage or a consequential final recommendation | a narrow task | understanding before selection; substantive justification |
 | `../strategic-repository-analysis/references/divergent-exploration-v1.md` | substantive bounded divergent inquiry, including when questions/frames might change, differences matter, or durable continuation is needed | a narrow edit or a trivial brainstorm | orient to the target and possible ends; use source relationships to reframe; expression identity stays distinct from enduring possibility and divergence keeps its scope |
+| `../strategic-repository-analysis/references/evidence-grounded-abductive-inquiry-v1.md` | competing explanations of the same consequential observation, changed evidence/premises or discriminating observations could alter the next inquiry or decision | a single verified, sufficient cause; a direct bounded repair; or pure divergence without an explanatory conflict | observation != hypothesized cause; evidence/assumptions remain per explanation; unrun discriminator != proof; explanation != new product end |
 | `../strategic-repository-analysis/references/possibility-assessment-v1.md` | a bounded coverage, consolidation, comparison or inquiry-portfolio assessment is warranted | a divergent-only inquiry or direct authorized construction | attributed purposes, method-sensitive inquiry priority and non-comparable entries remain distinct from decisions and work |
 | `../strategic-repository-analysis/references/convergent-direction-selection-v1.md` | the agent must justify selecting a direction or a source-grounded nonselection for an explicit decision question | a comparison-only request, a provisional ranking or an already authorized obvious repair | candidate warrant != comparative preference != adopted scoped decision != action authorization |
 | `../strategic-repository-analysis/references/connected-prospective-inquiry-v1.md` | a material consequence chain, reconsideration of a dated judgment, grounded adversarial challenge or coherent product-and-technical design question is the current responsibility | direct bounded work or a comparison/selection already covered without those questions | speculative effect != causal proof; revised preference != selected direction; objection != verified defect; coherent proposal != PRD/build authority |
