@@ -146,10 +146,10 @@
         <p>Change what the agent should investigate—not what the repository asserts. This overlay never edits baseline nodes, historical decisions or the indexed graph.</p>
         <div id="scenarioBanner" class="warning hidden" role="status"></div>
         <div class="inlineStack">
-          <button type="button" id="invertPremise">Explore selected premise as absent</button>
+          <button type="button" id="invertPremise">Explore selected record as absent</button>
           <button type="button" id="resetScenario">Reset scenario</button>
         </div>
-        <p class="minor" id="scenarioHelp">Select a hypothesis, constraint or assumption record to explore its absence.</p>
+        <p class="minor" id="scenarioHelp">Select a hypothesis, constraint, assumption or premise record to explore its absence.</p>
       </div>
       <div class="panel">
         <h2>Ask the coding agent</h2>
@@ -398,8 +398,8 @@
     renderInspector(node);
     $("invertPremise").disabled=!isPremise(node);
     text("scenarioHelp",isPremise(node)?
-      "Explore this record as an absent premise. Eligibility comes from its kind, not from a recorded dependency; the agent must still evaluate consequences.":
-      "Choose a hypothesis, constraint or assumption record. ID wording and ordinary links do not make a record a premise.");
+      "Explore this record as absent. Eligibility comes from its kind, not from a recorded dependency; the agent must still evaluate consequences.":
+      "Choose a hypothesis, constraint, assumption or premise record. ID wording and ordinary links do not make a record eligible.");
     if (ui.scenario) {
       $("scenarioBanner").classList.remove("hidden");
       $("scenarioPanel").classList.add("scenarioActive");
@@ -424,7 +424,7 @@
       "Selected original evidence: "+(node ? ids(node.evidence_refs).join("; ") : "NOT_ASSESSED"),
       "Selected relationship: "+(selectedEdge ? selectedEdge.id+" / "+selectedEdge.predicate+" / "+selectedEdge.role+" / "+selectedEdge.source_ref : "None"),
       "Scenario (UNCOMMITTED / HYPOTHETICAL): "+(ui.scenario ?
-         "Investigate if premise "+ui.scenario.premise_id+" does not hold." : "None"),
+         "Investigate if "+ui.scenario.premise_id+" does not hold. This does not establish that it is a premise of any linked judgment." : "None"),
       "Coverage: "+JSON.stringify(view.coverage || {}),
       "Inspect original source evidence and the governing authority. Separate recorded links from inferred causal/premise relationships. A graph miss is NOT_ASSESSED.",
       "Do not treat this scenario, the graph picture or this message as owner ratification, decision selection or permission to execute."
