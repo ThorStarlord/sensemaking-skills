@@ -324,6 +324,10 @@ sensemaking-skills semantic knowledge-query --db "$db" --repository "$repository
   graph link, computed exactly as `rules-for` computes them.
 - `context.contracts`: contracts linked by `exposes`, or by `flows_to` through
   its `carries` attribute.
+- `context.constraints`: invariant or constraint records linked by
+  `constrained_by` from an owning component or applicable rule. One second hop
+  follows `constrained_by` from a linked decision and is labelled as such. An
+  empty result means NOT ASSESSED, not that no constraint applies.
 - `context.decisions`: decisions linked by `decided_by`.
 - `context.alternatives`: source-linked alternatives explicitly attached to
   those decisions by `references` or `contradicts` (either direction). The

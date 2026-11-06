@@ -353,7 +353,7 @@ def query_knowledge(
                 *ctx["ownership"]["layers"],
                 *ctx["ownership"]["bounded_contexts"],
                 *(item["claim_id"] for name in
-                  ("contracts", "decisions", "alternatives", "history",
+                  ("contracts", "constraints", "decisions", "alternatives", "history",
                    "verification_refs")
                   for item in ctx[name]),
             ]
