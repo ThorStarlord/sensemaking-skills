@@ -1,0 +1,57 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-11-05-repair-hypothetical-premise-viewer
+state: final
+created_at: "2026-11-05T21:50:00Z"
+updated_at: "2026-11-06T01:10:15Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: 96f77942554704fb90acdcd6f84588a38a49c7c7
+  end_ref: 1dba98dbc247d9558f6f6609650407373dc6cefe
+  worktree_clean_at_end: true
+skill_identity:
+  load_mode: harness_discovered
+  sensemaking_source_ref: 6f54a4a7eeb2a2101536f3307c37bb55a46dcbca
+goal:
+  statement: Repair the hypothetical-premise selection defect in the graph viewer, reconcile affected documentation and verify the interaction, as a bounded product repair.
+  source: owner_message
+  source_ref: docs/normal-use/2026-11-05-ontology-author-reader-first-use.md
+delegation:
+  granted: [read, local_write, run_local_commands, commit, push, open_pr, merge]
+  withheld: [release, deploy, knowledge_edit]
+continuity:
+  resumes: null
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: Repair premise eligibility in the viewer and reconcile its documentation
+    capability: ordinary_coding
+    status: completed
+    reason: Owner authorized fixing the confirmed finding. Eligibility now comes from record kind; an independent review approved with minor findings, which were applied.
+    artifact_refs:
+      - src/sensemaking_skills/semantic_architecture/view_assets/graph_view.html
+      - docs/semantic-architecture/agent-native-graph-viewer-v1.md
+    validation:
+      - command: Browser pane on loopback, pointer clicks on hypothesis, constraint and curated assumption views at fbe1c9a
+        result: PASS
+      - command: Local unit and synthetic tests
+        result: NOT_RUN
+findings:
+  - id: F-1
+    statement: Follow-up text stays unchanged after selecting another record until Prepare or Copy regenerates it. Pre-existing and left unchanged.
+    epistemic_status: OBSERVED
+    evidence_refs:
+      - src/sensemaking_skills/semantic_architecture/view_assets/graph_view.html
+    disposition: no_action
+open_questions: []
+stop:
+  disposition: GOAL_SATISFIED
+  reason: Defect repaired, verified in a browser and documented. Knowledge reconciliation is NO_MODEL_CHANGE because no reviewed pack describes the viewer.
+next:
+  warranted_responsibility: null
+  blocked_on: []
+persistence: committed
+claim_ceiling: One browser run on loopback. Does not establish file URL, clipboard, keyboard or SVG behavior, or that retained knowledge improves agent reasoning. The earlier PARTIAL result is unchanged.
+action_authorized_by_receipt: false
+immutable: true
