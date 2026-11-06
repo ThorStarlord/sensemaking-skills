@@ -1,0 +1,127 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-11-06-harness-maturity-verification
+state: final
+created_at: "2026-11-06T05:42:00Z"
+updated_at: "2026-11-06T06:05:00Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: db254989bd6ccfa3670348328ad335c067b05816
+  end_ref: c36f79d97ea0a9f8a4417a8dc0b642529d2d38ad
+  worktree_clean_at_end: true
+skill_identity:
+  load_mode: harness_discovered
+  sensemaking_source_ref: null
+goal:
+  statement: Verify the harness maturity reconciliation against current sources, fix warranted gaps, and identify the next Sensemaking product responsibility.
+  source: owner_message
+  source_ref: Pasted mission "Harness Maturity Reconciliation and Value-Directed Follow-Through"
+delegation:
+  granted: [read, local_write, run_local_commands, commit, push, open_pr, merge]
+  withheld: [knowledge_edit, release, deploy, external_publication, tracker_write]
+continuity:
+  resumes: 2026-11-06-harness-maturity-reconciliation
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: Verify prior maturity reconciliation record against current sources
+    capability: ordinary_coding
+    status: completed
+    reason: Re-checked preserved hashes and scores, SECURITY.md, ADR 0023, gate_a no_retry, knowledge files, CI lint and branch protection at origin/main a3c86b9e.
+    artifact_refs: []
+    validation:
+      - command: sha256sum -c SHA256SUMS.txt (raw outputs, outside repository)
+        result: PASS
+      - command: ruff check on shipped-source paths --select E4,E7,E9,F
+        result: PASS
+  - id: R-2
+    responsibility: Align bare local ruff check with the CI rule set
+    capability: ordinary_coding
+    status: completed
+    reason: CI already passes --select E4,E7,E9,F, but a bare ruff check on the same paths reported 158 findings; the rule set is now declared in pyproject without changing CI.
+    artifact_refs:
+      - pyproject.toml
+    validation:
+      - command: ruff check on shipped-source paths, bare, before config
+        result: FAIL
+      - command: ruff check on shipped-source paths, bare, after config
+        result: PASS
+  - id: R-3
+    responsibility: Reassess product direction and select next responsibility
+    capability: using-sensemaking
+    status: completed
+    reason: PATH-1 and ADR 0034 favour reviewed-knowledge accretion over score work; the knowledge plane has no governance-bounds claims, so a bounded RECALL and RELATE episode is the warranted next step.
+    artifact_refs:
+      - STATUS.md
+      - docs/adr/0034-ontology-first-adaptive-sensemaking.md
+    validation: []
+findings:
+  - id: F-1
+    statement: The original no-config ruff finding was partly wrong because CI passes an explicit --select, but a bare local ruff check reported 158 findings on the same paths.
+    epistemic_status: OBSERVED
+    evidence_refs:
+      - .github/workflows/validation.yml:74
+      - pyproject.toml
+    disposition: resolved
+  - id: F-2
+    statement: SECURITY.md claims check out. Private vulnerability reporting is disabled, secret scanning and push protection are enabled, v1.0.0rc1 is the only pre-release, and main has no branch protection or rulesets.
+    epistemic_status: OBSERVED
+    evidence_refs:
+      - SECURITY.md
+    disposition: no_action
+  - id: F-3
+    statement: No reviewed knowledge file (10 on origin/main) mentions ADR 0023, gate_a no_retry, SECURITY or secret handling; this is ABSENT_FROM_GRAPH, not absence.
+    epistemic_status: OBSERVED
+    evidence_refs:
+      - .sensemaking/knowledge
+      - docs/adr/0023-two-lane-experiment-authorization.md
+    disposition: handed_off
+  - id: F-4
+    statement: ADR 0023 accepts attempt and invocation ceilings and gate_a requires no_retry; the max-3-attempts claim exists only in superseded ADR 0021, so the retry finding is narrowed.
+    epistemic_status: DERIVED
+    evidence_refs:
+      - docs/adr/0023-two-lane-experiment-authorization.md
+      - scripts/gate_a_authorization.py
+      - docs/adr/0021-production-readiness-requirements.md
+    disposition: resolved
+  - id: F-5
+    statement: ADR 0032 drift re-verified. The Skill runs the receipt reader only if installed, and the ADR names three authority fields against one in the schema. 59 receipts exist, not 57.
+    epistemic_status: OBSERVED
+    evidence_refs:
+      - docs/adr/0032-session-and-query-receipts.md
+      - skills/using-sensemaking/SKILL.md
+    disposition: handed_off
+open_questions:
+  - id: Q-1
+    question: Ratify, amend or keep PROPOSED ADR 0032 (session and query receipts)?
+    source: owner_intent
+    blocking: false
+    options:
+      - option: Ratify as amended to match the schema and optional reader
+        consequence: Keeps current receipt behaviour and removes both drifts; the Skill needs no change.
+      - option: Ratify as written
+        consequence: Makes the reader required at session start, so the Skill needs a matching change.
+      - option: Keep PROPOSED
+        consequence: The dated Skill instruction governs receipts and the drift remains.
+    durable_ref: null
+  - id: Q-2
+    question: Accept main with no branch protection or rulesets under the 2026-10-26 merge policy, or add gating?
+    source: owner_intent
+    blocking: false
+    options:
+      - option: Accept the platform risk under the current policy
+        consequence: Merges stay governed by owner policy and agent discipline, with no required check.
+      - option: Add required checks
+        consequence: Gating conflicts with the rule to merge without waiting for hosted CI, which must then be revised.
+    durable_ref: null
+stop:
+  disposition: GOAL_SATISFIED
+  reason: Corrections verified and recorded; the ruff alignment change is submitted; the next responsibility is identified but not executed.
+next:
+  warranted_responsibility: RECALL then RELATE the governance-bounds absence claims (ADR 0023 ceilings, gate_a no_retry, SECURITY sensitive-data boundary), then RECONCILE those claims.
+  blocked_on: [authority:knowledge_edit]
+persistence: committed
+claim_ceiling: Repository and API read checks only. Local unit and synthetic tests NOT_RUN under CLAUDE.md; hosted CI not awaited. The dirty main checkout was not reconciled. No knowledge or runtime change.
+action_authorized_by_receipt: false
+immutable: true
