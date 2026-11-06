@@ -75,6 +75,13 @@ sequence of mandatory passes. In an intentionally independent first pass,
 honor the exposure boundary before consulting earlier answers; record what
 prior material was actually available.
 
+If substantive exploration depends on *why an observation occurred*, distinguish
+rival causal/explanatory hypotheses before treating any one as fact or turning
+it into a new product end. Use the optional
+[evidence-grounded abductive inquiry profile](evidence-grounded-abductive-inquiry-v1.md)
+when a real explanation contrast or discriminator could change the question.
+Pure divergence needs no preceding abductive pass.
+
 For a novelty or overlap judgment, identify the compared expressions,
 dimension, inspected corpus/revision, assessor and uncertainty. Separate new
 wording, a changed realization, a different end and a changed question.
