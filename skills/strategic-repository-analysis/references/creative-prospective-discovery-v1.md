@@ -11,6 +11,22 @@ State the **inquiry question and known desired outcome** before consulting the g
 
 **Anti-anchoring:** the graph provides *seeds*, not the full allowable option set. Seek important unrepresented outcomes; a past rejection is a reason to inspect changing premises, not an eternal veto.
 
+**Knowledge-to-question hinge:** a relevant source relationship should change
+what the inquiry notices or asks where such a change is warranted. A source
+citation attached to a generic feature idea is not by itself a generative
+transformation. Consider whether a tension, historical premise, beneficiary,
+desired experience or cross-system relationship opens a *different product
+end*, rather than another implementation of the same end. Preserve the
+source-to-expression change in an attributed, concise explanation when
+material; do not demand an explanation of hidden private reasoning.
+
+**Global-local return:** when successive variants optimize one mechanism,
+check whether the current question is still about an open product outcome.
+Use a different frame or the existing Metareasoning/Exploration guidance
+only if it could change the meaning of the answer. Do not widen an
+intentionally narrow inquiry or promote an exploratory end into owner intent.
+
+
 For meaningful question/frame changes, uncertain candidate identity or durable
 continuation, use the [divergent exploration profile](divergent-exploration-v1.md).
 Retain emerging questions and fragments before applying the material-candidate
