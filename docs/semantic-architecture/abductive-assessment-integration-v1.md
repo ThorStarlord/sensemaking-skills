@@ -48,7 +48,7 @@ A **discriminating `InquiryQuestion`** specifies potential observations that wou
 
 ## 4. Coverage and comparability retain their denominator
 
-Use the five existing [assessment coverage dimensions](possibility-assessment-ontology.md#31-coveragefinding--several-different-kinds-of-covered): corpus, conceptual breadth, consequence depth, empirical support and perspective coverage. They apply only after declaring the **typed corpus** and **purpose**.
+Use the five existing [assessment coverage dimensions](possibility-assessment-ontology.md): corpus, conceptual breadth, consequence depth, empirical support and perspective coverage. They apply only after declaring the **typed corpus** and **purpose**.
 
 - **Explanatory adequacy/coverage:** have the materially plausible explanations of a specific observed question been considered with grounds/counterevidence and a potentially discriminating observation? This is a purpose-specific judgment about explanations, not a new universal `CoverageFinding` enum.
 - **Possibility-space coverage:** have materially different ends, beneficiaries, mechanisms, contexts and source-linked expressions been considered for a declared product question? Several explanations of one incident are **not** several futures.
