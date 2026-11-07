@@ -13,6 +13,8 @@
 
 **Their relation:** explaining what happened may reveal a new question or future; a proposed future may generate an explanatory question. Neither operation is automatically the next stage of the other. They can legitimately coexist, diverge, stop separately, or never intersect. They do not authorize strategy selection, construction, publication or owner-intent modification.
 
+**Assessment compatibility:** an explanatory `Hypothesis` is an unestablished `Claim` and may be evaluated under a diagnostic, purpose-relative `AssessmentFrame` without becoming a product alternative. Evidence supporting the explanation does not establish the desirability or novelty of an expression it inspires. The [abductive-to-assessment bridge](abductive-assessment-integration-v1.md), [competencies](abductive-assessment-integration-competency-v1.md) and [source cases](abductive-assessment-integration-cases-v1.md) clarify how explanation, divergence and later assessment retain distinct identity, coverage and revision histories. No mandatory transition follows.
+
 This is a profile **composing existing semantic concepts**, not a rival to:
 - [Layered Ontology](ontology.md): Observation, EvidenceSource, CounterEvidence, Hypothesis, Claim, Assumption, Provenance and authority;
 - [Relations and Epistemics](relations-and-epistemics.md): OBSERVED / INFERRED / HYPOTHESIZED / CONTRADICTED / UNRESOLVED / RATIFIED and their establishment rules;
