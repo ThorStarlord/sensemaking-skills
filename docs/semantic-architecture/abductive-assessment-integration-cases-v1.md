@@ -8,7 +8,7 @@
 
 ## Case I1 — Assess explanations without opening a product inquiry (historical-source reconstruction)
 
-**Source:** [abductive Case A, lines 7–25](evidence-grounded-abductive-divergent-reference-cases-v1.md#case-a--an-agent-narrowed-the-wrong-target-sensemaking-2026-10-27).
+**Source:** [abductive Case A, lines 7–25](evidence-grounded-abductive-divergent-reference-cases-v1.md).
 
 - **Explandum I1.O:** as *reported by the owner-supplied record*, the agent analyzed the Skill component rather than the requested whole repository; the available status read was partial. The observation does not reveal an exclusive internal cause.
 - **Targets I1.H1 / I1.H2 / I1.H3:** mistaken method/target framing; the partial read reinforcing premature closure; another instruction-application or delivery factor. All remain `Hypothesis` / Claim, **not** `ProductPossibility`.
@@ -18,7 +18,7 @@
 
 ## Case I2 — Explanation suggests an expression; two purposes remain distinct
 
-**Source:** [abductive Case B](evidence-grounded-abductive-divergent-reference-cases-v1.md#case-b--a-structural-divergence-rule-did-not-distinguish-meaning-auteur-2026-11-06) (retrospective Auteur source) and its B.H1/B.H2/B.T1; [Case C](evidence-grounded-abductive-divergent-reference-cases-v1.md#case-c--explanatory-reframing-opens-different-product-ends-auteur-sensemaking-source-use) for a related, distinct author-intention frame.
+**Source:** [abductive Case B](evidence-grounded-abductive-divergent-reference-cases-v1.md) (retrospective Auteur source) and its B.H1/B.H2/B.T1; [Case C](evidence-grounded-abductive-divergent-reference-cases-v1.md) for a related, distinct author-intention frame.
 
 - **Explandum I2.O:** reports describe alternatives that changed category labels or one cost-allocation variable without always changing their meaningful causal difference; later same-axis validation could also reject different mechanisms. These are historically reported behaviors, **not a proven general creative limitation**.
 - **Hypotheses I2.H1/H2:** categorical axes inadequately represent semantic mechanism differences; or insufficiently clarified labeling explains the issue. The source observations challenge a simple `different axis = different meaning` assumption but do not prove an exclusive causal diagnosis.
@@ -28,7 +28,7 @@
 
 ## Case I3 — Mixed targets and separate coverage denominators (illustrative combined view)
 
-**Source inputs:** I1.H1/H2 from abductive Case A, I2.E1 from Case B, and historical GD-D / DE-F2 from [assessment Case C2](possibility-assessment-reference-cases-v1.md#3-case-c2--a-navigational-near-duplicate-preserves-both-expressions).
+**Source inputs:** I1.H1/H2 from abductive Case A, I2.E1 from Case B, and historical GD-D / DE-F2 from [assessment Case C2](possibility-assessment-reference-cases-v1.md).
 
 **Illustrative frame I3.F1 — explanatory adequacy:** consider whether rival hypotheses address the *same* reported event and which relevant sources were actually inspected. H1 and H2 are two explanations of I1.O, not two user-valued futures. Their simultaneous presence does not prove explanatory completeness.
 
@@ -38,7 +38,7 @@
 
 ## Case I4 — Explanation history and assessment history do not overwrite one another
 
-**Source inputs:** the reported sequence of divergent-rule corrections in abductive Case B; separately the old-versus-new *inquiry priority* history in [assessment Case C5](possibility-assessment-reference-cases-v1.md#6-case-c5--priority-revision-without-retroactive-rank-rewrite).
+**Source inputs:** the reported sequence of divergent-rule corrections in abductive Case B; separately the old-versus-new *inquiry priority* history in [assessment Case C5](possibility-assessment-reference-cases-v1.md).
 
 - **Hypothesis-history role:** the sequence in Case B can lead a later author to narrow a hypothesis such as “a distinct axis guarantees material difference.” Preserve the original scope/source and record **what new reported behavior challenges it**. An authored explanation revision is not a deterministic fact about cognitive cause.
 - **Assessment-history role:** assessment Case C5 preserves historical broad prioritization (H), a narrower pairwise judgment (B) and a later residual inquiry portfolio (N). These are not one timeless ranking; their typed operands, baselines, methods and purposes changed.
@@ -47,7 +47,7 @@
 
 ## Negative case I5 — No justified transition
 
-**Source:** [abductive Case D](evidence-grounded-abductive-divergent-reference-cases-v1.md#case-d--negativestop-case-ontology-versus-product-reality) and [assessment ontology §1](possibility-assessment-ontology.md#1-purpose-and-separation-of-responsibilities).
+**Source:** [abductive Case D](evidence-grounded-abductive-divergent-reference-cases-v1.md) and [assessment ontology §1](possibility-assessment-ontology.md#1-purpose-and-separation-of-responsibilities).
 
 When a bounded local problem already has an adequate verified cause and a directly authorized repair, or a proposed expression is merely renaming the same mechanism, **do not** manufacture another explanatory rival, ProductPossibility, Coverage Assessment, ranking or new machine relation. Stop or return to the bounded responsibility. This is a **normative negative example**, not a newly recorded real host event.
 
