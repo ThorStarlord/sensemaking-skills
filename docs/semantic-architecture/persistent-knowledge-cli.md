@@ -352,6 +352,13 @@ sensemaking-skills semantic knowledge-query --db "$db" --repository "$repository
   not a substitute for the missing full records. An `envelope / TRUNCATED` gap
   explicitly flags that some category entries may reference omitted records.
 
+The top-level relation candidates are limited to links for **visible** context
+category items and visible owner/rule/layer relationships. A relation used only
+for a category entry omitted by its own `--limit` is not returned as unrelated
+evidence in the top-level envelope. Category omission counts and global
+`envelope_reference_coverage` limits still apply; omitted links are NOT ASSESSED
+by this bounded response, not disproven.
+
 For `context-for` the top-level claim envelope prioritizes reviewed **owners
 and applicable rules** before secondary linked context; it remains globally
 limited. A `truncated: false` category does not imply the global envelope
