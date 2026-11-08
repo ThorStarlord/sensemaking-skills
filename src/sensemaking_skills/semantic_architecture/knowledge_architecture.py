@@ -169,12 +169,15 @@ def context_for(
         "contracts": {}, "constraints": {}, "decisions": {}, "alternatives": {},
         "history": {}, "verification_refs": {},
     }
-    relation_ids: set[str] = set()
+    # Retain link provenance by category item. A per-category limit may omit an
+    # item, so its edges must not displace evidence for items actually returned.
+    link_relation_ids: dict[str, dict[str, set[str]]] = {name: {} for name in buckets}
+    structural_relation_ids: set[str] = set()
 
     def link(bucket: str, target: str, rel: Mapping[str, Any], via: str = "") -> None:
         text = f"{via}relation {rel['subject']} {rel['predicate']} {rel['object']}"
         buckets[bucket].setdefault(target, set()).add(text)
-        relation_ids.add(rel["id"])
+        link_relation_ids[bucket].setdefault(target, set()).add(rel["id"])
 
     for rel in edges:
         s, p, o = rel["subject"], rel["predicate"], rel["object"]
@@ -199,9 +202,9 @@ def context_for(
         elif p == "tested_by" and s in anchors and o_kind == "verification":
             link("verification_refs", o, rel)
         elif p == "belongs_to" and s in owners and o in layer_ids:
-            relation_ids.add(rel["id"])
+            structural_relation_ids.add(rel["id"])
         elif p == "applies_to" and s in rule_ids and o in owners | layer_ids:
-            relation_ids.add(rel["id"])
+            structural_relation_ids.add(rel["id"])
     for rel in edges:
         s, p, o = rel["subject"], rel["predicate"], rel["object"]
         if (p == "derived_from" and s in buckets["decisions"]
@@ -296,7 +299,20 @@ def context_for(
     returned: set[str] = {*owner_list, *layer_list, *context_list, *(r["claim_id"] for r in rule_list)}
     for group in (contracts, constraints, decisions, alternatives, history, verification):
         returned.update(item["claim_id"] for item in group[:limit])
-    return context, sorted(returned), sorted(relation_ids)
+
+    # The global relation envelope should describe visible context, not entries
+    # omitted by the independent category limits. Keep every link for a shown
+    # item, including labelled second hops and flows_to-carried contracts.
+    selected_relations = {
+        rid for name in lists for item in context[name]
+        for rid in link_relation_ids[name].get(item["claim_id"], ())
+    }
+    selected_relations.update(
+        rel["id"] for rel in edges
+        if rel["id"] in structural_relation_ids
+        and rel["subject"] in returned and rel["object"] in returned
+    )
+    return context, sorted(returned), sorted(selected_relations)
 
 
 def term(claims: Mapping[str, dict], relations: Iterable[dict], *, name: str, limit: int) -> dict:
