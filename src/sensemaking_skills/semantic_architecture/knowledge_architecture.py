@@ -157,7 +157,8 @@ def context_for(
     constrained_by. Bounded second hops recover decision -> derived_from ->
     observation, directly linked decision -> references/contradicts -> alternative
     records, and linked decision -> constrained_by -> constraint. Returns the context
-    and the claim and relation IDs it relied on, both in deterministic order.
+    and the claim and relation IDs grounding the visible, bounded result, both
+    in deterministic order. Category totals may include omitted records.
     """
     edges = list(relations)
     base = rules_for(claims, edges, path=path, limit=len(claims) + len(edges) + 1)
