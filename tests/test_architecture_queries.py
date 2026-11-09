@@ -297,6 +297,52 @@ def test_verified_component_needs_a_visible_supporting_record_at_small_limit():
     assert ctx["truncated"] is True
 
 
+def _rule_verifier_claims():
+    """An applicable rule adds its own verification record, which sorts before the file match."""
+    claims = dict(CLAIMS)
+    claims["rule:test-harness"] = _claim("rule:test-harness", "architecture_rule",
+        "Tests run through the harness.",
+        attributes={"rule_type": "convention", "severity": "warning", "applies_to": ["tests/**"]})
+    claims["verification:a-harness"] = _verification(
+        "verification:a-harness", authority_ref="tests/harness.py", evidence=["file:tests/harness.py"])
+    claims["verification:v-file"] = _verification(
+        "verification:v-file", authority_ref=TEST_PATH, evidence=[f"file:{TEST_PATH}"])
+    claims["component:c-supported"] = _claim("component:c-supported", "component")
+    claims["decision:c-supported"] = _claim("decision:c-supported", "decision", "Supported decision.")
+    relations = [
+        *(r for r in RELATIONS if r["id"] != "r3"),
+        _rel("r-rule-harness", "rule:test-harness", "tested_by", "verification:a-harness"),
+        _rel("r-supported-tested", "component:c-supported", "tested_by", "verification:v-file"),
+        _rel("r-supported-decided", "component:c-supported", "decided_by", "decision:c-supported"),
+    ]
+    return claims, relations
+
+
+def test_rule_added_verification_cannot_hide_the_record_that_supports_a_component():
+    claims, relations = _rule_verifier_claims()
+    # Small limit: the rule's record fills the one visible slot, so the component's only
+    # file-relevance record is hidden. The component is not returned, and its decision is not reached.
+    small, small_returned, small_rel_ids = context_for(claims, relations, path=TEST_PATH, limit=1)
+    assert _ids(small["verification_refs"]) == ["verification:a-harness"]
+    assert small["verified_components"] == []
+    assert small["omitted"]["verified_components"] == 1
+    assert "component:c-supported" not in small_returned
+    assert "verification:v-file" not in small_returned
+    assert "r-supported-tested" not in small_rel_ids
+    assert small["decisions"] == []
+    gaps = {g["category"]: g["status"] for g in small["knowledge_gaps"]}
+    assert gaps["verified_components"] == "TRUNCATED"
+    # Large limit: both records are displayed, so the component, its evidence path and its decision return.
+    large, large_returned, large_rel_ids = context_for(claims, relations, path=TEST_PATH, limit=25)
+    assert _ids(large["verification_refs"]) == ["verification:a-harness", "verification:v-file"]
+    assert _ids(large["verified_components"]) == ["component:c-supported"]
+    assert all("tested_by verification:v-file" in text for text in large["verified_components"][0]["matched_by"])
+    assert _ids(large["decisions"]) == ["decision:c-supported"]
+    assert large["omitted"]["verified_components"] == 0
+    assert {"r-supported-tested", "r-supported-decided"} <= set(large_rel_ids)
+    assert "verification:v-file" in large_returned
+
+
 def test_verified_components_and_their_context_are_returned_when_records_are_visible():
     claims, relations = _late_and_early_verifiers()
     ctx, returned, rel_ids = context_for(claims, relations, path=TEST_PATH, limit=5)

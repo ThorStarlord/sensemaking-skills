@@ -347,7 +347,10 @@ sensemaking-skills semantic knowledge-query --db "$db" --repository "$repository
 - `context.verified_components`: components that a file-level verification record
   in this response verifies, linked by `tested_by`. The supporting record must be
   in `verification_refs`, so a component supported only by an omitted record is
-  not returned. Their `decided_by` decisions, constraints and history follow the
+  not returned. `verification_refs` keeps the first `limit` records in claim-ID
+  order across file matches and rule-linked records, so a rule-linked record can
+  take a slot, hiding a file match and the component that match supports. Their
+  `decided_by` decisions, constraints and history follow the
   usual explicit links. They are not owners: `ownership` stays `NOT_ASSESSED`,
   contracts and rules do not follow from them, and their other verification
   records are not expanded. Relevance is not runtime truth or action authority.

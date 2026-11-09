@@ -196,33 +196,11 @@ def context_for(
     # keep their existing response. A component verified by such a record anchors its
     # decisions, constraints and history; it never becomes an owner of contracts or rules.
     test_verifications = {} if owners else _test_evidence_verifications(claims, path)
-    # A verified component is returned only with a supporting verification record that
-    # this response shows (the first `limit` in deterministic order). Components
-    # supported only by omitted records are counted as omitted, never returned.
-    visible_verifications = set(sorted(test_verifications)[:limit])
-    verified_all: set[str] = set()
-    supported_text: dict[str, set[str]] = {}
-    supported_rel_ids: dict[str, set[str]] = {}
-    for rel in edges:
-        if (rel["predicate"] == "tested_by" and rel["object"] in test_verifications
-                and claims.get(rel["subject"], {}).get("kind") == "component"):
-            verified_all.add(rel["subject"])
-            if rel["object"] in visible_verifications:
-                supported_text.setdefault(rel["subject"], set()).add(
-                    f"relation {rel['id']}: {rel['subject']} tested_by {rel['object']} "
-                    "(this component is verified by the file's verification record; not ownership)")
-                supported_rel_ids.setdefault(rel["subject"], set()).add(rel["id"])
-    verified_components = sorted(supported_text)[:limit]
-    verified_text = {cid: supported_text[cid] for cid in verified_components}
-    verified_rel_ids = {cid: supported_rel_ids[cid] for cid in verified_components}
     base_anchors = owners | rule_ids
-    anchors = base_anchors | set(verified_components)
     buckets: dict[str, dict[str, set[str]]] = {
         "contracts": {}, "constraints": {}, "decisions": {}, "alternatives": {},
         "history": {}, "verification_refs": {},
     }
-    for cid, reasons in test_verifications.items():
-        buckets["verification_refs"][cid] = set(reasons)
     # Retain link provenance by category item. A per-category limit may omit an
     # item, so its edges must not displace evidence for items actually returned.
     link_relation_ids: dict[str, dict[str, set[str]]] = {name: {} for name in buckets}
@@ -232,6 +210,40 @@ def context_for(
         text = f"{via}relation {rel['subject']} {rel['predicate']} {rel['object']}"
         buckets[bucket].setdefault(target, set()).add(text)
         link_relation_ids[bucket].setdefault(target, set()).add(rel["id"])
+
+    # The verification bucket has two sources: file matches, and tested_by links from
+    # owners and applicable rules. Only owners and rules expand to their verification
+    # records; a verified component adds its decisions, constraints and history, not
+    # every test of it. Built before the verified-component derivation below, because
+    # that derivation must read the bucket's displayed selection.
+    for cid, reasons in test_verifications.items():
+        buckets["verification_refs"][cid] = set(reasons)
+    for rel in edges:
+        if (rel["predicate"] == "tested_by" and rel["subject"] in base_anchors
+                and claims.get(rel["object"], {}).get("kind") == "verification"):
+            link("verification_refs", rel["object"], rel)
+    # A verified component is returned only with a supporting verification record that
+    # this response displays: the first `limit` of the whole verification bucket in
+    # deterministic order. A rule-added record can sort before a file match and displace
+    # it, so visibility comes from that displayed selection, not from file matches alone.
+    # Components supported only by hidden records are counted as omitted, never returned.
+    displayed_verifications = set(sorted(buckets["verification_refs"])[:limit])
+    verified_all: set[str] = set()
+    supported_text: dict[str, set[str]] = {}
+    supported_rel_ids: dict[str, set[str]] = {}
+    for rel in edges:
+        if (rel["predicate"] == "tested_by" and rel["object"] in test_verifications
+                and claims.get(rel["subject"], {}).get("kind") == "component"):
+            verified_all.add(rel["subject"])
+            if rel["object"] in displayed_verifications:
+                supported_text.setdefault(rel["subject"], set()).add(
+                    f"relation {rel['id']}: {rel['subject']} tested_by {rel['object']} "
+                    "(this component is verified by the file's verification record; not ownership)")
+                supported_rel_ids.setdefault(rel["subject"], set()).add(rel["id"])
+    verified_components = sorted(supported_text)[:limit]
+    verified_text = {cid: supported_text[cid] for cid in verified_components}
+    verified_rel_ids = {cid: supported_rel_ids[cid] for cid in verified_components}
+    anchors = base_anchors | set(verified_components)
 
     for rel in edges:
         s, p, o = rel["subject"], rel["predicate"], rel["object"]
@@ -253,10 +265,6 @@ def context_for(
                 link("history", o, rel)
             elif o in anchors and s_kind in HISTORY_KINDS:
                 link("history", s, rel)
-        # Only owners and rules expand to their other verification records. A verified
-        # component adds its decisions, constraints and history, not every test of it.
-        elif p == "tested_by" and s in base_anchors and o_kind == "verification":
-            link("verification_refs", o, rel)
         elif p == "belongs_to" and s in owners and o in layer_ids:
             structural_relation_ids.add(rel["id"])
         elif p == "applies_to" and s in rule_ids and o in owners | layer_ids:
