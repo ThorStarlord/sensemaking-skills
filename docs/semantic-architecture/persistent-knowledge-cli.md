@@ -339,7 +339,17 @@ sensemaking-skills semantic knowledge-query --db "$db" --repository "$repository
   linked decision to a recorded incident, lesson or observation, and is labelled as
   such.
 - `context.verification_refs`: verification records linked by `tested_by` from
-  an owner or a matched rule.
+  an owner or a matched rule. For a file that **no component owns**, a
+  verification record whose `authority_ref` is that file, or whose `evidence_refs`
+  cite `file:<path>`, is also returned. Its `matched_by` names the link
+  (`authority_ref` or `evidence_ref`). This is verification relevance, never
+  ownership: other claim kinds that merely cite the file do not qualify.
+- `context.verified_components`: components linked by `tested_by` to such a
+  file-level verification record. Their `decided_by` decisions, constraints and
+  history follow the usual explicit links. They are not owners, contracts and
+  rules do not follow from them, and their other verification records are not
+  expanded. The `verification_relevance` gap (`NOT_AN_OWNER`) states this limit,
+  and `ownership` stays `NOT_ASSESSED`. Owned paths do not use this route.
 - `context.knowledge_gaps`: `NOT_ASSESSED`, `AMBIGUOUS`, `EPISTEMIC_CAVEAT`,
   `HYPOTHETICAL_CAVEAT` and `TRUNCATED` entries. An empty category is reported
   as not assessed, never as
