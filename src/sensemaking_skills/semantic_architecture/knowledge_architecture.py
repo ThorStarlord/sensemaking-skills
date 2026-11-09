@@ -196,16 +196,25 @@ def context_for(
     # keep their existing response. A component verified by such a record anchors its
     # decisions, constraints and history; it never becomes an owner of contracts or rules.
     test_verifications = {} if owners else _test_evidence_verifications(claims, path)
-    verified_text: dict[str, set[str]] = {}
-    verified_rel_ids: dict[str, set[str]] = {}
+    # A verified component is returned only with a supporting verification record that
+    # this response shows (the first `limit` in deterministic order). Components
+    # supported only by omitted records are counted as omitted, never returned.
+    visible_verifications = set(sorted(test_verifications)[:limit])
+    verified_all: set[str] = set()
+    supported_text: dict[str, set[str]] = {}
+    supported_rel_ids: dict[str, set[str]] = {}
     for rel in edges:
         if (rel["predicate"] == "tested_by" and rel["object"] in test_verifications
                 and claims.get(rel["subject"], {}).get("kind") == "component"):
-            verified_text.setdefault(rel["subject"], set()).add(
-                f"relation {rel['id']}: {rel['subject']} tested_by {rel['object']} "
-                "(this component is verified by the file's verification record; not ownership)")
-            verified_rel_ids.setdefault(rel["subject"], set()).add(rel["id"])
-    verified_components = sorted(verified_text)
+            verified_all.add(rel["subject"])
+            if rel["object"] in visible_verifications:
+                supported_text.setdefault(rel["subject"], set()).add(
+                    f"relation {rel['id']}: {rel['subject']} tested_by {rel['object']} "
+                    "(this component is verified by the file's verification record; not ownership)")
+                supported_rel_ids.setdefault(rel["subject"], set()).add(rel["id"])
+    verified_components = sorted(supported_text)[:limit]
+    verified_text = {cid: supported_text[cid] for cid in verified_components}
+    verified_rel_ids = {cid: supported_rel_ids[cid] for cid in verified_components}
     base_anchors = owners | rule_ids
     anchors = base_anchors | set(verified_components)
     buckets: dict[str, dict[str, set[str]]] = {
@@ -280,10 +289,13 @@ def context_for(
     totals = {
         "owning_components": len(owners), "architecture_rules": len(rule_ids),
         "layers": len(base["layers"]), "bounded_contexts": len(base["bounded_contexts"]),
-        "verified_components": len(verified_list),
+        "verified_components": len(verified_all),
         **{name: len(group) for name, group in lists.items()},
     }
     omitted = {name: max(0, total - limit) for name, total in totals.items()}
+    # Every verified component not returned counts, including components supported
+    # only by an omitted verification record; the limit arithmetic would undercount.
+    omitted["verified_components"] = len(verified_all) - len(verified_list)
     truncated = any(omitted.values())
 
     gaps: list[dict] = []
@@ -299,10 +311,16 @@ def context_for(
                      "note": f"No component owns this file. {len(test_verifications)} verification "
                              "record(s) name it as authority or evidence; those links show relevance only. "
                              "They do not establish ownership, architectural dependency or runtime behaviour."})
-        if not verified_components:
+        if not verified_all:
             gaps.append({"category": "verified_components", "status": "NOT_ASSESSED",
                          "note": "No component records a tested_by relation to the verification "
                                  "record(s) above, so no verified component context is available."})
+        elif len(verified_all) > len(verified_list):
+            gaps.append({"category": "verified_components", "status": "TRUNCATED",
+                         "note": f"{len(verified_all) - len(verified_list)} verified component(s) are "
+                                 "not returned: beyond the limit, or supported only by verification "
+                                 "record(s) the limit omitted. Their decisions, constraints and history "
+                                 "are not expanded."})
     if not rule_ids:
         gaps.append({"category": "architecture_rules", "status": "NOT_ASSESSED",
                      "note": "No rule matched this path by declared scope or graph link. "

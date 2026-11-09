@@ -265,6 +265,47 @@ def test_verified_component_does_not_expand_to_all_its_other_verifications():
     assert _ids(ctx["verified_components"]) == ["component:semantic-store"]
 
 
+def _late_and_early_verifiers():
+    claims = dict(CLAIMS)
+    claims["verification:v-one"] = _verification(
+        "verification:v-one", authority_ref=TEST_PATH, evidence=[f"file:{TEST_PATH}"])
+    claims["verification:v-two"] = _verification(
+        "verification:v-two", authority_ref=TEST_PATH, evidence=[f"file:{TEST_PATH}"])
+    claims["component:a-late"] = _claim("component:a-late", "component")
+    claims["component:b-early"] = _claim("component:b-early", "component")
+    claims["decision:b-early"] = _claim("decision:b-early", "decision", "Early decision.")
+    claims["invariant:a-late"] = _claim("invariant:a-late", "invariant", "Late invariant.")
+    relations = [
+        _rel("r-a-late-tested", "component:a-late", "tested_by", "verification:v-two"),
+        _rel("r-b-early-tested", "component:b-early", "tested_by", "verification:v-one"),
+        _rel("r-b-early-decided", "component:b-early", "decided_by", "decision:b-early"),
+        _rel("r-a-late-constrained", "component:a-late", "constrained_by", "invariant:a-late"),
+    ]
+    return claims, relations
+
+
+def test_verified_component_needs_a_visible_supporting_record_at_small_limit():
+    claims, relations = _late_and_early_verifiers()
+    ctx, returned, rel_ids = context_for(claims, relations, path=TEST_PATH, limit=1)
+    assert _ids(ctx["verification_refs"]) == ["verification:v-one"]
+    assert _ids(ctx["verified_components"]) == ["component:b-early"]
+    assert _ids(ctx["decisions"]) == ["decision:b-early"]
+    assert ctx["constraints"] == []
+    assert "component:a-late" not in returned and "invariant:a-late" not in returned
+    assert "r-a-late-tested" not in rel_ids and "r-a-late-constrained" not in rel_ids
+    assert ctx["omitted"]["verified_components"] == 1
+    assert ctx["truncated"] is True
+
+
+def test_verified_components_and_their_context_are_returned_when_records_are_visible():
+    claims, relations = _late_and_early_verifiers()
+    ctx, returned, rel_ids = context_for(claims, relations, path=TEST_PATH, limit=5)
+    assert _ids(ctx["verified_components"]) == ["component:a-late", "component:b-early"]
+    assert _ids(ctx["constraints"]) == ["invariant:a-late"]
+    assert {"r-a-late-tested", "r-a-late-constrained", "r-b-early-tested"} <= set(rel_ids)
+    assert ctx["omitted"]["verified_components"] == 0
+
+
 def test_citations_from_other_claim_kinds_do_not_qualify():
     claims = _test_claims()
     claims["decision:unlinked-cites-test"] = _claim(
