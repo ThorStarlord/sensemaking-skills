@@ -20,16 +20,31 @@ Source resolution:
 2. Repository-root ``skills/`` -- editable/source-checkout development.
 
 Drift detection remains fail closed: existing divergent copies are reported and
-are never silently overwritten. Only ``--force`` replaces them.
+are never silently overwritten. Only ``--force`` replaces them, except that
+``--update`` replaces a copy that still matches the tree this installer
+recorded writing (or verifying) there, because such a copy holds no local
+change.
+
+Install record: each destination root gets one ``.sensemaking-skills-install.json``
+file beside the Skill directories. It maps a Skill name to the digest of the
+tree setup-skills last wrote or verified there, with the package version and
+source kind. The Skill trees themselves stay byte-identical to the packaged
+ones. The record lets a later run tell a copy that is merely outdated from one
+that changed after installation. It is setup-skills' own bookkeeping: it does
+not show what a host loaded, and copies written by any other tool are not
+recorded.
 """
 
 from __future__ import annotations
 
 import hashlib
+import json
+import os
 import shutil
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
-from typing import List, Sequence, Tuple
+from typing import List, Mapping, Sequence, Tuple
 
 import yaml
 
@@ -45,6 +60,7 @@ from .workflow_availability import (
 )
 
 __all__ = [
+    "INSTALL_RECORD_NAME",
     "SkillsSetupError",
     "copy_skill",
     "find_skills_in_package",
@@ -54,9 +70,17 @@ __all__ = [
     "get_codex_skills_dir",
     "get_opencode_skills_dir",
     "get_package_skills_dir",
+    "install_state",
+    "load_install_record",
     "setup_skills",
     "skill_state",
 ]
+
+INSTALL_RECORD_NAME = ".sensemaking-skills-install.json"
+"""File name of the per-root install record (see the module docstring)."""
+
+INSTALL_RECORD_ARTIFACT_ID = "sensemaking_skills_install_record"
+INSTALL_RECORD_SCHEMA_VERSION = 1
 
 
 class SkillsSetupError(Exception):
@@ -160,32 +184,172 @@ def skill_state(src_skill: Path, dest_skill: Path) -> str:
     return "different"
 
 
+def _tree_digest(fingerprint: Mapping[str, str]) -> str:
+    """Digest a tree fingerprint (relative path -> file SHA-256), order-independent."""
+    hasher = hashlib.sha256()
+    for rel in sorted(fingerprint):
+        hasher.update(rel.encode("utf-8"))
+        hasher.update(b"\0")
+        hasher.update(fingerprint[rel].encode("ascii"))
+        hasher.update(b"\n")
+    return hasher.hexdigest()
+
+
+def _skill_source_kind(package_skills_dir: Path) -> str:
+    """Name the kind of Skill source resolved by :func:`get_package_skills_dir`."""
+    return "packaged" if package_skills_dir.name == "skill_trees" else "source_checkout"
+
+
+def _valid_record_entry(entry: object) -> bool:
+    if not isinstance(entry, dict):
+        return False
+    digest = entry.get("tree_sha256")
+    return (
+        isinstance(digest, str)
+        and len(digest) == 64
+        and all(char in "0123456789abcdef" for char in digest)
+    )
+
+
+def _recorded_version(entry: Mapping | None) -> str:
+    """Return the recorded package version as short printable ASCII."""
+    version = entry.get("package_version") if entry else None
+    if not isinstance(version, str) or not version:
+        return "an earlier run"
+    cleaned = "".join(char for char in version[:40] if " " <= char <= "~")
+    return cleaned or "an earlier run"
+
+
+def load_install_record(dest_skills_dir: Path) -> Tuple[dict, str | None]:
+    """Read a destination root's install record.
+
+    Returns ``(entries_by_skill_name, problem)``. A root without a record gives
+    ``({}, None)``. A record that is not a regular file, cannot be parsed, or has
+    an unknown format gives ``({}, problem)``: every divergent copy is then
+    treated as unrecorded, as before install records existed, and the file is
+    left unchanged. Entries without a well-formed ``tree_sha256`` are skipped.
+    """
+    path = dest_skills_dir / INSTALL_RECORD_NAME
+    if not path.exists() and not path.is_symlink():
+        return {}, None
+    if path.is_symlink() or not path.is_file():
+        return {}, "install record is not a regular file"
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, ValueError) as exc:
+        return {}, f"install record could not be read ({type(exc).__name__})"
+    if (
+        not isinstance(data, dict)
+        or data.get("artifact_id") != INSTALL_RECORD_ARTIFACT_ID
+        or data.get("schema_version") != INSTALL_RECORD_SCHEMA_VERSION
+        or not isinstance(data.get("skills"), dict)
+    ):
+        return {}, "install record has an unknown format"
+    entries = {
+        name: dict(entry)
+        for name, entry in data["skills"].items()
+        if isinstance(name, str) and _valid_record_entry(entry)
+    }
+    return entries, None
+
+
+def _write_install_record(dest_skills_dir: Path, entries: Mapping[str, Mapping]) -> None:
+    """Write the install record atomically (temporary file, then replace)."""
+    payload = {
+        "artifact_id": INSTALL_RECORD_ARTIFACT_ID,
+        "schema_version": INSTALL_RECORD_SCHEMA_VERSION,
+        "note": (
+            "Written by sensemaking-skills setup-skills: the Skill trees it last "
+            "wrote or verified in this directory. It does not show what a host "
+            "loaded, and it is not a Skill."
+        ),
+        "skills": {name: dict(entries[name]) for name in sorted(entries)},
+    }
+    path = dest_skills_dir / INSTALL_RECORD_NAME
+    temporary = dest_skills_dir / (INSTALL_RECORD_NAME + ".tmp")
+    temporary.write_text(
+        json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=True) + "\n",
+        encoding="utf-8",
+    )
+    os.replace(temporary, path)
+
+
+def install_state(
+    src_skill: Path, dest_skill: Path, recorded: Mapping | None = None
+) -> str:
+    """Classify a destination against its packaged source and its install record.
+
+    ``missing`` and ``current`` mean what they mean for :func:`skill_state`. A
+    copy that differs from the packaged tree is:
+
+    - ``outdated`` when its tree still has the digest setup-skills recorded
+      writing or verifying there, so nothing has changed it since;
+    - ``changed`` when a record exists but the tree no longer matches it
+      (edited locally, or rewritten by another tool);
+    - ``unrecorded`` when there is no usable record for it.
+    """
+    if not dest_skill.exists():
+        return "missing"
+    dest_fingerprint = _skill_tree_fingerprint(dest_skill)
+    if _skill_tree_fingerprint(src_skill) == dest_fingerprint:
+        return "current"
+    if not _valid_record_entry(recorded):
+        return "unrecorded"
+    if _tree_digest(dest_fingerprint) == recorded["tree_sha256"]:
+        return "outdated"
+    return "changed"
+
+
 def copy_skill(
     src_skill_dir: Path,
     dest_skills_dir: Path,
     skill_name: str,
     dry_run: bool = False,
     force: bool = False,
+    *,
+    update: bool = False,
+    recorded: Mapping | None = None,
 ) -> Tuple[bool, str]:
-    """Copy one Skill tree with explicit drift handling."""
+    """Copy one Skill tree with explicit drift handling.
+
+    ``recorded`` is this Skill's install-record entry, if any. ``update``
+    replaces only an ``outdated`` copy (see :func:`install_state`); ``force``
+    replaces any divergent copy.
+    """
     src_skill = src_skill_dir / skill_name
     dest_skill = dest_skills_dir / skill_name
 
     if not (src_skill / "SKILL.md").exists():
         return False, f"Source SKILL.md not found: {src_skill / 'SKILL.md'}"
 
-    state = skill_state(src_skill, dest_skill)
+    state = install_state(src_skill, dest_skill, recorded)
     if state == "current":
         return True, f"Current (already matches packaged version): {skill_name}"
 
-    if state == "different" and not force:
+    version = _recorded_version(recorded)
+    if state == "outdated" and not (force or update):
+        return (
+            False,
+            f"Different from packaged version: {skill_name} "
+            f"(unchanged since setup-skills {version} recorded it; "
+            "use --update to replace it)",
+        )
+    if state == "changed" and not force:
+        return (
+            False,
+            f"Different from packaged version: {skill_name} "
+            f"(changed since setup-skills {version} recorded it; "
+            "--force overwrites those changes)",
+        )
+    if state == "unrecorded" and not force:
         return (
             False,
             f"Different from packaged version: {skill_name} "
             "(installed copy diverged; use --force to overwrite)",
         )
 
-    if dest_skill.exists() and not force:
+    replace_allowed = force or (update and state == "outdated")
+    if dest_skill.exists() and not replace_allowed:
         return False, f"Destination already exists: {dest_skill} (use --force to overwrite)"
 
     if dry_run:
@@ -196,9 +360,51 @@ def copy_skill(
         if dest_skill.exists():
             shutil.rmtree(dest_skill)
         shutil.copytree(src_skill, dest_skill)
+        if state == "outdated":
+            return True, (
+                f"Updated {skill_name} -> {dest_skill} "
+                f"(was unchanged since setup-skills {version} recorded it)"
+            )
         return True, f"Copied {skill_name} -> {dest_skill}"
     except Exception as exc:
         return False, f"Failed to copy {skill_name}: {exc}"
+
+
+def _refresh_record_entry(
+    entries: dict,
+    skill_name: str,
+    src_skill: Path,
+    dest_skill: Path,
+    *,
+    action: str,
+    source_kind: str,
+) -> bool:
+    """Record a destination tree that now equals its packaged source.
+
+    Returns True when the entry changed. Nothing is recorded unless the copy is
+    byte-identical to the source tree, so a record never vouches for bytes that
+    setup-skills did not ship.
+    """
+    dest_fingerprint = _skill_tree_fingerprint(dest_skill)
+    if not dest_fingerprint or dest_fingerprint != _skill_tree_fingerprint(src_skill):
+        return False
+    digest = _tree_digest(dest_fingerprint)
+    previous = entries.get(skill_name)
+    if (
+        previous
+        and previous.get("tree_sha256") == digest
+        and previous.get("package_version") == __version__
+        and previous.get("source") == source_kind
+    ):
+        return False
+    entries[skill_name] = {
+        "tree_sha256": digest,
+        "package_version": __version__,
+        "source": source_kind,
+        "action": action,
+        "recorded_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+    }
+    return True
 
 
 def _resolve_destinations(
@@ -368,6 +574,7 @@ def setup_skill_profile(
     project_root: str | Path | None = None,
     profile: str | None = None,
     include: Sequence[str] = (),
+    update: bool = False,
 ) -> bool:
     """Install packaged Skill trees to explicitly selected discovery roots.
 
@@ -390,6 +597,11 @@ def setup_skill_profile(
     or ``full``); ``include`` adds named add-ons (for example
     ``product-management``). Omitting both installs every packaged Skill, which
     is the current default. Profiles never change workflow liveness.
+
+    ``update`` replaces copies that are unchanged since setup-skills recorded
+    them in the destination's install record; changed or unrecorded copies
+    still need ``force``. Outside dry-run, each root's install record is
+    refreshed for every selected Skill that ends identical to its source.
     """
     try:
         package_skills_dir = get_package_skills_dir()
@@ -419,6 +631,8 @@ def setup_skill_profile(
             print(f"Scope: {scope}")
 
         all_success = True
+        source_kind = _skill_source_kind(package_skills_dir)
+        refused: dict[str, int] = {"outdated": 0, "changed": 0, "unrecorded": 0}
         for dest_name, dest_dir in destinations:
             print(f"\n{'=' * 60}")
             print(f"Installing to: {dest_name}")
@@ -431,18 +645,60 @@ def setup_skill_profile(
                 if verbose:
                     print(f"Created directory: {dest_dir}")
 
+            records, record_problem = load_install_record(dest_dir)
+            if record_problem:
+                print(
+                    f"  [!] {record_problem}: {dest_dir / INSTALL_RECORD_NAME} "
+                    "is ignored and left unchanged; divergent copies count as "
+                    "unrecorded. Remove it to start a new record."
+                )
+            record_changed = False
+
             for skill_name in selected:
+                src_skill = package_skills_dir / skill_name
+                dest_skill = dest_dir / skill_name
+                recorded = records.get(skill_name)
+                before = install_state(src_skill, dest_skill, recorded)
                 success, message = copy_skill(
                     package_skills_dir,
                     dest_dir,
                     skill_name,
                     dry_run=dry_run,
                     force=force,
+                    update=update,
+                    recorded=recorded,
                 )
                 symbol = "+" if success else "x"
                 print(f"  [{symbol}] {message}")
                 if not success:
                     all_success = False
+                    if before in refused:
+                        refused[before] += 1
+                elif not dry_run and record_problem is None:
+                    action = {"missing": "installed", "current": "verified"}.get(
+                        before, "replaced"
+                    )
+                    if _refresh_record_entry(
+                        records,
+                        skill_name,
+                        src_skill,
+                        dest_skill,
+                        action=action,
+                        source_kind=source_kind,
+                    ):
+                        record_changed = True
+
+            if record_changed:
+                try:
+                    _write_install_record(dest_dir, records)
+                except OSError as exc:
+                    print(
+                        f"  [!] Install record not written ({type(exc).__name__}: {exc}); "
+                        "a later run cannot tell outdated copies here from changed ones."
+                    )
+                else:
+                    if verbose:
+                        print(f"  Install record: {dest_dir / INSTALL_RECORD_NAME}")
 
             _report_workflow_availability(
                 dest_dir,
@@ -485,6 +741,17 @@ def setup_skill_profile(
             print("\nStatus: PARTIAL FAILURE - Some installations failed")
             print("Existing divergent Skill copies are reported above and are")
             print("NOT overwritten. Use --force to deliberately replace them.")
+            if refused["outdated"]:
+                print(
+                    f"{refused['outdated']} of them are unchanged since setup-skills "
+                    "recorded them; --update replaces only those."
+                )
+            if refused["changed"] or refused["unrecorded"]:
+                print(
+                    f"{refused['changed']} changed since setup-skills recorded them and "
+                    f"{refused['unrecorded']} have no install record; --update never "
+                    "replaces these. Inspect them before using --force."
+                )
 
         return all_success
 
