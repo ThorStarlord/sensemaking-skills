@@ -350,8 +350,9 @@
       "attributes": {
         "scope": "Delegated construction choice within ADR 0031; not an owner mandate",
         "claim_ceiling": "Source inspection and proposal-check on this proposal before and after the change; unit tests NOT_RUN by construction policy; no independent-agent use observed",
-        "staleness_condition": "Stale if proposal-check starts validating external endpoint attributes, or if placeholders stop carrying the declared kind"
-      }
+        "staleness_condition": "Superseded by the 2026-11-10 file-scoped validation contract; retained as the historical existence-only endpoint choice."
+      },
+      "epistemic_status": "superseded"
     },
     {
       "id": "alternative:carry-external-attributes-into-placeholders",
@@ -443,6 +444,24 @@
         "scope": "Sensemaking source-file context-for mechanism only; not a universal directive to add more links or a demonstration that an agent applies this rule",
         "claim_ceiling": "Source-grounded local lesson from several overlapping repository episodes, with independent repeated benefit and transfer NOT_ASSESSED",
         "revisit_when": "If context-for gains a different documented source-selection mechanism, or a fresh independent agent demonstrates a misleading or non-useful application, source-check and revise this lesson without deleting the original incident"
+      }
+    },
+    {
+      "id": "decision:proposal-check-file-scoped-source-contract",
+      "kind": "decision",
+      "statement": "knowledge-proposal-check is a read-only, single-pack draft preflight: it checks selected working-file bytes and current Git-index-tracked evidence against other reviewed packs at committed HEAD. It detects cross-pack identity collisions, incoming relationships changed by the proposal, and affected artifact-contract flows, but does not validate unrelated dirty packs, staged blob content, any hypothetical commit or knowledge-build options. The exact clean committed knowledge-build remains the whole-snapshot authority.",
+      "authority_kind": "delegated",
+      "authority_ref": "docs/adr/0031-persistent-semantic-stewardship.md",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/stewardship_validation.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_sources.py",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:skills/repository-semantic-steward/references/reconciliation.md"
+      ],
+      "attributes": {
+        "scope": "Delegated construction choice within ADR 0031, bounded by ADRs 0029 and 0034; not an owner-level product-thesis choice",
+        "claim_ceiling": "Source and PR diff inspection. Local unit and synthetic evidence tests NOT_RUN under CLAUDE.md; no standalone future-commit equivalence claim.",
+        "staleness_condition": "Reinspect if proposal-check begins consuming other dirty packs, staged blobs, structural/import modes, or a new source-state contract."
       }
     }
   ],
@@ -878,6 +897,17 @@
       "attributes": {
         "scope": "Interpretation of repeated local source-context anchoring findings; not proof of a generalized causal improvement"
       }
+    },
+    {
+      "id": "rel:proposal-file-scoped-supersedes-existence-only",
+      "subject": "decision:proposal-check-file-scoped-source-contract",
+      "predicate": "supersedes",
+      "object": "decision:proposal-check-existence-only-endpoints",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/stewardship_validation.py",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ]
     }
   ]
 }

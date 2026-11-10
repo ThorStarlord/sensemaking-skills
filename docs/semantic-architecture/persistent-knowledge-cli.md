@@ -581,6 +581,28 @@ sensemaking-skills semantic knowledge-proposal-check --repo . \
   --proposal .sensemaking/knowledge/my-domain.json --json
 ```
 
-This checks schema, endpoints and Git-tracked local evidence. It does NOT
-establish semantic truth, current committed evidence, or owner authority.
+This is a **single-pack draft preflight**, not a prospective commit validator
+and not a prediction of `knowledge-build` success. The selected proposal is
+read from its current **working-file bytes**, even if differently staged.
+Other reviewed knowledge packs are read from **committed HEAD**, so dirty,
+untracked or deleted *other* packs do not enter this check. Referenced ordinary
+evidence files use current worktree bytes only if Git-index-tracked (including
+staged new paths), and must exist safely. The check validates the proposed
+records and their outgoing references, checks cross-pack claim/relation ID
+collisions, and checks incoming committed relationships affected by changed
+or removed claims. It reuses the build-side artifact-contract flow checker
+for affected flows; unrelated pack defects remain outside scope.
+
+Success does **not** prove a whole working tree, staging index or hypothetical
+commit will build: other dirty packs, deleted or renamed packs, unstaged-vs-staged
+content, unrelated cross-pack defects, optional `--include-repository-structure`
+and `--include-python-imports` are not simulated. File/directory identity
+resolution is only a path preflight, not proof the default or capped structural
+build includes a record. Check the JSON `validation_scope`,
+`dirty_other_packs_ignored`, `structural_path_endpoints_only` and
+`build_equivalence_established: false` fields before relying on a pass.
+A removed proposal file cannot be checked by `--proposal`; deletions and
+multi-pack edits must be checked by the exact-commit builder after commit.
+Neither command establishes semantic truth, current owner authority or
+permission to act.
 For source-pinned indexing, commit the reviewed source/knowledge changes and rebuild the SQLite snapshot at the exact new SHA in the **same current checkout when naturally clean**. A fresh agent or separate clean-room worktree is not a construction prerequisite.
