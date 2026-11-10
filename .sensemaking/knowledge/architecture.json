@@ -880,7 +880,7 @@
     {
       "id": "component:distribution-setup",
       "kind": "component",
-      "statement": "At 04648638, the explicit installer maps a host and scope chosen by the caller to a filesystem discovery root and copies packaged Skill trees there. A destination is missing, current or different by tree fingerprint; against the root's install record (.sensemaking-skills-install.json) a different copy is outdated, changed or unrecorded, and only --update (outdated) or --force replaces it. It never detects the active host and does not establish what a host loaded.",
+      "statement": "At db6f0513, the explicit installer maps a host and scope chosen by the caller to a filesystem discovery root and copies packaged Skill trees there. A destination is missing, current or different by tree fingerprint; against the root's install record (.sensemaking-skills-install.json) a different copy is outdated, changed or unrecorded, and only --update (outdated) or --force replaces it. It never detects the active host and does not establish what a host loaded.",
       "epistemic_status": "observed",
       "authority_kind": "code",
       "authority_ref": "src/sensemaking_skills/setup_skills.py",
@@ -915,8 +915,48 @@
         "scope": "Agent-selected design within the owner's construction delegation; not an owner-ratified distribution policy or release qualification change.",
         "decision_changed": "Whether an installed Skill copy that differs from the packaged version can be replaced without risking a local edit, and what a fix to installer drift handling must preserve.",
         "known_limits": "The record is setup-skills bookkeeping, not evidence of what a host loaded. scripts/probe_skill_distribution.py --sync writes copies without updating it, so a copy synced that way reads as changed. An unknown-format record is ignored and left unchanged.",
-        "claim_ceiling": "Exercised through the real CLI on scratch roots on one Windows host at 04648638; unit tests NOT_RUN. Hosted wheel tests cover only the changed-copy refusal and --force replacement, not outdated or --update.",
+        "claim_ceiling": "Exercised through the real CLI on scratch roots on one Windows host at db6f0513; unit tests NOT_RUN. Hosted wheel tests cover only the changed-copy refusal and --force replacement, not outdated or --update.",
         "source_pr": "https://github.com/ThorStarlord/sensemaking-skills/pull/798"
+      }
+    },
+    {
+      "id": "rule:frozen-public-python-api",
+      "kind": "architecture_rule",
+      "statement": "The 1.0 Python API promise covers only names in each stable module's __all__. docs/public-api-v1.0.yaml pins a digest of __all__ and of the inspect.signature of every exported callable for sensemaking_skills.setup_skills, semantic_architecture, campaigns and campaign_semantics, so adding, removing or re-signing an exported name fails tests/test_public_api_contract.py. Put new helpers outside __all__ unless a deliberate API change updates the manifest.",
+      "authority_kind": "document",
+      "authority_ref": "docs/public-api-v1.0.yaml",
+      "evidence_refs": [
+        "file:docs/public-api-v1.0.yaml",
+        "file:tests/test_public_api_contract.py",
+        "file:docs/public-surface-v1.0.md"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "rule_type": "convention",
+        "severity": "error",
+        "applies_to": [
+          "src/sensemaking_skills/setup_skills.py",
+          "src/sensemaking_skills/semantic_architecture/**",
+          "src/sensemaking_skills/campaigns/**",
+          "src/sensemaking_skills/campaign_semantics/**"
+        ],
+        "learned_from": "PR #798 at 003c179e added three names to setup_skills.__all__ and keyword-only parameters to copy_skill; hosted Product Validation run 42759558168 failed only this test (3634 passed). Fixed by keeping new helpers private.",
+        "decision_changed": "Whether a change to one of these modules may add or alter an exported function, or must keep new behavior behind private helpers."
+      }
+    },
+    {
+      "id": "verification:public-api-contract-test",
+      "kind": "verification",
+      "statement": "Contract test: for every module in docs/public-api-v1.0.yaml, __all__ must exist and its export-list digest and exported-signature digest must equal the manifest values.",
+      "authority_kind": "test",
+      "authority_ref": "tests/test_public_api_contract.py",
+      "evidence_refs": [
+        "file:tests/test_public_api_contract.py",
+        "file:docs/public-api-v1.0.yaml"
+      ],
+      "epistemic_status": "observed",
+      "attributes": {
+        "claim_ceiling": "Test source read, and its failure observed in hosted run 42759558168; not run locally (construction policy NOT_RUN)."
       }
     },
     {
@@ -1874,6 +1914,16 @@
       "epistemic_status": "declared",
       "evidence_refs": [
         "file:src/sensemaking_skills/setup_skills.py"
+      ]
+    },
+    {
+      "id": "rel:frozen-public-api-tested-by-contract-test",
+      "subject": "rule:frozen-public-python-api",
+      "predicate": "tested_by",
+      "object": "verification:public-api-contract-test",
+      "epistemic_status": "observed",
+      "evidence_refs": [
+        "file:tests/test_public_api_contract.py"
       ]
     },
     {
