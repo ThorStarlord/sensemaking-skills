@@ -60,7 +60,6 @@ from .workflow_availability import (
 )
 
 __all__ = [
-    "INSTALL_RECORD_NAME",
     "SkillsSetupError",
     "copy_skill",
     "find_skills_in_package",
@@ -70,11 +69,12 @@ __all__ = [
     "get_codex_skills_dir",
     "get_opencode_skills_dir",
     "get_package_skills_dir",
-    "install_state",
-    "load_install_record",
     "setup_skills",
     "skill_state",
 ]
+# ``__all__`` and the signatures of the names in it are frozen by
+# docs/public-api-v1.0.yaml (tests/test_public_api_contract.py). The install
+# record helpers below are deliberately not exported.
 
 INSTALL_RECORD_NAME = ".sensemaking-skills-install.json"
 """File name of the per-root install record (see the module docstring)."""
@@ -306,15 +306,28 @@ def copy_skill(
     skill_name: str,
     dry_run: bool = False,
     force: bool = False,
+) -> Tuple[bool, str]:
+    """Copy one Skill tree with explicit drift handling (no install record)."""
+    return _copy_skill_tree(
+        src_skill_dir, dest_skills_dir, skill_name, dry_run=dry_run, force=force
+    )
+
+
+def _copy_skill_tree(
+    src_skill_dir: Path,
+    dest_skills_dir: Path,
+    skill_name: str,
     *,
+    dry_run: bool = False,
+    force: bool = False,
     update: bool = False,
     recorded: Mapping | None = None,
 ) -> Tuple[bool, str]:
-    """Copy one Skill tree with explicit drift handling.
+    """Copy one Skill tree, classifying a divergent copy against its record.
 
     ``recorded`` is this Skill's install-record entry, if any. ``update``
     replaces only an ``outdated`` copy (see :func:`install_state`); ``force``
-    replaces any divergent copy.
+    replaces any divergent copy. Without a record this is :func:`copy_skill`.
     """
     src_skill = src_skill_dir / skill_name
     dest_skill = dest_skills_dir / skill_name
@@ -662,7 +675,7 @@ def setup_skill_profile(
                 dest_skill = dest_dir / skill_name
                 recorded = records.get(skill_name)
                 before = install_state(src_skill, dest_skill, recorded)
-                success, message = copy_skill(
+                success, message = _copy_skill_tree(
                     package_skills_dir,
                     dest_dir,
                     skill_name,
