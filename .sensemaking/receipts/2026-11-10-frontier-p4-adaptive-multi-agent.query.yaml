@@ -1,0 +1,272 @@
+artifact_id: semantic_query_receipt
+schema_version: 1
+session_ref: 2026-11-10-frontier-p4-adaptive-multi-agent
+state: final
+created_at: '2026-11-10T11:40:00Z'
+updated_at: '2026-11-10T14:20:00Z'
+target_repository: ThorStarlord/sensemaking-skills
+modes: [RECALL, AUDIT, RECONCILE]
+decision: How knowledge-orient, knowledge-check-rules and knowledge-audit should read a commit from a dirty checkout,
+  and which recorded decisions bind that design.
+cli_identity: {sensemaking_source_ref: baaec6b92f87a00dbcefdbf865da04f86d5ce59f, invocation_prefix: PYTHONPATH=src
+    python -m sensemaking_skills.cli semantic, version_output: 'python -m sensemaking_skills.cli, version 1.0.0rc5.dev0'}
+index: {indexed_ref: baaec6b92f87a00dbcefdbf865da04f86d5ce59f, current_head: baaec6b92f87a00dbcefdbf865da04f86d5ce59f,
+  worktree_clean: false, uncommitted_changes_not_indexed: true}
+queries:
+- id: QY-1
+  operation: build
+  terms: []
+  subject: null
+  expect_kinds: []
+  target_ref: baaec6b92f87a00dbcefdbf865da04f86d5ce59f
+  result:
+    hit_count: 0
+    claim_ids: []
+    truncated: false
+    not_assessed_kinds: []
+  outcome: NOT_APPLICABLE
+  decision_relevant: false
+- id: QY-2
+  operation: context-for
+  terms: []
+  subject: src/sensemaking_skills/semantic_cli.py
+  expect_kinds: []
+  target_ref: baaec6b92f87a00dbcefdbf865da04f86d5ce59f
+  result:
+    hit_count: 6
+    claim_ids: ['component:semantic-cli', 'layer:knowledge-plane', 'lesson:console-guard-literal-print-arguments-only',
+      'rule:console-output-ascii', 'verification:console-output-ascii-guard', 'verification:semantic-cli-self-repo-tests']
+    truncated: false
+    not_assessed_kinds: [alternatives, constraints, contracts, decisions]
+  outcome: PARTIAL
+  decision_relevant: true
+- id: QY-3
+  operation: context-for
+  terms: []
+  subject: src/sensemaking_skills/semantic_architecture/knowledge_sources.py
+  expect_kinds: []
+  target_ref: baaec6b92f87a00dbcefdbf865da04f86d5ce59f
+  result:
+    hit_count: 17
+    claim_ids: ['alternative:dirty-tree-byte-audit', 'alternative:shared-clone-checkout', 'bounded_context:knowledge-stewardship',
+      'component:semantic-knowledge-plane', 'decision:index-from-temporary-worktree', 'inv:index-snapshot-vs-working-overlay',
+      'layer:knowledge-plane', 'lesson:console-guard-literal-print-arguments-only', 'lesson:source-anchored-context-reentry',
+      'rule:console-output-ascii', 'rule:frozen-public-python-api', 'rule:stable-core-no-lab-imports', 'verification:architecture-vocabulary-tests',
+      'verification:clean-index-tests', 'verification:console-output-ascii-guard', 'verification:public-api-contract-test',
+      'verification:semantic-knowledge-tests']
+    truncated: false
+    not_assessed_kinds: [contracts]
+  outcome: PARTIAL
+  decision_relevant: true
+- id: QY-4
+  operation: context-for
+  terms: []
+  subject: src/sensemaking_skills/semantic_architecture/knowledge_store.py
+  expect_kinds: []
+  target_ref: baaec6b92f87a00dbcefdbf865da04f86d5ce59f
+  result:
+    hit_count: 12
+    claim_ids: ['bounded_context:knowledge-stewardship', 'component:knowledge-store', 'layer:knowledge-plane', 'lesson:console-guard-literal-print-arguments-only',
+      'lesson:distinguish-provenance-content-and-meaning', 'lesson:query-completeness-is-evidence', 'lesson:uncited-change-is-coverage-gap',
+      'rule:console-output-ascii', 'rule:frozen-public-python-api', 'rule:stable-core-no-lab-imports', 'verification:console-output-ascii-guard',
+      'verification:public-api-contract-test']
+    truncated: false
+    not_assessed_kinds: [alternatives, constraints, contracts, decisions]
+  outcome: PARTIAL
+  decision_relevant: true
+- id: QY-5
+  operation: context-for
+  terms: []
+  subject: src/sensemaking_skills/semantic_architecture/repository_bootstrap.py
+  expect_kinds: []
+  target_ref: baaec6b92f87a00dbcefdbf865da04f86d5ce59f
+  result:
+    hit_count: 7
+    claim_ids: ['component:repository-bootstrap', 'lesson:console-guard-literal-print-arguments-only', 'rule:console-output-ascii',
+      'rule:frozen-public-python-api', 'rule:stable-core-no-lab-imports', 'verification:console-output-ascii-guard',
+      'verification:public-api-contract-test']
+    truncated: false
+    not_assessed_kinds: [alternatives, constraints, contracts, decisions]
+  outcome: PARTIAL
+  decision_relevant: false
+- id: QY-6
+  operation: context-for
+  terms: []
+  subject: src/sensemaking_skills/semantic_architecture/worktree_context.py
+  expect_kinds: []
+  target_ref: baaec6b92f87a00dbcefdbf865da04f86d5ce59f
+  result:
+    hit_count: 17
+    claim_ids: ['alternative:dirty-tree-byte-audit', 'alternative:shared-clone-checkout', 'bounded_context:knowledge-stewardship',
+      'component:semantic-knowledge-plane', 'decision:index-from-temporary-worktree', 'inv:index-snapshot-vs-working-overlay',
+      'layer:knowledge-plane', 'lesson:console-guard-literal-print-arguments-only', 'lesson:source-anchored-context-reentry',
+      'rule:console-output-ascii', 'rule:frozen-public-python-api', 'rule:stable-core-no-lab-imports', 'verification:architecture-vocabulary-tests',
+      'verification:clean-index-tests', 'verification:console-output-ascii-guard', 'verification:public-api-contract-test',
+      'verification:semantic-knowledge-tests']
+    truncated: false
+    not_assessed_kinds: [contracts]
+  outcome: PARTIAL
+  decision_relevant: false
+- id: QY-7
+  operation: build
+  terms: []
+  subject: null
+  expect_kinds: []
+  target_ref: 53b667c17c3e2e65ef2e344ccedfc60296f8d7cd
+  result:
+    hit_count: 0
+    claim_ids: []
+    truncated: false
+    not_assessed_kinds: []
+  outcome: NOT_APPLICABLE
+  decision_relevant: false
+- id: QY-8
+  operation: orient
+  terms: []
+  subject: null
+  expect_kinds: []
+  target_ref: baaec6b92f87a00dbcefdbf865da04f86d5ce59f
+  result:
+    hit_count: 0
+    claim_ids: []
+    truncated: false
+    not_assessed_kinds: []
+  outcome: NOT_APPLICABLE
+  decision_relevant: false
+- id: QY-9
+  operation: audit
+  terms: []
+  subject: null
+  expect_kinds: []
+  target_ref: baaec6b92f87a00dbcefdbf865da04f86d5ce59f
+  result:
+    hit_count: 442
+    claim_ids: []
+    truncated: false
+    not_assessed_kinds: []
+  outcome: HIT
+  decision_relevant: true
+- id: QY-10
+  operation: audit
+  terms: []
+  subject: null
+  expect_kinds: []
+  target_ref: baaec6b92f87a00dbcefdbf865da04f86d5ce59f
+  result:
+    hit_count: 139
+    claim_ids: []
+    truncated: false
+    not_assessed_kinds: []
+  outcome: HIT
+  decision_relevant: true
+- id: QY-11
+  operation: proposal-check
+  terms: []
+  subject: .sensemaking/knowledge/stewardship.json
+  expect_kinds: []
+  target_ref: null
+  result:
+    hit_count: 0
+    claim_ids: []
+    truncated: false
+    not_assessed_kinds: []
+  outcome: NOT_APPLICABLE
+  decision_relevant: false
+- id: QY-12
+  operation: build
+  terms: []
+  subject: null
+  expect_kinds: []
+  target_ref: 3c6ba4fcd99a4c4d4392d12d82ceb48d79cf20e0
+  result:
+    hit_count: 0
+    claim_ids: []
+    truncated: false
+    not_assessed_kinds: []
+  outcome: NOT_APPLICABLE
+  decision_relevant: false
+- id: QY-13
+  operation: context-for
+  terms: []
+  subject: src/sensemaking_skills/semantic_cli.py
+  expect_kinds: []
+  target_ref: 3c6ba4fcd99a4c4d4392d12d82ceb48d79cf20e0
+  result:
+    hit_count: 12
+    claim_ids: ['alternative:automatic-temporary-checkout-fallback', 'alternative:dirty-tree-byte-audit', 'alternative:read-committed-bytes-from-git-objects',
+      'alternative:shared-clone-checkout', 'component:semantic-cli', 'decision:index-from-temporary-worktree', 'inv:index-snapshot-vs-working-overlay',
+      'layer:knowledge-plane', 'lesson:console-guard-literal-print-arguments-only', 'rule:console-output-ascii',
+      'verification:console-output-ascii-guard', 'verification:semantic-cli-self-repo-tests']
+    truncated: false
+    not_assessed_kinds: [contracts]
+  outcome: PARTIAL
+  decision_relevant: true
+- id: QY-14
+  operation: context-for
+  terms: []
+  subject: src/sensemaking_skills/semantic_architecture/knowledge_store.py
+  expect_kinds: []
+  target_ref: 3c6ba4fcd99a4c4d4392d12d82ceb48d79cf20e0
+  result:
+    hit_count: 13
+    claim_ids: ['bounded_context:knowledge-stewardship', 'component:knowledge-store', 'layer:knowledge-plane', 'lesson:console-guard-literal-print-arguments-only',
+      'lesson:distinguish-provenance-content-and-meaning', 'lesson:query-completeness-is-evidence', 'lesson:separate-clone-changes-audited-bytes',
+      'lesson:uncited-change-is-coverage-gap', 'rule:console-output-ascii', 'rule:frozen-public-python-api', 'rule:stable-core-no-lab-imports',
+      'verification:console-output-ascii-guard', 'verification:public-api-contract-test']
+    truncated: false
+    not_assessed_kinds: [alternatives, constraints, contracts, decisions]
+  outcome: PARTIAL
+  decision_relevant: true
+- id: QY-15
+  operation: audit
+  terms: []
+  subject: null
+  expect_kinds: []
+  target_ref: 3c6ba4fcd99a4c4d4392d12d82ceb48d79cf20e0
+  result:
+    hit_count: 88
+    claim_ids: []
+    truncated: false
+    not_assessed_kinds: []
+  outcome: HIT
+  decision_relevant: true
+source_checks:
+- claim_id: decision:index-from-temporary-worktree
+  sources: ['src/sensemaking_skills/semantic_architecture/knowledge_sources.py:86-128', 'src/sensemaking_skills/semantic_cli.py:113-118']
+  result: SUPPORTED
+- claim_id: inv:index-snapshot-vs-working-overlay
+  sources: ['src/sensemaking_skills/semantic_architecture/knowledge_sources.py:52-65', 'src/sensemaking_skills/semantic_cli.py:91-93']
+  result: STALE
+- claim_id: alternative:dirty-tree-byte-audit
+  sources: ['src/sensemaking_skills/semantic_architecture/knowledge_store.py:533-571']
+  result: SUPPORTED
+- claim_id: rule:frozen-public-python-api
+  sources: ['src/sensemaking_skills/semantic_architecture/__init__.py:41-71', 'docs/public-api-v1.0.yaml:1-16']
+  result: SUPPORTED
+misses:
+- {id: M-1, query_ref: QY-2, needed_for: Which recorded decision and rejected alternatives govern how the commands
+    in semantic_cli.py pin source to a commit., kind: NOT_ASSESSED, resolved_by: 'the same batch query on knowledge_sources.py
+    returned decision:index-from-temporary-worktree; source inspection: semantic_cli.py:113-118', follow_up: ADD_PROPOSED,
+  proposal_ref: .sensemaking/knowledge/stewardship.json}
+- {id: M-2, query_ref: QY-4, needed_for: Whether a recorded decision constrains where knowledge-audit reads current
+    source bytes., kind: NOT_ASSESSED, resolved_by: 'source inspection: knowledge_store.py:518-571 reads through
+    verified_tracked_sources', follow_up: NO_MODEL_CHANGE, proposal_ref: null}
+reconcile:
+- {claim_id: 'decision:index-from-temporary-worktree', disposition: REVISE, applied: false, proposal_ref: .sensemaking/knowledge/stewardship.json,
+  proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+- {claim_id: 'inv:index-snapshot-vs-working-overlay', disposition: REVISE, applied: false, proposal_ref: .sensemaking/knowledge/stewardship.json,
+  proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+- {claim_id: 'alternative:automatic-temporary-checkout-fallback', disposition: ADD, applied: false, proposal_ref: .sensemaking/knowledge/stewardship.json,
+  proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+- {claim_id: 'alternative:read-committed-bytes-from-git-objects', disposition: ADD, applied: false, proposal_ref: .sensemaking/knowledge/stewardship.json,
+  proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+- {claim_id: 'lesson:separate-clone-changes-audited-bytes', disposition: ADD, applied: false, proposal_ref: .sensemaking/knowledge/stewardship.json,
+  proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+- {claim_id: 'component:semantic-cli', disposition: CONFIRM, applied: false, proposal_ref: null, proposal_check: NOT_RUN}
+- {claim_id: 'decision:workspace-impact-path-overlap', disposition: CONFIRM, applied: false, proposal_ref: null,
+  proposal_check: NOT_RUN}
+- {claim_id: null, disposition: NO_MODEL_CHANGE, applied: false, proposal_ref: null, proposal_check: NOT_RUN}
+persistence: committed
+action_authorized: false
+semantic_truth_established: false
+immutable: true
