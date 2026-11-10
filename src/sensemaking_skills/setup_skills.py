@@ -383,7 +383,10 @@ def _refresh_record_entry(
 
     Returns True when the entry changed. Nothing is recorded unless the copy is
     byte-identical to the source tree, so a record never vouches for bytes that
-    setup-skills did not ship.
+    setup-skills did not ship. ``action`` says how the recorded digest was
+    established (``installed``, ``replaced`` or ``verified`` for a copy that
+    already matched); an entry whose digest, version and source are unchanged
+    is left as it was, so ``action`` and ``recorded_at`` keep their first values.
     """
     dest_fingerprint = _skill_tree_fingerprint(dest_skill)
     if not dest_fingerprint or dest_fingerprint != _skill_tree_fingerprint(src_skill):
@@ -748,9 +751,9 @@ def setup_skill_profile(
                 )
             if refused["changed"] or refused["unrecorded"]:
                 print(
-                    f"{refused['changed']} changed since setup-skills recorded them and "
-                    f"{refused['unrecorded']} have no install record; --update never "
-                    "replaces these. Inspect them before using --force."
+                    f"Changed since recorded: {refused['changed']}; no install "
+                    f"record: {refused['unrecorded']}. --update never replaces "
+                    "these; inspect them before using --force."
                 )
 
         return all_success

@@ -24,7 +24,7 @@ sensemaking-skills setup-skills \
   [--project-root <repo>] \
   [--skills-dir <custom-root>] \
   [--dry-run] \
-  [--force]
+  [--force | --update]
 ```
 
 The caller chooses the adapter explicitly. P10 performs **no active-harness auto-detection**.
@@ -149,6 +149,19 @@ Replacement requires explicit:
 --force
 ```
 
+or, for a copy that the root's install record (`.sensemaking-skills-install.json`)
+shows unchanged since `setup-skills` wrote or verified it, explicit:
+
+```text
+--update
+```
+
+A different copy is classified against that record as `outdated` (still the
+recorded tree), `changed` (record exists, tree no longer matches) or
+`unrecorded`. `--update` replaces only `outdated` copies, which hold no local
+modification; `changed` and `unrecorded` copies still require `--force`.
+See [INSTALLATION.md](../INSTALLATION.md#updating-installed-skills).
+
 Therefore:
 
 ```text
@@ -246,7 +259,7 @@ A qualified P10 candidate must prove at least:
 6. unknown target/scope combinations fail closed;
 7. `all` deduplicates shared project roots deterministically;
 8. exact complete packaged Skill trees are copied;
-9. divergent installed copies are never overwritten without `--force`;
+9. divergent installed copies are never overwritten without `--force`, except that `--update` replaces a copy whose tree still matches the install record (no local modification); changed or unrecorded copies still require `--force`;
 10. dry-run creates no destination state;
 11. setup creates no Campaign state and emits no Skill selection, execution authority, semantic score, or next-action decision;
 12. existing `agents`, `custom`, `claude-superpowers`, and user-scope `all` compatibility behavior remains available;
