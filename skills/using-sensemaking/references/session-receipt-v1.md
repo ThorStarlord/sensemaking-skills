@@ -157,6 +157,23 @@ Then:
    follow-up statuses as recorded in each receipt, without reconciling later
    resolutions. Check relevant later receipts and current knowledge before
    treating a miss as unresolved; JSON retains the `pending_misses` name.
+5. **KNOWLEDGE QUERY RECORDING** says whether the record of knowledge queries
+   is still being kept: when the last query receipt was updated, how many
+   commits changed `.sensemaking/knowledge/` since, and how many sessions that
+   named `repository-semantic-steward` left no query receipt. A gap here means
+   later questions about reuse cannot be answered from receipts. It is a reason
+   to record this session's queries, not a finding about any agent.
+
+`--knowledge-use` (opt-in) joins the query receipts to the authored packs. It
+lists, per record, recorded retrievals split by how the record was reached
+(from a path, term, phrase or change; only from a claim ID already held; only
+in a mechanical listing), source checks and reconcile dispositions, and the
+records with no recorded retrieval, marking those added after the last query
+receipt. `--claim <id>` shows one record's history. The view is descriptive:
+it supports retention and recorded retrieval only. It does not show that a
+record was used, helped a decision or is unused, a later day is not a different
+agent, and it gives no score, no ordering by count and no reason to remove a
+record. Query receipts for another target repository are not counted.
 
 A receipt is evidence about a past session. It does not override current code,
 current owner intent or the current Level-3 projection. In an open-ended

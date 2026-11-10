@@ -1076,6 +1076,76 @@
         "observed_revision": "bb77dac13fa4212d11f414176c9a37071dcc0a7f",
         "claim_ceiling": "Source text only; independent hosted reasoning and comparative creative benefit not established"
       }
+    },
+    {
+      "id": "observation:query-receipt-recording-lapsed",
+      "kind": "observation",
+      "statement": "At 53b667c1 the last committed query receipt for this repository was updated on 2026-10-30. Sixteen later non-merge commits changed .sensemaking/knowledge/, and 8 of 21 session receipts naming repository-semantic-steward had no query receipt. The receipt reader read only misses from query receipts, so nothing reported the gap.",
+      "authority_kind": "document",
+      "authority_ref": ".sensemaking/receipts/2026-10-30-console-ascii-report-output.query.yaml",
+      "evidence_refs": [
+        "file:.sensemaking/receipts/2026-10-30-console-ascii-report-output.query.yaml",
+        "file:.sensemaking/receipts/2026-11-06-post-merge-constraint-surfacing.session.yaml",
+        "file:scripts/summarize-receipts.py"
+      ],
+      "epistemic_status": "observed",
+      "attributes": {
+        "observed_revision": "53b667c17c3e2e65ef2e344ccedfc60296f8d7cd",
+        "claim_ceiling": "Counts committed receipts and commits only. Sessions that left no receipt are invisible, and why recording stopped is not established"
+      }
+    },
+    {
+      "id": "decision:reader-reports-recording-and-recorded-retrieval",
+      "kind": "decision",
+      "statement": "The receipt reader reports by default whether knowledge-query recording is alive and, with --knowledge-use, recorded retrieval per knowledge record split by route, with source checks and reconcile dispositions. The view is descriptive: it reaches retention and retrieval only, gives no score or ordering by count, and does not count receipts for another target. knowledge-query responses carry the mechanical fields of their receipt entry and write nothing.",
+      "authority_kind": "delegated",
+      "authority_ref": "skills/using-sensemaking/references/session-receipt-v1.md",
+      "evidence_refs": [
+        "file:skills/using-sensemaking/references/session-receipt-v1.md",
+        "file:skills/repository-semantic-steward/references/query-receipt.md",
+        "file:scripts/summarize-receipts.py",
+        "file:src/sensemaking_skills/semantic_cli.py"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "scope": "Delegated construction choice within ADR 0031 under PATH-1; not an owner mandate. ADR 0032 stays PROPOSED and its receipt schema and validator are unchanged",
+        "claim_ceiling": "Reader and CLI runs on this repository's receipts at the implementing commit; unit tests NOT_RUN. Shows no reuse, decision benefit or independent-session behaviour",
+        "revisit_when": "If the owner decides query receipts should stop, or should be written by the query itself, re-inspect this choice"
+      }
+    },
+    {
+      "id": "alternative:query-writes-its-receipt-entry",
+      "kind": "alternative",
+      "statement": "Deferred alternative: have knowledge-query append its mechanical entry to the session's query receipt file. Recording would no longer depend on the agent, but the query would stop being read-only and the way a PROPOSED receipt contract is produced would change, so it needs the owner's decision.",
+      "authority_kind": "delegated",
+      "authority_ref": "skills/repository-semantic-steward/references/query-receipt.md",
+      "evidence_refs": [
+        "file:skills/repository-semantic-steward/references/query-receipt.md",
+        "file:docs/adr/0032-session-and-query-receipts.md",
+        "file:src/sensemaking_skills/semantic_cli.py"
+      ],
+      "attributes": {
+        "disposition": "deferred",
+        "scope": "Deferred to an owner decision; the response carries the entry instead"
+      }
+    },
+    {
+      "id": "alternative:staleness-flag-from-source-drift",
+      "kind": "alternative",
+      "statement": "Rejected alternative: flag a record as possibly stale when a cited source changed since the record's own revision anchor. At 53b667c1, 36 of the 42 records that carry an anchor had such a change, so the flag would fire on almost every record and discriminate nothing.",
+      "authority_kind": "delegated",
+      "authority_ref": "skills/repository-semantic-steward/references/recall.md",
+      "evidence_refs": [
+        "file:skills/repository-semantic-steward/references/recall.md",
+        "file:.sensemaking/knowledge/possibilities.json",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py"
+      ],
+      "attributes": {
+        "disposition": "rejected",
+        "observed_revision": "53b667c17c3e2e65ef2e344ccedfc60296f8d7cd",
+        "method": "git diff from each record's observed_ref, assessed_ref or examined_revision to HEAD, over its cited files outside .sensemaking/",
+        "scope": "Rejected as a currentness signal; recorded source checks carry that question instead"
+      }
     }
   ],
   "relations": [
@@ -1798,6 +1868,77 @@
       ],
       "attributes": {
         "scope": "Source-grounded local lesson on explicit file-first historical re-entry; no general agent-use claim"
+      }
+    },
+    {
+      "id": "rel:receipt-reader-decided-by-recorded-retrieval",
+      "subject": "component:receipt-validator",
+      "predicate": "decided_by",
+      "object": "decision:reader-reports-recording-and-recorded-retrieval",
+      "evidence_refs": [
+        "file:scripts/summarize-receipts.py"
+      ],
+      "attributes": {
+        "scope": "The reader's recording lines and its opt-in --knowledge-use view"
+      }
+    },
+    {
+      "id": "rel:semantic-cli-decided-by-recorded-retrieval",
+      "subject": "component:semantic-cli",
+      "predicate": "decided_by",
+      "object": "decision:reader-reports-recording-and-recorded-retrieval",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_cli.py"
+      ],
+      "attributes": {
+        "scope": "receipt_entries in knowledge-query responses only"
+      }
+    },
+    {
+      "id": "rel:recorded-retrieval-from-recording-lapse",
+      "subject": "decision:reader-reports-recording-and-recorded-retrieval",
+      "predicate": "derived_from",
+      "object": "observation:query-receipt-recording-lapsed",
+      "evidence_refs": [
+        "file:.sensemaking/receipts/2026-10-30-console-ascii-report-output.query.yaml"
+      ]
+    },
+    {
+      "id": "rel:recorded-retrieval-not-query-writes",
+      "subject": "decision:reader-reports-recording-and-recorded-retrieval",
+      "predicate": "references",
+      "object": "alternative:query-writes-its-receipt-entry",
+      "evidence_refs": [
+        "file:skills/repository-semantic-steward/references/query-receipt.md"
+      ],
+      "attributes": {
+        "disposition": "deferred alternative"
+      }
+    },
+    {
+      "id": "rel:recorded-retrieval-not-drift-flag",
+      "subject": "decision:reader-reports-recording-and-recorded-retrieval",
+      "predicate": "references",
+      "object": "alternative:staleness-flag-from-source-drift",
+      "evidence_refs": [
+        "file:skills/repository-semantic-steward/references/recall.md"
+      ],
+      "attributes": {
+        "disposition": "rejected alternative"
+      }
+    },
+    {
+      "id": "rel:recorded-retrieval-bears-on-consultation-hypothesis",
+      "subject": "decision:reader-reports-recording-and-recorded-retrieval",
+      "predicate": "references",
+      "object": "hyp:later-sessions-consult-knowledge",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-23-strategic-repository-analysis.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "makesTriggerReadable",
+        "establishment": "inferred",
+        "scope": "Makes records that bear on the hypothesis trigger readable; it does not test the hypothesis"
       }
     }
   ]

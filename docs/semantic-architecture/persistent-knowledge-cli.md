@@ -305,6 +305,7 @@ The SQLite index retains multiple repository/SHA snapshots. Indexing identical i
 - Impact follows explicit edges only; an indexed path is not a transitive or causal proof. The merged Episode A repair bounds `depth` to one explicit edge per hop in either direction.
 - Contradictions reports explicit conflicts only; missing conflicts means NOT ASSESSED.
 - Query results carry currentness/revision, source/evidence provenance, limits and no-authority flags.
+- Every query response also carries `receipt_entries`: the mechanical fields of the `semantic_query_receipt` `queries[]` entry for that response (one per path for a multi-file `context-for`). `claim_ids` are the IDs the response returned; `history` records its subject with `history_total_entries` as `hit_count`, `changes` records the delta IDs, and `snapshot` and `orientation-summary` record no hits. `not_assessed_kinds` comes from `bounded_coverage`, from `NOT_ASSESSED` gaps of `context-for`, or from a `NOT_ASSESSED` `rules-for` or `term` coverage status. The agent adds `id`, `outcome` and `decision_relevant`. The query writes no file, and a returned record is not evidence that it was used.
 
 ## Task-specific architectural context (`context-for`)
 

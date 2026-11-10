@@ -193,6 +193,13 @@ Do not infer a stronger class from a weaker one: retention does not show use, a
 later citation does not show causal contribution, and one episode does not show
 comparative benefit. Evidence can support several classes at once.
 
+When committed query receipts exist and the optional reader is installed,
+`scripts/summarize-receipts.py --knowledge-use` supplies the mechanical part of
+this synthesis: which records a recorded query returned and by which route,
+their source checks and reconcile dispositions, and whether query recording has
+lapsed. It reaches the retention and retrieval classes only. Decision use and
+every stronger class still need the sources above and your judgment.
+
 **Record the channel that carried the information.** Committed repository
 knowledge differs from inherited session handover material, ambient or
 auto-loaded host memory, independently observed host events and a session's
