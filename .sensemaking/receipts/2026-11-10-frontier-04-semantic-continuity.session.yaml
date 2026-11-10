@@ -1,0 +1,111 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-11-10-frontier-04-semantic-continuity
+state: final
+created_at: "2026-11-10T04:44:00Z"
+updated_at: "2026-11-10T06:55:00Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: 53b667c17c3e2e65ef2e344ccedfc60296f8d7cd
+  end_ref: 21bdf74ce7c174aff82cae8f8cb25609e936dcf6
+  worktree_clean_at_end: true
+skill_identity:
+  load_mode: harness_discovered
+  sensemaking_source_ref: null
+goal:
+  statement: "Owner mission (Frontier Challenge 04): build a consequential, warranted increment in sensemaking-skills, retain only consequential knowledge, then have a separately started fresh session do other worthwhile work and evaluate continuity independently."
+  source: owner_message
+  source_ref: null
+delegation:
+  granted: [read, local_write, run_local_commands, commit, push, open_pr, merge, knowledge_edit]
+  withheld: [release, deploy, tracker_write, external_publication]
+continuity:
+  resumes: null
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: orientation and responsibility selection
+    capability: using-sensemaking
+    status: completed
+    reason: "Installed using-sensemaking differed from origin/main (missing 2026-11-06 guidance). Selected install provenance for setup-skills from a live dry run: 24 of 52 user Skills diverged, 4 missing, with no way to tell stale from edited."
+    artifact_refs: []
+    validation: []
+  - id: R-2
+    responsibility: implementation
+    capability: ordinary_coding
+    status: completed
+    reason: "PR 798 merged as 7e5bff39: per-root install record, outdated/changed/unrecorded, --update. First head broke the frozen public API (hosted CI); reviewer findings fixed; a CRLF rewrite was reverted."
+    artifact_refs: [src/sensemaking_skills/setup_skills.py, INSTALLATION.md, docs/harness-adapters.md]
+    validation:
+      - command: real CLI setup-skills runs on scratch roots (fresh, rerun, upgrade, edit, unrecorded, junction, malformed record)
+        result: PASS
+      - command: hosted CI on PR 798 head 2386cf3d (9 checks)
+        result: PASS
+      - command: unit and synthetic tests (construction policy)
+        result: NOT_RUN
+  - id: R-3
+    responsibility: knowledge reconciliation
+    capability: repository-semantic-steward
+    status: completed
+    reason: "REVISE component:distribution-setup; ADD install-record decision, two alternatives, rule:frozen-public-python-api and its verification. After Phase C, REVISE the decision, made stale by PR 799."
+    artifact_refs: [.sensemaking/knowledge/architecture.json]
+    validation:
+      - command: semantic knowledge-proposal-check on architecture.json
+        result: PASS
+  - id: R-4
+    responsibility: independent re-entry (Phase B)
+    capability: null
+    status: completed
+    reason: "Separate fresh-context desktop session local_95510b04, problem-only brief; merged PR 799 (71746bd4). This receipt was not committed before it ran, to avoid priming it."
+    artifact_refs: [docs/normal-use/2026-11-10-frontier-04-semantic-continuity-evidence/phase-b-brief.md]
+    validation: []
+  - id: R-5
+    responsibility: independent evaluation (Phase C)
+    capability: null
+    status: completed
+    reason: "Fresh-context read-only evaluator subagent reconstructed both phases from transcripts, Git and PRs."
+    artifact_refs: [docs/normal-use/2026-11-10-frontier-04-semantic-continuity.md, docs/normal-use/2026-11-10-frontier-04-semantic-continuity-evidence/C-evaluation.md]
+    validation: []
+findings:
+  - id: F-1
+    statement: "Phase B found Phase A's work via git log and the PR 798 text within 21 s and set its design at 05:14:52Z; it first read the knowledge records at 05:30:01Z and never used RECALL or a Sensemaking Skill before deciding."
+    epistemic_status: OBSERVED
+    evidence_refs: [docs/normal-use/2026-11-10-frontier-04-semantic-continuity-evidence/C-evaluation.md]
+    disposition: resolved
+  - id: F-2
+    statement: "No Phase B decision is shown to have changed because of a reviewed knowledge record; PR text and a code docstring carried the same facts first. No source-only comparison was run."
+    epistemic_status: DERIVED
+    evidence_refs: [docs/normal-use/2026-11-10-frontier-04-semantic-continuity-evidence/C-evaluation.md]
+    disposition: open
+  - id: F-3
+    statement: "decision:install-record-classifies-divergent-skill-copies became stale through PR 799 and Phase B did not revise it; revised in 21bdf74c. PR 798 said 27 of 52 diverged; the dry run shows 24 (corrected)."
+    epistemic_status: OBSERVED
+    evidence_refs: [.sensemaking/knowledge/architecture.json, docs/normal-use/2026-11-10-frontier-04-semantic-continuity.md]
+    disposition: resolved
+  - id: F-4
+    statement: "Phase B wrote PR 798/799 facts into the shared per-user memory folder, which every later session on this host loads; later fresh-session experiments here are contaminated by it."
+    epistemic_status: OBSERVED
+    evidence_refs: [docs/normal-use/2026-11-10-frontier-04-semantic-continuity.md]
+    disposition: open
+open_questions:
+  - id: Q-1
+    question: "Refresh this host's real ~/.claude/skills root with setup-skills --update (23 of 24 stale copies are replaceable; strategic-repository-analysis needs a manual look)?"
+    source: owner_intent
+    blocking: false
+    options:
+      - option: Run --dry-run --update, then --update, from a checkout at or after 71746bd4
+        consequence: Future sessions load current Skills; the one irregular copy stays until inspected.
+      - option: Leave the root as it is
+        consequence: Sessions keep loading the stale using-sensemaking and 23 other stale copies.
+    durable_ref: null
+stop:
+  disposition: GOAL_SATISFIED
+  reason: "Phases A, B and C executed and recorded; the continuity result is observational and narrower than the mission's full objective."
+next:
+  warranted_responsibility: null
+  blocked_on: []
+persistence: committed
+claim_ceiling: "n=1, same model, Phase A chose the task and wrote both briefs; child-subagent evaluator. Shows Git/PR continuity only, not that reviewed records improve decisions or beat a source-only agent."
+action_authorized_by_receipt: false
+immutable: true
