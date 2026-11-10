@@ -433,6 +433,15 @@ def test(repos):
     help="Overwrite existing skills",
 )
 @click.option(
+    "--update",
+    is_flag=True,
+    help=(
+        "Replace installed Skill copies that are unchanged since setup-skills "
+        "recorded them in the root's install record. Changed or unrecorded "
+        "copies still need --force."
+    ),
+)
+@click.option(
     "--profile",
     type=click.Choice(["entrypoint", "full"]),
     default=None,
@@ -464,6 +473,7 @@ def setup_skills(
     skills_dir,
     dry_run,
     force,
+    update,
     profile,
     include,
     verbose,
@@ -485,6 +495,10 @@ def setup_skills(
     grant execution authority. It reports which active workflows have their
     required Skills installed in that root; that is installation availability,
     not liveness and not execution authorization.
+
+    Each root keeps an install record (.sensemaking-skills-install.json) of the
+    trees setup-skills wrote or verified there, so a later run can tell a copy
+    that is only outdated from one that changed after installation.
     """
     success = run_setup_skill_profile(
         target=target,
@@ -493,6 +507,7 @@ def setup_skills(
         skills_dir=skills_dir,
         dry_run=dry_run,
         force=force,
+        update=update,
         verbose=verbose,
         profile=profile,
         include=include,

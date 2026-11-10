@@ -89,6 +89,40 @@ sensemaking-skills setup-skills --target opencode --scope project --project-root
 
 Use `--dry-run` to preview and `--force` only when you explicitly intend to replace a divergent installed Skill tree.
 
+### Updating installed Skills
+
+Each destination root gets one install record, `.sensemaking-skills-install.json`,
+beside the Skill directories. For every Skill it wrote or found already
+identical, `setup-skills` records the digest of that tree, the package version
+and whether the source was a wheel (`packaged`) or a source checkout
+(`source_checkout`). Skill trees themselves stay byte-identical to the
+packaged ones. A dry run writes nothing.
+
+When an installed copy differs from the packaged version, the record says why:
+
+| Report | Meaning | Replaced by |
+|---|---|---|
+| `unchanged since setup-skills <version> recorded it` | outdated: nothing changed the copy since it was installed or verified | `--update` or `--force` |
+| `changed since setup-skills <version> recorded it` | edited locally, or rewritten by another tool | `--force` only |
+| `installed copy diverged` | no record for this copy (installed before records existed, or by another mechanism) | `--force` only |
+
+After upgrading the package:
+
+```bash
+sensemaking-skills setup-skills --target claude --scope user --dry-run --update
+sensemaking-skills setup-skills --target claude --scope user --update
+```
+
+`--update` never replaces a changed or unrecorded copy, nor a Skill directory
+that is a symlink or junction; inspect those before using `--force`, which
+takes precedence when both flags are given. Copies that already match get recorded on the next
+non-dry run, so a root installed before records existed gains them for every
+current copy. The record is `setup-skills` bookkeeping only: it does not show
+what a host loaded, and `scripts/probe_skill_distribution.py --sync` does not
+update it, so a copy synchronized that way reads as changed. An unreadable or
+unknown-format record is reported, ignored and left unchanged; remove it to
+start a new one.
+
 ### Verify installed Skill parity
 
 Repository source and the Skill bytes actually loaded by a harness can drift.
@@ -199,7 +233,7 @@ The shipped product dependencies are intentionally small. To run retained resear
 ## Troubleshooting
 
 - **`0+unknown` from a raw source import:** install the project/distribution so `importlib.metadata` can resolve `sensemaking-skills` version metadata.
-- **Skill tree differs:** run setup with `--dry-run`; use `--force` only if replacement is intentional.
+- **Skill tree differs:** run setup with `--dry-run`. If the report says the copy is unchanged since it was recorded, `--update` replaces it; otherwise use `--force` only if replacement is intentional.
 - **Project-scoped setup fails:** provide an explicit existing `--project-root`; the tool does not infer it from cwd/editor/git state.
 - **Artifact validation runtime error:** reinstall the package or explicitly select a valid source checkout with `--framework-root`.
 
