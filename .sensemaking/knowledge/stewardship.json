@@ -340,7 +340,8 @@
     {
       "id": "decision:proposal-check-existence-only-endpoints",
       "kind": "decision",
-      "statement": "knowledge-proposal-check checks an endpoint whose authored record lives in another file for existence and kind only. That record's own attributes and rule scope are validated where its file is read, so a proposal is not rejected for another file's defect. Kind-dependent relation checks still apply to the endpoint.",
+      "statement": "Superseded design: knowledge-proposal-check checked an endpoint whose authored record lives in another file for existence and kind only, validating the proposal against placeholder claims so that a proposal was not rejected for another file's defect. Placeholders also accepted proposals that knowledge-build then refused (cross-pack duplicate ids, a removed claim another pack relates to, a contradicted artifact-contract flow, file identities absent from a default build).",
+      "epistemic_status": "superseded",
       "authority_kind": "delegated",
       "authority_ref": "docs/adr/0031-persistent-semantic-stewardship.md",
       "evidence_refs": [
@@ -350,13 +351,13 @@
       "attributes": {
         "scope": "Delegated construction choice within ADR 0031; not an owner mandate",
         "claim_ceiling": "Source inspection and proposal-check on this proposal before and after the change; unit tests NOT_RUN by construction policy; no independent-agent use observed",
-        "staleness_condition": "Stale if proposal-check starts validating external endpoint attributes, or if placeholders stop carrying the declared kind"
+        "superseded_by": "decision:proposal-check-predicts-knowledge-build"
       }
     },
     {
       "id": "alternative:carry-external-attributes-into-placeholders",
       "kind": "alternative",
-      "statement": "Rejected alternative: copy an external record's attributes into proposal placeholders so v2 checks run on real data. It reports another file's defect as a proposal failure, and a rule whose scope is given by a relation in a third file would still fail the scope check.",
+      "statement": "Rejected alternative, still rejected: copy an external record's attributes into proposal placeholders so v2 checks run on real data. A rule whose scope is given by a relation in a third file would still fail the scope check, so placeholders refuse what knowledge-build accepts. The check now reads the real records of every tracked pack instead of building placeholders.",
       "authority_kind": "delegated",
       "authority_ref": "docs/adr/0031-persistent-semantic-stewardship.md",
       "evidence_refs": [
@@ -365,6 +366,37 @@
       "attributes": {
         "disposition": "rejected",
         "scope": "Considered at 465420ed while choosing the proposal-check repair recorded by the 2026-10-30 console-ASCII receipt"
+      }
+    },
+    {
+      "id": "decision:proposal-check-predicts-knowledge-build",
+      "kind": "decision",
+      "statement": "knowledge-proposal-check validates, in memory, the record set knowledge-build would index if the current working files were committed (paths deleted in the worktree excluded): Grounding Pack and ADR claims plus every tracked knowledge pack with the proposal in place, read and validated by the build's own functions, for the default build and for --include-repository-structure. It reports valid only when both would accept. A defect in another pack therefore refuses the proposal, and the message names the offending record id.",
+      "authority_kind": "delegated",
+      "authority_ref": "docs/adr/0031-persistent-semantic-stewardship.md",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/stewardship_validation.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_sources.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge.py"
+      ],
+      "attributes": {
+        "scope": "Delegated construction choice within ADR 0031; not an owner mandate",
+        "claim_ceiling": "Real CLI runs of knowledge-proposal-check and knowledge-build in a scratch clone at baaec6b9 for accepted and refused proposals; unit tests NOT_RUN by construction policy; --include-python-imports not simulated; no independent-agent use observed",
+        "staleness_condition": "Stale if knowledge-build gains a record source or validation step that the check does not call, or if the check stops reusing the build's readers and validator"
+      }
+    },
+    {
+      "id": "alternative:proposal-check-targeted-cross-pack-checks",
+      "kind": "alternative",
+      "statement": "Rejected alternative: keep placeholder endpoints and add separate checks for cross-pack duplicate ids, removed endpoints and artifact-contract flows. Each added check is a second implementation of a build rule that can drift from the build, and unlisted rules (rule targets, kind-dependent relations, rule scope given in another pack) would still disagree.",
+      "authority_kind": "delegated",
+      "authority_ref": "docs/adr/0031-persistent-semantic-stewardship.md",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/stewardship_validation.py"
+      ],
+      "attributes": {
+        "disposition": "rejected",
+        "scope": "Considered while making the proposal check agree with knowledge-build at baaec6b9"
       }
     },
     {
@@ -749,6 +781,36 @@
     {
       "id": "rel:proposal-decision-rejected-alternative",
       "subject": "decision:proposal-check-existence-only-endpoints",
+      "predicate": "references",
+      "object": "alternative:carry-external-attributes-into-placeholders",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/stewardship_validation.py"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:proposal-check-build-prediction-supersedes-existence-only",
+      "subject": "decision:proposal-check-predicts-knowledge-build",
+      "predicate": "supersedes",
+      "object": "decision:proposal-check-existence-only-endpoints",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/stewardship_validation.py"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:proposal-check-build-prediction-rejected-targeted-checks",
+      "subject": "decision:proposal-check-predicts-knowledge-build",
+      "predicate": "references",
+      "object": "alternative:proposal-check-targeted-cross-pack-checks",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/stewardship_validation.py"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:proposal-check-build-prediction-rejected-placeholders",
+      "subject": "decision:proposal-check-predicts-knowledge-build",
       "predicate": "references",
       "object": "alternative:carry-external-attributes-into-placeholders",
       "evidence_refs": [

@@ -581,6 +581,11 @@ sensemaking-skills semantic knowledge-proposal-check --repo . \
   --proposal .sensemaking/knowledge/my-domain.json --json
 ```
 
-This checks schema, endpoints and Git-tracked local evidence. It does NOT
-establish semantic truth, current committed evidence, or owner authority.
+This checks schema and Git-tracked local evidence, then validates in memory
+the record set `knowledge-build` would index if the working files were
+committed, for the default build and for `--include-repository-structure`,
+using the build's own readers and validator. A refusal names the offending
+record id. `--include-python-imports` is not simulated. It writes
+nothing and does NOT establish semantic truth, current committed evidence, or
+owner authority.
 For source-pinned indexing, commit the reviewed source/knowledge changes and rebuild the SQLite snapshot at the exact new SHA in the **same current checkout when naturally clean**. A fresh agent or separate clean-room worktree is not a construction prerequisite.

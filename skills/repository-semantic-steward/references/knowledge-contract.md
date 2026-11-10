@@ -43,7 +43,7 @@ Write a reviewed, Git-tracked file under `.sensemaking/knowledge/*.json`:
 }
 ```
 
-A file contains exactly `schema_version`, `claims` and `relations`; put revision or provenance notes in claim attributes or the session receipt, not new top-level keys. Every claim needs `id`, `kind`, `statement`, `authority_kind`, `authority_ref` and `evidence_refs`. Every relation needs `id`, `subject`, `predicate`, `object` and `evidence_refs` (the source that establishes the relation itself). Run `semantic knowledge-proposal-check` on each file before treating it as reviewed knowledge; a file that has not passed it is a draft.
+A file contains exactly `schema_version`, `claims` and `relations`; put revision or provenance notes in claim attributes or the session receipt, not new top-level keys. Every claim needs `id`, `kind`, `statement`, `authority_kind`, `authority_ref` and `evidence_refs`. Every relation needs `id`, `subject`, `predicate`, `object` and `evidence_refs` (the source that establishes the relation itself). Run `semantic knowledge-proposal-check` on each file before treating it as reviewed knowledge; a file that has not passed it is a draft. A pass predicts that the default `knowledge-build` and the `--include-repository-structure` build will index a commit holding the checked files unchanged; `--include-python-imports` is not simulated, and a relation to a `file:` or `directory:` structural id is refused because a default build has no such record.
 
 The example paths are illustrative, not a claim that the documents exist. All `file:` references and authority paths must resolve to legitimate tracked evidence on the target repository before a committed index is built.
 
