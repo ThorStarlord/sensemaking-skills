@@ -1078,9 +1078,9 @@
       }
     },
     {
-      "id": "observation:query-receipt-recording-lapsed",
+      "id": "observation:no-query-receipt-after-2026-10-30",
       "kind": "observation",
-      "statement": "At 53b667c1 the last committed query receipt for this repository was updated on 2026-10-30. Sixteen later non-merge commits changed .sensemaking/knowledge/, and 8 of 21 session receipts naming repository-semantic-steward had no query receipt. The receipt reader read only misses from query receipts, so nothing reported the gap.",
+      "statement": "At 53b667c1 the last query receipt for this repository was updated on 2026-10-30. Sixteen non-merge commits dated after that update changed .sensemaking/knowledge/. Of 21 session receipts naming repository-semantic-steward, 8 had no query receipt, 3 of them updated after it. The receipt reader read only misses from query receipts, so it reported none of this.",
       "authority_kind": "document",
       "authority_ref": ".sensemaking/receipts/2026-10-30-console-ascii-report-output.query.yaml",
       "evidence_refs": [
@@ -1091,13 +1091,13 @@
       "epistemic_status": "observed",
       "attributes": {
         "observed_revision": "53b667c17c3e2e65ef2e344ccedfc60296f8d7cd",
-        "claim_ceiling": "Counts committed receipts and commits only. Sessions that left no receipt are invisible, and why recording stopped is not established"
+        "claim_ceiling": "Counts committed receipts and commit dates only. Sessions that left no receipt are invisible, and why no query receipt followed is not established"
       }
     },
     {
-      "id": "decision:reader-reports-query-recording",
+      "id": "decision:reader-reports-query-recording-facts",
       "kind": "decision",
-      "statement": "The receipt reader reports by default whether knowledge-query recording is alive: the last query receipt, knowledge commits not contained in the commit that recorded it, Steward sessions without a query receipt, and contradicted or stale source checks never revised. With --claim it lists what the query receipts record about one knowledge record. It prints no retrieval tally and no score.",
+      "statement": "The receipt reader reports by default the facts that show whether knowledge queries are still recorded: the last query receipt, the latest commit changing reviewed knowledge and how many such commits are dated after that receipt's update, and the Steward-naming sessions without a query receipt. It gives no verdict, no tally of the records receipts list and no score.",
       "authority_kind": "delegated",
       "authority_ref": "skills/using-sensemaking/references/session-receipt-v1.md",
       "evidence_refs": [
@@ -1108,14 +1108,15 @@
       "epistemic_status": "declared",
       "attributes": {
         "scope": "Delegated construction choice within ADR 0031 under PATH-1; not an owner mandate. ADR 0032 stays PROPOSED and its receipt schema and validator are unchanged",
-        "claim_ceiling": "Reader runs on this repository's receipts at the implementing commit; unit tests NOT_RUN. Shows no retrieval rate, reuse, decision benefit or independent-session behaviour",
+        "claim_ceiling": "Reader runs on this repository's receipts at the implementing commit; unit tests NOT_RUN. Shows no retrieval, reuse, decision benefit or independent-session behaviour",
+        "withdrawn_before_merge": "A per-record receipt listing (--claim) and a list of unanswered contradicted source checks were built and cut after review: the first equals a search of the receipt files and the second was empty on every real receipt",
         "revisit_when": "If the owner decides query receipts should stop, or decides how their contents are to be recorded, re-inspect this choice"
       }
     },
     {
       "id": "alternative:retrieval-tallies-from-receipts",
       "kind": "alternative",
-      "statement": "Rejected after independent review: tally recorded retrieval per knowledge record across query receipts. The IDs a receipt lists are chosen by its session. At 53b667c1, 11 of 86 retrieving entries list fewer IDs than their hit_count, and recording one broad query in full moved the count of retrieved records from 101 to 135. The tally measures recording habits, not retrieval or use.",
+      "statement": "Rejected after independent review: tally recorded retrieval per knowledge record across query receipts. The claim IDs a receipt lists are chosen by its session: at 53b667c1, 15 of the 94 query entries with a positive hit_count list fewer IDs than that count. A tally therefore measures recording habits, not retrieval or use.",
       "authority_kind": "delegated",
       "authority_ref": "skills/repository-semantic-steward/references/query-receipt.md",
       "evidence_refs": [
@@ -1126,13 +1127,13 @@
       "attributes": {
         "disposition": "rejected",
         "observed_revision": "53b667c17c3e2e65ef2e344ccedfc60296f8d7cd",
-        "scope": "A first version with these tallies was built on the branch and withdrawn before any pull request; the per-record receipt listing was kept"
+        "scope": "A first version with these tallies was built on the branch and withdrawn before any pull request"
       }
     },
     {
       "id": "alternative:query-records-its-own-receipt-entry",
       "kind": "alternative",
-      "statement": "Deferred alternative: have knowledge-query emit or append the mechanical part of its query receipt entry, so recording does not depend on the agent. A first version that emitted the entry in the response was withdrawn after review: subjects over the 120-character cap fail validation, hit_count and not_assessed_kinds have no single definition across operations, and complete lists are not comparable with the selected lists in existing receipts. It needs an owner decision on the receipt contract.",
+      "statement": "Deferred alternative: have knowledge-query emit or append the mechanical part of its query receipt entry, so recording does not depend on the agent. A first version that emitted the entry in the response was withdrawn after review: a subject over the 120-character cap fails validation, and the response gives no single value for hit_count or not_assessed_kinds across operations. It needs an owner decision on the receipt contract.",
       "authority_kind": "delegated",
       "authority_ref": "skills/repository-semantic-steward/references/query-receipt.md",
       "evidence_refs": [
@@ -1143,24 +1144,6 @@
       "attributes": {
         "disposition": "deferred",
         "scope": "Deferred to an owner decision on ADR 0032 and on what a query receipt must list"
-      }
-    },
-    {
-      "id": "alternative:staleness-flag-from-source-drift",
-      "kind": "alternative",
-      "statement": "Rejected alternative: flag a record as possibly stale when a cited source changed since the record's own revision anchor. At 53b667c1, 36 of the 42 records that carry a resolvable anchor had such a change, so the flag would fire on almost every record and discriminate nothing.",
-      "authority_kind": "delegated",
-      "authority_ref": "skills/repository-semantic-steward/references/recall.md",
-      "evidence_refs": [
-        "file:skills/repository-semantic-steward/references/recall.md",
-        "file:.sensemaking/knowledge/possibilities.json",
-        "file:src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py"
-      ],
-      "attributes": {
-        "disposition": "rejected",
-        "observed_revision": "53b667c17c3e2e65ef2e344ccedfc60296f8d7cd",
-        "method": "git diff from each record's observed_ref, assessed_ref or examined_revision to HEAD, over its cited files outside .sensemaking/",
-        "scope": "Rejected as a currentness signal; a recorded source check answers that question for one record at one revision"
       }
     }
   ],
@@ -1887,29 +1870,29 @@
       }
     },
     {
-      "id": "rel:receipt-reader-decided-by-query-recording",
+      "id": "rel:receipt-reader-decided-by-query-recording-facts",
       "subject": "component:receipt-validator",
       "predicate": "decided_by",
-      "object": "decision:reader-reports-query-recording",
+      "object": "decision:reader-reports-query-recording-facts",
       "evidence_refs": [
         "file:scripts/summarize-receipts.py"
       ],
       "attributes": {
-        "scope": "The reader's recording lines and its --claim listing"
+        "scope": "The reader's KNOWLEDGE QUERY RECORDING lines only"
       }
     },
     {
-      "id": "rel:query-recording-from-recording-lapse",
-      "subject": "decision:reader-reports-query-recording",
+      "id": "rel:query-recording-facts-from-observation",
+      "subject": "decision:reader-reports-query-recording-facts",
       "predicate": "derived_from",
-      "object": "observation:query-receipt-recording-lapsed",
+      "object": "observation:no-query-receipt-after-2026-10-30",
       "evidence_refs": [
         "file:.sensemaking/receipts/2026-10-30-console-ascii-report-output.query.yaml"
       ]
     },
     {
-      "id": "rel:query-recording-not-retrieval-tallies",
-      "subject": "decision:reader-reports-query-recording",
+      "id": "rel:query-recording-facts-not-retrieval-tallies",
+      "subject": "decision:reader-reports-query-recording-facts",
       "predicate": "references",
       "object": "alternative:retrieval-tallies-from-receipts",
       "evidence_refs": [
@@ -1920,8 +1903,8 @@
       }
     },
     {
-      "id": "rel:query-recording-not-query-written-entry",
-      "subject": "decision:reader-reports-query-recording",
+      "id": "rel:query-recording-facts-not-query-written-entry",
+      "subject": "decision:reader-reports-query-recording-facts",
       "predicate": "references",
       "object": "alternative:query-records-its-own-receipt-entry",
       "evidence_refs": [
@@ -1929,18 +1912,6 @@
       ],
       "attributes": {
         "disposition": "deferred alternative"
-      }
-    },
-    {
-      "id": "rel:query-recording-not-drift-flag",
-      "subject": "decision:reader-reports-query-recording",
-      "predicate": "references",
-      "object": "alternative:staleness-flag-from-source-drift",
-      "evidence_refs": [
-        "file:skills/repository-semantic-steward/references/recall.md"
-      ],
-      "attributes": {
-        "disposition": "rejected alternative"
       }
     }
   ]

@@ -16,15 +16,14 @@ It reports, mechanically and without judging meaning:
     contain (the declared value is historical: session-receipt-v1 section 3);
   - declared non-durable receipts that HEAD does contain (reported separately);
   - receipts that fail validation;
-  - whether knowledge-query recording is still alive: the last query receipt,
-    knowledge commits made after the commit that recorded it, Steward sessions
-    that left no query receipt, and contradicted or stale source checks that no
-    later applied revision answered.
+  - the facts that show whether knowledge queries are still being recorded: the
+    last query receipt, the latest commit that changed reviewed knowledge and
+    how many such commits are dated after that receipt's update, and the
+    sessions naming the Steward that left no query receipt.
 
-With --claim <id> it also lists what the query receipts record about
-one knowledge record. That is a list of pointers into receipts. It prints no
-tally: the IDs a receipt lists are chosen by the session that wrote it, so a
-count of them would measure recording habits, not retrieval or use.
+It does not count which knowledge records receipts list. Those lists are chosen
+by the session that wrote them, so a count would measure recording habits, not
+retrieval or use.
 
 Exit codes: 0 = every receipt valid (or no receipts), 1 = at least one invalid receipt,
 2 = usage error. Output is ASCII-only.
@@ -38,6 +37,7 @@ import json
 import subprocess
 import sys
 from collections import defaultdict
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -100,12 +100,6 @@ def _committed_receipt_names(repo_root: Path | None, receipt_dir: Path) -> set[s
 
 _KNOWLEDGE_DIR = ".sensemaking/knowledge"
 _STEWARD = "repository-semantic-steward"
-_REVISING = ("REVISE", "SUPERSEDE", "CONTEST")
-_HISTORY_LIMITS = (
-    "A receipt lists what its session chose to record. A listed record was not thereby used, "
-    "and a record no receipt lists was not thereby unused.",
-    "Sessions that left no query receipt do not appear here.",
-)
 
 
 def _git_lines(repo_root: Path | None, *args: str) -> list[str] | None:
@@ -114,8 +108,8 @@ def _git_lines(repo_root: Path | None, *args: str) -> list[str] | None:
         return None
     try:
         result = subprocess.run(
-            ["git", "-C", str(repo_root), *args], capture_output=True, text=True,
-            encoding="utf-8", errors="replace", timeout=60, check=False,
+            ["git", "-C", str(repo_root), "-c", "color.ui=never", *args], capture_output=True,
+            text=True, encoding="utf-8", errors="replace", timeout=60, check=False,
         )
     except (OSError, subprocess.SubprocessError):
         return None
@@ -125,8 +119,8 @@ def _git_lines(repo_root: Path | None, *args: str) -> list[str] | None:
 def _receipt_target(sessions: list[dict], queries: list[dict], override: str | None) -> tuple[str | None, list[str]]:
     """The repository these receipts describe, and the rivals when that is ambiguous.
 
-    Without an override it is the target most receipts declare. A tie is not
-    resolved by name: the caller is told and counts nothing.
+    Without an override it is the target most receipts declare, which the output
+    names so a wrong choice is visible. A tie is reported and nothing is counted.
     """
     if override:
         return override, []
@@ -140,118 +134,87 @@ def _receipt_target(sessions: list[dict], queries: list[dict], override: str | N
     return (leaders[0], []) if len(leaders) == 1 else (None, leaders)
 
 
-def _knowledge_commits_after(repo_root: Path | None, receipt_dir: Path, file_name: str) -> tuple[int | None, str | None]:
-    """Commits that changed reviewed knowledge and are not contained in the commit that added a receipt.
+def _knowledge_commits(repo_root: Path | None, receipt_dir: Path, last: dict) -> dict[str, Any]:
+    """Commit dates of reviewed-knowledge changes, set beside the last query receipt's update time.
 
-    Ancestry is used, not timestamps: clocks and time zones do not matter, and
-    the commit that carries the receipt itself is never counted. Returns the
-    count, or None with the reason Git cannot answer.
+    Dates are compared as instants and every commit is read, so time zones and
+    out-of-order dates do not matter. The commit that added the receipt is left
+    out. A parallel branch or an imprecise receipt time can still move the count,
+    which is why the latest commit is shown as well.
     """
+    unknown = {"latest": None, "dated_after_last_query_receipt": None}
     if repo_root is None:
-        return None, "no repository given"
+        return {**unknown, "note": "no repository given"}
     shallow = _git_lines(repo_root, "rev-parse", "--is-shallow-repository")
     if shallow is None:
-        return None, "not a Git repository"
+        return {**unknown, "note": "not a Git repository"}
     if shallow and shallow[0].strip() == "true":
-        return None, "shallow clone"
+        return {**unknown, "note": "shallow clone"}
     try:
-        relative = (receipt_dir.resolve() / file_name).relative_to(repo_root.resolve()).as_posix()
+        updated = datetime.strptime(last["data"]["updated_at"], "%Y-%m-%dT%H:%M:%SZ").replace(
+            tzinfo=timezone.utc).timestamp()
+        relative = (receipt_dir.resolve() / last["file"]).relative_to(repo_root.resolve()).as_posix()
     except ValueError:
-        return None, "receipt directory is outside the repository"
-    added = _git_lines(repo_root, "-c", "color.ui=never", "log", "--diff-filter=A", "--format=%H", "-1",
-                       "--", relative)
-    if added is None:
-        return None, "Git could not read the receipt history"
-    if not added:
-        return 0, "the last query receipt is not committed yet"
-    later = _git_lines(repo_root, "rev-list", "--no-merges", f"{added[0].strip()}..HEAD",
-                       "--", _KNOWLEDGE_DIR)
-    if later is None:
-        return None, "Git could not list later commits"
-    return len([line for line in later if line.strip()]), None
+        return {**unknown, "note": "receipt time or location could not be read"}
+    log = _git_lines(repo_root, "log", "--no-merges", "--full-history", "--format=%H %ct",
+                     "--", _KNOWLEDGE_DIR)
+    if log is None:
+        return {**unknown, "note": "Git could not list knowledge commits"}
+    adding = _git_lines(repo_root, "log", "--diff-filter=A", "--format=%H", "-1", "--", relative) or []
+    commits = [(line.split()[0], int(line.split()[1])) for line in log if len(line.split()) == 2]
+    latest = max(commits, key=lambda item: item[1], default=None)
+    return {
+        "latest": None if latest is None else {
+            "commit": latest[0],
+            "committed_at": datetime.fromtimestamp(latest[1], timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        },
+        "dated_after_last_query_receipt": sum(
+            1 for commit, when in commits if when > updated and commit not in adding),
+        "note": None,
+    }
 
 
 def _knowledge_recording(
     sessions: list[dict], queries: list[dict], repo_root: Path | None, receipt_dir: Path,
     target: str | None, rivals: list[str],
 ) -> dict[str, Any]:
-    """Whether knowledge-query recording is alive. Mechanical facts only, no tally of use."""
-    local = [r for r in queries if target is not None and r["data"]["target_repository"] == target]
+    """Facts about whether knowledge queries are still recorded. No verdict and no tally of use."""
+    if target is None:
+        return {"target_repository": None, "target_ambiguous_between": rivals,
+                "query_receipt_total": None, "last_query_receipt": None, "knowledge_commits": None,
+                "steward_session_total": None, "steward_sessions_without_query_receipt": None,
+                "steward_sessions_without_query_receipt_after_last": None,
+                "other_target_query_receipts": None}
+    local = [r for r in queries if r["data"]["target_repository"] == target]
     last = max(local, key=lambda r: (r["data"]["updated_at"], r["file"]), default=None)
-    commits, reason = (None, None)
-    if last is not None:
-        commits, reason = _knowledge_commits_after(repo_root, receipt_dir, last["file"])
     # A companion written for another target still shows that the session recorded its queries.
     recorded_refs = {r["data"]["session_ref"] for r in queries}
     steward = [
-        r["data"]["session_ref"] for r in sessions
-        if target is not None and r["data"]["target_repository"] == target and any(
+        r["data"] for r in sessions
+        if r["data"]["target_repository"] == target and any(
             _STEWARD in (item.get("capability") or "")
             for item in r["data"].get("responsibilities") or [])
     ]
-    revisions: dict[str, list[str]] = defaultdict(list)
-    for record in local:
-        for item in record["data"].get("reconcile") or []:
-            if item.get("claim_id") and item.get("applied") and item["disposition"] in _REVISING:
-                revisions[item["claim_id"]].append(record["data"]["updated_at"])
-    unanswered = [
-        {"claim_id": check["claim_id"], "result": check["result"],
-         "session_ref": record["data"]["session_ref"]}
-        for record in local for check in record["data"].get("source_checks") or []
-        if check["result"] in ("CONTRADICTED", "STALE")
-        and not any(when >= record["data"]["updated_at"] for when in revisions.get(check["claim_id"], []))
-    ]
+    missing = [data for data in steward if data["session_ref"] not in recorded_refs]
     return {
         "target_repository": target,
-        "target_ambiguous_between": rivals,
+        "target_ambiguous_between": [],
         "query_receipt_total": len(local),
         "last_query_receipt": None if last is None else {
             "receipt": last["file"], "updated_at": last["data"]["updated_at"]},
-        "knowledge_commits_after_last_query_receipt": commits,
-        "knowledge_commits_note": reason,
+        "knowledge_commits": None if last is None else _knowledge_commits(repo_root, receipt_dir, last),
         "steward_session_total": len(steward),
-        "steward_sessions_without_query_receipt": sorted(
-            ref for ref in steward if ref not in recorded_refs),
+        "steward_sessions_without_query_receipt": sorted(data["session_ref"] for data in missing),
+        "steward_sessions_without_query_receipt_after_last": None if last is None else sorted(
+            data["session_ref"] for data in missing
+            if data["updated_at"] > last["data"]["updated_at"]),
         "other_target_query_receipts": sorted(
-            r["file"] for r in queries if target is not None and r["data"]["target_repository"] != target),
-        "contradicted_or_stale_checks_without_later_applied_revision": unanswered,
+            r["file"] for r in queries if r["data"]["target_repository"] != target),
     }
 
 
-def _claim_history(queries: list[dict], wanted: tuple[str, ...]) -> dict[str, list[dict]]:
-    """What the query receipts record about each requested claim ID, in receipt order."""
-    history: dict[str, list[dict]] = {claim: [] for claim in wanted}
-    for record in queries:
-        data = record["data"]
-        common = {"session_ref": data["session_ref"], "updated_at": data["updated_at"],
-                  "target_repository": data["target_repository"]}
-        for query in data.get("queries") or []:
-            result = query.get("result") or {}
-            for claim in wanted:
-                if query.get("subject") == claim:
-                    history[claim].append({**common, "event": "query_subject",
-                                           "operation": query["operation"],
-                                           "hit_count": result.get("hit_count"),
-                                           "outcome": query["outcome"]})
-                elif claim in (result.get("claim_ids") or []):
-                    history[claim].append({**common, "event": "listed_in_result",
-                                           "operation": query["operation"],
-                                           "query_subject": query.get("subject")})
-        for check in data.get("source_checks") or []:
-            if check["claim_id"] in history:
-                history[check["claim_id"]].append({**common, "event": "source_check",
-                                                   "result": check["result"], "sources": check["sources"]})
-        for item in data.get("reconcile") or []:
-            if item.get("claim_id") in history:
-                history[item["claim_id"]].append({**common, "event": "reconcile",
-                                                  "disposition": item["disposition"],
-                                                  "applied": bool(item.get("applied"))})
-    return history
-
-
 def summarize(
-    receipt_dir: Path, repo_root: Path | None = None, *,
-    claims: tuple[str, ...] = (), target_repository: str | None = None,
+    receipt_dir: Path, repo_root: Path | None = None, *, target_repository: str | None = None,
 ) -> dict[str, Any]:
     files = sorted(
         p for p in receipt_dir.glob("*.yaml")
@@ -360,8 +323,6 @@ def summarize(
     ]
 
     target, rivals = _receipt_target(sessions, queries, target_repository)
-    recording = _knowledge_recording(sessions, queries, repo_root, receipt_dir, target, rivals)
-    wanted = tuple(dict.fromkeys(claims))
 
     return {
         "receipt_dir": str(receipt_dir),
@@ -387,61 +348,41 @@ def summarize(
         "not_durable": not_durable,
         "declared_but_committed": declared_but_committed,
         "invalid": invalid,
-        "knowledge_recording": recording,
-        **({"claim_history": {"records": _claim_history(queries, wanted),
-                              "limits": list(_HISTORY_LIMITS)}} if wanted else {}),
+        "knowledge_recording": _knowledge_recording(sessions, queries, repo_root, receipt_dir,
+                                                    target, rivals),
     }
 
 
 def _recording_lines(recording: dict[str, Any]) -> list[str]:
     if recording["target_ambiguous_between"]:
-        return ["KNOWLEDGE QUERY RECORDING: not counted; receipts name several target repositories equally "
-                f"often ({', '.join(recording['target_ambiguous_between'])}). Pass --target-repository."]
+        return ["KNOWLEDGE QUERY RECORDING: not reported; receipts name several target repositories "
+                f"equally often ({', '.join(recording['target_ambiguous_between'])}). "
+                "Pass --target-repository."]
+    if recording["target_repository"] is None:
+        return ["KNOWLEDGE QUERY RECORDING: no receipts"]
     last = recording["last_query_receipt"]
-    lines = [f"KNOWLEDGE QUERY RECORDING ({recording['target_repository'] or 'no receipts'}): "
+    lines = [f"KNOWLEDGE QUERY RECORDING ({recording['target_repository']}): "
              f"{recording['query_receipt_total']} query receipts; last "
              + (f"{last['receipt']} (updated {last['updated_at']})" if last else "none")]
-    if last:
-        commits, note = (recording["knowledge_commits_after_last_query_receipt"],
-                         recording["knowledge_commits_note"])
-        shown = "unknown" if commits is None else str(commits)
-        lines.append(f"  commits changing {_KNOWLEDGE_DIR}/ after the commit that recorded it: {shown}"
-                     + (f" ({note})" if note else ""))
+    commits = recording["knowledge_commits"]
+    if commits is not None:
+        if commits["note"]:
+            lines.append(f"  commits changing {_KNOWLEDGE_DIR}/ since that update: unknown ({commits['note']})")
+        elif commits["latest"] is None:
+            lines.append(f"  no commit changes {_KNOWLEDGE_DIR}/")
+        else:
+            lines.append(f"  latest non-merge commit changing {_KNOWLEDGE_DIR}/: "
+                         f"{commits['latest']['committed_at']} ({commits['latest']['commit'][:8]}); "
+                         f"{commits['dated_after_last_query_receipt']} such commits are dated after "
+                         "that update")
     missing = recording["steward_sessions_without_query_receipt"]
+    after = recording["steward_sessions_without_query_receipt_after_last"]
     lines.append(f"  sessions naming {_STEWARD} without a query receipt: "
-                 f"{len(missing)} of {recording['steward_session_total']}")
+                 f"{len(missing)} of {recording['steward_session_total']}"
+                 + ("" if after is None else f" ({len(after)} updated after the last query receipt)"))
     if recording["other_target_query_receipts"]:
         lines.append("  query receipts for another target repository (not counted above): "
                      f"{len(recording['other_target_query_receipts'])}")
-    unanswered = recording["contradicted_or_stale_checks_without_later_applied_revision"]
-    if unanswered:
-        lines.append("  source checks CONTRADICTED or STALE with no later applied REVISE, SUPERSEDE or "
-                     f"CONTEST: {len(unanswered)}")
-        lines.extend(f"    {item['claim_id']} {item['result']} in {item['session_ref']}" for item in unanswered)
-    return lines
-
-
-def _history_lines(history: dict[str, Any], local_target: str | None) -> list[str]:
-    lines: list[str] = []
-    for claim, events in history["records"].items():
-        lines.append(f"RECEIPT HISTORY OF {claim} (what the query receipts record; not evidence of use)")
-        for event in events:
-            other = "" if event["target_repository"] == local_target else f" [target {event['target_repository']}]"
-            where = f"  {event['updated_at'][:10]} {event['session_ref']}{other}: "
-            if event["event"] == "query_subject":
-                lines.append(f"{where}subject of {event['operation']}, hit_count {event['hit_count']}, "
-                             f"outcome {event['outcome']}")
-            elif event["event"] == "listed_in_result":
-                subject = f" on {event['query_subject']}" if event["query_subject"] else ""
-                lines.append(f"{where}listed in the result of {event['operation']}{subject}")
-            elif event["event"] == "source_check":
-                lines.append(f"{where}source check {event['result']}")
-            else:
-                lines.append(f"{where}reconcile {event['disposition']}"
-                             f"{'' if event['applied'] else ' (not applied)'}")
-        if not events:
-            lines.append("  no query receipt names this record")
-    lines.extend(f"  Limit: {limit}" for limit in history["limits"])
     return lines
 
 
@@ -494,9 +435,6 @@ def _print_text(summary: dict[str, Any]) -> None:
     )
     lines.extend(f"  {n['receipt']} persistence={n['persistence']}" for n in summary["declared_but_committed"])
     lines.extend(_recording_lines(summary["knowledge_recording"]))
-    if "claim_history" in summary:
-        lines.extend(_history_lines(summary["claim_history"],
-                                    summary["knowledge_recording"]["target_repository"]))
     if summary["invalid"]:
         lines.append("INVALID RECEIPTS (run scripts/validate-receipt.py for detail):")
         lines.extend(f"  {i['file']}: {'; '.join(i['errors'])}" for i in summary["invalid"])
@@ -508,17 +446,13 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--repo", default=".", help="Target repository root (default: current directory)")
     parser.add_argument("--dir", default=None, help=f"Receipt directory (default: <repo>/{_validator.RECEIPT_DIR})")
     parser.add_argument("--json", action="store_true", help="Emit JSON")
-    parser.add_argument("--claim", action="append", default=[], metavar="CLAIM_ID",
-                        help="List what the committed query receipts record about one knowledge "
-                             "record (pointers into receipts, not evidence of use); repeatable")
     parser.add_argument("--target-repository", default=None,
                         help="Repository identity the receipts describe (default: the target most "
                              "receipts declare; a tie is reported, not guessed)")
     args = parser.parse_args(argv)
 
     receipt_dir = Path(args.dir) if args.dir else Path(args.repo) / _validator.RECEIPT_DIR
-    summary = summarize(receipt_dir, Path(args.repo), claims=tuple(args.claim),
-                        target_repository=args.target_repository)
+    summary = summarize(receipt_dir, Path(args.repo), target_repository=args.target_repository)
     if args.json:
         print(_ascii(json.dumps(summary, indent=2)))
     else:

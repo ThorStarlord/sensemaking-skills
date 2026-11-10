@@ -157,22 +157,18 @@ Then:
    follow-up statuses as recorded in each receipt, without reconciling later
    resolutions. Check relevant later receipts and current knowledge before
    treating a miss as unresolved; JSON retains the `pending_misses` name.
-5. **KNOWLEDGE QUERY RECORDING** says whether the record of knowledge queries
-   is still being kept: the last query receipt, how many commits changed
-   `.sensemaking/knowledge/` after the commit that recorded it, how many
-   sessions that named `repository-semantic-steward` left no query receipt, and
-   any source check that found a record CONTRADICTED or STALE with no later
-   applied REVISE, SUPERSEDE or CONTEST. A gap is a reason to record this
-   session's queries. It is not a finding about any agent, and a shallow clone
-   or a missing repository is reported as unknown, not as zero.
 
-`--claim <id>` lists what the query receipts record about one knowledge record:
-the queries that had it as subject, the results that listed it, its source
-checks and its reconcile entries. Use it to find the receipts worth reading.
-The reader prints no retrieval tally on purpose. The IDs a receipt lists are
-chosen by the session that wrote it, so counting them would measure recording
-habits. A listed record was not thereby used, and an unlisted one was not
-thereby unused.
+5. **KNOWLEDGE QUERY RECORDING** gives the facts that show whether knowledge
+   queries are still being recorded: the last query receipt, the latest
+   non-merge commit that changed `.sensemaking/knowledge/` and how many such
+   commits are dated after that receipt's update, and how many sessions that
+   named `repository-semantic-steward` left no query receipt. It states no
+   verdict. Commit dates are compared with the time the receipt declares, so a
+   parallel branch or an imprecise receipt time can move the count, and a
+   shallow clone or a missing repository is reported as unknown. A gap is a
+   reason to record this session's queries, not a finding about any agent. The
+   reader does not count which records receipts list: those lists are chosen by
+   the session that wrote them.
 
 A receipt is evidence about a past session. It does not override current code,
 current owner intent or the current Level-3 projection. In an open-ended
