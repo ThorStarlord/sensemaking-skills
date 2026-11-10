@@ -321,7 +321,7 @@
     {
       "id": "alternative:automatic-temporary-checkout-fallback",
       "kind": "alternative",
-      "statement": "Rejected alternative: fall back to a temporary checkout automatically whenever the active checkout is dirty. It would change a fail-closed default that hosted tests pin, pay for a full checkout the caller did not ask for, and let a caller miss that uncommitted edits were not read.",
+      "statement": "Rejected alternative: have knowledge-build, knowledge-orient, knowledge-check-rules and knowledge-audit fall back to a temporary checkout automatically whenever the active checkout is dirty. It would change a fail-closed default that hosted tests pin, pay for a full checkout the caller did not ask for, and let a caller miss that uncommitted edits were not read.",
       "authority_kind": "delegated",
       "authority_ref": "docs/semantic-architecture/persistent-knowledge-cli.md",
       "evidence_refs": [
@@ -332,22 +332,24 @@
       ],
       "attributes": {
         "disposition": "rejected",
-        "scope": "Rejected 2026-11-10; revisit if agents are observed to skip audit or rule checks because the refusal hint does not lead them to the flag"
+        "scope": "Rejected 2026-11-10 for the four explicit-identity commands. workspace-query is a different contract: it resolves and materializes the commit itself and reports that in workspace_index.build_source (decision:workspace-query-derived-commit-index). Revisit if agents are observed to skip audit or rule checks because the refusal hint does not lead them to the flag"
       }
     },
     {
       "id": "alternative:read-committed-bytes-from-git-objects",
       "kind": "alternative",
-      "statement": "Deferred alternative: read committed bytes from Git objects instead of checking the commit out. It would remove the checkout cost, but source fingerprints are taken from checked-out bytes, which Git can convert (line endings, filters); an object reader would be a second byte path that has to agree with every index already built.",
+      "statement": "Deferred alternative: read committed bytes from Git objects instead of checking the commit out, for index building (including the first call of workspace-query) and for orient, check-rules and audit. It would remove the checkout cost, roughly 10 s of a 15 to 20 s first call on the development host, but source fingerprints are taken from checked-out bytes, which Git can convert (line endings, filters); an object reader would be a second byte path that has to agree with every index already built.",
       "authority_kind": "delegated",
       "authority_ref": "docs/semantic-architecture/persistent-knowledge-cli.md",
       "evidence_refs": [
         "file:docs/semantic-architecture/persistent-knowledge-cli.md",
-        "file:src/sensemaking_skills/semantic_architecture/knowledge_sources.py"
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_sources.py",
+        "file:src/sensemaking_skills/workspace_knowledge.py"
       ],
       "attributes": {
         "disposition": "deferred",
-        "scope": "Deferred 2026-11-10; revisit when the checkout cost is shown to deter use and index building can move to the same reader in the same change"
+        "scope": "Deferred 2026-11-10 for how a commit is materialized, by the temporary-checkout change and by the workspace-query change. The two records were merged into this one during integration; the earlier workspace-query record called the fingerprint difference inferred, and lesson:separate-clone-changes-audited-bytes has since observed it",
+        "revisit_when": "First-call latency or the checkout cost is shown to keep agents from querying or checking, and index building and the readers can move to the same reader in one change; or snapshots must be byte-identical across platforms"
       }
     },
     {
@@ -529,7 +531,8 @@
       "attributes": {
         "scope": "Delegated construction choice within ADR 0031 under PATH-1; not an owner mandate. ADR 0033 stays PROPOSED and is not ratified by this record",
         "claim_ceiling": "CLI runs on this repository's records at the implementing commit; unit tests NOT_RUN; independent-agent use and decision benefit NOT TESTED",
-        "revisit_when": "If the verification relevance route of PR 795 merges, or the owner rules on whether path relevance stays ownership-only, re-inspect how the two compose"
+        "revisit_when": "If the owner rules on whether path relevance stays ownership-only, or either route changes which records a category holds, re-inspect how the two compose",
+        "composition": "Integrated on 2026-11-10 with decision:verification-relevance-for-unowned-files. On a file no component owns, verification claims that name the file are returned in verification_refs and the records linked from verified components are returned in their categories, so none of them is listed as a candidate; the capability route starts from owning components only and adds nothing there. Observed on tests/test_semantic_knowledge.py: two verification records, two verified components and no candidates, where this change alone listed three citation candidates"
       }
     },
     {
@@ -561,6 +564,24 @@
       "attributes": {
         "disposition": "rejected",
         "scope": "Rejected as sufficient by itself; authored anchoring is kept and documented"
+      }
+    },
+    {
+      "id": "decision:verification-relevance-for-unowned-files",
+      "kind": "decision",
+      "statement": "For a file that no component owns, context-for returns verification relevance, never ownership: a verification claim whose authority_ref is the file, or whose evidence_refs cite it, is returned in verification_refs, and a component that a displayed record verifies through tested_by is returned under verified_components with its explicitly linked decisions, constraints and history. Ownership stays NOT_ASSESSED, contracts and rules do not follow, and owned paths do not use this route.",
+      "authority_kind": "delegated",
+      "authority_ref": "docs/semantic-architecture/persistent-knowledge-cli.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_architecture.py",
+        "file:tests/test_architecture_queries.py"
+      ],
+      "attributes": {
+        "scope": "Delegated construction choice for the owner's bounded outcome of 2026-11-09 (pull request 795). Recorded on 2026-11-10 during integration, from that pull request's decision note and the merged code; ADR 0033 stays PROPOSED and is not ratified by this record",
+        "rejected_alternatives": "Ownership semantics for test files (ADR 0033 is still PROPOSED). A new tested_file relation (new vocabulary; existing verification records already name the file). Matching every citation of the file (components and decisions cite tests as evidence, which is not verification relevance; those records are listed as relevance candidates instead)",
+        "revisit_when": "If the owner rules on whether path relevance stays ownership-only, or ADR 0033 is ratified, re-inspect this route together with decision:relevance-candidates-separate-from-context",
+        "claim_ceiling": "Hosted tests in tests/test_architecture_queries.py cover the route; independent-agent use NOT TESTED"
       }
     }
   ],
@@ -857,6 +878,18 @@
       }
     },
     {
+      "id": "rel:automatic-fallback-not-workspace-query",
+      "subject": "alternative:automatic-temporary-checkout-fallback",
+      "predicate": "references",
+      "object": "decision:workspace-query-derived-commit-index",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/workspace_knowledge.py"
+      ],
+      "attributes": {
+        "scope": "workspace-query materializes a dirty checkout's commit by design; the rejection covers the explicit-identity commands only"
+      }
+    },
+    {
       "id": "rel:temporary-worktree-not-git-objects",
       "subject": "decision:index-from-temporary-worktree",
       "predicate": "references",
@@ -867,6 +900,15 @@
       "attributes": {
         "disposition": "deferred alternative"
       }
+    },
+    {
+      "id": "rel:git-objects-alternative-observed-conversion",
+      "subject": "alternative:read-committed-bytes-from-git-objects",
+      "predicate": "references",
+      "object": "lesson:separate-clone-changes-audited-bytes",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ]
     },
     {
       "id": "rel:semantic-cli-temporary-worktree-decision",
@@ -1143,6 +1185,30 @@
       ],
       "attributes": {
         "scope": "Envelope order of candidate records in query_knowledge and the separate candidate block of context_workspace_overlap"
+      }
+    },
+    {
+      "id": "rel:plane-decided-by-verification-relevance",
+      "subject": "component:semantic-knowledge-plane",
+      "predicate": "decided_by",
+      "object": "decision:verification-relevance-for-unowned-files",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_architecture.py"
+      ],
+      "attributes": {
+        "scope": "context-for verification route for files no component owns"
+      }
+    },
+    {
+      "id": "rel:relevance-candidates-compose-with-verification-relevance",
+      "subject": "decision:relevance-candidates-separate-from-context",
+      "predicate": "references",
+      "object": "decision:verification-relevance-for-unowned-files",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_architecture.py"
+      ],
+      "attributes": {
+        "scope": "On a file no component owns, records the verification route returns are excluded from candidates"
       }
     }
   ]

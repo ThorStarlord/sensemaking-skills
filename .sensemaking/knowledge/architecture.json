@@ -153,22 +153,6 @@
       }
     },
     {
-      "id": "alternative:snapshot-from-git-objects",
-      "kind": "alternative",
-      "statement": "Deferred alternative: build the snapshot from Git objects without any checkout, which would remove the temporary-worktree cost of a dirty tree (roughly 10 s of a 15 to 20 s first call on the development host). The builder reads and fingerprints files from a checkout, and its tracked-file, symlink and filter checks assume one; object bytes can differ from checkout bytes under line-ending conversion, so the two build routes could give different fingerprints for one commit.",
-      "authority_kind": "document",
-      "authority_ref": "src/sensemaking_skills/semantic_architecture/knowledge_sources.py",
-      "evidence_refs": [
-        "file:src/sensemaking_skills/semantic_architecture/knowledge_sources.py"
-      ],
-      "epistemic_status": "hypothetical",
-      "attributes": {
-        "disposition": "deferred",
-        "scope": "Engineering alternative for how a commit is materialized for indexing; the fingerprint difference is inferred from the source and was not run.",
-        "revisit_when": "First-call latency is shown to keep agents from querying, or snapshots must be byte-identical across platforms."
-      }
-    },
-    {
       "id": "alternative:ephemeral-index-per-query",
       "kind": "alternative",
       "statement": "Rejected alternative: build a throwaway index on every call and keep no cache. It needs no cache location, retention or trust rule, but every call would pay the build, about 15 to 20 s on the development host whenever the tree is dirty, which is the usual state during work.",
@@ -1400,7 +1384,7 @@
       "id": "rel:workspace-query-decision-git-objects-alternative",
       "subject": "decision:workspace-query-derived-commit-index",
       "predicate": "references",
-      "object": "alternative:snapshot-from-git-objects",
+      "object": "alternative:read-committed-bytes-from-git-objects",
       "evidence_refs": [
         "file:src/sensemaking_skills/semantic_architecture/knowledge_sources.py"
       ],

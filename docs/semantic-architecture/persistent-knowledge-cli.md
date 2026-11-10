@@ -503,10 +503,13 @@ visible without being presented as context that applies:
   constraints, `decided_by` decisions (either direction), `tested_by`
   verification records, and incidents, lessons and observations linked by
   `references`, `learned_from` or `contradicts`.
-- **Citation route:** a contract, invariant, constraint, decision, alternative,
-  incident, lesson, observation or verification claim whose `evidence_refs`
-  cite `file:<path>` or whose `authority_ref` is the path. This route also
-  serves a file that no component owns, such as a test.
+- **Citation route:** a contract, invariant, constraint, decision,
+  alternative, incident, lesson, observation or verification claim whose
+  `evidence_refs` cite `file:<path>` or whose `authority_ref` is the path.
+  This route also serves a file that no component owns, such as a test. There,
+  verification claims that name the file are returned in `verification_refs`
+  by the verification-relevance route, so only citing records of other kinds
+  are listed here.
 
 Both routes read fields of indexed records only: authored records, and the
 index's own ADR and Grounding Pack claims, which cite their source document. No
