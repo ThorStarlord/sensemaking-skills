@@ -507,9 +507,12 @@ visible without being presented as context that applies:
   alternative, incident, lesson, observation or verification claim whose
   `evidence_refs` cite `file:<path>` or whose `authority_ref` is the path.
   This route also serves a file that no component owns, such as a test. There,
-  verification claims that name the file are returned in `verification_refs`
-  by the verification-relevance route, so only citing records of other kinds
-  are listed here.
+  a verification claim that names the file by exact path is returned in
+  `verification_refs` by the verification-relevance route and is not listed
+  here. The two routes match citations differently: that route needs the exact
+  `file:<path>` reference, while this one also accepts a `:line:` or `#`
+  suffix, so a verification claim that cites the file with a suffix is listed
+  here as a candidate.
 
 Both routes read fields of indexed records only: authored records, and the
 index's own ADR and Grounding Pack claims, which cite their source document. No

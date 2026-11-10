@@ -338,7 +338,7 @@
     {
       "id": "alternative:read-committed-bytes-from-git-objects",
       "kind": "alternative",
-      "statement": "Deferred alternative: read committed bytes from Git objects instead of checking the commit out, for index building (including the first call of workspace-query) and for orient, check-rules and audit. It would remove the checkout cost, roughly 10 s of a 15 to 20 s first call on the development host, but source fingerprints are taken from checked-out bytes, which Git can convert (line endings, filters); an object reader would be a second byte path that has to agree with every index already built.",
+      "statement": "Deferred alternative: read committed bytes from Git objects instead of checking the commit out, for index building (including the first call of workspace-query) and for orient, check-rules and audit. It would remove the checkout cost, roughly 10 s of a 15 to 20 s first call on the development host. The builder reads and fingerprints files from a checkout, and its tracked-file, symlink and filter checks assume one; source fingerprints are taken from checked-out bytes, which Git can convert (line endings, filters), so an object reader would be a second byte path that has to agree with every index already built.",
       "authority_kind": "delegated",
       "authority_ref": "docs/semantic-architecture/persistent-knowledge-cli.md",
       "evidence_refs": [
@@ -348,7 +348,7 @@
       ],
       "attributes": {
         "disposition": "deferred",
-        "scope": "Deferred 2026-11-10 for how a commit is materialized, by the temporary-checkout change and by the workspace-query change. The two records were merged into this one during integration; the earlier workspace-query record called the fingerprint difference inferred, and lesson:separate-clone-changes-audited-bytes has since observed it",
+        "scope": "Deferred 2026-11-10 for how a commit is materialized, by the temporary-checkout change and by the workspace-query change; the two records were merged into this one during integration. That object bytes differ from checkout bytes is inferred from the source and was not run; lesson:separate-clone-changes-audited-bytes observed the related fact that checked-out bytes vary with Git configuration",
         "revisit_when": "First-call latency or the checkout cost is shown to keep agents from querying or checking, and index building and the readers can move to the same reader in one change; or snapshots must be byte-identical across platforms"
       }
     },
@@ -532,7 +532,7 @@
         "scope": "Delegated construction choice within ADR 0031 under PATH-1; not an owner mandate. ADR 0033 stays PROPOSED and is not ratified by this record",
         "claim_ceiling": "CLI runs on this repository's records at the implementing commit; unit tests NOT_RUN; independent-agent use and decision benefit NOT TESTED",
         "revisit_when": "If the owner rules on whether path relevance stays ownership-only, or either route changes which records a category holds, re-inspect how the two compose",
-        "composition": "Integrated on 2026-11-10 with decision:verification-relevance-for-unowned-files. On a file no component owns, verification claims that name the file are returned in verification_refs and the records linked from verified components are returned in their categories, so none of them is listed as a candidate; the capability route starts from owning components only and adds nothing there. Observed on tests/test_semantic_knowledge.py: two verification records, two verified components and no candidates, where this change alone listed three citation candidates"
+        "composition": "Integrated on 2026-11-10 with decision:verification-relevance-for-unowned-files. On a file no component owns, a verification claim that names the file by exact path is returned in verification_refs, and the records linked from verified components are returned in their categories, so none of them is listed as a candidate; the capability route starts from owning components only and adds nothing there. Candidates exclude every record a category holds, including records the category cut at its limit, which are counted only in that category's omission total. The two routes match citations differently: the verification route needs the exact file: reference, while the citation route also accepts a line or fragment suffix, so a verification claim that cites the file with a suffix is listed as a candidate"
       }
     },
     {
