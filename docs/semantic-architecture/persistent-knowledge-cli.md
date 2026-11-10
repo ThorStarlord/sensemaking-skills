@@ -155,6 +155,63 @@ implementation behavior at the tested revision; they do not establish
 independent-session cumulative value, cross-repository transfer, release
 readiness, or a benchmark advantage.
 
+## Zero-setup workspace query (workspace-query)
+
+`semantic workspace-query` answers a reviewed-knowledge query without a prior
+build and without identity arguments. It resolves the checkout, the commit
+(`--ref`, default `HEAD`) and a repository label, builds or reuses a derived
+SQLite index of that committed revision, runs one read operation and returns
+the same payload as `knowledge-query --repo .` plus one additive
+`workspace_index` object.
+
+Two main uses:
+
+- Before editing a file: `semantic workspace-query path/to/file.py --json`
+  (`context-for`; up to 8 positional paths are composed as in `context-for --path`).
+- Before finishing: `semantic workspace-query --operation workspace-impact --ref <base> --json`
+  lists reviewed records whose cited files changed since `<base>`.
+
+Facts that bound its use:
+
+- Only committed bytes are indexed. A dirty checkout is indexed from a
+  temporary worktree. `workspace_context` discloses uncommitted changes that
+  are not indexed; the working overlay is never indexed and never authority.
+- The derived index lives at `<index-dir>/<clone-key>/<sha>.sqlite`. The default
+  index directory is `%LOCALAPPDATA%\sensemaking-skills\index` on Windows and
+  `$XDG_CACHE_HOME/sensemaking-skills/index` (else `~/.cache/sensemaking-skills/index`)
+  elsewhere. The clone key hashes the Git common directory, so all worktrees of one
+  clone share one cache. The index is rebuildable, is never authority, and at most
+  8 snapshot files are kept per clone (older ones are pruned after a build).
+- `workspace_index` fields: `indexed_ref`, `ref_requested`, `repository`,
+  `repository_identity_source` (`explicit`, `origin_remote` or `local_path`),
+  `repository_label_verified` (always `false`), `index_path`, `index_state`
+  (`built` or `reused`), `build_source` (`active_checkout`, `temporary_worktree`,
+  or `null` when reused) and `equivalent_operations` (the build plus the operation
+  when built; the operation alone when reused).
+- The label comes from the `origin` remote path (last two segments, `.git`
+  removed) or, without an origin, from the checkout directory name. The origin
+  URL, its credentials and its host are never printed. An origin whose kept path
+  segments contain `@` or `:` is not used; the directory name is used instead. The
+  label is not a verified identity; `--repository` sets it explicitly.
+- Supported operations: `context-for`, `rules-for`, `search`, `explain`, `why`,
+  `impact`, `term`, `orientation-summary`, `contradictions`, `snapshot` and
+  `workspace-impact`. `changes` and `history` are refused, because they need
+  several indexed revisions in one database; use `knowledge-build` and
+  `knowledge-query` with an explicit `--db` for those.
+- Options: `--ref REV` (rejected when it starts with `-` or contains whitespace or
+  control characters), `--repository LABEL`, `--index-dir DIR` (must lie outside
+  the checkout), `--refresh` (delete this commit's cache file and rebuild it) and
+  `--repo DIR` (any directory inside the working tree).
+- Cost: the first call for a commit builds the index; a dirty tree uses the
+  temporary-worktree path, which takes on the order of 15 seconds on the development
+  host. A reused index answers in about 2 seconds. Timing is not a benchmark.
+- Cache trust: a reused cache file is trusted as written and is not re-verified
+  against Git. Anyone who can write to the index directory can alter answers, so keep
+  the default per-user location or a private directory, and use `--refresh` when in doubt.
+- Claim ceiling: this is construction evidence that the command exists and returns
+  source-pinned answers. Whether agents consult reviewed records earlier because of
+  it is NOT TESTED.
+
 ## Change granularity and shared authored-pack limitation
 
 Source change and semantic change are different questions:

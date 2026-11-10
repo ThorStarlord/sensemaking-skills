@@ -288,6 +288,50 @@ def register_semantic_commands(root_cli: click.Group) -> None:
         payload["code"] = "SEMANTIC_KNOWLEDGE_QUERY"
         _emit(payload, output_json=output_json)
 
+    @semantic_group.command(name="workspace-query")
+    @click.argument("paths", nargs=-1)
+    @click.option("--operation", default="context-for", show_default=True,
+                  type=click.Choice(["context-for", "rules-for", "search", "explain", "why", "impact", "term",
+                                     "orientation-summary", "contradictions", "snapshot", "workspace-impact",
+                                     "changes", "history"]))
+    @click.option("--subject", default=None, help="One repository-relative file path or the operation's subject")
+    @click.option("--term", "search_terms", multiple=True, help="Repeat explicit literal OR phrase (search operation only)")
+    @click.option("--expect-kind", "expected_kinds", multiple=True,
+                  help="Repeat claim kinds to assess in the explicit one-hop explain/why neighborhood")
+    @click.option("--limit", type=click.IntRange(1, 250), default=50)
+    @click.option("--depth", type=click.IntRange(0, 4), default=2)
+    @click.option("--repo", "repo_dir", type=click.Path(exists=True, file_okay=False, path_type=Path),
+                  default=Path("."), show_default=True, help="Any directory inside the Git working tree")
+    @click.option("--ref", "ref", default="HEAD", show_default=True, help="Revision to index and query (committed bytes only)")
+    @click.option("--repository", "repository_label", default=None,
+                  help="Explicit repository label; otherwise derived from origin or the checkout directory")
+    @click.option("--index-dir", "index_dir", type=click.Path(path_type=Path), default=None,
+                  help="Derived cache directory outside the checkout (default: per-user cache)")
+    @click.option("--refresh", is_flag=True, help="Delete the cached snapshot file for this commit and rebuild it")
+    @click.option("--json", "output_json", is_flag=True)
+    def semantic_workspace_query(
+        paths: tuple[str, ...], operation: str, subject: str | None, search_terms: tuple[str, ...],
+        expected_kinds: tuple[str, ...], limit: int, depth: int, repo_dir: Path, ref: str,
+        repository_label: str | None, index_dir: Path | None, refresh: bool, output_json: bool,
+    ) -> None:
+        """Query committed reviewed knowledge with no prior build or identity arguments.
+
+        Side effect: builds or reuses a derived index of the committed revision
+        (--ref, default HEAD) in a per-user cache outside the checkout (see --index-dir).
+        Uncommitted bytes are never indexed; workspace_context reports them.
+        """
+        from .workspace_knowledge import run_workspace_query
+
+        try:
+            payload = run_workspace_query(
+                repo=repo_dir, ref=ref, operation=operation, paths=paths, subject=subject,
+                search_terms=search_terms, expected_kinds=expected_kinds, limit=limit, depth=depth,
+                repository=repository_label, index_dir=index_dir, refresh=refresh,
+            )
+        except (ValueError, OSError, UnicodeError) as exc:
+            raise click.ClickException(str(exc)) from exc
+        _emit(payload, output_json=output_json)
+
     @semantic_group.command(name="knowledge-view-export")
     @click.option("--db", "db_path", required=True, type=click.Path(exists=True, dir_okay=False, path_type=Path))
     @click.option("--repository", "repository_id", required=True)
