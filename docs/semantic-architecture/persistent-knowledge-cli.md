@@ -387,25 +387,27 @@ revision and whether it has uncommitted changes.
 
 ### Relevance candidates (not established context)
 
-The categories above follow ownership and rule links only. A reviewed record
-can bear on a file without such a link: it may be attached to a capability the
-owner implements, or it may cite the file as evidence. `context.relevance_candidates`
-lists those records separately, so they are visible without being presented as
-context that applies:
+Each category above is filled only through the explicit links described for it.
+An indexed record can bear on a file without such a link: it may be attached to
+a capability the owner implements, or it may cite the file as evidence.
+`context.relevance_candidates` lists those records separately, so they are
+visible without being presented as context that applies:
 
 - **Capability route:** a `capability` linked to an owning component by
   `implemented_by`, then that capability's `constrained_by` invariants and
-  constraints, `decided_by` decisions, `tested_by` verification records, and
-  incidents, lessons and observations linked by `references`, `learned_from`
-  or `contradicts`.
+  constraints, `decided_by` decisions (either direction), `tested_by`
+  verification records, and incidents, lessons and observations linked by
+  `references`, `learned_from` or `contradicts`.
 - **Citation route:** a contract, invariant, constraint, decision, alternative,
   incident, lesson, observation or verification claim whose `evidence_refs`
   cite `file:<path>` or whose `authority_ref` is the path. This route also
   serves a file that no component owns, such as a test.
 
-Both routes read reviewed fields only. No name, directory or import heuristic is
-used, and mechanical records never qualify. Records already held by a category
-above are excluded, including records that category cut at its limit.
+Both routes read fields of indexed records only: authored records, and the
+index's own ADR and Grounding Pack claims, which cite their source document. No
+name, directory or import heuristic is used, and mechanical claims and relations
+never qualify. Records already held by a category above are excluded, including
+records that category cut at its limit.
 
 - `status` is `CANDIDATES_NOT_ESTABLISHED` or `NONE_RECORDED`. The second is not
   evidence that nothing else applies.
@@ -413,31 +415,38 @@ above are excluded, including records that category cut at its limit.
   the usual claim fields, the `category` it would belong to, its `routes`,
   `matched_by` naming the exact relation IDs or cited field, and
   `applicability: NOT_ESTABLISHED`.
-- `total`, `omitted` and `by_category` count all candidates before the limit.
+- `total`, `omitted` and `by_category` count all candidates before the limit;
+  `returned_by_category` counts the returned items.
 - `implemented_capabilities` names each capability an owner implements, its
   `epistemic_status`, the `implemented_by` relation IDs, and
   `implementing_component_total`. A capability that several components implement
-  can hold a constraint that binds only one of them.
+  can hold a constraint that binds only one of them. The list is cut at
+  `--limit`; `implemented_capabilities_omitted` counts the rest, and cutting it
+  sets `truncated` even when no candidate was cut.
 - `other_citing_kinds` counts citing records of other kinds, for example a
   component that cites the file without owning it. They are not expanded.
-- `route_relation_ids` are the relations behind the returned capability-route
-  items.
+- `route_relation_ids` and `route_capability_ids` are the relations and
+  capabilities behind the returned capability-route items.
 
 A candidate is never an owner, a rule or an obligation. `ownership` and every
 category keep their own status: a category that is `NOT_ASSESSED` stays
-`NOT_ASSESSED`, and its note gains a pointer when candidates of that kind exist.
-The `relevance_candidates / CANDIDATES_NOT_ESTABLISHED` gap states the count, and
-`relevance_candidates / TRUNCATED` with `omitted.relevance_candidates` states what
-the limit cut. Candidate claims and route relations are appended to the
-top-level envelope after all ownership-anchored records. Citations made only by
-relation records are not searched. To make a candidate count as context, anchor
-it to the owner through reviewed knowledge (RECONCILE); this query does not.
+`NOT_ASSESSED`, and its note gains a count when candidates of that kind exist.
+In addition to the `knowledge_gaps` statuses listed above, the
+`relevance_candidates / CANDIDATES_NOT_ESTABLISHED` gap states how many exist
+and how many were returned, and `relevance_candidates / TRUNCATED` with
+`omitted.relevance_candidates` states what the limit cut. In the top-level
+envelope, candidate claims, their capabilities and their route relations come
+after every record of the categories, so the global limit cuts them first.
+Citations made only by relation records are not searched. To make a candidate
+count as context, anchor it to the owner through reviewed knowledge
+(RECONCILE); this query does not.
 
 `owner_verification / NOT_ASSESSED` is a separate gap. It appears when every
-returned verification record is linked from a path-scoped rule and none from an
+returned verification record is linked from an applicable rule and none from an
 owning component. A rule's own guard test fills `verification_refs` for every
-file in the rule's scope, which would otherwise hide that the owner's tests are
-not linked.
+file the rule applies to, which would otherwise hide that the owner's tests are
+not linked. One verification link from the owner removes the gap for all of the
+owner's files, because ownership is recorded per component.
 
 ### Source overlap during active edits (PATH-1/T5)
 
@@ -448,9 +457,9 @@ source-fingerprint paths of the *selected* context claims and relations. It
 reports `target_path_changed`, the count of changed paths, affected record IDs,
 the cited sources that changed, omitted affected-record totals, and the number
 of records for which there was no fingerprint to assess. Returned relevance
-candidates and their route relations are compared too. Each affected record has
-`selection: context` or `selection: relevance_candidate`, and
-`candidate_record_total` and `affected_candidate_total` count the candidate share.
+candidates, their capabilities and their route relations get the same
+comparison in a separate `workspace_relevance.relevance_candidates` block with
+its own totals and limit, so they never displace a record of the categories.
 Querying an older indexed revision from a newer checkout therefore shows which
 candidates cite sources that changed since that revision.
 

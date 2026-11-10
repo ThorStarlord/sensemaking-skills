@@ -430,7 +430,7 @@
     {
       "id": "lesson:source-anchored-context-reentry",
       "kind": "lesson",
-      "statement": "For Sensemaking's file-first `context-for` retrieval, a record counts as context for a file only when reviewed component `owned_paths` plus explicit component/rule-to-history or decision relations connect it. A record held on a capability the owner implements, or one that cites the file, is listed under `relevance_candidates` with applicability NOT_ESTABLISHED: visible, not anchored. Before adding a new query type, inspect those anchors and original sources; missing graph context is not evidence that the engineering history is absent.",
+      "statement": "For Sensemaking's file-first `context-for` retrieval, a record counts as context for a file a component owns only when reviewed `owned_paths` plus explicit component/rule-to-history or decision relations connect it. A record held on a capability the owner implements, or one that cites the file, is listed under `relevance_candidates` with applicability NOT_ESTABLISHED: visible, not anchored. Before adding a new query type, inspect those anchors and original sources; missing graph context is not evidence that the engineering history is absent.",
       "epistemic_status": "declared",
       "authority_kind": "document",
       "authority_ref": "docs/normal-use/2026-11-02-cross-episode-source-reentry-learning.md",
@@ -467,7 +467,7 @@
     {
       "id": "decision:relevance-candidates-separate-from-context",
       "kind": "decision",
-      "statement": "context-for lists reviewed records that reach a file only through a capability its owner implements, or by citing the file, in a separate relevance_candidates section with applicability NOT_ESTABLISHED. The ownership- and rule-anchored categories are unchanged, candidates join the workspace source overlap under their own label, and a candidate becomes context only when reviewed knowledge anchors it to the owner.",
+      "statement": "context-for lists indexed records that reach a file only through a capability its owner implements, or by citing the file, in a separate relevance_candidates section with applicability NOT_ESTABLISHED. The context categories and the claim and relation IDs context_for returns are unchanged, candidates are compared for changed sources in their own block, and a candidate becomes context only when reviewed knowledge anchors it to the owner.",
       "epistemic_status": "declared",
       "authority_kind": "delegated",
       "authority_ref": "docs/semantic-architecture/persistent-knowledge-cli.md",
@@ -1027,6 +1027,19 @@
       ],
       "attributes": {
         "scope": "The test module imports and calls query_knowledge, store_snapshot and audit_knowledge_sources from knowledge_store.py; whether it passes is a separate CI observation"
+      }
+    },
+    {
+      "id": "rel:store-decided-by-relevance-candidates",
+      "subject": "component:knowledge-store",
+      "predicate": "decided_by",
+      "object": "decision:relevance-candidates-separate-from-context",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_store.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py"
+      ],
+      "attributes": {
+        "scope": "Envelope order of candidate records in query_knowledge and the separate candidate block of context_workspace_overlap"
       }
     }
   ]

@@ -185,19 +185,19 @@ def _mechanical(record: Mapping[str, Any]) -> bool:
 def relevance_candidates(
     claims: Mapping[str, dict], relations: Iterable[dict], *, path: str,
     owners: set[str], excluded: set[str], limit: int,
-) -> tuple[dict, list[str], list[str]]:
-    """Reviewed records that reach a file without an ownership or rule link.
+) -> dict:
+    """Indexed records that reach a file without a link the context categories follow.
 
-    Two explicit routes, both read from reviewed fields and never from names or
+    Two explicit routes, both read from record fields and never from names or
     neighbouring files: a capability that an owning component implements
     (``implemented_by``) and its constraint, decision, verification and history
     links; and a claim whose ``evidence_refs`` or ``authority_ref`` name the file.
-    Records the ownership-anchored categories already hold are excluded. The result
-    is a separate candidate list: it adds no owner, and applicability to the file
-    stays unestablished. Returns the section, the returned candidate claim IDs and
-    the relation IDs behind the capability route of the returned items.
+    Mechanical claims and relations never qualify, and records the context
+    categories already hold are excluded. The result is a separate candidate
+    section: it adds no owner, and applicability to the file stays unestablished.
+    The caller's own returned claim and relation IDs are not changed by it.
     """
-    edges = list(relations)
+    edges = [rel for rel in relations if not _mechanical(rel)]
 
     def kind(cid: str) -> str | None:
         return claims.get(cid, {}).get("kind")
@@ -214,6 +214,7 @@ def relevance_candidates(
     reasons: dict[str, set[str]] = {}
     routes: dict[str, set[str]] = {}
     route_relations: dict[str, set[str]] = {}
+    route_capabilities: dict[str, set[str]] = {}
 
     def capability_candidate(target: str, capability: str, rel: Mapping[str, Any]) -> None:
         if target in excluded or kind(target) not in _CANDIDATE_CATEGORY or _mechanical(claims[target]):
@@ -229,6 +230,7 @@ def relevance_candidates(
             route_relations.setdefault(target, set()).update(link_ids)
         routes.setdefault(target, set()).add("capability")
         route_relations.setdefault(target, set()).add(rel["id"])
+        route_capabilities.setdefault(target, set()).add(capability)
 
     for rel in edges:
         s, p, o = rel["subject"], rel["predicate"], rel["object"]
@@ -237,8 +239,11 @@ def relevance_candidates(
                 capability_candidate(o, s, rel)
             elif p in _HISTORY_PREDICATES and kind(o) in HISTORY_KINDS:
                 capability_candidate(o, s, rel)
-        elif o in owner_links and p in _HISTORY_PREDICATES and kind(s) in HISTORY_KINDS:
-            capability_candidate(s, o, rel)
+        elif o in owner_links:
+            if p == "decided_by" and kind(s) == "decision":
+                capability_candidate(s, o, rel)
+            elif p in _HISTORY_PREDICATES and kind(s) in HISTORY_KINDS:
+                capability_candidate(s, o, rel)
 
     other_citing: dict[str, int] = {}
     for cid, claim in claims.items():
@@ -257,15 +262,20 @@ def relevance_candidates(
         reasons.setdefault(cid, set()).update(cited_as)
         routes.setdefault(cid, set()).add("citation")
 
-    ordered = sorted(reasons, key=lambda cid: (_CATEGORY_ORDER.index(_CANDIDATE_CATEGORY[kind(cid)]), cid))
-    by_category: dict[str, int] = {}
-    for cid in ordered:
-        category = _CANDIDATE_CATEGORY[kind(cid)]
-        by_category[category] = by_category.get(category, 0) + 1
+    def category(cid: str) -> str:
+        return _CANDIDATE_CATEGORY[claims[cid]["kind"]]
+
+    ordered = sorted(reasons, key=lambda cid: (_CATEGORY_ORDER.index(category(cid)), cid))
     shown = ordered[:limit]
+    by_category: dict[str, int] = {}
+    returned_by_category: dict[str, int] = {}
+    for position, cid in enumerate(ordered):
+        by_category[category(cid)] = by_category.get(category(cid), 0) + 1
+        if position < limit:
+            returned_by_category[category(cid)] = returned_by_category.get(category(cid), 0) + 1
     items = [{
         **_context_item(cid, claims[cid], reasons[cid]),
-        "category": _CANDIDATE_CATEGORY[kind(cid)],
+        "category": category(cid),
         "routes": sorted(routes[cid]),
         "applicability": "NOT_ESTABLISHED",
     } for cid in shown]
@@ -276,20 +286,25 @@ def relevance_candidates(
         "relation_ids": sorted({rid for ids in owner_links[capability].values() for rid in ids}),
         "implementing_component_total": len(implementers[capability]),
     } for capability in sorted(owner_links)]
-    relation_ids = sorted({rid for cid in shown for rid in route_relations.get(cid, ())})
-    section = {
+    if ordered:
+        note = RELEVANCE_NOTE
+    else:
+        note = ("No indexed record of a context kind reaches this file through an implemented "
+                "capability or a citation beyond the context above. This is not evidence that "
+                "nothing else applies.")
+        if other_citing:
+            note += " Records of other kinds cite the file; see other_citing_kinds."
+    return {
         "status": "CANDIDATES_NOT_ESTABLISHED" if ordered else "NONE_RECORDED",
         "items": items, "total": len(ordered), "omitted": max(0, len(ordered) - limit),
-        "by_category": by_category,
-        "route_relation_ids": relation_ids,
+        "by_category": by_category, "returned_by_category": returned_by_category,
+        "route_relation_ids": sorted({rid for cid in shown for rid in route_relations.get(cid, ())}),
+        "route_capability_ids": sorted({cap for cid in shown for cap in route_capabilities.get(cid, ())}),
         "implemented_capabilities": capabilities[:limit],
         "implemented_capabilities_omitted": max(0, len(capabilities) - limit),
         "other_citing_kinds": dict(sorted(other_citing.items())),
-        "note": RELEVANCE_NOTE if ordered else (
-            "No reviewed record reaches this file through an implemented capability or a "
-            "citation beyond the context above. This is not evidence that nothing else applies."),
+        "note": note,
     }
-    return section, shown, relation_ids
 
 
 def _disclose_relevance_candidates(context: dict, section: Mapping[str, Any], *, limit: int) -> None:
@@ -301,13 +316,15 @@ def _disclose_relevance_candidates(context: dict, section: Mapping[str, Any], *,
             category = "verification_refs" if gap["category"] == "owner_verification" else gap["category"]
             count = section["by_category"].get(category, 0)
             if gap["status"] == "NOT_ASSESSED" and count:
-                gap["note"] += (f" {count} relevance candidate(s) of this kind are listed under "
-                                "relevance_candidates; their applicability to this file is not established.")
+                returned = section["returned_by_category"].get(category, 0)
+                gap["note"] += (f" {count} relevance candidate(s) of this kind exist ({returned} returned "
+                                "under relevance_candidates); their applicability to this file is not "
+                                "established.")
         caveats = sorted(item["claim_id"] for item in section["items"]
                          if item["epistemic_status"] in INACTIVE_STATUSES | {"hypothetical"})
-        note = (f"{total} reviewed record(s) reach this file only through an implemented capability "
-                "or a citation and are listed under relevance_candidates, not in the categories "
-                "above. Applicability to this file is NOT established.")
+        note = (f"{total} indexed record(s) reach this file only through an implemented capability "
+                f"or a citation; {len(section['items'])} are returned under relevance_candidates, not "
+                "in the categories above. Applicability to this file is NOT established.")
         if caveats:
             note += (f" {len(caveats)} returned candidate(s) are hypothetical, superseded, contested "
                      f"or invalidated: {', '.join(caveats[:8])}.")
@@ -494,28 +511,27 @@ def context_for(
         and rel["subject"] in returned and rel["object"] in returned
     )
 
-    # A path-scoped rule's own test can fill the verification category for every file in
-    # its scope. That says nothing about tests of the owning component, so say so.
+    # A rule's own test can fill the verification category for every file the rule
+    # applies to. That says nothing about tests of the owning component, so say so.
     if owners and verification and not any(
         rel["predicate"] == "tested_by" and rel["subject"] in owners
         and claims.get(rel["object"], {}).get("kind") == "verification" for rel in edges
     ):
         gaps.append({"category": "owner_verification", "status": "NOT_ASSESSED",
-                     "note": "Every verification record above is linked from a path-scoped rule. "
+                     "note": "Every verification record above is linked from an applicable rule. "
                              "No verification record is linked from an owning component, so tests "
                              "of the owner itself are NOT ASSESSED here."})
-    # Records that reach the file without an ownership or rule link stay outside the
-    # categories above: listing them must not turn a capability relation or a citation
-    # into established applicability.
-    candidates, candidate_ids, candidate_relation_ids = relevance_candidates(
+    # Records that reach the file without a link the categories follow stay outside them:
+    # listing must not turn a capability relation or a citation into established
+    # applicability. The returned claim and relation IDs below stay those of the context
+    # categories; the section carries its own IDs for the caller to append.
+    candidates = relevance_candidates(
         claims, edges, path=path, owners=owners,
         excluded=owners | layer_ids | rule_ids | {cid for group in buckets.values() for cid in group},
         limit=limit,
     )
     context["relevance_candidates"] = candidates
     _disclose_relevance_candidates(context, candidates, limit=limit)
-    returned.update(candidate_ids)
-    selected_relations.update(candidate_relation_ids)
     return context, sorted(returned), sorted(selected_relations)
 
 
