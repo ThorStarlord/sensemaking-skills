@@ -68,7 +68,7 @@ sensemaking-skills setup-skills --target opencode --scope user
 sensemaking-skills setup-skills --target claude --scope project --project-root /path/to/repo
 ```
 
-Use `--dry-run` to preview. Divergent installed Skill trees are preserved unless `--force` is explicit. After upgrading the package, `--update` replaces only the copies that are unchanged since `setup-skills` recorded installing them; see [INSTALLATION.md](INSTALLATION.md#updating-installed-skills).
+Use `--dry-run` to preview. Divergent installed Skill trees are preserved unless `--force` is explicit. After upgrading the package, `--update` replaces only the copies that are unchanged since `setup-skills` recorded installing them (from a Git checkout, also unrecorded copies identical to a committed version); see [INSTALLATION.md](INSTALLATION.md#updating-installed-skills).
 
 With no `--profile` flag, every packaged Skill is installed (52), as before. To install a smaller, dependency-closed set:
 

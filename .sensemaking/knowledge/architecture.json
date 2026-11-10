@@ -880,7 +880,7 @@
     {
       "id": "component:distribution-setup",
       "kind": "component",
-      "statement": "At db6f0513, the explicit installer maps a host and scope chosen by the caller to a filesystem discovery root and copies packaged Skill trees there. A destination is missing, current or different by tree fingerprint; against the root's install record (.sensemaking-skills-install.json) a different copy is outdated, changed or unrecorded, and only --update (outdated) or --force replaces it. It never detects the active host and does not establish what a host loaded.",
+      "statement": "At deb19d05, the explicit installer maps a host and scope chosen by the caller to a filesystem discovery root and copies packaged Skill trees there. A destination is missing, current or different by tree fingerprint; against the root's install record (.sensemaking-skills-install.json) a different copy is outdated, changed or unrecorded, and from a Git checkout an unrecorded copy equal to a committed version of skills/<name> is historical. Only --update (outdated or historical) or --force replaces a different copy. It never detects the active host and does not establish what a host loaded.",
       "epistemic_status": "observed",
       "authority_kind": "code",
       "authority_ref": "src/sensemaking_skills/setup_skills.py",
@@ -894,7 +894,44 @@
           "src/sensemaking_skills/setup_skills.py",
           "src/sensemaking_skills/harness_adapters.py"
         ],
-        "revision_history": "REVISED 2026-11-10 (PR #798): the db821c25 statement named only missing/current/different; install-record classification and --update were added."
+        "revision_history": "REVISED 2026-11-10 (PR #798): the db821c25 statement named only missing/current/different; install-record classification and --update were added. REVISED 2026-11-10 (deb19d05): the db6f0513 statement had no historical state; committed-history matching for unrecorded copies was added."
+      }
+    },
+    {
+      "id": "decision:committed-history-identifies-unrecorded-skill-copies",
+      "kind": "decision",
+      "statement": "Delegated design at deb19d05: when setup-skills runs from a Git checkout, a divergent copy with no install record is compared with every version of skills/<name> committed on the checkout's branches, tags, remote-tracking refs and HEAD. A copy whose Git tree id equals one of them, computed locally with every file as mode 100644, byte for byte or after CRLF to LF in files without NUL bytes, is historical: its content is recoverable from Git, so --update replaces it and the report names the commit. Other unrecorded copies, symlinked or junctioned copies and trees containing links still need --force. Matching never writes the install record; a replaced copy is recorded as replaced.",
+      "authority_kind": "delegated",
+      "authority_ref": "src/sensemaking_skills/setup_skills.py",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/setup_skills.py",
+        "file:INSTALLATION.md",
+        "file:docs/harness-adapters.md",
+        "file:scripts/repo_probes.py"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "scope": "Agent-selected design within the owner's construction delegation; extends decision:install-record-classifies-divergent-skill-copies without changing what the record means. Not an owner-ratified distribution policy.",
+        "decision_changed": "Whether a Skill root installed before install records existed can be updated without --force replacing every divergent copy, and which evidence makes an unrecorded copy safe to replace.",
+        "safety_basis": "Replacing a historical copy loses nothing that is not in a commit reachable from a ref at the time of the run. CRLF-only equality follows the line_ending_only drift class scripts/repo_probes.py already uses.",
+        "known_limits": "Only a source checkout whose top level is the parent of the skills directory; wheel installs have no history and keep the old behavior. A copy written from an uncommitted working tree, or from a commit no longer reachable from any ref, stays unrecorded. A committed file stored with mode 100755 cannot match. About 0.5 s per unrecorded copy on this host (two Git subprocesses).",
+        "claim_ceiling": "Exercised through the real CLI on scratch copies of one Windows host's ~/.claude/skills at deb19d05: 23 of 24 unrecorded copies matched (13 byte for byte, 10 apart from CRLF), one with a nested duplicate directory and one hand-edited copy were refused and preserved byte for byte. Unit tests NOT_RUN.",
+        "source_pr": "https://github.com/ThorStarlord/sensemaking-skills/pull/799"
+      }
+    },
+    {
+      "id": "alternative:backfill-install-record-from-history",
+      "kind": "alternative",
+      "statement": "Rejected alternative: a command that writes install-record entries for unrecorded copies that match committed history, after which --update works unchanged. The record would then vouch for trees setup-skills neither wrote nor verified against its source, which the record's meaning excludes; classifying at run time uses the same evidence without persisting a claim.",
+      "authority_kind": "document",
+      "authority_ref": "src/sensemaking_skills/setup_skills.py",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/setup_skills.py"
+      ],
+      "epistemic_status": "hypothetical",
+      "attributes": {
+        "disposition": "rejected",
+        "scope": "Engineering alternative for migrating roots installed before install records existed."
       }
     },
     {
@@ -1934,6 +1971,36 @@
       "epistemic_status": "declared",
       "evidence_refs": [
         "file:docs/harness-adapters.md"
+      ]
+    },
+    {
+      "id": "rel:distribution-setup-decided-by-committed-history",
+      "subject": "component:distribution-setup",
+      "predicate": "decided_by",
+      "object": "decision:committed-history-identifies-unrecorded-skill-copies",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/setup_skills.py"
+      ]
+    },
+    {
+      "id": "rel:committed-history-decision-extends-install-record",
+      "subject": "decision:committed-history-identifies-unrecorded-skill-copies",
+      "predicate": "references",
+      "object": "decision:install-record-classifies-divergent-skill-copies",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/setup_skills.py"
+      ]
+    },
+    {
+      "id": "rel:committed-history-decision-backfill-alternative",
+      "subject": "decision:committed-history-identifies-unrecorded-skill-copies",
+      "predicate": "references",
+      "object": "alternative:backfill-install-record-from-history",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/setup_skills.py"
       ]
     }
   ]

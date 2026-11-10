@@ -22,8 +22,9 @@ Source resolution:
 Drift detection remains fail closed: existing divergent copies are reported and
 are never silently overwritten. Only ``--force`` replaces them, except that
 ``--update`` replaces a copy that still matches the tree this installer
-recorded writing (or verifying) there, because such a copy holds no local
-change.
+recorded writing (or verifying) there, or (from a Git checkout, with no record)
+a tree committed in the checkout's history, because such a copy holds no local
+change that replacing it would lose.
 
 Install record: each destination root gets one ``.sensemaking-skills-install.json``
 file beside the Skill directories. It maps a Skill name to the digest of the
@@ -33,6 +34,14 @@ ones. The record lets a later run tell a copy that is merely outdated from one
 that changed after installation. It is setup-skills' own bookkeeping: it does
 not show what a host loaded, and copies written by any other tool are not
 recorded.
+
+Committed history: when the Skill source is a Git checkout, a divergent copy
+with no record is compared with every version of ``skills/<name>`` committed on
+the checkout's branches, tags and remote-tracking refs. A copy whose tree equals
+one of them (byte for byte, or after converting CRLF line endings to LF, which
+is what a Windows checkout writes) is ``historical``: its exact content is
+still in Git, so ``--update`` may replace it. This covers roots installed
+before install records existed. Only read-only Git commands are run.
 """
 
 from __future__ import annotations
@@ -41,6 +50,7 @@ import hashlib
 import json
 import os
 import shutil
+import subprocess
 import sys
 import tempfile
 from datetime import datetime, timezone
@@ -320,6 +330,156 @@ def install_state(
     return "changed"
 
 
+_GIT_TIMEOUT_SECONDS = 120
+
+
+def _git_object_id(hash_name: str, kind: bytes, body: bytes) -> str:
+    return hashlib.new(hash_name, kind + b" %d\0" % len(body) + body).hexdigest()
+
+
+def _git_tree_id(directory: Path, hash_name: str, *, lf_only: bool) -> str | None:
+    """Compute the Git tree id ``directory`` would have if committed as is.
+
+    Every file is taken as a regular non-executable file (mode 100644), which
+    is how every committed Skill file is stored. With ``lf_only``, CRLF line
+    endings in files without NUL bytes are converted to LF first, which undoes
+    a Windows checkout's conversion. Returns ``None`` when the tree holds a
+    symlink, junction or anything that is neither a file nor a directory, so
+    such a copy never matches. Empty directories, which Git cannot hold, are
+    skipped.
+    """
+    entries: list[tuple[bytes, bytes, str]] = []
+    for child in directory.iterdir():
+        if _is_link_like(child):
+            return None
+        name = child.name.encode("utf-8")
+        if child.is_dir():
+            subtree = _git_tree_id(child, hash_name, lf_only=lf_only)
+            if subtree is None:
+                return None
+            if subtree != _git_object_id(hash_name, b"tree", b""):
+                entries.append((b"40000", name, subtree))
+        elif child.is_file():
+            data = child.read_bytes()
+            if lf_only and b"\0" not in data:
+                data = data.replace(b"\r\n", b"\n")
+            entries.append((b"100644", name, _git_object_id(hash_name, b"blob", data)))
+        else:
+            return None
+    # Git orders tree entries by name, comparing a directory as "name/".
+    entries.sort(key=lambda entry: entry[1] + (b"/" if entry[0] == b"40000" else b""))
+    body = b"".join(
+        mode + b" " + name + b"\0" + bytes.fromhex(object_id)
+        for mode, name, object_id in entries
+    )
+    return _git_object_id(hash_name, b"tree", body)
+
+
+class _CommittedSkillHistory:
+    """Look up installed Skill trees among versions committed in a checkout.
+
+    Only constructed for a ``source_checkout`` source whose parent directory is
+    the top level of a Git work tree. Any Git failure makes a lookup return
+    ``None``, so a copy without a match stays ``unrecorded``.
+    """
+
+    def __init__(self, repo_root: Path, hash_name: str) -> None:
+        self.repo_root = repo_root
+        self.hash_name = hash_name
+
+    @classmethod
+    def for_source(cls, package_skills_dir: Path) -> "_CommittedSkillHistory | None":
+        if _skill_source_kind(package_skills_dir) != "source_checkout":
+            return None
+        repo_root = package_skills_dir.parent
+        output = cls._git(repo_root, "rev-parse", "--show-toplevel", "--show-object-format")
+        lines = output.splitlines() if output else []
+        if len(lines) != 2 or lines[1] not in ("sha1", "sha256"):
+            return None
+        try:
+            if Path(lines[0]).resolve() != repo_root.resolve():
+                return None
+        except OSError:
+            return None
+        return cls(repo_root, lines[1])
+
+    @staticmethod
+    def _git(repo_root: Path, *args: str, stdin: str | None = None) -> str | None:
+        try:
+            completed = subprocess.run(
+                ["git", "-C", str(repo_root), *args],
+                input=stdin,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+                timeout=_GIT_TIMEOUT_SECONDS,
+                check=False,
+            )
+        except (OSError, subprocess.SubprocessError):
+            return None
+        if completed.returncode != 0:
+            return None
+        return completed.stdout
+
+    def find(self, skill_name: str, dest_skill: Path) -> dict | None:
+        """Return the newest commit whose ``skills/<name>`` tree equals ``dest_skill``.
+
+        The result has ``commit``, ``date`` and ``line_endings_only`` (True
+        when only CRLF line endings differ). ``None`` when nothing matches.
+        """
+        if _is_link_like(dest_skill) or not dest_skill.is_dir():
+            return None
+        try:
+            exact = _git_tree_id(dest_skill, self.hash_name, lf_only=False)
+            lf_only = _git_tree_id(dest_skill, self.hash_name, lf_only=True)
+        except OSError:
+            return None
+        if exact is None:
+            return None
+        log = self._git(
+            self.repo_root,
+            "log",
+            "--format=%H %cs",
+            "--branches",
+            "--tags",
+            "--remotes",
+            "HEAD",
+            "--",
+            f"skills/{skill_name}",
+        )
+        commits = [line.split(" ", 1) for line in (log or "").splitlines() if " " in line]
+        if not commits:
+            return None
+        batch = self._git(
+            self.repo_root,
+            "cat-file",
+            "--batch-check",
+            stdin="".join(f"{commit}:skills/{skill_name}\n" for commit, _ in commits),
+        )
+        answers = (batch or "").splitlines()
+        if len(answers) != len(commits):
+            return None
+        for (commit, date), answer in zip(commits, answers):
+            fields = answer.split()
+            if len(fields) != 3 or fields[1] != "tree":
+                continue
+            if fields[0] in (exact, lf_only):
+                return {
+                    "commit": commit,
+                    "date": date,
+                    "line_endings_only": fields[0] != exact,
+                }
+        return None
+
+
+def _describe_commit(skill_name: str, match: Mapping) -> str:
+    text = f"skills/{skill_name} in commit {match['commit'][:10]} ({match['date']})"
+    if match.get("line_endings_only"):
+        text += ", apart from CRLF line endings"
+    return text
+
+
 def copy_skill(
     src_skill_dir: Path,
     dest_skills_dir: Path,
@@ -333,6 +493,30 @@ def copy_skill(
     )
 
 
+_REPLACEABLE_BY_UPDATE = ("outdated", "historical")
+"""States whose copy holds nothing that replacing it would lose."""
+
+
+def _classify_install(
+    src_skill: Path,
+    dest_skill: Path,
+    recorded: Mapping | None,
+    history: _CommittedSkillHistory | None,
+) -> Tuple[str, dict | None]:
+    """:func:`install_state`, refined by committed history for unrecorded copies.
+
+    Returns ``(state, match)``. An ``unrecorded`` copy whose tree equals a
+    committed version of its Skill becomes ``historical`` and ``match`` names
+    that commit; every other state is returned unchanged with ``None``.
+    """
+    state = install_state(src_skill, dest_skill, recorded)
+    if state == "unrecorded" and history is not None:
+        match = history.find(src_skill.name, dest_skill)
+        if match is not None:
+            return "historical", match
+    return state, None
+
+
 def _copy_skill_tree(
     src_skill_dir: Path,
     dest_skills_dir: Path,
@@ -342,12 +526,18 @@ def _copy_skill_tree(
     force: bool = False,
     update: bool = False,
     recorded: Mapping | None = None,
+    classified: Tuple[str, Mapping | None] | None = None,
+    history_checked: bool = False,
 ) -> Tuple[bool, str]:
     """Copy one Skill tree, classifying a divergent copy against its record.
 
-    ``recorded`` is this Skill's install-record entry, if any. ``update``
-    replaces only an ``outdated`` copy (see :func:`install_state`); ``force``
-    replaces any divergent copy. Without a record this is :func:`copy_skill`.
+    ``recorded`` is this Skill's install-record entry, if any. ``classified``
+    is a ``(state, match)`` pair from :func:`_classify_install`; without it the
+    state comes from :func:`install_state` and committed history is not used.
+    ``history_checked`` says whether committed history was searched, which only
+    changes the wording for an ``unrecorded`` copy. ``update`` replaces only an
+    ``outdated`` or ``historical`` copy; ``force`` replaces any divergent copy.
+    Without a record or classification this is :func:`copy_skill`.
     """
     src_skill = src_skill_dir / skill_name
     dest_skill = dest_skills_dir / skill_name
@@ -355,7 +545,10 @@ def _copy_skill_tree(
     if not (src_skill / "SKILL.md").exists():
         return False, f"Source SKILL.md not found: {src_skill / 'SKILL.md'}"
 
-    state = install_state(src_skill, dest_skill, recorded)
+    if classified is None:
+        state, match = install_state(src_skill, dest_skill, recorded), None
+    else:
+        state, match = classified
     if state == "current":
         return True, f"Current (already matches packaged version): {skill_name}"
 
@@ -367,6 +560,13 @@ def _copy_skill_tree(
             f"(unchanged since setup-skills {version} recorded it; "
             "use --update to replace it)",
         )
+    if state == "historical" and not (force or update):
+        return (
+            False,
+            f"Different from packaged version: {skill_name} "
+            f"(no install record, but identical to {_describe_commit(skill_name, match)}; "
+            "use --update to replace it)",
+        )
     if state == "changed" and not force:
         return (
             False,
@@ -375,13 +575,21 @@ def _copy_skill_tree(
             "--force overwrites those changes)",
         )
     if state == "unrecorded" and not force:
+        if history_checked and not _is_link_like(dest_skill):
+            return (
+                False,
+                f"Different from packaged version: {skill_name} "
+                "(installed copy diverged; no install record, and no version "
+                "committed in this checkout matches it; inspect it, then use "
+                "--force to overwrite)",
+            )
         return (
             False,
             f"Different from packaged version: {skill_name} "
             "(installed copy diverged; use --force to overwrite)",
         )
 
-    replace_allowed = force or (update and state == "outdated")
+    replace_allowed = force or (update and state in _REPLACEABLE_BY_UPDATE)
     if dest_skill.exists() and not replace_allowed:
         return False, f"Destination already exists: {dest_skill} (use --force to overwrite)"
 
@@ -397,6 +605,11 @@ def _copy_skill_tree(
             return True, (
                 f"Updated {skill_name} -> {dest_skill} "
                 f"(was unchanged since setup-skills {version} recorded it)"
+            )
+        if state == "historical":
+            return True, (
+                f"Updated {skill_name} -> {dest_skill} "
+                f"(was identical to {_describe_commit(skill_name, match)})"
             )
         return True, f"Copied {skill_name} -> {dest_skill}"
     except Exception as exc:
@@ -637,9 +850,11 @@ def setup_skill_profile(
     is the current default. Profiles never change workflow liveness.
 
     ``update`` replaces copies that are unchanged since setup-skills recorded
-    them in the destination's install record; changed or unrecorded copies
-    still need ``force``. Outside dry-run, each root's install record is
-    refreshed for every selected Skill that ends identical to its source.
+    them in the destination's install record and, from a Git checkout, copies
+    without a record that equal a committed version of their Skill; changed or
+    other unrecorded copies still need ``force``. Outside dry-run, each root's
+    install record is refreshed for every selected Skill that ends identical
+    to its source.
     """
     try:
         package_skills_dir = get_package_skills_dir()
@@ -670,7 +885,18 @@ def setup_skill_profile(
 
         all_success = True
         source_kind = _skill_source_kind(package_skills_dir)
-        refused: dict[str, int] = {"outdated": 0, "changed": 0, "unrecorded": 0}
+        history = _CommittedSkillHistory.for_source(package_skills_dir)
+        if verbose:
+            print(
+                "Committed history for unrecorded copies: "
+                + (str(history.repo_root) if history else "not available")
+            )
+        refused: dict[str, int] = {
+            "outdated": 0,
+            "historical": 0,
+            "changed": 0,
+            "unrecorded": 0,
+        }
         for dest_name, dest_dir in destinations:
             print(f"\n{'=' * 60}")
             print(f"Installing to: {dest_name}")
@@ -696,7 +922,9 @@ def setup_skill_profile(
                 src_skill = package_skills_dir / skill_name
                 dest_skill = dest_dir / skill_name
                 recorded = records.get(skill_name)
-                before = install_state(src_skill, dest_skill, recorded)
+                before, match = _classify_install(
+                    src_skill, dest_skill, recorded, history
+                )
                 success, message = _copy_skill_tree(
                     package_skills_dir,
                     dest_dir,
@@ -705,6 +933,8 @@ def setup_skill_profile(
                     force=force,
                     update=update,
                     recorded=recorded,
+                    classified=(before, match),
+                    history_checked=history is not None,
                 )
                 symbol = "+" if success else "x"
                 print(f"  [{symbol}] {message}")
@@ -712,7 +942,7 @@ def setup_skill_profile(
                     all_success = False
                     # Count policy refusals only; a copy that was allowed but
                     # failed (for example rmtree on a link) is not a refusal.
-                    allowed = force or (update and before == "outdated")
+                    allowed = force or (update and before in _REPLACEABLE_BY_UPDATE)
                     if before in refused and not allowed:
                         refused[before] += 1
                 elif not dry_run and record_problem is None:
@@ -784,16 +1014,27 @@ def setup_skill_profile(
             if any(refused.values()):
                 print("Divergent Skill copies refused above were NOT overwritten.")
                 print("Use --force to deliberately replace them.")
+            replaceable = []
             if refused["outdated"]:
-                print(
-                    f"Unchanged since recorded: {refused['outdated']}; "
-                    "--update replaces only these."
+                replaceable.append(f"Unchanged since recorded: {refused['outdated']}")
+            if refused["historical"]:
+                replaceable.append(
+                    "no install record but identical to a committed version: "
+                    f"{refused['historical']}"
                 )
+            if replaceable:
+                replaceable[0] = replaceable[0][0].upper() + replaceable[0][1:]
+                print("; ".join(replaceable) + "; --update replaces only these.")
             if refused["changed"] or refused["unrecorded"]:
+                unrecorded = (
+                    "not matched to an install record or a commit"
+                    if history is not None
+                    else "no install record"
+                )
                 print(
-                    f"Changed since recorded: {refused['changed']}; no install "
-                    f"record: {refused['unrecorded']}. --update never replaces "
-                    "these; inspect them before using --force."
+                    f"Changed since recorded: {refused['changed']}; "
+                    f"{unrecorded}: {refused['unrecorded']}. --update never "
+                    "replaces these; inspect them before using --force."
                 )
 
         return all_success
