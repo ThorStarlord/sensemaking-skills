@@ -317,10 +317,12 @@ def _disclose_relevance_candidates(context: dict, section: Mapping[str, Any], *,
     context["omitted"]["relevance_candidates"] = omitted
     if omitted or capabilities_omitted:
         context["truncated"] = True
+        cut = [f"{count} {label}" for count, label in (
+            (omitted, "relevance candidate(s)"),
+            (capabilities_omitted, "implemented capability record(s)")) if count]
         gaps.append({"category": "relevance_candidates", "status": "TRUNCATED",
-                     "note": f"{omitted} relevance candidate(s) and {capabilities_omitted} implemented "
-                             f"capability entr(ies) are beyond the limit of {limit} and are not returned; "
-                             "omitted candidates are neither listed nor checked for source overlap."})
+                     "note": f"{' and '.join(cut)} beyond the limit of {limit} are not returned. "
+                             "Omitted candidates are neither listed nor checked for source overlap."})
 
 
 def context_for(
