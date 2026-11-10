@@ -153,4 +153,4 @@ sensemaking-skills semantic knowledge-query --db /outside/index.sqlite --reposit
 sensemaking-skills semantic knowledge-audit --db /outside/index.sqlite --repo . --repository owner/repo --indexed-ref "$OLD_SHA" --current-ref "$REF" --json
 ```
 
-No `knowledge-build` operation accepts a dirty checkout; use a clean detached snapshot/worktree. The database path must stay outside target checkout; the generated SQLite file is not a reviewed semantic source. Query results describe declared edges and indexed source, not a validated complete graph.
+None of `knowledge-build`, `knowledge-orient`, `knowledge-check-rules` and exact-source `knowledge-audit` reads dirty bytes; each reads a clean committed revision, from the active checkout when it is clean or from a temporary worktree with `--temporary-checkout`. The database path must stay outside target checkout; the generated SQLite file is not a reviewed semantic source. Query results describe declared edges and indexed source, not a validated complete graph.

@@ -69,13 +69,31 @@ run can leave a worktree entry that `git worktree list` marks prunable.
 `git clone --shared` was not used, because Git ignores `--shared` for a
 shallow source and copies objects instead.
 
+`knowledge-orient`, `knowledge-check-rules` and `knowledge-audit` accept the
+same flag under the same checks and limits; audit applies it to
+`--current-ref`. The JSON output then gains `source_checkout`
+(`temporary_worktree`) and `active_checkout`, which reports `head`,
+`head_matches_source_ref`, `worktree_clean`, `modified_tracked_count`,
+`untracked_count` and `working_changes_read` (always `false`). Everything else
+equals a clean-checkout run at the same commit. Without the flag, a dirty
+checkout or a ref other than the checked-out HEAD is refused, and the refusal
+ends with a hint naming `--temporary-checkout`.
+The temporary worktree belongs to the same repository, so it uses that
+repository's Git configuration and checks out the same bytes as its ordinary
+checkout. A separate clone can differ: under another `core.autocrlf` setting
+its text files have other line endings, and `knowledge-audit` then reports
+every cited source as changed. Observed on one Windows host on 2026-11-10: 442
+of 442 records reported changed from such a clone, against 139 of 442 from a
+worktree of the repository itself.
+
 Other operations: snapshot, search, contradictions, history, changes and
 workspace-impact (see active-workspace recall below).
 Changes also requires --base-ref with a *previously indexed* revision.
 The import-syntax option is --include-python-imports with --max-imports cap.
 
 To inspect whether the **original source evidence** has drifted since an
-indexed revision, while standing in a newer clean target checkout:
+indexed revision, while standing in a newer clean target checkout (or, with
+`--temporary-checkout`, a dirty one):
 
     sensemaking-skills semantic knowledge-audit       --db /tmp/semantic-knowledge.sqlite       --repo . --repository "ThorStarlord/sensemaking-skills"       --indexed-ref "$OLD_SHA" --current-ref "$(git rev-parse HEAD)" --json
 
@@ -144,7 +162,8 @@ sensemaking-skills semantic knowledge-query --db $db --repository $repository `
   and bounded by `--limit`; `uncited_changed_path_total` is the pre-limit
   count, and top-level `truncated` is true when either the affected-record or
   the uncited-path list omits entries. Use
-  `knowledge-audit` for byte-level drift once the checkout is clean.
+  `knowledge-audit` for byte-level drift once the checkout is clean, or with
+  `--temporary-checkout` while it is dirty.
 - For source truth, inspect affected current code, owner documentation,
   tests and architectural alternatives. To retain a reusable decision in
   dirty work, preflight JSON with `knowledge-proposal-check`, run local tests
@@ -544,7 +563,8 @@ S6 richness (other language adapters, domain-specific graph types, optional visu
 ## First-visit repository orientation and bounded structural skeleton
 
 Use `knowledge-orient` to inspect a clean Git checkout without creating
-an index or reading unreviewed product semantics:
+an index or reading unreviewed product semantics. With `--temporary-checkout`,
+it orients a dirty checkout at its committed HEAD:
 
 ```bash
 REF="$(git rev-parse HEAD)"
