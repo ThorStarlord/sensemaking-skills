@@ -401,8 +401,9 @@
       "attributes": {
         "scope": "Delegated construction choice within ADR 0031; not an owner mandate",
         "claim_ceiling": "Source inspection and proposal-check on this proposal before and after the change; unit tests NOT_RUN by construction policy; no independent-agent use observed",
-        "staleness_condition": "Stale if proposal-check starts validating external endpoint attributes, or if placeholders stop carrying the declared kind"
-      }
+        "staleness_condition": "Superseded by the 2026-11-10 file-scoped validation contract; retained as the historical existence-only endpoint choice."
+      },
+      "epistemic_status": "superseded"
     },
     {
       "id": "alternative:carry-external-attributes-into-placeholders",
@@ -532,7 +533,7 @@
         "scope": "Delegated construction choice within ADR 0031 under PATH-1; not an owner mandate. ADR 0033 stays PROPOSED and is not ratified by this record",
         "claim_ceiling": "CLI runs on this repository's records at the implementing commit; unit tests NOT_RUN; independent-agent use and decision benefit NOT TESTED",
         "revisit_when": "If the owner rules on whether path relevance stays ownership-only, or either route changes which records a category holds, re-inspect how the two compose",
-        "composition": "Integrated on 2026-11-10 with decision:verification-relevance-for-unowned-files. On a file no component owns, a verification claim that names the file by exact path is returned in verification_refs, and the records linked from verified components are returned in their categories, so none of them is listed as a candidate; the capability route starts from owning components only and adds nothing there. Candidates exclude every record a category holds, including records the category cut at its limit, which are counted only in that category's omission total. The two routes match citations differently: the verification route needs the exact file: reference, while the citation route also accepts a line or fragment suffix, so a verification claim that cites the file with a suffix is listed as a candidate"
+        "composition": "Integrated on 2026-11-10 with decision:verification-relevance-for-unowned-files. On a file no component owns, a verification claim that identifies the file via authority_ref or via file: evidence (with supported line or fragment qualifiers) is returned in verification_refs, and the records linked from verified components are returned in their categories, so none of them is listed as a candidate; the capability route starts from owning components only and adds nothing there. Candidates exclude every record a category holds, including records the category cut at its limit, which are counted only in that category's omission total. Both routes use the same supported file identity parser for file: evidence with optional :line:N or #fragment qualifiers. Verification evidence of an unowned file enters verification_refs instead of the candidate list. Original evidence citations are preserved, and neither route grants architectural ownership."
       }
     },
     {
@@ -581,7 +582,26 @@
         "scope": "Delegated construction choice for the owner's bounded outcome of 2026-11-09 (pull request 795). Recorded on 2026-11-10 during integration, from that pull request's decision note and the merged code; ADR 0033 stays PROPOSED and is not ratified by this record",
         "rejected_alternatives": "Ownership semantics for test files (ADR 0033 is still PROPOSED). A new tested_file relation (new vocabulary; existing verification records already name the file). Matching every citation of the file (components and decisions cite tests as evidence, which is not verification relevance; those records are listed as relevance candidates instead)",
         "revisit_when": "If the owner rules on whether path relevance stays ownership-only, or ADR 0033 is ratified, re-inspect this route together with decision:relevance-candidates-separate-from-context",
-        "claim_ceiling": "Hosted tests in tests/test_architecture_queries.py cover the route; independent-agent use NOT TESTED"
+        "claim_ceiling": "Original hosted tests covered unowned verification relevance. The new line/fragment identity reconciliation was source-reviewed but no local unit/synthetic qualifier test was added under CLAUDE.md; independent-agent use and decision benefit are NOT TESTED.",
+        "file_reference_contract": "Supported evidence_refs file identities file:path, file:path:line:N and file:path#fragment share a source path via knowledge_sources._local_evidence_path. authority_ref still matches the exact repository path. This is provenance, not ownership or runtime correctness; a verified component requires a separate tested_by edge and a displayed verification record."
+      }
+    },
+    {
+      "id": "decision:proposal-check-file-scoped-source-contract",
+      "kind": "decision",
+      "statement": "knowledge-proposal-check is a read-only, single-pack draft preflight: it checks selected working-file bytes and current Git-index-tracked evidence against other reviewed packs at committed HEAD. It detects cross-pack identity collisions, incoming relationships changed by the proposal, and affected artifact-contract flows, but does not validate unrelated dirty packs, staged blob content, any hypothetical commit or knowledge-build options. The exact clean committed knowledge-build remains the whole-snapshot authority.",
+      "authority_kind": "delegated",
+      "authority_ref": "docs/adr/0031-persistent-semantic-stewardship.md",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/stewardship_validation.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_sources.py",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:skills/repository-semantic-steward/references/reconciliation.md"
+      ],
+      "attributes": {
+        "scope": "Delegated construction choice within ADR 0031, bounded by ADRs 0029 and 0034; not an owner-level product-thesis choice",
+        "claim_ceiling": "Source and PR diff inspection. Local unit and synthetic evidence tests NOT_RUN under CLAUDE.md; no standalone future-commit equivalence claim.",
+        "staleness_condition": "Reinspect if proposal-check begins consuming other dirty packs, staged blobs, structural/import modes, or a new source-state contract."
       }
     }
   ],
@@ -1210,6 +1230,17 @@
       "attributes": {
         "scope": "On a file no component owns, records the verification route returns are excluded from candidates"
       }
+    },
+    {
+      "id": "rel:proposal-file-scoped-supersedes-existence-only",
+      "subject": "decision:proposal-check-file-scoped-source-contract",
+      "predicate": "supersedes",
+      "object": "decision:proposal-check-existence-only-endpoints",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/stewardship_validation.py",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ]
     }
   ]
 }

@@ -11,6 +11,7 @@ import re
 from typing import Any, Iterable, Mapping
 
 from .knowledge import _valid_repo_path, is_path_scope
+from .knowledge_sources import _local_evidence_path
 
 OPERATIONS = frozenset({"rules-for", "term", "orientation-summary", "context-for"})
 NOT_ASSESSED_NOTE = (
@@ -149,11 +150,11 @@ def _test_evidence_verifications(claims: Mapping[str, dict], path: str) -> dict[
     """Verification records that explicitly name this file as authority or evidence.
 
     A reviewed verification claim whose ``authority_ref`` is the file, or whose
-    ``evidence_refs`` cite it as ``file:<path>``, is verification context for it.
+    ``evidence_refs`` identify the file (plain, line-qualified or fragment-
+    qualified), is verification context for it when the file is unowned.
     This is provenance, never ownership: no component is created, and claim kinds
     other than verification that merely cite the file do not qualify.
     """
-    file_ref = f"file:{path}"
     found: dict[str, list[str]] = {}
     for cid, claim in claims.items():
         if claim.get("kind") != "verification":
@@ -161,7 +162,10 @@ def _test_evidence_verifications(claims: Mapping[str, dict], path: str) -> dict[
         reasons = []
         if claim.get("authority_ref") == path:
             reasons.append("authority_ref: this file is the authority of this verification claim")
-        if file_ref in claim.get("evidence_refs", []):
+        if any(
+            isinstance(reference, str) and _local_evidence_path(reference) == path
+            for reference in claim.get("evidence_refs", [])
+        ):
             reasons.append("evidence_ref: this file is cited in this verification claim's evidence")
         if reasons:
             found[cid] = reasons
@@ -191,13 +195,13 @@ _HISTORY_PREDICATES = frozenset({"references", "learned_from", "contradicts"})
 
 
 def _evidence_paths(claim: Mapping[str, Any]) -> set[str]:
-    """Repository paths a reviewed claim cites as ``file:`` evidence, without line or fragment."""
+    """Supported file evidence identities; retain original citations in the record."""
     paths: set[str] = set()
     for reference in claim.get("evidence_refs", []):
-        if isinstance(reference, str) and reference.startswith("file:"):
-            local = reference[5:].split("#", 1)[0]
-            prefix, marker, line = local.rpartition(":line:")
-            paths.add(prefix if marker and line.isdigit() else local)
+        if isinstance(reference, str):
+            path = _local_evidence_path(reference)
+            if path is not None:
+                paths.add(path)
     return paths
 
 

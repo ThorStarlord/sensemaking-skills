@@ -426,7 +426,8 @@ sensemaking-skills semantic knowledge-query --db "$db" --repository "$repository
 - `context.verification_refs`: verification records linked by `tested_by` from
   an owner or a matched rule. For a file that **no component owns**, a
   verification record whose `authority_ref` is that file, or whose `evidence_refs`
-  cite `file:<path>`, is also returned. Its `matched_by` names the link
+  identify it as `file:<path>` (optionally followed by `:line:<N>` or
+  `#<fragment>`), is also returned. Its `matched_by` names the link
   (`authority_ref` or `evidence_ref`). This is verification relevance, never
   ownership: other claim kinds that merely cite the file do not qualify.
 - `context.verified_components`: components that a file-level verification record
@@ -507,12 +508,25 @@ visible without being presented as context that applies:
   alternative, incident, lesson, observation or verification claim whose
   `evidence_refs` cite `file:<path>` or whose `authority_ref` is the path.
   This route also serves a file that no component owns, such as a test. There,
-  a verification claim that names the file by exact path is returned in
-  `verification_refs` by the verification-relevance route and is not listed
-  here. The two routes match citations differently: that route needs the exact
-  `file:<path>` reference, while this one also accepts a `:line:` or `#`
-  suffix, so a verification claim that cites the file with a suffix is listed
-  here as a candidate.
+  a verification claim that identifies the same file in `authority_ref` or
+  `evidence_refs` enters `verification_refs` first, not the candidate list;
+  an explicit `tested_by` relation is required to reach verified components.
+  Other citation-only records remain candidates, never applicable rules or owners.
+
+**File-reference identity contract:** `knowledge_sources._local_evidence_path`
+parses supported repository-local evidence references for both retrieval routes:
+`file:tests/example.py`, `file:tests/example.py:line:42`, and
+`file:tests/example.py#test_case` identify the same tracked source file.
+Matching removes only supported line/fragment qualifiers; returned
+`evidence_refs` keep their exact authored strings and provenance. The
+`authority_ref` file-path route remains exact. Normalized citations do not
+establish architectural applicability, runtime correctness or ownership.
+Verification relevance applies only to `verification` records on unowned
+paths. A component needs a reviewed `tested_by` link to a displayed
+verification record and cannot inherit ownership, contracts or rules through
+that link. Category-limited verification records stay in that category's
+`omitted` totals, not reintroduced as candidates. `NOT_ASSESSED` and
+truncation remain explicit.
 
 Both routes read fields of indexed records only: authored records, and the
 index's own ADR and Grounding Pack claims, which cite their source document. No
@@ -761,6 +775,28 @@ sensemaking-skills semantic knowledge-proposal-check --repo . \
   --proposal .sensemaking/knowledge/my-domain.json --json
 ```
 
-This checks schema, endpoints and Git-tracked local evidence. It does NOT
-establish semantic truth, current committed evidence, or owner authority.
+This is a **single-pack draft preflight**, not a prospective commit validator
+and not a prediction of `knowledge-build` success. The selected proposal is
+read from its current **working-file bytes**, even if differently staged.
+Other reviewed knowledge packs are read from **committed HEAD**, so dirty,
+untracked or deleted *other* packs do not enter this check. Referenced ordinary
+evidence files use current worktree bytes only if Git-index-tracked (including
+staged new paths), and must exist safely. The check validates the proposed
+records and their outgoing references, checks cross-pack claim/relation ID
+collisions, and checks incoming committed relationships affected by changed
+or removed claims. It reuses the build-side artifact-contract flow checker
+for affected flows; unrelated pack defects remain outside scope.
+
+Success does **not** prove a whole working tree, staging index or hypothetical
+commit will build: other dirty packs, deleted or renamed packs, unstaged-vs-staged
+content, unrelated cross-pack defects, optional `--include-repository-structure`
+and `--include-python-imports` are not simulated. File/directory identity
+resolution is only a path preflight, not proof the default or capped structural
+build includes a record. Check the JSON `validation_scope`,
+`dirty_other_packs_ignored`, `structural_path_endpoints_only` and
+`build_equivalence_established: false` fields before relying on a pass.
+A removed proposal file cannot be checked by `--proposal`; deletions and
+multi-pack edits must be checked by the exact-commit builder after commit.
+Neither command establishes semantic truth, current owner authority or
+permission to act.
 For source-pinned indexing, commit the reviewed source/knowledge changes and rebuild the SQLite snapshot at the exact new SHA in the **same current checkout when naturally clean**. A fresh agent or separate clean-room worktree is not a construction prerequisite.
