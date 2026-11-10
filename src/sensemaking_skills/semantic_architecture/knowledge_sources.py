@@ -13,7 +13,7 @@ import re
 import shutil
 import subprocess
 import tempfile
-from collections.abc import Iterator
+from collections.abc import Iterator, Mapping
 from contextlib import contextmanager
 from pathlib import Path
 
@@ -307,13 +307,23 @@ def _validate_authored_contract_flows(
                 raise ValueError(f"authored data flow contradicts artifact contract: {edge.id}")
 
 
-def _authored_records(root: Path, tracked: set[str]) -> tuple[list[KnowledgeClaim], list[KnowledgeRelation]]:
+def _authored_records(
+    root: Path, tracked: set[str], pack_documents: Mapping[str, str] | None = None,
+) -> tuple[list[KnowledgeClaim], list[KnowledgeRelation]]:
+    """Read reviewed packs from the tree, or from ``pack_documents`` when given.
+
+    ``pack_documents`` maps repository-relative pack paths to their text. The
+    proposal preflight uses it to validate the committed packs plus one proposed
+    file without reading the working tree; the indexer passes nothing.
+    """
     claims: list[KnowledgeClaim] = []
     edges: list[KnowledgeRelation] = []
-    for p in sorted(tracked):
+    names = sorted(pack_documents) if pack_documents is not None else sorted(tracked)
+    for p in names:
         if not p.startswith(".sensemaking/knowledge/") or not p.endswith(".json"):
             continue
-        data = json.loads(_source(root, tracked, p).read_text(encoding="utf-8"))
+        text = pack_documents[p] if pack_documents is not None else _source(root, tracked, p).read_text(encoding="utf-8")
+        data = json.loads(text)
         if not isinstance(data, dict) or set(data) != {"schema_version", "claims", "relations"} or data["schema_version"] not in AUTHORED_SCHEMA_VERSIONS:
             raise ValueError(f"invalid authored knowledge document: {p}")
         if not isinstance(data["claims"], list) or not isinstance(data["relations"], list):
@@ -390,8 +400,31 @@ def build_knowledge_snapshot(
     if not 1 <= max_structural_files <= 2000:
         raise ValueError("max_structural_files must be between 1 and 2000")
     root, tracked = verified_tracked_sources(repo_root, target_ref)
+    return assemble_knowledge_snapshot(
+        root, tracked, repository=repository, target_ref=target_ref,
+        include_python_imports=include_python_imports, max_imports=max_imports,
+        include_repository_structure=include_repository_structure,
+        max_structural_files=max_structural_files,
+    )
+
+
+def assemble_knowledge_snapshot(
+    root: Path, tracked: set[str], *,
+    repository: str, target_ref: str,
+    include_python_imports: bool = False,
+    max_imports: int = 1000,
+    include_repository_structure: bool = False,
+    max_structural_files: int = 600,
+    pack_documents: Mapping[str, str] | None = None,
+) -> KnowledgeSnapshot:
+    """Assemble and validate a snapshot from already-resolved sources.
+
+    The indexer calls this with a verified clean checkout. The proposal preflight
+    calls it with the committed tree plus committed-pack text, so both run the
+    same assembly and the same ``validate_snapshot``.
+    """
     claims = [*_grounding_claims(root, tracked), *_adr_claims(root, tracked)]
-    authored_claims, authored_edges = _authored_records(root, tracked)
+    authored_claims, authored_edges = _authored_records(root, tracked, pack_documents)
     claims.extend(authored_claims)
     edges = [*authored_edges]
     limits = list(_LIMITS)

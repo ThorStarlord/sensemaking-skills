@@ -340,23 +340,24 @@
     {
       "id": "decision:proposal-check-existence-only-endpoints",
       "kind": "decision",
-      "statement": "knowledge-proposal-check checks an endpoint whose authored record lives in another file for existence and kind only. That record's own attributes and rule scope are validated where its file is read, so a proposal is not rejected for another file's defect. Kind-dependent relation checks still apply to the endpoint.",
+      "statement": "knowledge-proposal-check validates a proposal as the commit that adds it would contain it: the committed HEAD packs plus the proposal's working bytes, assembled and validated by the same code as knowledge-build (default options and --include-repository-structure). A proposal passes only when both builds accept that commit, and its refusal names the record that causes it. Existing endpoints resolve to their real committed records, so no placeholders are used. The id is kept for reference stability; it no longer describes existence-only endpoint checks.",
       "authority_kind": "delegated",
       "authority_ref": "docs/adr/0031-persistent-semantic-stewardship.md",
       "evidence_refs": [
         "file:src/sensemaking_skills/semantic_architecture/stewardship_validation.py",
-        "file:src/sensemaking_skills/semantic_architecture/knowledge.py"
+        "file:src/sensemaking_skills/semantic_architecture/knowledge.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_sources.py"
       ],
       "attributes": {
         "scope": "Delegated construction choice within ADR 0031; not an owner mandate",
-        "claim_ceiling": "Source inspection and proposal-check on this proposal before and after the change; unit tests NOT_RUN by construction policy; no independent-agent use observed",
-        "staleness_condition": "Stale if proposal-check starts validating external endpoint attributes, or if placeholders stop carrying the declared kind"
+        "claim_ceiling": "Scratch-clone CLI runs of the proposal cases (valid drafts, duplicate claim and relation ids, brief-flow retarget, deleted bounded context, file-identity endpoint) with commit-then-build comparison; build errors unchanged from the baseline source; unit tests NOT_RUN by construction policy; symlink refusal NOT_RUN (no Windows symlink privilege in this session); no independent-agent use observed",
+        "staleness_condition": "Stale if proposal-check stops running the build's assembly and validate_snapshot, starts reading other packs from the working tree instead of HEAD, or accepts a proposal that either build rejects"
       }
     },
     {
       "id": "alternative:carry-external-attributes-into-placeholders",
       "kind": "alternative",
-      "statement": "Rejected alternative: copy an external record's attributes into proposal placeholders so v2 checks run on real data. It reports another file's defect as a proposal failure, and a rule whose scope is given by a relation in a third file would still fail the scope check.",
+      "statement": "Rejected alternative: copy an external record's attributes into proposal placeholders so v2 checks run on real data. Still rejected, and placeholders are no longer used at all: the check reads the committed packs themselves through the build's assembly. A defect already committed in another pack now fails the proposal check, because knowledge-build fails on that same commit.",
       "authority_kind": "delegated",
       "authority_ref": "docs/adr/0031-persistent-semantic-stewardship.md",
       "evidence_refs": [
