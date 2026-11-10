@@ -145,6 +145,29 @@ def _context_item(cid: str, claim: Mapping[str, Any], matched_by: set[str]) -> d
     }
 
 
+def _test_evidence_verifications(claims: Mapping[str, dict], path: str) -> dict[str, list[str]]:
+    """Verification records that explicitly name this file as authority or evidence.
+
+    A reviewed verification claim whose ``authority_ref`` is the file, or whose
+    ``evidence_refs`` cite it as ``file:<path>``, is verification context for it.
+    This is provenance, never ownership: no component is created, and claim kinds
+    other than verification that merely cite the file do not qualify.
+    """
+    file_ref = f"file:{path}"
+    found: dict[str, list[str]] = {}
+    for cid, claim in claims.items():
+        if claim.get("kind") != "verification":
+            continue
+        reasons = []
+        if claim.get("authority_ref") == path:
+            reasons.append("authority_ref: this file is the authority of this verification claim")
+        if file_ref in claim.get("evidence_refs", []):
+            reasons.append("evidence_ref: this file is cited in this verification claim's evidence")
+        if reasons:
+            found[cid] = reasons
+    return found
+
+
 def context_for(
     claims: Mapping[str, dict], relations: Iterable[dict], *, path: str, limit: int,
 ) -> tuple[dict, list[str], list[str]]:
@@ -159,13 +182,21 @@ def context_for(
     records, and linked decision -> constrained_by -> constraint. Returns the context
     and the claim and relation IDs grounding the visible, bounded result, both
     in deterministic order. Category totals may include omitted records.
+
+    A file that no component owns can also reach verification records that name it
+    as authority or evidence, and the components those records verify. Both are
+    relevance, never ownership, and are reported as such.
     """
     edges = list(relations)
     base = rules_for(claims, edges, path=path, limit=len(claims) + len(edges) + 1)
     owners = set(base["owning_components"])
     rule_ids = {rule["claim_id"] for rule in base["applicable_rules"]}
     layer_ids = set(base["layers"]) | set(base["bounded_contexts"])
-    anchors = owners | rule_ids
+    # Verification relevance applies only to a file no component owns, so owned paths
+    # keep their existing response. A component verified by such a record anchors its
+    # decisions, constraints and history; it never becomes an owner of contracts or rules.
+    test_verifications = {} if owners else _test_evidence_verifications(claims, path)
+    base_anchors = owners | rule_ids
     buckets: dict[str, dict[str, set[str]]] = {
         "contracts": {}, "constraints": {}, "decisions": {}, "alternatives": {},
         "history": {}, "verification_refs": {},
@@ -179,6 +210,40 @@ def context_for(
         text = f"{via}relation {rel['subject']} {rel['predicate']} {rel['object']}"
         buckets[bucket].setdefault(target, set()).add(text)
         link_relation_ids[bucket].setdefault(target, set()).add(rel["id"])
+
+    # The verification bucket has two sources: file matches, and tested_by links from
+    # owners and applicable rules. Only owners and rules expand to their verification
+    # records; a verified component adds its decisions, constraints and history, not
+    # every test of it. Built before the verified-component derivation below, because
+    # that derivation must read the bucket's displayed selection.
+    for cid, reasons in test_verifications.items():
+        buckets["verification_refs"][cid] = set(reasons)
+    for rel in edges:
+        if (rel["predicate"] == "tested_by" and rel["subject"] in base_anchors
+                and claims.get(rel["object"], {}).get("kind") == "verification"):
+            link("verification_refs", rel["object"], rel)
+    # A verified component is returned only with a supporting verification record that
+    # this response displays: the first `limit` of the whole verification bucket in
+    # deterministic order. A rule-added record can sort before a file match and displace
+    # it, so visibility comes from that displayed selection, not from file matches alone.
+    # Components supported only by hidden records are counted as omitted, never returned.
+    displayed_verifications = set(sorted(buckets["verification_refs"])[:limit])
+    verified_all: set[str] = set()
+    supported_text: dict[str, set[str]] = {}
+    supported_rel_ids: dict[str, set[str]] = {}
+    for rel in edges:
+        if (rel["predicate"] == "tested_by" and rel["object"] in test_verifications
+                and claims.get(rel["subject"], {}).get("kind") == "component"):
+            verified_all.add(rel["subject"])
+            if rel["object"] in displayed_verifications:
+                supported_text.setdefault(rel["subject"], set()).add(
+                    f"relation {rel['id']}: {rel['subject']} tested_by {rel['object']} "
+                    "(this component is verified by the file's verification record; not ownership)")
+                supported_rel_ids.setdefault(rel["subject"], set()).add(rel["id"])
+    verified_components = sorted(supported_text)[:limit]
+    verified_text = {cid: supported_text[cid] for cid in verified_components}
+    verified_rel_ids = {cid: supported_rel_ids[cid] for cid in verified_components}
+    anchors = base_anchors | set(verified_components)
 
     for rel in edges:
         s, p, o = rel["subject"], rel["predicate"], rel["object"]
@@ -200,8 +265,6 @@ def context_for(
                 link("history", o, rel)
             elif o in anchors and s_kind in HISTORY_KINDS:
                 link("history", s, rel)
-        elif p == "tested_by" and s in anchors and o_kind == "verification":
-            link("verification_refs", o, rel)
         elif p == "belongs_to" and s in owners and o in layer_ids:
             structural_relation_ids.add(rel["id"])
         elif p == "applies_to" and s in rule_ids and o in owners | layer_ids:
@@ -230,12 +293,17 @@ def context_for(
     lists = {"contracts": contracts, "constraints": constraints, "decisions": decisions,
              "alternatives": alternatives, "history": history,
              "verification_refs": verification}
+    verified_list = [_context_item(cid, claims[cid], verified_text[cid]) for cid in verified_components]
     totals = {
         "owning_components": len(owners), "architecture_rules": len(rule_ids),
         "layers": len(base["layers"]), "bounded_contexts": len(base["bounded_contexts"]),
+        "verified_components": len(verified_all),
         **{name: len(group) for name, group in lists.items()},
     }
     omitted = {name: max(0, total - limit) for name, total in totals.items()}
+    # Every verified component not returned counts, including components supported
+    # only by an omitted verification record; the limit arithmetic would undercount.
+    omitted["verified_components"] = len(verified_all) - len(verified_list)
     truncated = any(omitted.values())
 
     gaps: list[dict] = []
@@ -246,6 +314,21 @@ def context_for(
         gaps.append({"category": "ownership", "status": "AMBIGUOUS",
                      "note": f"{len(owners)} reviewed components declare this path; "
                              f"{shown} shown, {len(owners) - shown} omitted by limit."})
+    if test_verifications:
+        gaps.append({"category": "verification_relevance", "status": "NOT_AN_OWNER",
+                     "note": f"No component owns this file. {len(test_verifications)} verification "
+                             "record(s) name it as authority or evidence; those links show relevance only. "
+                             "They do not establish ownership, architectural dependency or runtime behaviour."})
+        if not verified_all:
+            gaps.append({"category": "verified_components", "status": "NOT_ASSESSED",
+                         "note": "No component records a tested_by relation to the verification "
+                                 "record(s) above, so no verified component context is available."})
+        elif len(verified_all) > len(verified_list):
+            gaps.append({"category": "verified_components", "status": "TRUNCATED",
+                         "note": f"{len(verified_all) - len(verified_list)} verified component(s) are "
+                                 "not returned: beyond the limit, or supported only by verification "
+                                 "record(s) the limit omitted. Their decisions, constraints and history "
+                                 "are not expanded."})
     if not rule_ids:
         gaps.append({"category": "architecture_rules", "status": "NOT_ASSESSED",
                      "note": "No rule matched this path by declared scope or graph link. "
@@ -257,7 +340,7 @@ def context_for(
             gaps.append({"category": name, "status": "NOT_ASSESSED", "note": note})
     # Include owner and layer claims as well as the expanded linked categories:
     # a hypothetical owner or constraint is not an established obligation.
-    considered_ids = owners | layer_ids | rule_ids | {
+    considered_ids = owners | layer_ids | rule_ids | set(verified_components) | {
         item["claim_id"] for group in lists.values() for item in group
     }
     inactive = sorted(cid for cid in considered_ids
@@ -294,12 +377,14 @@ def context_for(
         "decisions": decisions[:limit],
         "alternatives": alternatives[:limit],
         "history": history[:limit], "verification_refs": verification[:limit],
+        "verified_components": verified_list[:limit],
         "knowledge_gaps": gaps, "omitted": omitted, "truncated": truncated,
         "note": CONTEXT_NOTE,
     }
     returned: set[str] = {*owner_list, *layer_list, *context_list, *(r["claim_id"] for r in rule_list)}
     for group in (contracts, constraints, decisions, alternatives, history, verification):
         returned.update(item["claim_id"] for item in group[:limit])
+    returned.update(item["claim_id"] for item in verified_list[:limit])
 
     # The global relation envelope should describe visible context, not entries
     # omitted by the independent category limits. Keep every link for a shown
@@ -308,6 +393,8 @@ def context_for(
         rid for name in lists for item in context[name]
         for rid in link_relation_ids[name].get(item["claim_id"], ())
     }
+    selected_relations.update(rid for item in verified_list[:limit]
+                              for rid in verified_rel_ids.get(item["claim_id"], ()))
     selected_relations.update(
         rel["id"] for rel in edges
         if rel["id"] in structural_relation_ids

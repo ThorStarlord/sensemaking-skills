@@ -424,12 +424,32 @@ sensemaking-skills semantic knowledge-query --db "$db" --repository "$repository
   linked decision to a recorded incident, lesson or observation, and is labelled as
   such.
 - `context.verification_refs`: verification records linked by `tested_by` from
-  an owner or a matched rule.
+  an owner or a matched rule. For a file that **no component owns**, a
+  verification record whose `authority_ref` is that file, or whose `evidence_refs`
+  cite `file:<path>`, is also returned. Its `matched_by` names the link
+  (`authority_ref` or `evidence_ref`). This is verification relevance, never
+  ownership: other claim kinds that merely cite the file do not qualify.
+- `context.verified_components`: components that a file-level verification record
+  in this response verifies, linked by `tested_by`. The supporting record must be
+  in `verification_refs`, so a component supported only by an omitted record is
+  not returned. `verification_refs` keeps the first `limit` records in claim-ID
+  order across file matches and rule-linked records, so a rule-linked record can
+  take a slot, hiding a file match and the component that match supports. Their
+  `decided_by` decisions, constraints and history follow the
+  usual explicit links. They are not owners: `ownership` stays `NOT_ASSESSED`,
+  contracts and rules do not follow from them, and their other verification
+  records are not expanded. Relevance is not runtime truth or action authority.
+  Owned paths do not use this route.
 - `context.knowledge_gaps`: `NOT_ASSESSED`, `AMBIGUOUS`, `EPISTEMIC_CAVEAT`,
-  `HYPOTHETICAL_CAVEAT` and `TRUNCATED` entries. An empty category is reported
-  as not assessed, never as
-  the absence of a contract, decision, lesson or test.
-- `context.omitted`: how many records each category held beyond `--limit`.
+  `HYPOTHETICAL_CAVEAT`, `TRUNCATED` and `NOT_AN_OWNER` entries. `NOT_AN_OWNER`
+  (category `verification_relevance`) marks a file that no component owns, with
+  its verification links recorded as relevance only. A `TRUNCATED` entry on
+  `verified_components` marks verified components that were not returned. An
+  empty category is reported as not assessed, never as the absence of a contract,
+  decision, lesson or test.
+- `context.omitted`: how many records each category held beyond `--limit`. For
+  `verified_components` it counts every verified component not returned, including
+  components supported only by an omitted verification record.
 - `context.envelope_reference_coverage`: a **separate** count of claims and
   relations selected by the category context but not returned in the top-level
   query envelope, which is capped globally by `--limit`. The omitted-ID samples

@@ -352,6 +352,7 @@ def query_knowledge(
                 *(rule["claim_id"] for rule in ctx["architecture_rules"]),
                 *ctx["ownership"]["layers"],
                 *ctx["ownership"]["bounded_contexts"],
+                *(item["claim_id"] for item in ctx["verified_components"]),
                 *(item["claim_id"] for name in
                   ("contracts", "constraints", "decisions", "alternatives", "history",
                    "verification_refs")
