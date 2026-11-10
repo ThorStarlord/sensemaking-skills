@@ -1,0 +1,189 @@
+{
+ "audit": {
+  "absent": [],
+  "authored_fields_changed": [
+   "component:semantic-cli",
+   "decision:index-from-temporary-worktree",
+   "inv:index-snapshot-vs-working-overlay",
+   "lesson:source-anchored-context-reentry",
+   "rel:temporary-worktree-decision"
+  ],
+  "counts": {
+   "not_assessed": 0,
+   "source_changed": 235,
+   "source_missing_or_unsafe": 0,
+   "unchanged_source_bytes": 221
+  }
+ },
+ "checkout_clean": true,
+ "cli_file": {
+  "alternatives": [
+   "alternative:automatic-temporary-checkout-fallback",
+   "alternative:dirty-tree-byte-audit",
+   "alternative:ephemeral-index-per-query",
+   "alternative:implicit-index-in-knowledge-query",
+   "alternative:read-committed-bytes-from-git-objects",
+   "alternative:shared-clone-checkout"
+  ],
+  "decisions": [
+   "decision:index-from-temporary-worktree",
+   "decision:workspace-query-derived-commit-index"
+  ]
+ },
+ "composition": {
+  "tests/test_legacy_workflow_planner_fail_closed.py": {
+   "candidate_total": 0,
+   "candidates": [],
+   "constraints": [],
+   "decisions": [
+    "decision:legacy-planner-fails-closed"
+   ],
+   "gaps": {
+    "architecture_rules": "NOT_ASSESSED",
+    "constraints": "NOT_ASSESSED",
+    "contracts": "NOT_ASSESSED",
+    "ownership": "NOT_ASSESSED",
+    "verification_relevance": "NOT_AN_OWNER"
+   },
+   "verification_refs": [
+    "verification:legacy-planner-fail-closed-tests"
+   ],
+   "verified_components": [
+    "component:legacy-workflow-planner"
+   ]
+  },
+  "tests/test_semantic_knowledge.py": {
+   "candidate_total": 0,
+   "candidates": [],
+   "constraints": [
+    "inv:bounded-query-disclosure",
+    "inv:index-snapshot-vs-working-overlay",
+    "inv:source-boundary"
+   ],
+   "decisions": [
+    "decision:index-from-temporary-worktree",
+    "decision:relevance-candidates-separate-from-context",
+    "decision:verification-relevance-for-unowned-files"
+   ],
+   "gaps": {
+    "architecture_rules": "NOT_ASSESSED",
+    "contracts": "NOT_ASSESSED",
+    "ownership": "NOT_ASSESSED",
+    "verification_relevance": "NOT_AN_OWNER"
+   },
+   "verification_refs": [
+    "verification:knowledge-tests",
+    "verification:semantic-knowledge-tests"
+   ],
+   "verified_components": [
+    "component:knowledge-store",
+    "component:semantic-knowledge-plane"
+   ]
+  }
+ },
+ "head": "e395fdd255880cfe1dc38d2c6d9cedec43e39ad1",
+ "hosted_sizes": {
+  "skills/repository-semantic-steward/references/architectural-synthesis-template.md": {
+   "candidates": 0,
+   "claims": 10,
+   "largest_category": 3,
+   "relations": 8
+  },
+  "skills/repository-semantic-steward/references/architecture-exploration.md": {
+   "candidates": 0,
+   "claims": 10,
+   "largest_category": 3,
+   "relations": 8
+  },
+  "skills/repository-semantic-steward/references/recall.md": {
+   "candidates": 1,
+   "claims": 11,
+   "largest_category": 3,
+   "relations": 8
+  },
+  "skills/strategic-repository-analysis/SKILL.md": {
+   "candidates": 0,
+   "claims": 12,
+   "largest_category": 4,
+   "relations": 10
+  },
+  "skills/strategic-repository-analysis/references/creative-prospective-discovery-v1.md": {
+   "candidates": 0,
+   "claims": 12,
+   "largest_category": 4,
+   "relations": 10
+  },
+  "skills/strategic-repository-analysis/references/goal-fitness-and-completion-v1.md": {
+   "candidates": 0,
+   "claims": 12,
+   "largest_category": 4,
+   "relations": 10
+  },
+  "skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md": {
+   "candidates": 2,
+   "claims": 14,
+   "largest_category": 4,
+   "relations": 10
+  },
+  "src/sensemaking_skills/semantic_architecture/knowledge_architecture.py": {
+   "candidates": 2,
+   "claims": 29,
+   "largest_category": 6,
+   "relations": 25
+  },
+  "src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py": {
+   "candidates": 6,
+   "claims": 27,
+   "largest_category": 6,
+   "relations": 23
+  },
+  "src/sensemaking_skills/semantic_architecture/knowledge_store.py": {
+   "candidates": 7,
+   "claims": 28,
+   "largest_category": 6,
+   "relations": 23
+  },
+  "src/sensemaking_skills/workflow_availability.py": {
+   "candidates": 0,
+   "claims": 6,
+   "largest_category": 2,
+   "relations": 4
+  }
+ },
+ "rules": {
+  "findings_total": 0,
+  "rules_total": 10
+ },
+ "store": {
+  "candidates": [
+   "inv:index-snapshot-vs-working-overlay",
+   "adr:0031",
+   "decision:granular-indexed-delta-classification",
+   "decision:workspace-impact-path-overlap",
+   "incident:shared-authored-pack-fingerprint-fanout",
+   "observation:knowledge-query-closed-operations",
+   "verification:granular-delta-classification-tests"
+  ],
+  "decisions": [
+   "decision:relevance-candidates-separate-from-context"
+  ],
+  "gaps": {
+   "contracts": "NOT_ASSESSED",
+   "relevance_candidates": "CANDIDATES_NOT_ESTABLISHED"
+  },
+  "history": [
+   "lesson:console-guard-literal-print-arguments-only",
+   "lesson:distinguish-provenance-content-and-meaning",
+   "lesson:query-completeness-is-evidence",
+   "lesson:separate-clone-changes-audited-bytes",
+   "lesson:uncited-change-is-coverage-gap",
+   "observation:ownership-edit-stranded-store-verification"
+  ],
+  "verification_refs": [
+   "verification:console-output-ascii-guard",
+   "verification:knowledge-tests",
+   "verification:public-api-contract-test"
+  ],
+  "verified_components": []
+ }
+}
