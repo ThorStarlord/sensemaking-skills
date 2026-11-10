@@ -51,7 +51,8 @@ inspected count, truncation, top-level tracked-path distribution, recognized fil
 extensions, candidate product entry documents, manifest examples, and bounded
 source/test examples. It does **not** read document content or run repository code.
 All entries are paths from the current Git index; source meaning requires
-inspection. Without `--temporary-checkout`, the command refuses untracked or dirty source bytes and a ref other than the checked-out HEAD.
+inspection. Without `--temporary-checkout`, the command refuses untracked or
+dirty source bytes and a ref other than the checked-out HEAD.
 
 Defaults: maximum 5000 eligible paths inspected, 16 examples per category.
 Both have bounded CLI options. Source-tree priority prevents archival files

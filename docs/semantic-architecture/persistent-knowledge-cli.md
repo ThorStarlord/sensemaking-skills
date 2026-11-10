@@ -74,17 +74,26 @@ same flag under the same checks and limits; audit applies it to
 `--current-ref`. The JSON output then gains `source_checkout`
 (`temporary_worktree`) and `active_checkout`, which reports `head`,
 `head_matches_source_ref`, `worktree_clean`, `modified_tracked_count`,
-`untracked_count` and `working_changes_read` (always `false`). Everything else
-equals a clean-checkout run at the same commit. Without the flag, a dirty
-checkout or a ref other than the checked-out HEAD is refused, and the refusal
-ends with a hint naming `--temporary-checkout`.
+`untracked_count`, `working_changes_read` (always `false`) and `note`, a fixed
+sentence saying that the active checkout was not read and that its uncommitted
+and untracked changes are not part of the result. Everything else equals a
+clean-checkout run at the same commit. Without the flag, a dirty checkout or a
+ref other than the checked-out HEAD is refused, and the refusal ends with a
+hint naming `--temporary-checkout`. `knowledge-build` reports
+`source_checkout` in both modes and has no `active_checkout` object. These
+three commands add their two keys only with the flag. The refusal of
+`knowledge-build` ends with the same hint.
+
 The temporary worktree belongs to the same repository, so it uses that
 repository's Git configuration and checks out the same bytes as its ordinary
-checkout. A separate clone can differ: under another `core.autocrlf` setting
-its text files have other line endings, and `knowledge-audit` then reports
-every cited source as changed. Observed on one Windows host on 2026-11-10: 442
-of 442 records reported changed from such a clone, against 139 of 442 from a
-worktree of the repository itself.
+checkout. Source fingerprints are taken from the bytes Git checks out, after
+any line-ending conversion that the repository's configuration applies. A
+separate clone can differ: under another `core.autocrlf` setting its text
+files have other line endings, and `knowledge-audit` then reports cited text
+files as changed. Observed on one Windows host on 2026-11-10, in an audit of
+an index of commit `53b667c1` run at commit `baaec6b9`: 442 of 442 records
+reported changed from such a clone, against 139 of 442 from a worktree of the
+repository itself.
 
 Other operations: snapshot, search, contradictions, history, changes and
 workspace-impact (see active-workspace recall below).
