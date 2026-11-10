@@ -192,6 +192,11 @@ inspect relevant later receipts and current knowledge before treating a miss
 as unresolved. A repeated miss is evidence that a source-linked ADD may be
 warranted. It is not by itself proof, and not a quota.
 
+The same reader shows when the last query receipt was written and which
+knowledge commits are dated after it
+(`../../using-sensemaking/references/session-receipt-v1.md` section 4). It does
+not count the claim IDs that receipts list.
+
 ## 6. Validate
 
 When the optional validator is available:

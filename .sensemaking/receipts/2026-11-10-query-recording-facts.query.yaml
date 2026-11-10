@@ -1,0 +1,168 @@
+artifact_id: semantic_query_receipt
+schema_version: 1
+session_ref: 2026-11-10-query-recording-facts
+state: final
+created_at: "2026-11-10T03:05:00Z"
+updated_at: "2026-11-10T04:29:00Z"
+target_repository: ThorStarlord/sensemaking-skills
+modes: [RECALL, RECONCILE]
+decision: "Whether the receipt reader should report the facts that show if knowledge queries are still recorded, and which reviewed records govern the reader before and after the change."
+cli_identity:
+  sensemaking_source_ref: 2bc809b5fd5477a6c6db6155c3fd1c40a4c27a5f
+  invocation_prefix: "PYTHONPATH=src python -m sensemaking_skills.cli (worktree source)"
+  version_output: "python -m sensemaking_skills.cli, version 1.0.0rc5.dev0"
+index:
+  indexed_ref: 2bc809b5fd5477a6c6db6155c3fd1c40a4c27a5f
+  current_head: 2bc809b5fd5477a6c6db6155c3fd1c40a4c27a5f
+  worktree_clean: true
+  uncommitted_changes_not_indexed: false
+queries:
+  - id: QY-1
+    operation: context-for
+    terms: []
+    subject: scripts/summarize-receipts.py
+    expect_kinds: []
+    target_ref: 53b667c17c3e2e65ef2e344ccedfc60296f8d7cd
+    result:
+      hit_count: 7
+      claim_ids: [component:receipt-validator, rule:console-output-ascii, rule:validators-placement, layer:validation, lesson:console-guard-literal-print-arguments-only, verification:console-output-ascii-guard, verification:receipt-validator-tests]
+      truncated: false
+      not_assessed_kinds: [contracts, constraints, decisions, alternatives]
+    outcome: PARTIAL
+    decision_relevant: true
+  - id: QY-2
+    operation: build
+    terms: []
+    subject: null
+    expect_kinds: []
+    target_ref: 2bc809b5fd5477a6c6db6155c3fd1c40a4c27a5f
+    result:
+      hit_count: 0
+      claim_ids: []
+      truncated: false
+      not_assessed_kinds: []
+    outcome: NOT_APPLICABLE
+    decision_relevant: false
+  - id: QY-3
+    operation: proposal-check
+    terms: []
+    subject: .sensemaking/knowledge/architecture.json
+    expect_kinds: []
+    target_ref: null
+    result:
+      hit_count: 0
+      claim_ids: []
+      truncated: false
+      not_assessed_kinds: []
+    outcome: NOT_APPLICABLE
+    decision_relevant: false
+  - id: QY-4
+    operation: context-for
+    terms: []
+    subject: scripts/summarize-receipts.py
+    expect_kinds: []
+    target_ref: 2bc809b5fd5477a6c6db6155c3fd1c40a4c27a5f
+    result:
+      hit_count: 11
+      claim_ids: [component:receipt-validator, rule:console-output-ascii, rule:validators-placement, layer:validation, decision:reader-reports-query-recording-facts, alternative:query-records-its-own-receipt-entry, alternative:retrieval-tallies-from-receipts, lesson:console-guard-literal-print-arguments-only, observation:no-query-receipt-after-2026-10-30, verification:console-output-ascii-guard, verification:receipt-validator-tests]
+      truncated: false
+      not_assessed_kinds: [contracts, constraints]
+    outcome: PARTIAL
+    decision_relevant: true
+  - id: QY-5
+    operation: context-for
+    terms: []
+    subject: skills/using-sensemaking/references/session-receipt-v1.md
+    expect_kinds: []
+    target_ref: 2bc809b5fd5477a6c6db6155c3fd1c40a4c27a5f
+    result:
+      hit_count: 4
+      claim_ids: [rule:runtime-owns-artifact-paths, observation:legacy-brief-producer-bypasses-runtime-paths, observation:legacy-plan-producer-overwrites-tracked-plan, verification:executor-path-handoff-tests]
+      truncated: false
+      not_assessed_kinds: [ownership, contracts, constraints, decisions, alternatives]
+    outcome: NOT_ASSESSED
+    decision_relevant: true
+  - id: QY-6
+    operation: explain
+    terms: []
+    subject: hyp:later-sessions-consult-knowledge
+    expect_kinds: []
+    target_ref: 2bc809b5fd5477a6c6db6155c3fd1c40a4c27a5f
+    result:
+      hit_count: 4
+      claim_ids: [hyp:later-sessions-consult-knowledge, poss:cross-episode-possibility-synthesis, poss:possibility-memory, poss:target-repository-discovery-memory]
+      truncated: false
+      not_assessed_kinds: []
+    outcome: HIT
+    decision_relevant: true
+  - id: QY-7
+    operation: why
+    terms: []
+    subject: decision:reader-reports-query-recording-facts
+    expect_kinds: []
+    target_ref: 2bc809b5fd5477a6c6db6155c3fd1c40a4c27a5f
+    result:
+      hit_count: 5
+      claim_ids: [decision:reader-reports-query-recording-facts, alternative:query-records-its-own-receipt-entry, alternative:retrieval-tallies-from-receipts, component:receipt-validator, observation:no-query-receipt-after-2026-10-30]
+      truncated: false
+      not_assessed_kinds: []
+    outcome: HIT
+    decision_relevant: false
+source_checks:
+  - claim_id: component:receipt-validator
+    sources: ["scripts/validate-receipt.py", "scripts/summarize-receipts.py", ".claude/settings.json"]
+    result: SUPPORTED
+  - claim_id: hyp:later-sessions-consult-knowledge
+    sources: ["artifacts/history/2026-10-23-strategic-repository-analysis.md:199-204", "STATUS.md:256"]
+    result: SUPPORTED
+  - claim_id: lesson:console-guard-literal-print-arguments-only
+    sources: ["scripts/summarize-receipts.py"]
+    result: NOT_CHECKED
+  - claim_id: observation:no-query-receipt-after-2026-10-30
+    sources: [".sensemaking/receipts/2026-10-30-console-ascii-report-output.query.yaml", ".sensemaking/receipts/2026-11-06-post-merge-constraint-surfacing.session.yaml"]
+    result: SUPPORTED
+misses:
+  - id: M-1
+    query_ref: QY-1
+    needed_for: "Decisions and constraints that govern what the receipt reader reports"
+    kind: NOT_ASSESSED
+    resolved_by: "Read docs/adr/0032-session-and-query-receipts.md and session-receipt-v1.md section 4 directly; the decision and its two alternatives were then added and linked to the owning component"
+    follow_up: ADDED
+    proposal_ref: .sensemaking/knowledge/architecture.json
+  - id: M-2
+    query_ref: QY-5
+    needed_for: "Owner and governing decision for the session receipt reference file"
+    kind: NOT_ASSESSED
+    resolved_by: "Read the reference and ADR 0032 directly; no component owns the file, and only a path-scoped rule returned records"
+    follow_up: DEFERRED
+    proposal_ref: null
+reconcile:
+  - claim_id: observation:no-query-receipt-after-2026-10-30
+    disposition: ADD
+    applied: true
+    proposal_ref: .sensemaking/knowledge/architecture.json
+    proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID
+  - claim_id: decision:reader-reports-query-recording-facts
+    disposition: ADD
+    applied: true
+    proposal_ref: .sensemaking/knowledge/architecture.json
+    proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID
+  - claim_id: alternative:retrieval-tallies-from-receipts
+    disposition: ADD
+    applied: true
+    proposal_ref: .sensemaking/knowledge/architecture.json
+    proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID
+  - claim_id: alternative:query-records-its-own-receipt-entry
+    disposition: ADD
+    applied: true
+    proposal_ref: .sensemaking/knowledge/architecture.json
+    proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID
+  - claim_id: component:receipt-validator
+    disposition: CONFIRM
+    applied: false
+    proposal_ref: null
+    proposal_check: NOT_RUN
+persistence: committed
+action_authorized: false
+semantic_truth_established: false
+immutable: true

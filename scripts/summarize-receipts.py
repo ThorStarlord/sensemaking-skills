@@ -15,7 +15,15 @@ It reports, mechanically and without judging meaning:
   - receipts whose declared persistence is non-durable and that HEAD does not
     contain (the declared value is historical: session-receipt-v1 section 3);
   - declared non-durable receipts that HEAD does contain (reported separately);
-  - receipts that fail validation.
+  - receipts that fail validation;
+  - the facts that show whether knowledge queries are still being recorded: the
+    last query receipt, the latest commit that changed reviewed knowledge and
+    how many such commits are dated after that receipt's update, and the
+    sessions naming the Steward that left no query receipt.
+
+It does not count which knowledge records receipts list. Those lists are chosen
+by the session that wrote them, so a count would measure recording habits, not
+retrieval or use.
 
 Exit codes: 0 = every receipt valid (or no receipts), 1 = at least one invalid receipt,
 2 = usage error. Output is ASCII-only.
@@ -29,6 +37,7 @@ import json
 import subprocess
 import sys
 from collections import defaultdict
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -89,7 +98,124 @@ def _committed_receipt_names(repo_root: Path | None, receipt_dir: Path) -> set[s
     return {line[len(prefix):] for line in result.stdout.splitlines() if line.startswith(prefix)}
 
 
-def summarize(receipt_dir: Path, repo_root: Path | None = None) -> dict[str, Any]:
+_KNOWLEDGE_DIR = ".sensemaking/knowledge"
+_STEWARD = "repository-semantic-steward"
+
+
+def _git_lines(repo_root: Path | None, *args: str) -> list[str] | None:
+    """Output lines of one read-only Git command, or None when Git cannot answer."""
+    if repo_root is None:
+        return None
+    try:
+        result = subprocess.run(
+            ["git", "-C", str(repo_root), "-c", "color.ui=never", *args], capture_output=True,
+            text=True, encoding="utf-8", errors="replace", timeout=60, check=False,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return None
+    return result.stdout.splitlines() if result.returncode == 0 else None
+
+
+def _receipt_target(sessions: list[dict], queries: list[dict], override: str | None) -> tuple[str | None, list[str]]:
+    """The repository these receipts describe, and the rivals when that is ambiguous.
+
+    Without an override it is the target most receipts declare, which the output
+    names so a wrong choice is visible. A tie is reported and nothing is counted.
+    """
+    if override:
+        return override, []
+    counts: dict[str, int] = defaultdict(int)
+    for record in sessions + queries:
+        counts[record["data"]["target_repository"]] += 1
+    if not counts:
+        return None, []
+    top = max(counts.values())
+    leaders = sorted(name for name, count in counts.items() if count == top)
+    return (leaders[0], []) if len(leaders) == 1 else (None, leaders)
+
+
+def _knowledge_commits(repo_root: Path | None, receipt_dir: Path, last: dict) -> dict[str, Any]:
+    """Commit dates of reviewed-knowledge changes, set beside the last query receipt's update time.
+
+    Dates are compared as instants and every commit is read, so time zones and
+    out-of-order dates do not matter. The commit that added the receipt is left
+    out. A parallel branch or an imprecise receipt time can still move the count,
+    which is why the latest commit is shown as well.
+    """
+    unknown = {"latest": None, "dated_after_last_query_receipt": None}
+    if repo_root is None:
+        return {**unknown, "note": "no repository given"}
+    shallow = _git_lines(repo_root, "rev-parse", "--is-shallow-repository")
+    if shallow is None:
+        return {**unknown, "note": "not a Git repository"}
+    if shallow and shallow[0].strip() == "true":
+        return {**unknown, "note": "shallow clone"}
+    try:
+        updated = datetime.strptime(last["data"]["updated_at"], "%Y-%m-%dT%H:%M:%SZ").replace(
+            tzinfo=timezone.utc).timestamp()
+        relative = (receipt_dir.resolve() / last["file"]).relative_to(repo_root.resolve()).as_posix()
+    except ValueError:
+        return {**unknown, "note": "receipt time or location could not be read"}
+    log = _git_lines(repo_root, "log", "--no-merges", "--full-history", "--format=%H %ct",
+                     "--", _KNOWLEDGE_DIR)
+    if log is None:
+        return {**unknown, "note": "Git could not list knowledge commits"}
+    adding = _git_lines(repo_root, "log", "--diff-filter=A", "--format=%H", "-1", "--", relative) or []
+    commits = [(line.split()[0], int(line.split()[1])) for line in log if len(line.split()) == 2]
+    latest = max(commits, key=lambda item: item[1], default=None)
+    return {
+        "latest": None if latest is None else {
+            "commit": latest[0],
+            "committed_at": datetime.fromtimestamp(latest[1], timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        },
+        "dated_after_last_query_receipt": sum(
+            1 for commit, when in commits if when > updated and commit not in adding),
+        "note": None,
+    }
+
+
+def _knowledge_recording(
+    sessions: list[dict], queries: list[dict], repo_root: Path | None, receipt_dir: Path,
+    target: str | None, rivals: list[str],
+) -> dict[str, Any]:
+    """Facts about whether knowledge queries are still recorded. No verdict and no tally of use."""
+    if target is None:
+        return {"target_repository": None, "target_ambiguous_between": rivals,
+                "query_receipt_total": None, "last_query_receipt": None, "knowledge_commits": None,
+                "steward_session_total": None, "steward_sessions_without_query_receipt": None,
+                "steward_sessions_without_query_receipt_after_last": None,
+                "other_target_query_receipts": None}
+    local = [r for r in queries if r["data"]["target_repository"] == target]
+    last = max(local, key=lambda r: (r["data"]["updated_at"], r["file"]), default=None)
+    # A companion written for another target still shows that the session recorded its queries.
+    recorded_refs = {r["data"]["session_ref"] for r in queries}
+    steward = [
+        r["data"] for r in sessions
+        if r["data"]["target_repository"] == target and any(
+            _STEWARD in (item.get("capability") or "")
+            for item in r["data"].get("responsibilities") or [])
+    ]
+    missing = [data for data in steward if data["session_ref"] not in recorded_refs]
+    return {
+        "target_repository": target,
+        "target_ambiguous_between": [],
+        "query_receipt_total": len(local),
+        "last_query_receipt": None if last is None else {
+            "receipt": last["file"], "updated_at": last["data"]["updated_at"]},
+        "knowledge_commits": None if last is None else _knowledge_commits(repo_root, receipt_dir, last),
+        "steward_session_total": len(steward),
+        "steward_sessions_without_query_receipt": sorted(data["session_ref"] for data in missing),
+        "steward_sessions_without_query_receipt_after_last": None if last is None else sorted(
+            data["session_ref"] for data in missing
+            if data["updated_at"] > last["data"]["updated_at"]),
+        "other_target_query_receipts": sorted(
+            r["file"] for r in queries if r["data"]["target_repository"] != target),
+    }
+
+
+def summarize(
+    receipt_dir: Path, repo_root: Path | None = None, *, target_repository: str | None = None,
+) -> dict[str, Any]:
     files = sorted(
         p for p in receipt_dir.glob("*.yaml")
         if p.name.endswith(".session.yaml") or p.name.endswith(".query.yaml")
@@ -196,6 +322,8 @@ def summarize(receipt_dir: Path, repo_root: Path | None = None) -> dict[str, Any
         for key, refs in sorted(miss_sessions.items()) if len(refs) >= 2
     ]
 
+    target, rivals = _receipt_target(sessions, queries, target_repository)
+
     return {
         "receipt_dir": str(receipt_dir),
         "receipts": [
@@ -220,7 +348,42 @@ def summarize(receipt_dir: Path, repo_root: Path | None = None) -> dict[str, Any
         "not_durable": not_durable,
         "declared_but_committed": declared_but_committed,
         "invalid": invalid,
+        "knowledge_recording": _knowledge_recording(sessions, queries, repo_root, receipt_dir,
+                                                    target, rivals),
     }
+
+
+def _recording_lines(recording: dict[str, Any]) -> list[str]:
+    if recording["target_ambiguous_between"]:
+        return ["KNOWLEDGE QUERY RECORDING: not reported; receipts name several target repositories "
+                f"equally often ({', '.join(recording['target_ambiguous_between'])}). "
+                "Pass --target-repository."]
+    if recording["target_repository"] is None:
+        return ["KNOWLEDGE QUERY RECORDING: no receipts"]
+    last = recording["last_query_receipt"]
+    lines = [f"KNOWLEDGE QUERY RECORDING ({recording['target_repository']}): "
+             f"{recording['query_receipt_total']} query receipts; last "
+             + (f"{last['receipt']} (updated {last['updated_at']})" if last else "none")]
+    commits = recording["knowledge_commits"]
+    if commits is not None:
+        if commits["note"]:
+            lines.append(f"  commits changing {_KNOWLEDGE_DIR}/ since that update: unknown ({commits['note']})")
+        elif commits["latest"] is None:
+            lines.append(f"  no commit changes {_KNOWLEDGE_DIR}/")
+        else:
+            lines.append(f"  latest non-merge commit changing {_KNOWLEDGE_DIR}/: "
+                         f"{commits['latest']['committed_at']} ({commits['latest']['commit'][:8]}); "
+                         f"{commits['dated_after_last_query_receipt']} such commits are dated after "
+                         "that update")
+    missing = recording["steward_sessions_without_query_receipt"]
+    after = recording["steward_sessions_without_query_receipt_after_last"]
+    lines.append(f"  sessions naming {_STEWARD} without a query receipt: "
+                 f"{len(missing)} of {recording['steward_session_total']}"
+                 + ("" if after is None else f" ({len(after)} updated after the last query receipt)"))
+    if recording["other_target_query_receipts"]:
+        lines.append("  query receipts for another target repository (not counted above): "
+                     f"{len(recording['other_target_query_receipts'])}")
+    return lines
 
 
 def _print_text(summary: dict[str, Any]) -> None:
@@ -271,6 +434,7 @@ def _print_text(summary: dict[str, Any]) -> None:
         f"receipts are immutable): {len(summary['declared_but_committed'])}"
     )
     lines.extend(f"  {n['receipt']} persistence={n['persistence']}" for n in summary["declared_but_committed"])
+    lines.extend(_recording_lines(summary["knowledge_recording"]))
     if summary["invalid"]:
         lines.append("INVALID RECEIPTS (run scripts/validate-receipt.py for detail):")
         lines.extend(f"  {i['file']}: {'; '.join(i['errors'])}" for i in summary["invalid"])
@@ -282,10 +446,13 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--repo", default=".", help="Target repository root (default: current directory)")
     parser.add_argument("--dir", default=None, help=f"Receipt directory (default: <repo>/{_validator.RECEIPT_DIR})")
     parser.add_argument("--json", action="store_true", help="Emit JSON")
+    parser.add_argument("--target-repository", default=None,
+                        help="Repository identity the receipts describe (default: the target most "
+                             "receipts declare; a tie is reported, not guessed)")
     args = parser.parse_args(argv)
 
     receipt_dir = Path(args.dir) if args.dir else Path(args.repo) / _validator.RECEIPT_DIR
-    summary = summarize(receipt_dir, Path(args.repo))
+    summary = summarize(receipt_dir, Path(args.repo), target_repository=args.target_repository)
     if args.json:
         print(_ascii(json.dumps(summary, indent=2)))
     else:

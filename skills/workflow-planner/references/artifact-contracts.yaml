@@ -686,6 +686,7 @@ artifacts:
     notes:
       - "Every decision-relevant query with outcome MISS or NOT_ASSESSED must have a misses entry; NO_MODEL_CHANGE is recorded, not omitted."
       - "Never indexed as knowledge; a recorded miss becomes knowledge only through RECONCILE ADD and normal review."
+      - "scripts/summarize-receipts.py reads updated_at, session_ref and target_repository of query receipts to report the last one and the knowledge commits dated after it. It counts no listed claim IDs."
       - "action_authorized and semantic_truth_established must remain false."
     verification:
       generic_validator: "python scripts/validate-receipt.py {artifact_path}"

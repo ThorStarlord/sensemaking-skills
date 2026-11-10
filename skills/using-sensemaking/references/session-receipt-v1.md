@@ -158,6 +158,18 @@ Then:
    resolutions. Check relevant later receipts and current knowledge before
    treating a miss as unresolved; JSON retains the `pending_misses` name.
 
+5. **KNOWLEDGE QUERY RECORDING** gives the facts that show whether knowledge
+   queries are still being recorded: the last query receipt, the latest
+   non-merge commit that changed `.sensemaking/knowledge/` and how many such
+   commits are dated after that receipt's update, and how many sessions that
+   named `repository-semantic-steward` left no query receipt. It states no
+   verdict. Commit dates are compared with the time the receipt declares, so a
+   parallel branch or an imprecise receipt time can move the count, and a
+   shallow clone or a missing repository is reported as unknown. A gap is a
+   reason to record this session's queries, not a finding about any agent. The
+   reader does not count which records receipts list: those lists are chosen by
+   the session that wrote them.
+
 A receipt is evidence about a past session. It does not override current code,
 current owner intent or the current Level-3 projection. In an open-ended
 selection, a recent `next` or repeated same-subsystem recommendations must be
