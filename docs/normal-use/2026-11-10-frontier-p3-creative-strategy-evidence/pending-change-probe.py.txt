@@ -1,0 +1,54 @@
+"""Planner probe (P3 Phase A): what would a pending-change view say about today's open PR heads?
+Read-only: git object reads plus the existing workspace-impact query against the base index."""
+import json, os, subprocess, sys, itertools
+sys.path.insert(0, "src")
+from sensemaking_skills.semantic_architecture.knowledge_store import query_knowledge
+
+BASE = "origin/main"
+REFS = {"795": "origin/claude/context-for-test-evidence", "796": "origin/claude/context-for-relevance-candidates",
+        "797": "origin/claude/recorded-knowledge-retrieval", "801": "origin/claude/workspace-knowledge-query",
+        "794": "origin/claude/sequential-autonomy-pilot-002"}
+DB = os.path.expandvars(r"%LOCALAPPDATA%\sensemaking-skills\index\5132fe7917773ebd\baaec6b92f87a00dbcefdbf865da04f86d5ce59f.sqlite")
+def git(*a):
+    return subprocess.run(["git", *a], capture_output=True, text=True, encoding="utf-8").stdout
+base_sha = git("rev-parse", BASE).strip()
+def packs(ref):
+    out = {}
+    for p in git("ls-tree", "-r", "--name-only", ref, ".sensemaking/knowledge/").split():
+        if p.endswith(".json"):
+            d = json.loads(git("show", f"{ref}:{p}"))
+            for c in d["claims"]: out[c["id"]] = ("claim", p, c)
+            for r in d["relations"]: out[r["id"]] = ("relation", p, r)
+    return out
+info = {}
+for n, ref in REFS.items():
+    mb = git("merge-base", BASE, ref).strip()
+    paths = [p for p in git("diff", "--name-only", "--no-renames", mb, ref).split("\n") if p]
+    a, b = packs(mb), packs(ref)
+    added = sorted(k for k in b if k not in a); removed = sorted(k for k in a if k not in b)
+    revised = sorted(k for k in b if k in a and b[k][2] != a[k][2])
+    wi = query_knowledge(DB, repository="ThorStarlord/sensemaking-skills", target_ref=base_sha, operation="workspace-impact",
+                         limit=250, workspace_changed_paths=frozenset(paths))["workspace_impact"]
+    aff = {r["id"]: r for r in wi["affected_records"]}
+    info[n] = dict(mb=mb[:8], paths=paths, added=added, removed=removed, revised=revised, aff=aff,
+                   uncited=wi.get("uncited_changed_paths", []), b=b)
+    claims_added = [k for k in added if b[k][0] == "claim"]
+    print(f"\n=== PR {n}  merge-base {mb[:8]}  files {len(paths)}")
+    for k in claims_added:
+        c = b[k][2]; print(f"   + {k} [{c.get('kind')}; authority={c.get('authority_kind')}]")
+    for k in revised:
+        if b[k][0] == "claim": print(f"   ~ {k} [{b[k][2].get('kind')}]")
+    aff_claims = sorted(k for k, r in aff.items() if not k.startswith("rel:"))
+    kinds = {}
+    for k in aff_claims: kinds[k.split(":")[0]] = kinds.get(k.split(":")[0], 0) + 1
+    print(f"   existing records citing changed files: {len(aff_claims)} claims {kinds}; uncited changed paths: {len(info[n]['uncited'])}")
+    dec = [k for k in aff_claims if k.split(":")[0] in ("decision", "adr", "inv", "rule", "contract", "con", "goal")]
+    print("   standing commitments touched:", dec[:14])
+print("\n=== pairwise")
+for x, y in itertools.combinations(REFS, 2):
+    f = sorted(set(info[x]["paths"]) & set(info[y]["paths"]))
+    recs_rev = sorted((set(info[x]["added"]) | set(info[x]["revised"])) & (set(info[y]["added"]) | set(info[y]["revised"])))
+    shared_aff = sorted(k for k in set(info[x]["aff"]) & set(info[y]["aff"]) if not k.startswith("rel:"))
+    mt = subprocess.run(["git", "merge-tree", "--write-tree", "--name-only", REFS[x], REFS[y]], capture_output=True, text=True)
+    conflict = [l for l in mt.stdout.split("\n")[1:] if l and not l.startswith(("Auto-merging", "CONFLICT"))][:6] if mt.returncode else []
+    print(f"{x} x {y}: same files {len(f)} {f[:5]}; records written by both {recs_rev[:6]}; shared cited records {len(shared_aff)}; textual conflict in {conflict}")
