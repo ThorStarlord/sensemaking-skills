@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import json
+import re
+from contextlib import contextmanager
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any, Callable, Iterator
 
 import click
 
@@ -36,11 +38,61 @@ from .semantic_architecture.knowledge_store import (
 )
 
 
+_TEMPORARY_CHECKOUT_REFUSALS = (
+    "dirty or untracked worktree: source bytes cannot be pinned",
+    "target_ref does not equal the checked-out Git HEAD",
+)
+_TEMPORARY_CHECKOUT_HINT = (
+    " (pass --temporary-checkout to read the committed revision from a temporary worktree)"
+)
+
+
 def _emit(payload: dict[str, Any], *, output_json: bool) -> None:
     if output_json:
         click.echo(json.dumps(payload, sort_keys=True, ensure_ascii=False))
     else:
         click.echo(json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=False))
+
+
+def _refusal(exc: Exception, *, temporary_checkout: bool) -> click.ClickException:
+    """Map a refusal to a one-line ClickException, hinting the flag for pin refusals."""
+    message = str(exc)
+    if not temporary_checkout and message in _TEMPORARY_CHECKOUT_REFUSALS:
+        message += _TEMPORARY_CHECKOUT_HINT
+    return click.ClickException(message)
+
+
+@contextmanager
+def _pinned_source(repo_root: Path, ref: str, temporary_checkout: bool) -> Iterator[Path]:
+    """Yield the directory to read: the active checkout, or a temporary committed worktree."""
+    if not temporary_checkout:
+        yield repo_root
+        return
+    with temporary_commit_checkout(repo_root, ref) as checkout:
+        yield checkout
+
+
+def _temporary_checkout_disclosure(repo_root: Path, ref: str) -> dict[str, Any]:
+    """Describe the active checkout's relation to the committed ref; read Git metadata only.
+
+    Runs before the temporary checkout exists. The ref check repeats the message
+    that temporary_commit_checkout gives, so a malformed ref keeps the same error.
+    """
+    if not re.fullmatch(r"[0-9a-f]{40}", ref):
+        raise ValueError("target_ref must be a full 40-character Git SHA")
+    context = inspect_worktree_context(repo_root, ref)
+    return {
+        "source_checkout": "temporary_worktree",
+        "active_checkout": {
+            "head": context["current_head"],
+            "head_matches_source_ref": context["head_matches_indexed_ref"],
+            "worktree_clean": context["worktree_clean"],
+            "modified_tracked_count": context["modified_tracked_count"],
+            "untracked_count": context["untracked_count"],
+            "working_changes_read": False,
+            "note": "The active checkout was not read; its uncommitted and untracked changes are not part of this result.",
+        },
+    }
 
 
 def _write_payload(path: Path | None, payload: dict[str, Any]) -> None:
@@ -118,7 +170,7 @@ def register_semantic_commands(root_cli: click.Group) -> None:
                 snapshot = build(repo_root)
             payload = store_snapshot(db_path, snapshot, source_root=repo_root)
         except (ValueError, OSError, UnicodeError, KeyError, TypeError) as exc:
-            raise click.ClickException(str(exc)) from exc
+            raise _refusal(exc, temporary_checkout=temporary_checkout) from exc
         payload["code"] = "SEMANTIC_KNOWLEDGE_INDEXED"
         payload["source_checkout"] = "temporary_worktree" if temporary_checkout else "active_checkout"
         payload["source_scope"] = list(snapshot.source_scope)
@@ -128,62 +180,70 @@ def register_semantic_commands(root_cli: click.Group) -> None:
     @semantic_group.command(name="knowledge-orient")
     @click.option("--repo", "repo_root", required=True, type=click.Path(exists=True, file_okay=False, path_type=Path))
     @click.option("--repository", "repository_id", required=True, help="Explicit repository identity")
-    @click.option("--target-ref", required=True, help="Exact 40-character SHA of clean checked-out HEAD")
+    @click.option("--target-ref", required=True, help="Exact 40-character SHA of clean checked-out HEAD (any local commit with --temporary-checkout)")
     @click.option("--max-files", type=click.IntRange(1, 20000), default=5000)
     @click.option("--sample-limit", type=click.IntRange(1, 50), default=16)
     @click.option("--db", "db_path", type=click.Path(exists=True, dir_okay=False, path_type=Path),
                   default=None, help="Optional existing semantic index for revision-specific knowledge counts")
+    @click.option("--temporary-checkout", is_flag=True, help="Read --target-ref from a temporary detached worktree outside --repo, so the active checkout may be dirty or at another commit; only committed bytes are read")
     @click.option("--json", "output_json", is_flag=True)
     def semantic_knowledge_orient(
         repo_root: Path, repository_id: str, target_ref: str,
-        max_files: int, sample_limit: int, db_path: Path | None, output_json: bool,
+        max_files: int, sample_limit: int, db_path: Path | None, temporary_checkout: bool, output_json: bool,
     ) -> None:
         """Orient at pinned Git HEAD without reading unreviewed semantics or mutating sources."""
         try:
-            root, tracked = verified_tracked_sources(repo_root, target_ref)
-            payload = orient_repository(
-                root, tracked, repository=repository_id, target_ref=target_ref,
-                max_files=max_files, sample_limit=sample_limit,
-            )
-            if db_path is not None:
-                indexed = query_knowledge(
-                    db_path, repository=repository_id, target_ref=target_ref,
-                    operation="snapshot", limit=1,
+            disclosure = _temporary_checkout_disclosure(repo_root, target_ref) if temporary_checkout else {}
+            with _pinned_source(repo_root, target_ref, temporary_checkout) as source_root:
+                root, tracked = verified_tracked_sources(source_root, target_ref)
+                payload = orient_repository(
+                    root, tracked, repository=repository_id, target_ref=target_ref,
+                    max_files=max_files, sample_limit=sample_limit,
                 )
-                payload["knowledge_index"] = {
-                    "counts": indexed["counts"],
-                    "source_scope": indexed["source_scope"],
-                    "limits": indexed["explicit_limits"],
-                    "semantic_truth_established": False,
-                }
+                if db_path is not None:
+                    indexed = query_knowledge(
+                        db_path, repository=repository_id, target_ref=target_ref,
+                        operation="snapshot", limit=1,
+                    )
+                    payload["knowledge_index"] = {
+                        "counts": indexed["counts"],
+                        "source_scope": indexed["source_scope"],
+                        "limits": indexed["explicit_limits"],
+                        "semantic_truth_established": False,
+                    }
+                payload.update(disclosure)
         except (ValueError, OSError, UnicodeError, KeyError, TypeError) as exc:
-            raise click.ClickException(str(exc)) from exc
+            raise _refusal(exc, temporary_checkout=temporary_checkout) from exc
         payload["code"] = "SEMANTIC_REPOSITORY_ORIENTATION"
         _emit(payload, output_json=output_json)
 
     @semantic_group.command(name="knowledge-check-rules")
     @click.option("--repo", "repo_root", required=True, type=click.Path(exists=True, file_okay=False, path_type=Path),
-                  help="Exact clean Git checkout whose committed authored rules are checked")
-    @click.option("--target-ref", required=True, help="Exact committed HEAD SHA of the checkout")
+                  help="Exact Git checkout root whose committed authored rules are checked (clean unless --temporary-checkout)")
+    @click.option("--target-ref", required=True, help="Exact committed HEAD SHA of the checkout (any local commit with --temporary-checkout)")
+    @click.option("--temporary-checkout", is_flag=True, help="Read --target-ref from a temporary detached worktree outside --repo, so the active checkout may be dirty or at another commit; only committed bytes are read")
     @click.option("--json", "output_json", is_flag=True)
-    def semantic_knowledge_check_rules(repo_root: Path, target_ref: str, output_json: bool) -> None:
+    def semantic_knowledge_check_rules(repo_root: Path, target_ref: str, temporary_checkout: bool, output_json: bool) -> None:
         """Report possible dependency-rule violations. Warning-only; never fails."""
         from .semantic_architecture.knowledge import record_dict
         from .semantic_architecture.knowledge_architecture import check_rule_findings
         from .semantic_architecture.knowledge_sources import _authored_records, _source
 
         try:
-            root, tracked = verified_tracked_sources(repo_root, target_ref)
-            claims, relations = _authored_records(root, tracked)
-            claim_map = {c.id: record_dict(c) for c in claims}
-            payload = check_rule_findings(
-                claim_map,
-                read_source=lambda rel: _source(root, tracked, rel).read_text(encoding="utf-8", errors="replace"),
-                tracked=tracked,
-                relations=[record_dict(r) for r in relations],
-            )
+            disclosure = _temporary_checkout_disclosure(repo_root, target_ref) if temporary_checkout else {}
+            with _pinned_source(repo_root, target_ref, temporary_checkout) as source_root:
+                root, tracked = verified_tracked_sources(source_root, target_ref)
+                claims, relations = _authored_records(root, tracked)
+                claim_map = {c.id: record_dict(c) for c in claims}
+                payload = check_rule_findings(
+                    claim_map,
+                    read_source=lambda rel: _source(root, tracked, rel).read_text(encoding="utf-8", errors="replace"),
+                    tracked=tracked,
+                    relations=[record_dict(r) for r in relations],
+                )
+                payload.update(disclosure)
         except (ValueError, OSError, UnicodeError) as exc:
-            raise click.ClickException(str(exc)) from exc
+            raise _refusal(exc, temporary_checkout=temporary_checkout) from exc
         payload.update({"repository_target_ref": target_ref, "action_authorized": False,
                         "semantic_truth_established": False})
         _emit(payload, output_json=output_json)
@@ -390,21 +450,25 @@ def register_semantic_commands(root_cli: click.Group) -> None:
     @click.option("--repo", "repo_root", required=True, type=click.Path(exists=True, file_okay=False, path_type=Path))
     @click.option("--repository", "repository_id", required=True)
     @click.option("--indexed-ref", required=True, help="Historical snapshot already in SQLite")
-    @click.option("--current-ref", required=True, help="Exact clean Git HEAD currently checked out")
+    @click.option("--current-ref", required=True, help="Exact clean Git HEAD currently checked out (any local commit with --temporary-checkout)")
     @click.option("--limit", type=click.IntRange(1, 500), default=100)
+    @click.option("--temporary-checkout", is_flag=True, help="Read --current-ref from a temporary detached worktree outside --repo, so the active checkout may be dirty or at another commit; only committed bytes are read")
     @click.option("--json", "output_json", is_flag=True)
     def semantic_knowledge_audit(
         db_path: Path, repo_root: Path, repository_id: str,
-        indexed_ref: str, current_ref: str, limit: int, output_json: bool,
+        indexed_ref: str, current_ref: str, limit: int, temporary_checkout: bool, output_json: bool,
     ) -> None:
         """Audit source drift without deciding whether historical claims remain valid."""
         try:
-            payload = audit_knowledge_sources(
-                db_path, repository=repository_id, indexed_ref=indexed_ref,
-                current_repo_root=repo_root, current_ref=current_ref, limit=limit,
-            )
+            disclosure = _temporary_checkout_disclosure(repo_root, current_ref) if temporary_checkout else {}
+            with _pinned_source(repo_root, current_ref, temporary_checkout) as source_root:
+                payload = audit_knowledge_sources(
+                    db_path, repository=repository_id, indexed_ref=indexed_ref,
+                    current_repo_root=source_root, current_ref=current_ref, limit=limit,
+                )
+                payload.update(disclosure)
         except (ValueError, OSError, UnicodeError) as exc:
-            raise click.ClickException(str(exc)) from exc
+            raise _refusal(exc, temporary_checkout=temporary_checkout) from exc
         payload["code"] = "SEMANTIC_KNOWLEDGE_SOURCE_AUDIT"
         _emit(payload, output_json=output_json)
 

@@ -129,7 +129,7 @@
     {
       "id": "inv:index-snapshot-vs-working-overlay",
       "kind": "invariant",
-      "statement": "Exact-source semantic index builds require a clean, pinned committed HEAD. Recall can query an existing committed index while the active working tree is dirty, but workspace context must disclose unindexed changes and must not promote that working overlay into indexed truth.",
+      "statement": "Exact-source index builds, orientation, rule checks and source audits read only a clean, pinned committed revision: the checked-out HEAD, or any local commit through a temporary worktree. Recall can query an existing committed index while the active working tree is dirty, but workspace context must disclose unindexed changes and must not promote that working overlay into indexed truth.",
       "authority_kind": "document",
       "authority_ref": "docs/semantic-architecture/persistent-knowledge-cli.md",
       "evidence_refs": [
@@ -290,7 +290,7 @@
     {
       "id": "decision:index-from-temporary-worktree",
       "kind": "decision",
-      "statement": "knowledge-build --temporary-checkout indexes target-ref from a temporary detached git worktree outside the checkout, then removes it, so a dirty active checkout (for example an untracked session receipt) or a historical base revision needs no hand-made clean clone. The clean-source check is unchanged rather than exempting untracked files or reading dirty bytes. Hooks and configured external filters are disabled, and a commit that assigns a filter to a tracked path is refused.",
+      "statement": "--temporary-checkout on knowledge-build, knowledge-orient, knowledge-check-rules and knowledge-audit reads the named commit from a temporary detached git worktree outside the checkout, then removes it, so a dirty active checkout (for example an untracked session receipt) or another local commit needs no hand-made clean clone. The flag is opt-in and the clean-source check is unchanged rather than exempting untracked files or reading dirty bytes. Hooks and configured external filters are disabled, and a commit that assigns a filter to a tracked path is refused. Orient, check-rules and audit report the unread active checkout in source_checkout and active_checkout.",
       "authority_kind": "delegated",
       "authority_ref": "docs/semantic-architecture/persistent-knowledge-cli.md",
       "evidence_refs": [
@@ -300,7 +300,8 @@
       ],
       "attributes": {
         "scope": "Delegated construction choice within ADR 0031; not an owner mandate",
-        "claim_ceiling": "Manual CLI probes on one shallow cloud checkout and disposable repositories; unit tests NOT_RUN; independent-agent use NOT TESTED"
+        "claim_ceiling": "knowledge-build: manual CLI probes on one shallow cloud checkout and disposable repositories. Orient, check-rules and audit: real-CLI probes on one Windows host, on scratch repositories and this repository; unit tests NOT_RUN; independent-agent use NOT TESTED",
+        "revision_note": "2026-11-10: extended from knowledge-build to the three other commit-pinned commands"
       }
     },
     {
@@ -315,6 +316,54 @@
       "attributes": {
         "disposition": "rejected",
         "scope": "Observed on this repository's shallow cloud checkout on 2026-10-28; revisit only if shallow sources need not be supported"
+      }
+    },
+    {
+      "id": "alternative:automatic-temporary-checkout-fallback",
+      "kind": "alternative",
+      "statement": "Rejected alternative: fall back to a temporary checkout automatically whenever the active checkout is dirty. It would change a fail-closed default that hosted tests pin, pay for a full checkout the caller did not ask for, and let a caller miss that uncommitted edits were not read.",
+      "authority_kind": "delegated",
+      "authority_ref": "docs/semantic-architecture/persistent-knowledge-cli.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:tests/test_architecture_rule_checker.py",
+        "file:tests/test_repository_bootstrap.py"
+      ],
+      "attributes": {
+        "disposition": "rejected",
+        "scope": "Rejected 2026-11-10; revisit if agents are observed to skip audit or rule checks because the refusal hint does not lead them to the flag"
+      }
+    },
+    {
+      "id": "alternative:read-committed-bytes-from-git-objects",
+      "kind": "alternative",
+      "statement": "Deferred alternative: read committed bytes from Git objects instead of checking the commit out. It would remove the checkout cost, but source fingerprints are taken from checked-out bytes, which Git can convert (line endings, filters); an object reader would be a second byte path that has to agree with every index already built.",
+      "authority_kind": "delegated",
+      "authority_ref": "docs/semantic-architecture/persistent-knowledge-cli.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_sources.py"
+      ],
+      "attributes": {
+        "disposition": "deferred",
+        "scope": "Deferred 2026-11-10; revisit when the checkout cost is shown to deter use and index building can move to the same reader in the same change"
+      }
+    },
+    {
+      "id": "lesson:separate-clone-changes-audited-bytes",
+      "kind": "lesson",
+      "statement": "A separate clone is not a neutral clean checkout for knowledge-audit. Source fingerprints are taken from checked-out bytes, after any line-ending conversion, so in a clone made under another core.autocrlf setting cited text files read as changed. A temporary worktree of the same repository uses that repository's configuration and checks out the same bytes as its ordinary checkout; the flag does not make differently configured clones agree.",
+      "authority_kind": "document",
+      "authority_ref": "docs/semantic-architecture/persistent-knowledge-cli.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_store.py"
+      ],
+      "epistemic_status": "observed",
+      "attributes": {
+        "scope": "Observed on one Windows host on 2026-11-10, auditing an index of commit 53b667c1 at commit baaec6b9: 442 of 442 records reported changed from a clone made under the system default core.autocrlf=true, with and without --temporary-checkout, against 139 of 442 from a worktree of the repository. An independent reviewer reproduced both counts. Other conversions (filters, working-tree-encoding) not probed",
+        "decision_changed": "Whether an audit run from a hand-made clone can be trusted, and why --temporary-checkout materializes a worktree rather than a clone"
       }
     },
     {
@@ -690,7 +739,7 @@
         "file:src/sensemaking_skills/semantic_architecture/knowledge_sources.py"
       ],
       "attributes": {
-        "scope": "Index-build source materialization only"
+        "scope": "Source materialization for build, orient, check-rules and audit"
       }
     },
     {
@@ -725,6 +774,60 @@
       "attributes": {
         "disposition": "rejected alternative"
       }
+    },
+    {
+      "id": "rel:temporary-worktree-not-automatic-fallback",
+      "subject": "decision:index-from-temporary-worktree",
+      "predicate": "references",
+      "object": "alternative:automatic-temporary-checkout-fallback",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_cli.py"
+      ],
+      "attributes": {
+        "disposition": "rejected alternative"
+      }
+    },
+    {
+      "id": "rel:temporary-worktree-not-git-objects",
+      "subject": "decision:index-from-temporary-worktree",
+      "predicate": "references",
+      "object": "alternative:read-committed-bytes-from-git-objects",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_sources.py"
+      ],
+      "attributes": {
+        "disposition": "deferred alternative"
+      }
+    },
+    {
+      "id": "rel:semantic-cli-temporary-worktree-decision",
+      "subject": "component:semantic-cli",
+      "predicate": "decided_by",
+      "object": "decision:index-from-temporary-worktree",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_cli.py"
+      ],
+      "attributes": {
+        "scope": "The four commands that accept --temporary-checkout"
+      }
+    },
+    {
+      "id": "rel:separate-clone-lesson-origin",
+      "subject": "lesson:separate-clone-changes-audited-bytes",
+      "predicate": "learned_from",
+      "object": "decision:index-from-temporary-worktree",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ]
+    },
+    {
+      "id": "rel:store-references-separate-clone-lesson",
+      "subject": "component:knowledge-store",
+      "predicate": "references",
+      "object": "lesson:separate-clone-changes-audited-bytes",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_store.py"
+      ]
     },
     {
       "id": "rel:knowledge-plane-clean-index-tested",
