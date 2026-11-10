@@ -398,6 +398,10 @@ def query_knowledge(
                     selected_relation_ids=selected_relations,
                     changed_paths=workspace_changed_paths, target_path=subject,
                     limit=limit, context_truncated=extra["context"]["truncated"],
+                    candidate_claim_ids=frozenset(
+                        item["claim_id"] for item in ctx["relevance_candidates"]["items"]),
+                    candidate_relation_ids=frozenset(
+                        ctx["relevance_candidates"]["route_relation_ids"]),
                 )
                 if extra["context"]["workspace_relevance"]["affected_records_omitted"]:
                     extra_truncated = True

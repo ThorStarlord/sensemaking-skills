@@ -121,21 +121,28 @@ def context_workspace_overlap(
     selected_claim_ids: list[str], selected_relation_ids: list[str],
     changed_paths: frozenset[str], target_path: str, limit: int,
     context_truncated: bool,
+    candidate_claim_ids: frozenset[str] = frozenset(),
+    candidate_relation_ids: frozenset[str] = frozenset(),
 ) -> dict:
     """Read-only source-path overlap for records selected by context-for.
 
     A changed cited file is a re-inspection candidate, never a finding that the
     authored claim is wrong. Source fingerprints describe the indexed commit,
-    not the working-tree overlay.
+    not the working-tree overlay. Records named in the candidate ID sets are
+    relevance candidates and their route relations, not ownership-anchored
+    context, and are labelled so.
     """
     relation_ids = set(selected_relation_ids)
     selected = (
         [("claim", claims[cid]) for cid in selected_claim_ids if cid in claims]
         + [("relation", r) for r in relations if r["id"] in relation_ids]
     )
+    candidate_ids = {"claim": candidate_claim_ids, "relation": candidate_relation_ids}
     affected: list[dict] = []
     without_fingerprints = 0
     mechanical = 0
+    candidate_total = sum(1 for record_type, record in selected
+                          if record["id"] in candidate_ids[record_type])
     for record_type, record in selected:
         if _is_mechanical(record):
             mechanical += 1
@@ -152,11 +159,16 @@ def context_workspace_overlap(
                 "record_type": record_type, "id": record["id"],
                 "record_source_changed": source_path in overlap,
                 "changed_evidence_sources": [p for p in overlap if p != source_path],
+                "selection": ("relevance_candidate" if record["id"] in candidate_ids[record_type]
+                              else "context"),
             })
     return {
         "target_path_changed": target_path in changed_paths,
         "changed_path_total": len(changed_paths),
         "selected_record_total": len(selected),
+        "candidate_record_total": candidate_total,
+        "affected_candidate_total": sum(
+            1 for item in affected if item["selection"] == "relevance_candidate"),
         "affected_record_total": len(affected),
         "affected_records": affected[:limit],
         "affected_records_omitted": max(0, len(affected) - limit),
@@ -168,8 +180,10 @@ def context_workspace_overlap(
         "note": (
             "Changed paths since the indexed commit overlap cited sources of selected "
             "records. Re-inspect originals; fingerprint overlap is neither a content "
-            "comparison nor proof a claim changed meaning. Uncited paths, missing "
-            "fingerprints and relationships outside this bounded context are NOT ASSESSED."
+            "comparison nor proof a claim changed meaning. Each affected record's selection "
+            "says whether it is ownership-anchored context or a relevance candidate. Uncited "
+            "paths, missing fingerprints and relationships outside this bounded context are "
+            "NOT ASSESSED."
         ),
     }
 

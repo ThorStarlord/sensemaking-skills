@@ -385,6 +385,60 @@ its neighbours. The result states
 `--repo`, `workspace_context` reports whether the checkout matches the indexed
 revision and whether it has uncommitted changes.
 
+### Relevance candidates (not established context)
+
+The categories above follow ownership and rule links only. A reviewed record
+can bear on a file without such a link: it may be attached to a capability the
+owner implements, or it may cite the file as evidence. `context.relevance_candidates`
+lists those records separately, so they are visible without being presented as
+context that applies:
+
+- **Capability route:** a `capability` linked to an owning component by
+  `implemented_by`, then that capability's `constrained_by` invariants and
+  constraints, `decided_by` decisions, `tested_by` verification records, and
+  incidents, lessons and observations linked by `references`, `learned_from`
+  or `contradicts`.
+- **Citation route:** a contract, invariant, constraint, decision, alternative,
+  incident, lesson, observation or verification claim whose `evidence_refs`
+  cite `file:<path>` or whose `authority_ref` is the path. This route also
+  serves a file that no component owns, such as a test.
+
+Both routes read reviewed fields only. No name, directory or import heuristic is
+used, and mechanical records never qualify. Records already held by a category
+above are excluded, including records that category cut at its limit.
+
+- `status` is `CANDIDATES_NOT_ESTABLISHED` or `NONE_RECORDED`. The second is not
+  evidence that nothing else applies.
+- `items` are sorted by category and claim ID and cut at `--limit`. Each has
+  the usual claim fields, the `category` it would belong to, its `routes`,
+  `matched_by` naming the exact relation IDs or cited field, and
+  `applicability: NOT_ESTABLISHED`.
+- `total`, `omitted` and `by_category` count all candidates before the limit.
+- `implemented_capabilities` names each capability an owner implements, its
+  `epistemic_status`, the `implemented_by` relation IDs, and
+  `implementing_component_total`. A capability that several components implement
+  can hold a constraint that binds only one of them.
+- `other_citing_kinds` counts citing records of other kinds, for example a
+  component that cites the file without owning it. They are not expanded.
+- `route_relation_ids` are the relations behind the returned capability-route
+  items.
+
+A candidate is never an owner, a rule or an obligation. `ownership` and every
+category keep their own status: a category that is `NOT_ASSESSED` stays
+`NOT_ASSESSED`, and its note gains a pointer when candidates of that kind exist.
+The `relevance_candidates / CANDIDATES_NOT_ESTABLISHED` gap states the count, and
+`relevance_candidates / TRUNCATED` with `omitted.relevance_candidates` states what
+the limit cut. Candidate claims and route relations are appended to the
+top-level envelope after all ownership-anchored records. Citations made only by
+relation records are not searched. To make a candidate count as context, anchor
+it to the owner through reviewed knowledge (RECONCILE); this query does not.
+
+`owner_verification / NOT_ASSESSED` is a separate gap. It appears when every
+returned verification record is linked from a path-scoped rule and none from an
+owning component. A rule's own guard test fills `verification_refs` for every
+file in the rule's scope, which would otherwise hide that the owner's tests are
+not linked.
+
 ### Source overlap during active edits (PATH-1/T5)
 
 When `context-for` is called with `--repo` and the indexed commit is available
@@ -393,7 +447,12 @@ tracked/untracked paths since that exact indexed SHA against the original
 source-fingerprint paths of the *selected* context claims and relations. It
 reports `target_path_changed`, the count of changed paths, affected record IDs,
 the cited sources that changed, omitted affected-record totals, and the number
-of records for which there was no fingerprint to assess.
+of records for which there was no fingerprint to assess. Returned relevance
+candidates and their route relations are compared too. Each affected record has
+`selection: context` or `selection: relevance_candidate`, and
+`candidate_record_total` and `affected_candidate_total` count the candidate share.
+Querying an older indexed revision from a newer checkout therefore shows which
+candidates cite sources that changed since that revision.
 
 This is a bounded **re-inspection signal**, not an audit of changed bytes and
 not proof that any claim is stale or accurate. Authored shared-pack fingerprints

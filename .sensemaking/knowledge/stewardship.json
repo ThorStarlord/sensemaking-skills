@@ -430,19 +430,88 @@
     {
       "id": "lesson:source-anchored-context-reentry",
       "kind": "lesson",
-      "statement": "For Sensemaking's file-first `context-for` retrieval, current source guidance or historical lessons do not become reachable merely by existing: reviewed component `owned_paths` plus relevant explicit component/rule-to-history or decision relations must connect the source file. Before adding a new query type, inspect those anchors and original sources; missing graph context is not evidence that the engineering history is absent.",
+      "statement": "For Sensemaking's file-first `context-for` retrieval, a record counts as context for a file only when reviewed component `owned_paths` plus explicit component/rule-to-history or decision relations connect it. A record held on a capability the owner implements, or one that cites the file, is listed under `relevance_candidates` with applicability NOT_ESTABLISHED: visible, not anchored. Before adding a new query type, inspect those anchors and original sources; missing graph context is not evidence that the engineering history is absent.",
       "epistemic_status": "declared",
       "authority_kind": "document",
       "authority_ref": "docs/normal-use/2026-11-02-cross-episode-source-reentry-learning.md",
       "evidence_refs": [
         "file:docs/normal-use/2026-11-02-cross-episode-source-reentry-learning.md",
         "file:src/sensemaking_skills/semantic_architecture/knowledge_architecture.py",
-        "file:skills/repository-semantic-steward/references/recall.md"
+        "file:skills/repository-semantic-steward/references/recall.md",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
       ],
       "attributes": {
         "scope": "Sensemaking source-file context-for mechanism only; not a universal directive to add more links or a demonstration that an agent applies this rule",
         "claim_ceiling": "Source-grounded local lesson from several overlapping repository episodes, with independent repeated benefit and transfer NOT_ASSESSED",
-        "revisit_when": "If context-for gains a different documented source-selection mechanism, or a fresh independent agent demonstrates a misleading or non-useful application, source-check and revise this lesson without deleting the original incident"
+        "revisit_when": "If context-for changes how anchors or candidates are selected again, or a fresh independent agent demonstrates a misleading or non-useful application, source-check and revise this lesson without deleting the original incident",
+        "revised": "2026-11-10: context-for gained relevance_candidates (capability and citation routes), the condition this record named in revisit_when. The earlier wording said unanchored history was not reachable; it is now listed as a candidate, and anchoring is still what makes it context. The earlier text is in Git history before this change."
+      }
+    },
+    {
+      "id": "observation:ownership-edit-stranded-store-verification",
+      "kind": "observation",
+      "statement": "Commit 06941828 removed knowledge_store.py and knowledge_retrieval.py from component:semantic-knowledge-plane owned_paths to end ambiguous ownership. The tested_by links stayed on that component, so context-for on those files stopped returning verification:semantic-knowledge-tests. The invariants, decisions and tests held on cap:semantic-queries were never returned for them.",
+      "epistemic_status": "observed",
+      "authority_kind": "document",
+      "authority_ref": ".sensemaking/receipts/2026-11-09-context-for-anchoring-forensics.session.yaml",
+      "evidence_refs": [
+        "file:.sensemaking/receipts/2026-11-09-context-for-anchoring-forensics.session.yaml",
+        "file:.sensemaking/knowledge/architecture.json"
+      ],
+      "attributes": {
+        "observed_ref": "53b667c17c3e2e65ef2e344ccedfc60296f8d7cd",
+        "scope": "Replay of context_for over the record states before and after commit 06941828 and CLI queries at the observed revision; this repository only",
+        "claim_ceiling": "Shows what the query returned. Does not show that any agent decision changed."
+      }
+    },
+    {
+      "id": "decision:relevance-candidates-separate-from-context",
+      "kind": "decision",
+      "statement": "context-for lists reviewed records that reach a file only through a capability its owner implements, or by citing the file, in a separate relevance_candidates section with applicability NOT_ESTABLISHED. The ownership- and rule-anchored categories are unchanged, candidates join the workspace source overlap under their own label, and a candidate becomes context only when reviewed knowledge anchors it to the owner.",
+      "epistemic_status": "declared",
+      "authority_kind": "delegated",
+      "authority_ref": "docs/semantic-architecture/persistent-knowledge-cli.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_architecture.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_store.py"
+      ],
+      "attributes": {
+        "scope": "Delegated construction choice within ADR 0031 under PATH-1; not an owner mandate. ADR 0033 stays PROPOSED and is not ratified by this record",
+        "claim_ceiling": "CLI runs on this repository's records at the implementing commit; unit tests NOT_RUN; independent-agent use and decision benefit NOT TESTED",
+        "revisit_when": "If the verification relevance route of PR 795 merges, or the owner rules on whether path relevance stays ownership-only, re-inspect how the two compose"
+      }
+    },
+    {
+      "id": "alternative:capability-hop-into-context-categories",
+      "kind": "alternative",
+      "statement": "Rejected alternative: follow capability implemented_by links into the constraints, decisions, history and verification categories. A capability can have several implementing components and can hold a constraint that binds only one file, so the hop would present unverified applicability as context.",
+      "authority_kind": "delegated",
+      "authority_ref": "docs/semantic-architecture/persistent-knowledge-cli.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_architecture.py"
+      ],
+      "attributes": {
+        "disposition": "rejected",
+        "scope": "Rejected for context-for categories; the same links are listed as candidates"
+      }
+    },
+    {
+      "id": "alternative:authored-anchoring-only",
+      "kind": "alternative",
+      "statement": "Rejected as the only response: keep ownership-only selection and anchor each record to its owner by hand. Anchoring remains the way to establish applicability, but an owned_paths edit can strand links without any signal, as commit 06941828 did, and unanchored records stay invisible to the file query.",
+      "authority_kind": "delegated",
+      "authority_ref": "docs/semantic-architecture/persistent-knowledge-cli.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:.sensemaking/receipts/2026-11-09-context-for-anchoring-forensics.session.yaml",
+        "file:skills/repository-semantic-steward/references/reconciliation.md"
+      ],
+      "attributes": {
+        "disposition": "rejected",
+        "scope": "Rejected as sufficient by itself; authored anchoring is kept and documented"
       }
     }
   ],
@@ -877,6 +946,87 @@
       ],
       "attributes": {
         "scope": "Interpretation of repeated local source-context anchoring findings; not proof of a generalized causal improvement"
+      }
+    },
+    {
+      "id": "rel:plane-decided-by-relevance-candidates",
+      "subject": "component:semantic-knowledge-plane",
+      "predicate": "decided_by",
+      "object": "decision:relevance-candidates-separate-from-context",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_architecture.py"
+      ],
+      "attributes": {
+        "scope": "context-for candidate listing and its disclosure only"
+      }
+    },
+    {
+      "id": "rel:relevance-candidates-not-capability-hop",
+      "subject": "decision:relevance-candidates-separate-from-context",
+      "predicate": "references",
+      "object": "alternative:capability-hop-into-context-categories",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ],
+      "attributes": {
+        "disposition": "rejected alternative"
+      }
+    },
+    {
+      "id": "rel:relevance-candidates-not-anchoring-only",
+      "subject": "decision:relevance-candidates-separate-from-context",
+      "predicate": "references",
+      "object": "alternative:authored-anchoring-only",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ],
+      "attributes": {
+        "disposition": "rejected alternative"
+      }
+    },
+    {
+      "id": "rel:relevance-candidates-bounded-disclosure",
+      "subject": "decision:relevance-candidates-separate-from-context",
+      "predicate": "constrained_by",
+      "object": "inv:bounded-query-disclosure",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_architecture.py"
+      ],
+      "attributes": {
+        "scope": "The candidate section reports its total, omitted count and a TRUNCATED gap"
+      }
+    },
+    {
+      "id": "rel:relevance-candidates-source-boundary",
+      "subject": "decision:relevance-candidates-separate-from-context",
+      "predicate": "constrained_by",
+      "object": "inv:source-boundary",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ],
+      "attributes": {
+        "scope": "A capability relation or a citation is not promoted into applicability"
+      }
+    },
+    {
+      "id": "rel:relevance-candidates-from-stranding-observation",
+      "subject": "decision:relevance-candidates-separate-from-context",
+      "predicate": "derived_from",
+      "object": "observation:ownership-edit-stranded-store-verification",
+      "evidence_refs": [
+        "file:.sensemaking/receipts/2026-11-09-context-for-anchoring-forensics.session.yaml"
+      ]
+    },
+    {
+      "id": "rel:store-tested-by-knowledge-tests",
+      "subject": "component:knowledge-store",
+      "predicate": "tested_by",
+      "object": "verification:knowledge-tests",
+      "evidence_refs": [
+        "file:tests/test_semantic_knowledge.py"
+      ],
+      "attributes": {
+        "scope": "The test module imports and calls query_knowledge, store_snapshot and audit_knowledge_sources from knowledge_store.py; whether it passes is a separate CI observation"
       }
     }
   ]
