@@ -116,27 +116,14 @@ def workspace_source_overlap(
 
 
 
-def context_workspace_overlap(
-    claims: Mapping[str, dict], relations: tuple[dict, ...], *,
-    selected_claim_ids: list[str], selected_relation_ids: list[str],
-    changed_paths: frozenset[str], target_path: str, limit: int,
-    context_truncated: bool,
-) -> dict:
-    """Read-only source-path overlap for records selected by context-for.
-
-    A changed cited file is a re-inspection candidate, never a finding that the
-    authored claim is wrong. Source fingerprints describe the indexed commit,
-    not the working-tree overlay.
-    """
-    relation_ids = set(selected_relation_ids)
-    selected = (
-        [("claim", claims[cid]) for cid in selected_claim_ids if cid in claims]
-        + [("relation", r) for r in relations if r["id"] in relation_ids]
-    )
+def _source_overlap(
+    records: list[tuple[str, dict]], changed_paths: frozenset[str],
+) -> tuple[list[dict], int, int]:
+    """Affected entries, records without fingerprints and mechanical records, in input order."""
     affected: list[dict] = []
     without_fingerprints = 0
     mechanical = 0
-    for record_type, record in selected:
+    for record_type, record in records:
         if _is_mechanical(record):
             mechanical += 1
             continue
@@ -153,6 +140,39 @@ def context_workspace_overlap(
                 "record_source_changed": source_path in overlap,
                 "changed_evidence_sources": [p for p in overlap if p != source_path],
             })
+    return affected, without_fingerprints, mechanical
+
+
+def context_workspace_overlap(
+    claims: Mapping[str, dict], relations: tuple[dict, ...], *,
+    selected_claim_ids: list[str], selected_relation_ids: list[str],
+    changed_paths: frozenset[str], target_path: str, limit: int,
+    context_truncated: bool,
+    candidate_claim_ids: tuple[str, ...] = (),
+    candidate_relation_ids: tuple[str, ...] = (),
+) -> dict:
+    """Read-only source-path overlap for records selected by context-for.
+
+    A changed cited file is a re-inspection candidate, never a finding that the
+    authored claim is wrong. Source fingerprints describe the indexed commit,
+    not the working-tree overlay. Relevance candidates, the capabilities behind
+    them and their route relations are compared in a separate
+    ``relevance_candidates`` block with its own limit, so they never displace a
+    record of the context categories and the existing counts keep their meaning.
+    """
+    relation_ids = set(selected_relation_ids)
+    selected = (
+        [("claim", claims[cid]) for cid in selected_claim_ids if cid in claims]
+        + [("relation", r) for r in relations if r["id"] in relation_ids]
+    )
+    affected, without_fingerprints, mechanical = _source_overlap(selected, changed_paths)
+    candidate_relations = set(candidate_relation_ids) - relation_ids
+    candidates = (
+        [("claim", claims[cid]) for cid in candidate_claim_ids if cid in claims]
+        + [("relation", r) for r in relations if r["id"] in candidate_relations]
+    )
+    candidate_affected, candidate_unfingerprinted, candidate_mechanical = _source_overlap(
+        candidates, changed_paths)
     return {
         "target_path_changed": target_path in changed_paths,
         "changed_path_total": len(changed_paths),
@@ -162,6 +182,19 @@ def context_workspace_overlap(
         "affected_records_omitted": max(0, len(affected) - limit),
         "records_without_fingerprints": without_fingerprints,
         "mechanical_records_not_assessed": mechanical,
+        "relevance_candidates": {
+            "record_total": len(candidates),
+            "affected_record_total": len(candidate_affected),
+            "affected_records": candidate_affected[:limit],
+            "affected_records_omitted": max(0, len(candidate_affected) - limit),
+            "records_without_fingerprints": candidate_unfingerprinted,
+            "mechanical_records_not_assessed": candidate_mechanical,
+            "note": (
+                "Same path-level comparison for returned relevance candidates, the capabilities "
+                "behind them and their route relations. A changed cited source is a reason to "
+                "re-inspect a candidate, not evidence that it applies to this file."
+            ),
+        },
         "context_selection_truncated": context_truncated,
         "overlay_indexed": False,
         "semantic_staleness_established": False,

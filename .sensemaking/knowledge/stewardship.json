@@ -129,7 +129,7 @@
     {
       "id": "inv:index-snapshot-vs-working-overlay",
       "kind": "invariant",
-      "statement": "Exact-source semantic index builds require a clean, pinned committed HEAD. Recall can query an existing committed index while the active working tree is dirty, but workspace context must disclose unindexed changes and must not promote that working overlay into indexed truth.",
+      "statement": "Exact-source index builds, orientation, rule checks and source audits read only a clean, pinned committed revision: the checked-out HEAD, or any local commit through a temporary worktree. Recall can query an existing committed index while the active working tree is dirty, but workspace context must disclose unindexed changes and must not promote that working overlay into indexed truth.",
       "authority_kind": "document",
       "authority_ref": "docs/semantic-architecture/persistent-knowledge-cli.md",
       "evidence_refs": [
@@ -290,7 +290,7 @@
     {
       "id": "decision:index-from-temporary-worktree",
       "kind": "decision",
-      "statement": "knowledge-build --temporary-checkout indexes target-ref from a temporary detached git worktree outside the checkout, then removes it, so a dirty active checkout (for example an untracked session receipt) or a historical base revision needs no hand-made clean clone. The clean-source check is unchanged rather than exempting untracked files or reading dirty bytes. Hooks and configured external filters are disabled, and a commit that assigns a filter to a tracked path is refused.",
+      "statement": "--temporary-checkout on knowledge-build, knowledge-orient, knowledge-check-rules and knowledge-audit reads the named commit from a temporary detached git worktree outside the checkout, then removes it, so a dirty active checkout (for example an untracked session receipt) or another local commit needs no hand-made clean clone. The flag is opt-in and the clean-source check is unchanged rather than exempting untracked files or reading dirty bytes. Hooks and configured external filters are disabled, and a commit that assigns a filter to a tracked path is refused. Orient, check-rules and audit report the unread active checkout in source_checkout and active_checkout.",
       "authority_kind": "delegated",
       "authority_ref": "docs/semantic-architecture/persistent-knowledge-cli.md",
       "evidence_refs": [
@@ -300,7 +300,8 @@
       ],
       "attributes": {
         "scope": "Delegated construction choice within ADR 0031; not an owner mandate",
-        "claim_ceiling": "Manual CLI probes on one shallow cloud checkout and disposable repositories; unit tests NOT_RUN; independent-agent use NOT TESTED"
+        "claim_ceiling": "knowledge-build: manual CLI probes on one shallow cloud checkout and disposable repositories. Orient, check-rules and audit: real-CLI probes on one Windows host, on scratch repositories and this repository; unit tests NOT_RUN; independent-agent use NOT TESTED",
+        "revision_note": "2026-11-10: extended from knowledge-build to the three other commit-pinned commands"
       }
     },
     {
@@ -315,6 +316,56 @@
       "attributes": {
         "disposition": "rejected",
         "scope": "Observed on this repository's shallow cloud checkout on 2026-10-28; revisit only if shallow sources need not be supported"
+      }
+    },
+    {
+      "id": "alternative:automatic-temporary-checkout-fallback",
+      "kind": "alternative",
+      "statement": "Rejected alternative: have knowledge-build, knowledge-orient, knowledge-check-rules and knowledge-audit fall back to a temporary checkout automatically whenever the active checkout is dirty. It would change a fail-closed default that hosted tests pin, pay for a full checkout the caller did not ask for, and let a caller miss that uncommitted edits were not read.",
+      "authority_kind": "delegated",
+      "authority_ref": "docs/semantic-architecture/persistent-knowledge-cli.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:tests/test_architecture_rule_checker.py",
+        "file:tests/test_repository_bootstrap.py"
+      ],
+      "attributes": {
+        "disposition": "rejected",
+        "scope": "Rejected 2026-11-10 for the four explicit-identity commands. workspace-query is a different contract: it resolves and materializes the commit itself and reports that in workspace_index.build_source (decision:workspace-query-derived-commit-index). Revisit if agents are observed to skip audit or rule checks because the refusal hint does not lead them to the flag"
+      }
+    },
+    {
+      "id": "alternative:read-committed-bytes-from-git-objects",
+      "kind": "alternative",
+      "statement": "Deferred alternative: read committed bytes from Git objects instead of checking the commit out, for index building (including the first call of workspace-query) and for orient, check-rules and audit. It would remove the checkout cost, roughly 10 s of a 15 to 20 s first call on the development host. The builder reads and fingerprints files from a checkout, and its tracked-file, symlink and filter checks assume one; source fingerprints are taken from checked-out bytes, which Git can convert (line endings, filters), so an object reader would be a second byte path that has to agree with every index already built.",
+      "authority_kind": "delegated",
+      "authority_ref": "docs/semantic-architecture/persistent-knowledge-cli.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_sources.py",
+        "file:src/sensemaking_skills/workspace_knowledge.py"
+      ],
+      "attributes": {
+        "disposition": "deferred",
+        "scope": "Deferred 2026-11-10 for how a commit is materialized, by the temporary-checkout change and by the workspace-query change; the two records were merged into this one during integration. That object bytes differ from checkout bytes is inferred from the source and was not run; lesson:separate-clone-changes-audited-bytes observed the related fact that checked-out bytes vary with Git configuration",
+        "revisit_when": "First-call latency or the checkout cost is shown to keep agents from querying or checking, and index building and the readers can move to the same reader in one change; or snapshots must be byte-identical across platforms"
+      }
+    },
+    {
+      "id": "lesson:separate-clone-changes-audited-bytes",
+      "kind": "lesson",
+      "statement": "A separate clone is not a neutral clean checkout for knowledge-audit. Source fingerprints are taken from checked-out bytes, after any line-ending conversion, so in a clone made under another core.autocrlf setting cited text files read as changed. A temporary worktree of the same repository uses that repository's configuration and checks out the same bytes as its ordinary checkout; the flag does not make differently configured clones agree.",
+      "authority_kind": "document",
+      "authority_ref": "docs/semantic-architecture/persistent-knowledge-cli.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_store.py"
+      ],
+      "epistemic_status": "observed",
+      "attributes": {
+        "scope": "Observed on one Windows host on 2026-11-10, auditing an index of commit 53b667c1 at commit baaec6b9: 442 of 442 records reported changed from a clone made under the system default core.autocrlf=true, with and without --temporary-checkout, against 139 of 442 from a worktree of the repository. An independent reviewer reproduced both counts. Other conversions (filters, working-tree-encoding) not probed",
+        "decision_changed": "Whether an audit run from a hand-made clone can be trusted, and why --temporary-checkout materializes a worktree rather than a clone"
       }
     },
     {
@@ -431,19 +482,108 @@
     {
       "id": "lesson:source-anchored-context-reentry",
       "kind": "lesson",
-      "statement": "For Sensemaking's file-first `context-for` retrieval, current source guidance or historical lessons do not become reachable merely by existing: reviewed component `owned_paths` plus relevant explicit component/rule-to-history or decision relations must connect the source file. Before adding a new query type, inspect those anchors and original sources; missing graph context is not evidence that the engineering history is absent.",
+      "statement": "For Sensemaking's file-first `context-for` retrieval, a record counts as context for a file a component owns only when reviewed `owned_paths` plus explicit component/rule-to-history or decision relations connect it. A record held on a capability the owner implements, or one that cites the file, is listed under `relevance_candidates` with applicability NOT_ESTABLISHED: visible, not anchored. Before adding a new query type, inspect those anchors and original sources; missing graph context is not evidence that the engineering history is absent.",
       "epistemic_status": "declared",
       "authority_kind": "document",
       "authority_ref": "docs/normal-use/2026-11-02-cross-episode-source-reentry-learning.md",
       "evidence_refs": [
         "file:docs/normal-use/2026-11-02-cross-episode-source-reentry-learning.md",
         "file:src/sensemaking_skills/semantic_architecture/knowledge_architecture.py",
-        "file:skills/repository-semantic-steward/references/recall.md"
+        "file:skills/repository-semantic-steward/references/recall.md",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
       ],
       "attributes": {
         "scope": "Sensemaking source-file context-for mechanism only; not a universal directive to add more links or a demonstration that an agent applies this rule",
         "claim_ceiling": "Source-grounded local lesson from several overlapping repository episodes, with independent repeated benefit and transfer NOT_ASSESSED",
-        "revisit_when": "If context-for gains a different documented source-selection mechanism, or a fresh independent agent demonstrates a misleading or non-useful application, source-check and revise this lesson without deleting the original incident"
+        "revisit_when": "If context-for changes how anchors or candidates are selected again, or a fresh independent agent demonstrates a misleading or non-useful application, source-check and revise this lesson without deleting the original incident",
+        "revised": "2026-11-10: context-for gained relevance_candidates (capability and citation routes), the condition this record named in revisit_when. The earlier wording said unanchored history was not reachable; it is now listed as a candidate, and anchoring is still what makes it context. The earlier text is in Git history before this change."
+      }
+    },
+    {
+      "id": "observation:ownership-edit-stranded-store-verification",
+      "kind": "observation",
+      "statement": "Commit 06941828 removed knowledge_store.py and knowledge_retrieval.py from component:semantic-knowledge-plane owned_paths to end ambiguous ownership. The tested_by links stayed on that component, so context-for on those files stopped returning verification:semantic-knowledge-tests. The invariants, decisions and tests held on cap:semantic-queries were never returned for them.",
+      "epistemic_status": "observed",
+      "authority_kind": "document",
+      "authority_ref": ".sensemaking/receipts/2026-11-09-context-for-anchoring-forensics.session.yaml",
+      "evidence_refs": [
+        "file:.sensemaking/receipts/2026-11-09-context-for-anchoring-forensics.session.yaml",
+        "file:.sensemaking/knowledge/architecture.json"
+      ],
+      "attributes": {
+        "observed_ref": "53b667c17c3e2e65ef2e344ccedfc60296f8d7cd",
+        "scope": "Replay of context_for over the record states before and after commit 06941828 and CLI queries at the observed revision; this repository only",
+        "claim_ceiling": "Shows what the query returned. Does not show that any agent decision changed."
+      }
+    },
+    {
+      "id": "decision:relevance-candidates-separate-from-context",
+      "kind": "decision",
+      "statement": "context-for lists indexed records that reach a file only through a capability its owner implements, or by citing the file, in a separate relevance_candidates section with applicability NOT_ESTABLISHED. The context categories and the claim and relation IDs context_for returns are unchanged, candidates are compared for changed sources in their own block, and a candidate becomes context only when reviewed knowledge anchors it to the owner.",
+      "epistemic_status": "declared",
+      "authority_kind": "delegated",
+      "authority_ref": "docs/semantic-architecture/persistent-knowledge-cli.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_architecture.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_store.py"
+      ],
+      "attributes": {
+        "scope": "Delegated construction choice within ADR 0031 under PATH-1; not an owner mandate. ADR 0033 stays PROPOSED and is not ratified by this record",
+        "claim_ceiling": "CLI runs on this repository's records at the implementing commit; unit tests NOT_RUN; independent-agent use and decision benefit NOT TESTED",
+        "revisit_when": "If the owner rules on whether path relevance stays ownership-only, or either route changes which records a category holds, re-inspect how the two compose",
+        "composition": "Integrated on 2026-11-10 with decision:verification-relevance-for-unowned-files. On a file no component owns, a verification claim that identifies the file via authority_ref or via file: evidence (with supported line or fragment qualifiers) is returned in verification_refs, and the records linked from verified components are returned in their categories, so none of them is listed as a candidate; the capability route starts from owning components only and adds nothing there. Candidates exclude every record a category holds, including records the category cut at its limit, which are counted only in that category's omission total. Both routes use the same supported file identity parser for file: evidence with optional :line:N or #fragment qualifiers. Verification evidence of an unowned file enters verification_refs instead of the candidate list. Original evidence citations are preserved, and neither route grants architectural ownership."
+      }
+    },
+    {
+      "id": "alternative:capability-hop-into-context-categories",
+      "kind": "alternative",
+      "statement": "Rejected alternative: follow capability implemented_by links into the constraints, decisions, history and verification categories. A capability can have several implementing components and can hold a constraint that binds only one file, so the hop would present unverified applicability as context.",
+      "authority_kind": "delegated",
+      "authority_ref": "docs/semantic-architecture/persistent-knowledge-cli.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_architecture.py"
+      ],
+      "attributes": {
+        "disposition": "rejected",
+        "scope": "Rejected for context-for categories; the same links are listed as candidates"
+      }
+    },
+    {
+      "id": "alternative:authored-anchoring-only",
+      "kind": "alternative",
+      "statement": "Rejected as the only response: keep ownership-only selection and anchor each record to its owner by hand. Anchoring remains the way to establish applicability, but an owned_paths edit can strand links without any signal, as commit 06941828 did, and unanchored records stay invisible to the file query.",
+      "authority_kind": "delegated",
+      "authority_ref": "docs/semantic-architecture/persistent-knowledge-cli.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:.sensemaking/receipts/2026-11-09-context-for-anchoring-forensics.session.yaml",
+        "file:skills/repository-semantic-steward/references/reconciliation.md"
+      ],
+      "attributes": {
+        "disposition": "rejected",
+        "scope": "Rejected as sufficient by itself; authored anchoring is kept and documented"
+      }
+    },
+    {
+      "id": "decision:verification-relevance-for-unowned-files",
+      "kind": "decision",
+      "statement": "For a file that no component owns, context-for returns verification relevance, never ownership: a verification claim whose authority_ref is the file, or whose evidence_refs cite it, is returned in verification_refs, and a component that a displayed record verifies through tested_by is returned under verified_components with its explicitly linked decisions, constraints and history. Ownership stays NOT_ASSESSED, contracts and rules do not follow, and owned paths do not use this route.",
+      "authority_kind": "delegated",
+      "authority_ref": "docs/semantic-architecture/persistent-knowledge-cli.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_architecture.py",
+        "file:tests/test_architecture_queries.py"
+      ],
+      "attributes": {
+        "scope": "Delegated construction choice for the owner's bounded outcome of 2026-11-09 (pull request 795). Recorded on 2026-11-10 during integration, from that pull request's decision note and the merged code; ADR 0033 stays PROPOSED and is not ratified by this record",
+        "rejected_alternatives": "Ownership semantics for test files (ADR 0033 is still PROPOSED). A new tested_file relation (new vocabulary; existing verification records already name the file). Matching every citation of the file (components and decisions cite tests as evidence, which is not verification relevance; those records are listed as relevance candidates instead)",
+        "revisit_when": "If the owner rules on whether path relevance stays ownership-only, or ADR 0033 is ratified, re-inspect this route together with decision:relevance-candidates-separate-from-context",
+        "claim_ceiling": "Original hosted tests covered unowned verification relevance. The new line/fragment identity reconciliation was source-reviewed but no local unit/synthetic qualifier test was added under CLAUDE.md; independent-agent use and decision benefit are NOT TESTED.",
+        "file_reference_contract": "Supported evidence_refs file identities file:path, file:path:line:N and file:path#fragment share a source path via knowledge_sources._local_evidence_path. authority_ref still matches the exact repository path. This is provenance, not ownership or runtime correctness; a verified component requires a separate tested_by edge and a displayed verification record."
       }
     },
     {
@@ -709,7 +849,7 @@
         "file:src/sensemaking_skills/semantic_architecture/knowledge_sources.py"
       ],
       "attributes": {
-        "scope": "Index-build source materialization only"
+        "scope": "Source materialization for build, orient, check-rules and audit"
       }
     },
     {
@@ -744,6 +884,81 @@
       "attributes": {
         "disposition": "rejected alternative"
       }
+    },
+    {
+      "id": "rel:temporary-worktree-not-automatic-fallback",
+      "subject": "decision:index-from-temporary-worktree",
+      "predicate": "references",
+      "object": "alternative:automatic-temporary-checkout-fallback",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_cli.py"
+      ],
+      "attributes": {
+        "disposition": "rejected alternative"
+      }
+    },
+    {
+      "id": "rel:automatic-fallback-not-workspace-query",
+      "subject": "alternative:automatic-temporary-checkout-fallback",
+      "predicate": "references",
+      "object": "decision:workspace-query-derived-commit-index",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/workspace_knowledge.py"
+      ],
+      "attributes": {
+        "scope": "workspace-query materializes a dirty checkout's commit by design; the rejection covers the explicit-identity commands only"
+      }
+    },
+    {
+      "id": "rel:temporary-worktree-not-git-objects",
+      "subject": "decision:index-from-temporary-worktree",
+      "predicate": "references",
+      "object": "alternative:read-committed-bytes-from-git-objects",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_sources.py"
+      ],
+      "attributes": {
+        "disposition": "deferred alternative"
+      }
+    },
+    {
+      "id": "rel:git-objects-alternative-observed-conversion",
+      "subject": "alternative:read-committed-bytes-from-git-objects",
+      "predicate": "references",
+      "object": "lesson:separate-clone-changes-audited-bytes",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ]
+    },
+    {
+      "id": "rel:semantic-cli-temporary-worktree-decision",
+      "subject": "component:semantic-cli",
+      "predicate": "decided_by",
+      "object": "decision:index-from-temporary-worktree",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_cli.py"
+      ],
+      "attributes": {
+        "scope": "The four commands that accept --temporary-checkout"
+      }
+    },
+    {
+      "id": "rel:separate-clone-lesson-origin",
+      "subject": "lesson:separate-clone-changes-audited-bytes",
+      "predicate": "learned_from",
+      "object": "decision:index-from-temporary-worktree",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ]
+    },
+    {
+      "id": "rel:store-references-separate-clone-lesson",
+      "subject": "component:knowledge-store",
+      "predicate": "references",
+      "object": "lesson:separate-clone-changes-audited-bytes",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_store.py"
+      ]
     },
     {
       "id": "rel:knowledge-plane-clean-index-tested",
@@ -896,6 +1111,124 @@
       ],
       "attributes": {
         "scope": "Interpretation of repeated local source-context anchoring findings; not proof of a generalized causal improvement"
+      }
+    },
+    {
+      "id": "rel:plane-decided-by-relevance-candidates",
+      "subject": "component:semantic-knowledge-plane",
+      "predicate": "decided_by",
+      "object": "decision:relevance-candidates-separate-from-context",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_architecture.py"
+      ],
+      "attributes": {
+        "scope": "context-for candidate listing and its disclosure only"
+      }
+    },
+    {
+      "id": "rel:relevance-candidates-not-capability-hop",
+      "subject": "decision:relevance-candidates-separate-from-context",
+      "predicate": "references",
+      "object": "alternative:capability-hop-into-context-categories",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ],
+      "attributes": {
+        "disposition": "rejected alternative"
+      }
+    },
+    {
+      "id": "rel:relevance-candidates-not-anchoring-only",
+      "subject": "decision:relevance-candidates-separate-from-context",
+      "predicate": "references",
+      "object": "alternative:authored-anchoring-only",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ],
+      "attributes": {
+        "disposition": "rejected alternative"
+      }
+    },
+    {
+      "id": "rel:relevance-candidates-bounded-disclosure",
+      "subject": "decision:relevance-candidates-separate-from-context",
+      "predicate": "constrained_by",
+      "object": "inv:bounded-query-disclosure",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_architecture.py"
+      ],
+      "attributes": {
+        "scope": "The candidate section reports its total, omitted count and a TRUNCATED gap"
+      }
+    },
+    {
+      "id": "rel:relevance-candidates-source-boundary",
+      "subject": "decision:relevance-candidates-separate-from-context",
+      "predicate": "constrained_by",
+      "object": "inv:source-boundary",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ],
+      "attributes": {
+        "scope": "A capability relation or a citation is not promoted into applicability"
+      }
+    },
+    {
+      "id": "rel:relevance-candidates-from-stranding-observation",
+      "subject": "decision:relevance-candidates-separate-from-context",
+      "predicate": "derived_from",
+      "object": "observation:ownership-edit-stranded-store-verification",
+      "evidence_refs": [
+        "file:.sensemaking/receipts/2026-11-09-context-for-anchoring-forensics.session.yaml"
+      ]
+    },
+    {
+      "id": "rel:store-tested-by-knowledge-tests",
+      "subject": "component:knowledge-store",
+      "predicate": "tested_by",
+      "object": "verification:knowledge-tests",
+      "evidence_refs": [
+        "file:tests/test_semantic_knowledge.py"
+      ],
+      "attributes": {
+        "scope": "The test module imports and calls query_knowledge, store_snapshot and audit_knowledge_sources from knowledge_store.py; whether it passes is a separate CI observation"
+      }
+    },
+    {
+      "id": "rel:store-decided-by-relevance-candidates",
+      "subject": "component:knowledge-store",
+      "predicate": "decided_by",
+      "object": "decision:relevance-candidates-separate-from-context",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_store.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py"
+      ],
+      "attributes": {
+        "scope": "Envelope order of candidate records in query_knowledge and the separate candidate block of context_workspace_overlap"
+      }
+    },
+    {
+      "id": "rel:plane-decided-by-verification-relevance",
+      "subject": "component:semantic-knowledge-plane",
+      "predicate": "decided_by",
+      "object": "decision:verification-relevance-for-unowned-files",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_architecture.py"
+      ],
+      "attributes": {
+        "scope": "context-for verification route for files no component owns"
+      }
+    },
+    {
+      "id": "rel:relevance-candidates-compose-with-verification-relevance",
+      "subject": "decision:relevance-candidates-separate-from-context",
+      "predicate": "references",
+      "object": "decision:verification-relevance-for-unowned-files",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_architecture.py"
+      ],
+      "attributes": {
+        "scope": "On a file no component owns, records the verification route returns are excluded from candidates"
       }
     },
     {

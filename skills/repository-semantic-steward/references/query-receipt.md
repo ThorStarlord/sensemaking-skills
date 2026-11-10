@@ -158,7 +158,11 @@ Field notes:
   decision-relevant omission as `PARTIAL` or `NOT_ASSESSED` rather than a
   complete `HIT`; query receipts do not invent missing claim payloads. A path whose `ownership.coverage_status`
   is `NOT_ASSESSED` is never `outcome: HIT`: use `NOT_ASSESSED` or `PARTIAL`
-  according to the `knowledge_gaps` that matter to the decision.
+  according to the `knowledge_gaps` that matter to the decision. The returned
+  `claims` include `context.relevance_candidates` items; they are not
+  established context, so a category they point at stays in
+  `not_assessed_kinds`, and a decision-relevant answer that rests on candidates
+  alone is `PARTIAL`, with a miss when the anchoring is what was needed.
 - For `rules-for` and `term`, set `result.claim_ids` to the IDs in the query
   envelope's returned `claims`, and `hit_count` to their count. Preserve the
   `truncated` indication; do not turn `coverage_status: NOT_ASSESSED` into

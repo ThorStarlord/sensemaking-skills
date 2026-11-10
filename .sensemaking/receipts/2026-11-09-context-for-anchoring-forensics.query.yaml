@@ -1,0 +1,277 @@
+artifact_id: semantic_query_receipt
+schema_version: 1
+session_ref: 2026-11-09-context-for-anchoring-forensics
+state: final
+created_at: "2026-11-09T23:25:00Z"
+updated_at: "2026-11-09T23:25:00Z"
+target_repository: ThorStarlord/sensemaking-skills
+modes: [RECALL, AUDIT]
+decision: "Whether path-scoped retrieval and revalidation give an agent editing knowledge_store.py or its tests the reviewed constraints, decisions and verification that bear on the edit."
+cli_identity:
+  sensemaking_source_ref: 53b667c17c3e2e65ef2e344ccedfc60296f8d7cd
+  invocation_prefix: "PYTHONPATH=src python -m sensemaking_skills.cli (worktree source at 53b667c1)"
+  version_output: "python -m sensemaking_skills.cli, version 1.0.0rc5.dev0"
+index:
+  indexed_ref: 53b667c17c3e2e65ef2e344ccedfc60296f8d7cd
+  current_head: 53b667c17c3e2e65ef2e344ccedfc60296f8d7cd
+  worktree_clean: true
+  uncommitted_changes_not_indexed: false
+queries:
+  - id: QY-1
+    operation: build
+    terms: []
+    subject: null
+    expect_kinds: []
+    target_ref: 53b667c17c3e2e65ef2e344ccedfc60296f8d7cd
+    result:
+      hit_count: 0
+      claim_ids: []
+      truncated: false
+      not_assessed_kinds: []
+    outcome: NOT_APPLICABLE
+    decision_relevant: false
+  - id: QY-2
+    operation: context-for
+    terms: []
+    subject: src/sensemaking_skills/semantic_architecture/knowledge_store.py
+    expect_kinds: []
+    target_ref: 53b667c17c3e2e65ef2e344ccedfc60296f8d7cd
+    result:
+      hit_count: 10
+      claim_ids: [component:knowledge-store, rule:console-output-ascii, rule:stable-core-no-lab-imports, layer:knowledge-plane, bounded_context:knowledge-stewardship, lesson:console-guard-literal-print-arguments-only, lesson:distinguish-provenance-content-and-meaning, lesson:query-completeness-is-evidence, lesson:uncited-change-is-coverage-gap, verification:console-output-ascii-guard]
+      truncated: false
+      not_assessed_kinds: [contracts, constraints, decisions, alternatives]
+    outcome: PARTIAL
+    decision_relevant: true
+  - id: QY-3
+    operation: context-for
+    terms: []
+    subject: tests/test_semantic_knowledge.py
+    expect_kinds: []
+    target_ref: 53b667c17c3e2e65ef2e344ccedfc60296f8d7cd
+    result:
+      hit_count: 0
+      claim_ids: []
+      truncated: false
+      not_assessed_kinds: [ownership, architecture_rules, contracts, constraints, decisions, alternatives, history, verification_refs]
+    outcome: NOT_ASSESSED
+    decision_relevant: true
+  - id: QY-4
+    operation: context-for
+    terms: []
+    subject: src/sensemaking_skills/semantic_architecture/knowledge_store.py
+    expect_kinds: []
+    target_ref: 53b667c17c3e2e65ef2e344ccedfc60296f8d7cd
+    result:
+      hit_count: 10
+      claim_ids: [component:knowledge-store, rule:console-output-ascii, rule:stable-core-no-lab-imports, layer:knowledge-plane, bounded_context:knowledge-stewardship, lesson:console-guard-literal-print-arguments-only, lesson:distinguish-provenance-content-and-meaning, lesson:query-completeness-is-evidence, lesson:uncited-change-is-coverage-gap, verification:console-output-ascii-guard]
+      truncated: false
+      not_assessed_kinds: [contracts, constraints, decisions, alternatives]
+    outcome: PARTIAL
+    decision_relevant: true
+  - id: QY-5
+    operation: context-for
+    terms: []
+    subject: tests/test_semantic_knowledge.py
+    expect_kinds: []
+    target_ref: 53b667c17c3e2e65ef2e344ccedfc60296f8d7cd
+    result:
+      hit_count: 0
+      claim_ids: []
+      truncated: false
+      not_assessed_kinds: [ownership, architecture_rules, contracts, constraints, decisions, alternatives, history, verification_refs]
+    outcome: NOT_ASSESSED
+    decision_relevant: true
+  - id: QY-6
+    operation: workspace-impact
+    terms: []
+    subject: null
+    expect_kinds: []
+    target_ref: 53b667c17c3e2e65ef2e344ccedfc60296f8d7cd
+    result:
+      hit_count: 8
+      claim_ids: [component:knowledge-store, component:semantic-knowledge-plane, decision:granular-indexed-delta-classification, incident:shared-authored-pack-fingerprint-fanout, inv:bounded-query-disclosure, lesson:distinguish-provenance-content-and-meaning, verification:knowledge-tests, verification:semantic-knowledge-tests]
+      truncated: false
+      not_assessed_kinds: []
+    outcome: HIT
+    decision_relevant: true
+  - id: QY-7
+    operation: explain
+    terms: []
+    subject: component:knowledge-store
+    expect_kinds: [invariant, decision, verification, capability]
+    target_ref: 53b667c17c3e2e65ef2e344ccedfc60296f8d7cd
+    result:
+      hit_count: 7
+      claim_ids: [component:knowledge-store, bounded_context:knowledge-stewardship, cap:semantic-queries, layer:knowledge-plane, lesson:distinguish-provenance-content-and-meaning, lesson:query-completeness-is-evidence, lesson:uncited-change-is-coverage-gap]
+      truncated: false
+      not_assessed_kinds: [invariant, decision, verification]
+    outcome: PARTIAL
+    decision_relevant: true
+  - id: QY-8
+    operation: explain
+    terms: []
+    subject: cap:semantic-queries
+    expect_kinds: [invariant, decision, verification]
+    target_ref: 53b667c17c3e2e65ef2e344ccedfc60296f8d7cd
+    result:
+      hit_count: 17
+      claim_ids: [cap:semantic-queries, adr:0031, component:knowledge-store, decision:granular-indexed-delta-classification, decision:workspace-impact-path-overlap, goal:longterm-stewardship, inv:bounded-query-disclosure, inv:index-snapshot-vs-working-overlay, inv:source-boundary, observation:knowledge-query-closed-operations, poss:construction-time-possibility-reconciliation, poss:git-authored-knowledge-index, poss:persistent-semantic-stewardship, poss:possibility-memory, poss:possibility-reconsideration-from-change, verification:granular-delta-classification-tests, verification:knowledge-tests]
+      truncated: false
+      not_assessed_kinds: []
+    outcome: HIT
+    decision_relevant: true
+  - id: QY-9
+    operation: search
+    terms: []
+    subject: test_semantic_knowledge.py
+    expect_kinds: []
+    target_ref: 53b667c17c3e2e65ef2e344ccedfc60296f8d7cd
+    result:
+      hit_count: 0
+      claim_ids: []
+      truncated: false
+      not_assessed_kinds: []
+    outcome: MISS
+    decision_relevant: true
+  - id: QY-10
+    operation: search
+    terms: []
+    subject: knowledge_store.py
+    expect_kinds: []
+    target_ref: 53b667c17c3e2e65ef2e344ccedfc60296f8d7cd
+    result:
+      hit_count: 0
+      claim_ids: []
+      truncated: false
+      not_assessed_kinds: []
+    outcome: MISS
+    decision_relevant: true
+  - id: QY-11
+    operation: context-for
+    terms: []
+    subject: src/sensemaking_skills/semantic_architecture/worktree_context.py
+    expect_kinds: []
+    target_ref: 53b667c17c3e2e65ef2e344ccedfc60296f8d7cd
+    result:
+      hit_count: 15
+      claim_ids: [component:semantic-knowledge-plane, rule:console-output-ascii, rule:stable-core-no-lab-imports, layer:knowledge-plane, bounded_context:knowledge-stewardship, inv:index-snapshot-vs-working-overlay, decision:index-from-temporary-worktree, alternative:dirty-tree-byte-audit, alternative:shared-clone-checkout, lesson:console-guard-literal-print-arguments-only, lesson:source-anchored-context-reentry, verification:architecture-vocabulary-tests, verification:clean-index-tests, verification:console-output-ascii-guard, verification:semantic-knowledge-tests]
+      truncated: false
+      not_assessed_kinds: [contracts]
+    outcome: HIT
+    decision_relevant: false
+  - id: QY-12
+    operation: build
+    terms: []
+    subject: null
+    expect_kinds: []
+    target_ref: 22d15d94c281579cd7e67a591068372c84edef60
+    result:
+      hit_count: 0
+      claim_ids: []
+      truncated: false
+      not_assessed_kinds: []
+    outcome: NOT_APPLICABLE
+    decision_relevant: false
+  - id: QY-13
+    operation: audit
+    terms: []
+    subject: null
+    expect_kinds: []
+    target_ref: 22d15d94c281579cd7e67a591068372c84edef60
+    result:
+      hit_count: 257
+      claim_ids: []
+      truncated: false
+      not_assessed_kinds: []
+    outcome: HIT
+    decision_relevant: true
+  - id: QY-14
+    operation: why
+    terms: []
+    subject: adr:0013
+    expect_kinds: []
+    target_ref: 53b667c17c3e2e65ef2e344ccedfc60296f8d7cd
+    result:
+      hit_count: 1
+      claim_ids: [adr:0013]
+      truncated: false
+      not_assessed_kinds: []
+    outcome: HIT
+    decision_relevant: false
+  - id: QY-15
+    operation: explain
+    terms: []
+    subject: adr:0021
+    expect_kinds: []
+    target_ref: 53b667c17c3e2e65ef2e344ccedfc60296f8d7cd
+    result:
+      hit_count: 1
+      claim_ids: [adr:0021]
+      truncated: false
+      not_assessed_kinds: []
+    outcome: HIT
+    decision_relevant: false
+source_checks:
+  - claim_id: component:knowledge-store
+    sources: [".sensemaking/knowledge/stewardship.json", "src/sensemaking_skills/semantic_architecture/knowledge_store.py:161-433"]
+    result: SUPPORTED
+  - claim_id: component:semantic-knowledge-plane
+    sources: [".sensemaking/knowledge/architecture.json", "src/sensemaking_skills/semantic_architecture/knowledge_architecture.py:148-316"]
+    result: SUPPORTED
+  - claim_id: verification:knowledge-tests
+    sources: ["tests/test_semantic_knowledge.py:13-18", "tests/test_semantic_knowledge.py:487-496"]
+    result: SUPPORTED
+  - claim_id: inv:bounded-query-disclosure
+    sources: ["src/sensemaking_skills/semantic_architecture/knowledge_store.py:366-394", "src/sensemaking_skills/semantic_architecture/knowledge_store.py:420-424"]
+    result: NOT_CHECKED
+  - claim_id: inv:index-snapshot-vs-working-overlay
+    sources: ["src/sensemaking_skills/semantic_architecture/knowledge_sources.py:52-65", "src/sensemaking_skills/semantic_architecture/worktree_context.py:76-101"]
+    result: SUPPORTED
+  - claim_id: decision:workspace-impact-path-overlap
+    sources: ["src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py:64-115", "src/sensemaking_skills/semantic_cli.py:244-256"]
+    result: SUPPORTED
+  - claim_id: observation:knowledge-query-closed-operations
+    sources: ["src/sensemaking_skills/semantic_cli.py:209-211"]
+    result: SUPPORTED
+misses:
+  - id: M-1
+    query_ref: QY-2
+    needed_for: "Invariants, decisions and functional tests governing an edit to the query store"
+    kind: NOT_ASSESSED
+    resolved_by: "explain cap:semantic-queries (QY-8) and direct reading of .sensemaking/knowledge/stewardship.json; the records exist at the indexed revision on the capability the owner implements"
+    follow_up: DEFERRED
+    proposal_ref: null
+  - id: M-2
+    query_ref: QY-3
+    needed_for: "Reviewed verification, component and constraint context for the store's main test file"
+    kind: NOT_ASSESSED
+    resolved_by: "workspace-impact with a temporary reverted edit (QY-6) and direct reading of the authored packs; draft PR 795 addresses verification claims only"
+    follow_up: DEFERRED
+    proposal_ref: null
+  - id: M-5
+    query_ref: QY-5
+    needed_for: "Re-inspection candidates for an edited test file (repeat of QY-3 with temporary probe edits)"
+    kind: NOT_ASSESSED
+    resolved_by: "workspace-impact (QY-6) listed the verification, invariant and relation records that cite the changed test file"
+    follow_up: DEFERRED
+    proposal_ref: null
+  - id: M-3
+    query_ref: QY-9
+    needed_for: "Find the reviewed records that cite an unchanged test file"
+    kind: NO_MATCH_IN_SCOPE
+    resolved_by: "Direct reading of evidence_refs in the authored packs; search matches statements and IDs only"
+    follow_up: NO_MODEL_CHANGE
+    proposal_ref: null
+  - id: M-4
+    query_ref: QY-10
+    needed_for: "Find the reviewed records that cite an unchanged source file"
+    kind: NO_MATCH_IN_SCOPE
+    resolved_by: "Direct reading of evidence_refs in the authored packs; four unselected claims cite the file"
+    follow_up: NO_MODEL_CHANGE
+    proposal_ref: null
+reconcile: []
+persistence: working_tree_only
+action_authorized: false
+semantic_truth_established: false
+immutable: true

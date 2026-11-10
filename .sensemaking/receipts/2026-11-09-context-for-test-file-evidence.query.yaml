@@ -1,0 +1,129 @@
+artifact_id: semantic_query_receipt
+schema_version: 1
+session_ref: 2026-11-09-context-for-test-file-evidence
+state: final
+created_at: "2026-11-09T19:16:03Z"
+updated_at: "2026-11-09T19:16:03Z"
+target_repository: ThorStarlord/sensemaking-skills
+modes: [RECALL, RECONCILE]
+decision: "Whether file-level context-for can surface reviewed verification and component context for a source-linked regression test without treating the file as an owner."
+cli_identity:
+  sensemaking_source_ref: 53b667c17c3e2e65ef2e344ccedfc60296f8d7cd
+  invocation_prefix: "PYTHONPATH=src python -m sensemaking_skills.cli (worktree source)"
+  version_output: "sensemaking-skills, version 1.0.0rc5.dev0"
+index:
+  indexed_ref: 53b667c17c3e2e65ef2e344ccedfc60296f8d7cd
+  current_head: 53b667c17c3e2e65ef2e344ccedfc60296f8d7cd
+  worktree_clean: false
+  uncommitted_changes_not_indexed: true
+queries:
+  - id: QY-1
+    operation: context-for
+    terms: []
+    subject: tests/test_legacy_workflow_planner_fail_closed.py
+    expect_kinds: []
+    target_ref: 53b667c17c3e2e65ef2e344ccedfc60296f8d7cd
+    result:
+      hit_count: 0
+      claim_ids: []
+      truncated: false
+      not_assessed_kinds: [ownership, architecture_rules, contracts, constraints, decisions, alternatives, history, verification_refs]
+    outcome: NOT_ASSESSED
+    decision_relevant: true
+  - id: QY-2
+    operation: context-for
+    terms: []
+    subject: tests/test_legacy_workflow_planner_fail_closed.py
+    expect_kinds: []
+    target_ref: 53b667c17c3e2e65ef2e344ccedfc60296f8d7cd
+    result:
+      hit_count: 5
+      claim_ids: [verification:legacy-planner-fail-closed-tests, component:legacy-workflow-planner, decision:legacy-planner-fails-closed, observation:legacy-plan-producer-overwrites-tracked-plan, alternative:legacy-planner-removal]
+      truncated: false
+      not_assessed_kinds: [ownership, architecture_rules, contracts, constraints]
+    outcome: HIT
+    decision_relevant: true
+  - id: QY-3
+    operation: context-for
+    terms: []
+    subject: tests/test_architecture_queries.py
+    expect_kinds: []
+    target_ref: 53b667c17c3e2e65ef2e344ccedfc60296f8d7cd
+    result:
+      hit_count: 5
+      claim_ids: [verification:architecture-vocabulary-tests, verification:clean-index-tests, verification:semantic-knowledge-tests, component:semantic-knowledge-plane, decision:index-from-temporary-worktree]
+      truncated: false
+      not_assessed_kinds: [ownership, architecture_rules, contracts]
+    outcome: PARTIAL
+    decision_relevant: true
+  - id: QY-4
+    operation: context-for
+    terms: []
+    subject: tests/test_architecture_queries.py
+    expect_kinds: []
+    target_ref: 53b667c17c3e2e65ef2e344ccedfc60296f8d7cd
+    result:
+      hit_count: 7
+      claim_ids: [verification:architecture-vocabulary-tests, component:semantic-knowledge-plane, decision:index-from-temporary-worktree, alternative:dirty-tree-byte-audit, alternative:shared-clone-checkout, inv:index-snapshot-vs-working-overlay, lesson:source-anchored-context-reentry]
+      truncated: false
+      not_assessed_kinds: [ownership, architecture_rules, contracts]
+    outcome: HIT
+    decision_relevant: true
+  - id: QY-5
+    operation: context-for
+    terms: []
+    subject: tests/test_cli.py
+    expect_kinds: []
+    target_ref: 53b667c17c3e2e65ef2e344ccedfc60296f8d7cd
+    result:
+      hit_count: 0
+      claim_ids: []
+      truncated: false
+      not_assessed_kinds: [ownership, architecture_rules, contracts, constraints, decisions, alternatives, history, verification_refs]
+    outcome: NOT_ASSESSED
+    decision_relevant: true
+  - id: QY-6
+    operation: context-for
+    terms: []
+    subject: src/sensemaking_skills/semantic_architecture/knowledge_store.py
+    expect_kinds: []
+    target_ref: 53b667c17c3e2e65ef2e344ccedfc60296f8d7cd
+    result:
+      hit_count: 10
+      claim_ids: [component:knowledge-store, layer:knowledge-plane, bounded_context:knowledge-stewardship, rule:console-output-ascii, rule:stable-core-no-lab-imports, lesson:console-guard-literal-print-arguments-only, lesson:distinguish-provenance-content-and-meaning, lesson:query-completeness-is-evidence, lesson:uncited-change-is-coverage-gap, verification:console-output-ascii-guard]
+      truncated: false
+      not_assessed_kinds: [contracts, constraints, decisions, alternatives]
+    outcome: HIT
+    decision_relevant: true
+source_checks:
+  - claim_id: verification:legacy-planner-fail-closed-tests
+    sources: [".sensemaking/knowledge/architecture.json", "tests/test_legacy_workflow_planner_fail_closed.py"]
+    result: SUPPORTED
+  - claim_id: component:legacy-workflow-planner
+    sources: [".sensemaking/knowledge/architecture.json"]
+    result: SUPPORTED
+misses:
+  - id: M-1
+    query_ref: QY-1
+    needed_for: "Verification and architecture context for the Pilot 001 regression test"
+    kind: NOT_ASSESSED
+    resolved_by: "Source change: authority_ref and evidence_ref route, plus verified components. Covered by unit tests and QY-2."
+    follow_up: NO_MODEL_CHANGE
+    proposal_ref: null
+  - id: M-2
+    query_ref: QY-5
+    needed_for: "Confirm an unrelated test file gets no speculative context"
+    kind: NOT_ASSESSED
+    resolved_by: "No claim names this file as authority or evidence, so NOT_ASSESSED is the expected result. Confirmed by a unit test."
+    follow_up: NO_MODEL_CHANGE
+    proposal_ref: null
+reconcile:
+  - claim_id: null
+    disposition: NO_MODEL_CHANGE
+    applied: false
+    proposal_ref: null
+    proposal_check: NOT_RUN
+persistence: committed
+action_authorized: false
+semantic_truth_established: false
+immutable: true

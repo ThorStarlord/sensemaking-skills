@@ -69,13 +69,40 @@ run can leave a worktree entry that `git worktree list` marks prunable.
 `git clone --shared` was not used, because Git ignores `--shared` for a
 shallow source and copies objects instead.
 
+`knowledge-orient`, `knowledge-check-rules` and `knowledge-audit` accept the
+same flag under the same checks and limits; audit applies it to
+`--current-ref`. The JSON output then gains `source_checkout`
+(`temporary_worktree`) and `active_checkout`, which reports `head`,
+`head_matches_source_ref`, `worktree_clean`, `modified_tracked_count`,
+`untracked_count`, `working_changes_read` (always `false`) and `note`, a fixed
+sentence saying that the active checkout was not read and that its uncommitted
+and untracked changes are not part of the result. Everything else equals a
+clean-checkout run at the same commit. Without the flag, a dirty checkout or a
+ref other than the checked-out HEAD is refused, and the refusal ends with a
+hint naming `--temporary-checkout`. `knowledge-build` reports
+`source_checkout` in both modes and has no `active_checkout` object. These
+three commands add their two keys only with the flag. The refusal of
+`knowledge-build` ends with the same hint.
+
+The temporary worktree belongs to the same repository, so it uses that
+repository's Git configuration and checks out the same bytes as its ordinary
+checkout. Source fingerprints are taken from the bytes Git checks out, after
+any line-ending conversion that the repository's configuration applies. A
+separate clone can differ: under another `core.autocrlf` setting its text
+files have other line endings, and `knowledge-audit` then reports cited text
+files as changed. Observed on one Windows host on 2026-11-10, in an audit of
+an index of commit `53b667c1` run at commit `baaec6b9`: 442 of 442 records
+reported changed from such a clone, against 139 of 442 from a worktree of the
+repository itself.
+
 Other operations: snapshot, search, contradictions, history, changes and
 workspace-impact (see active-workspace recall below).
 Changes also requires --base-ref with a *previously indexed* revision.
 The import-syntax option is --include-python-imports with --max-imports cap.
 
 To inspect whether the **original source evidence** has drifted since an
-indexed revision, while standing in a newer clean target checkout:
+indexed revision, while standing in a newer clean target checkout (or, with
+`--temporary-checkout`, a dirty one):
 
     sensemaking-skills semantic knowledge-audit       --db /tmp/semantic-knowledge.sqlite       --repo . --repository "ThorStarlord/sensemaking-skills"       --indexed-ref "$OLD_SHA" --current-ref "$(git rev-parse HEAD)" --json
 
@@ -144,7 +171,8 @@ sensemaking-skills semantic knowledge-query --db $db --repository $repository `
   and bounded by `--limit`; `uncited_changed_path_total` is the pre-limit
   count, and top-level `truncated` is true when either the affected-record or
   the uncited-path list omits entries. Use
-  `knowledge-audit` for byte-level drift once the checkout is clean.
+  `knowledge-audit` for byte-level drift once the checkout is clean, or with
+  `--temporary-checkout` while it is dirty.
 - For source truth, inspect affected current code, owner documentation,
   tests and architectural alternatives. To retain a reusable decision in
   dirty work, preflight JSON with `knowledge-proposal-check`, run local tests
@@ -154,6 +182,63 @@ sensemaking-skills semantic knowledge-query --db $db --repository $repository `
 implementation behavior at the tested revision; they do not establish
 independent-session cumulative value, cross-repository transfer, release
 readiness, or a benchmark advantage.
+
+## Zero-setup workspace query (workspace-query)
+
+`semantic workspace-query` answers a reviewed-knowledge query without a prior
+build and without identity arguments. It resolves the checkout, the commit
+(`--ref`, default `HEAD`) and a repository label, builds or reuses a derived
+SQLite index of that committed revision, runs one read operation and returns
+the same payload as `knowledge-query --repo .` plus one additive
+`workspace_index` object.
+
+Two main uses:
+
+- Before editing a file: `semantic workspace-query path/to/file.py --json`
+  (`context-for`; up to 8 positional paths are composed as in `context-for --path`).
+- Before finishing: `semantic workspace-query --operation workspace-impact --ref <base> --json`
+  lists reviewed records whose cited files changed since `<base>`.
+
+Facts that bound its use:
+
+- Only committed bytes are indexed. A dirty checkout is indexed from a
+  temporary worktree. `workspace_context` discloses uncommitted changes that
+  are not indexed; the working overlay is never indexed and never authority.
+- The derived index lives at `<index-dir>/<clone-key>/<sha>.sqlite`. The default
+  index directory is `%LOCALAPPDATA%\sensemaking-skills\index` on Windows and
+  `$XDG_CACHE_HOME/sensemaking-skills/index` (else `~/.cache/sensemaking-skills/index`)
+  elsewhere. The clone key hashes the Git common directory, so all worktrees of one
+  clone share one cache. The index is rebuildable, is never authority, and at most
+  8 snapshot files are kept per clone (older ones are pruned after a build).
+- `workspace_index` fields: `indexed_ref`, `ref_requested`, `repository`,
+  `repository_identity_source` (`explicit`, `origin_remote` or `local_path`),
+  `repository_label_verified` (always `false`), `index_path`, `index_state`
+  (`built` or `reused`), `build_source` (`active_checkout`, `temporary_worktree`,
+  or `null` when reused) and `equivalent_operations` (the build plus the operation
+  when built; the operation alone when reused).
+- The label comes from the `origin` remote path (last two segments, `.git`
+  removed) or, without an origin, from the checkout directory name. The origin
+  URL, its credentials and its host are never printed. An origin whose kept path
+  segments contain `@` or `:` is not used; the directory name is used instead. The
+  label is not a verified identity; `--repository` sets it explicitly.
+- Supported operations: `context-for`, `rules-for`, `search`, `explain`, `why`,
+  `impact`, `term`, `orientation-summary`, `contradictions`, `snapshot` and
+  `workspace-impact`. `changes` and `history` are refused, because they need
+  several indexed revisions in one database; use `knowledge-build` and
+  `knowledge-query` with an explicit `--db` for those.
+- Options: `--ref REV` (rejected when it starts with `-` or contains whitespace or
+  control characters), `--repository LABEL`, `--index-dir DIR` (must lie outside
+  the checkout), `--refresh` (delete this commit's cache file and rebuild it) and
+  `--repo DIR` (any directory inside the working tree).
+- Cost: the first call for a commit builds the index; a dirty tree uses the
+  temporary-worktree path, which takes on the order of 15 seconds on the development
+  host. A reused index answers in about 2 seconds. Timing is not a benchmark.
+- Cache trust: a reused cache file is trusted as written and is not re-verified
+  against Git. Anyone who can write to the index directory can alter answers, so keep
+  the default per-user location or a private directory, and use `--refresh` when in doubt.
+- Claim ceiling: this is construction evidence that the command exists and returns
+  source-pinned answers. Whether agents consult reviewed records earlier because of
+  it is NOT TESTED.
 
 ## Change granularity and shared authored-pack limitation
 
@@ -339,12 +424,33 @@ sensemaking-skills semantic knowledge-query --db "$db" --repository "$repository
   linked decision to a recorded incident, lesson or observation, and is labelled as
   such.
 - `context.verification_refs`: verification records linked by `tested_by` from
-  an owner or a matched rule.
+  an owner or a matched rule. For a file that **no component owns**, a
+  verification record whose `authority_ref` is that file, or whose `evidence_refs`
+  identify it as `file:<path>` (optionally followed by `:line:<N>` or
+  `#<fragment>`), is also returned. Its `matched_by` names the link
+  (`authority_ref` or `evidence_ref`). This is verification relevance, never
+  ownership: other claim kinds that merely cite the file do not qualify.
+- `context.verified_components`: components that a file-level verification record
+  in this response verifies, linked by `tested_by`. The supporting record must be
+  in `verification_refs`, so a component supported only by an omitted record is
+  not returned. `verification_refs` keeps the first `limit` records in claim-ID
+  order across file matches and rule-linked records, so a rule-linked record can
+  take a slot, hiding a file match and the component that match supports. Their
+  `decided_by` decisions, constraints and history follow the
+  usual explicit links. They are not owners: `ownership` stays `NOT_ASSESSED`,
+  contracts and rules do not follow from them, and their other verification
+  records are not expanded. Relevance is not runtime truth or action authority.
+  Owned paths do not use this route.
 - `context.knowledge_gaps`: `NOT_ASSESSED`, `AMBIGUOUS`, `EPISTEMIC_CAVEAT`,
-  `HYPOTHETICAL_CAVEAT` and `TRUNCATED` entries. An empty category is reported
-  as not assessed, never as
-  the absence of a contract, decision, lesson or test.
-- `context.omitted`: how many records each category held beyond `--limit`.
+  `HYPOTHETICAL_CAVEAT`, `TRUNCATED` and `NOT_AN_OWNER` entries. `NOT_AN_OWNER`
+  (category `verification_relevance`) marks a file that no component owns, with
+  its verification links recorded as relevance only. A `TRUNCATED` entry on
+  `verified_components` marks verified components that were not returned. An
+  empty category is reported as not assessed, never as the absence of a contract,
+  decision, lesson or test.
+- `context.omitted`: how many records each category held beyond `--limit`. For
+  `verified_components` it counts every verified component not returned, including
+  components supported only by an omitted verification record.
 - `context.envelope_reference_coverage`: a **separate** count of claims and
   relations selected by the category context but not returned in the top-level
   query envelope, which is capped globally by `--limit`. The omitted-ID samples
@@ -385,6 +491,88 @@ its neighbours. The result states
 `--repo`, `workspace_context` reports whether the checkout matches the indexed
 revision and whether it has uncommitted changes.
 
+### Relevance candidates (not established context)
+
+Each category above is filled only through the explicit links described for it.
+An indexed record can bear on a file without such a link: it may be attached to
+a capability the owner implements, or it may cite the file as evidence.
+`context.relevance_candidates` lists those records separately, so they are
+visible without being presented as context that applies:
+
+- **Capability route:** a `capability` linked to an owning component by
+  `implemented_by`, then that capability's `constrained_by` invariants and
+  constraints, `decided_by` decisions (either direction), `tested_by`
+  verification records, and incidents, lessons and observations linked by
+  `references`, `learned_from` or `contradicts`.
+- **Citation route:** a contract, invariant, constraint, decision,
+  alternative, incident, lesson, observation or verification claim whose
+  `evidence_refs` cite `file:<path>` or whose `authority_ref` is the path.
+  This route also serves a file that no component owns, such as a test. There,
+  a verification claim that identifies the same file in `authority_ref` or
+  `evidence_refs` enters `verification_refs` first, not the candidate list;
+  an explicit `tested_by` relation is required to reach verified components.
+  Other citation-only records remain candidates, never applicable rules or owners.
+
+**File-reference identity contract:** `knowledge_sources._local_evidence_path`
+parses supported repository-local evidence references for both retrieval routes:
+`file:tests/example.py`, `file:tests/example.py:line:42`, and
+`file:tests/example.py#test_case` identify the same tracked source file.
+Matching removes only supported line/fragment qualifiers; returned
+`evidence_refs` keep their exact authored strings and provenance. The
+`authority_ref` file-path route remains exact. Normalized citations do not
+establish architectural applicability, runtime correctness or ownership.
+Verification relevance applies only to `verification` records on unowned
+paths. A component needs a reviewed `tested_by` link to a displayed
+verification record and cannot inherit ownership, contracts or rules through
+that link. Category-limited verification records stay in that category's
+`omitted` totals, not reintroduced as candidates. `NOT_ASSESSED` and
+truncation remain explicit.
+
+Both routes read fields of indexed records only: authored records, and the
+index's own ADR and Grounding Pack claims, which cite their source document. No
+name, directory or import heuristic is used, and mechanical claims and relations
+never qualify. Records already held by a category above are excluded, including
+records that category cut at its limit.
+
+- `status` is `CANDIDATES_NOT_ESTABLISHED` or `NONE_RECORDED`. The second is not
+  evidence that nothing else applies.
+- `items` are sorted by category and claim ID and cut at `--limit`. Each has
+  the usual claim fields, the `category` it would belong to, its `routes`,
+  `matched_by` naming the exact relation IDs or cited field, and
+  `applicability: NOT_ESTABLISHED`.
+- `total`, `omitted` and `by_category` count all candidates before the limit;
+  `returned_by_category` counts the returned items.
+- `implemented_capabilities` names each capability an owner implements, its
+  `epistemic_status`, the `implemented_by` relation IDs, and
+  `implementing_component_total`. A capability that several components implement
+  can hold a constraint that binds only one of them. The list is cut at
+  `--limit`; `implemented_capabilities_omitted` counts the rest, and cutting it
+  sets `truncated` even when no candidate was cut.
+- `other_citing_kinds` counts citing records of other kinds, for example a
+  component that cites the file without owning it. They are not expanded.
+- `route_relation_ids` and `route_capability_ids` are the relations and
+  capabilities behind the returned capability-route items.
+
+A candidate is never an owner, a rule or an obligation. `ownership` and every
+category keep their own status: a category that is `NOT_ASSESSED` stays
+`NOT_ASSESSED`, and its note gains a count when candidates of that kind exist.
+In addition to the `knowledge_gaps` statuses listed above, the
+`relevance_candidates / CANDIDATES_NOT_ESTABLISHED` gap states how many exist
+and how many were returned, and `relevance_candidates / TRUNCATED` with
+`omitted.relevance_candidates` states what the limit cut. In the top-level
+envelope, candidate claims, their capabilities and their route relations come
+after every record of the categories, so the global limit cuts them first.
+Citations made only by relation records are not searched. To make a candidate
+count as context, anchor it to the owner through reviewed knowledge
+(RECONCILE); this query does not.
+
+`owner_verification / NOT_ASSESSED` is a separate gap. It appears when every
+returned verification record is linked from an applicable rule and none from an
+owning component. A rule's own guard test fills `verification_refs` for every
+file the rule applies to, which would otherwise hide that the owner's tests are
+not linked. One verification link from the owner removes the gap for all of the
+owner's files, because ownership is recorded per component.
+
 ### Source overlap during active edits (PATH-1/T5)
 
 When `context-for` is called with `--repo` and the indexed commit is available
@@ -393,7 +581,12 @@ tracked/untracked paths since that exact indexed SHA against the original
 source-fingerprint paths of the *selected* context claims and relations. It
 reports `target_path_changed`, the count of changed paths, affected record IDs,
 the cited sources that changed, omitted affected-record totals, and the number
-of records for which there was no fingerprint to assess.
+of records for which there was no fingerprint to assess. Returned relevance
+candidates, their capabilities and their route relations get the same
+comparison in a separate `workspace_relevance.relevance_candidates` block with
+its own totals and limit, so they never displace a record of the categories.
+Querying an older indexed revision from a newer checkout therefore shows which
+candidates cite sources that changed since that revision.
 
 This is a bounded **re-inspection signal**, not an audit of changed bytes and
 not proof that any claim is stale or accurate. Authored shared-pack fingerprints
@@ -544,7 +737,8 @@ S6 richness (other language adapters, domain-specific graph types, optional visu
 ## First-visit repository orientation and bounded structural skeleton
 
 Use `knowledge-orient` to inspect a clean Git checkout without creating
-an index or reading unreviewed product semantics:
+an index or reading unreviewed product semantics. With `--temporary-checkout`,
+it orients a dirty checkout at its committed HEAD:
 
 ```bash
 REF="$(git rev-parse HEAD)"

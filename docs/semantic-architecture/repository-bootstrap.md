@@ -36,7 +36,9 @@ inherited. Whether ontology-first entry improves decisions is not yet observed.
 
 ## First-visit contract — RSB-1
 
-On a **clean checkout**, pin the full Git HEAD. Then run:
+On a **clean checkout**, pin the full Git HEAD. From a dirty checkout, add
+`--temporary-checkout` to the command below, which reads the committed HEAD from
+a temporary worktree. Then run:
 
 ```bash
 REF="$(git rev-parse HEAD)"
@@ -49,7 +51,8 @@ inspected count, truncation, top-level tracked-path distribution, recognized fil
 extensions, candidate product entry documents, manifest examples, and bounded
 source/test examples. It does **not** read document content or run repository code.
 All entries are paths from the current Git index; source meaning requires
-inspection. The command refuses untracked/dirty source bytes and wrong HEAD.
+inspection. Without `--temporary-checkout`, the command refuses untracked or
+dirty source bytes and a ref other than the checked-out HEAD.
 
 Defaults: maximum 5000 eligible paths inspected, 16 examples per category.
 Both have bounded CLI options. Source-tree priority prevents archival files
@@ -96,7 +99,8 @@ claims/edges in tracked `.sensemaking/knowledge/*.json`. Hypotheses stay
 hypotheses. Review must not convert a generated inference into owner intent.
 
 After source changes, use existing `knowledge-audit`, then rebuild/reconcile
-the snapshot at the new clean HEAD. Preserve indexed history; source drift
+the snapshot at the new clean HEAD, or with `--temporary-checkout` while the
+checkout is dirty. Preserve indexed history; source drift
 is not automatic semantic invalidation.
 
 ## Delivery sequence and evidence ceiling

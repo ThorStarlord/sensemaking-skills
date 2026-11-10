@@ -352,17 +352,30 @@ def query_knowledge(
                 *(rule["claim_id"] for rule in ctx["architecture_rules"]),
                 *ctx["ownership"]["layers"],
                 *ctx["ownership"]["bounded_contexts"],
+                *(item["claim_id"] for item in ctx["verified_components"]),
                 *(item["claim_id"] for name in
                   ("contracts", "constraints", "decisions", "alternatives", "history",
                    "verification_refs")
                   for item in ctx[name]),
             ]
+            # Relevance candidates, the capabilities behind them and their route
+            # relations come last in both lists, so the global limit cuts them
+            # before any record of the context categories.
+            candidates = ctx["relevance_candidates"]
+            candidate_claim_ids = [
+                *(item["claim_id"] for item in candidates["items"]),
+                *candidates["route_capability_ids"],
+            ]
             ordered_claim_ids = list(dict.fromkeys(
-                cid for cid in [*ranked, *selected_claims] if cid in claims
+                cid for cid in [*ranked, *selected_claims, *candidate_claim_ids] if cid in claims
             ))
             found_claims = [claims[cid] for cid in ordered_claim_ids]
             relation_id_set = set(selected_relations)
-            found_relations = [r for r in relations if r["id"] in relation_id_set]
+            candidate_relation_ids = set(candidates["route_relation_ids"]) - relation_id_set
+            found_relations = [
+                *(r for r in relations if r["id"] in relation_id_set),
+                *(r for r in relations if r["id"] in candidate_relation_ids),
+            ]
             claim_overflow = max(0, len(found_claims) - limit)
             relation_overflow = max(0, len(found_relations) - limit)
             ctx["envelope_reference_coverage"] = {
@@ -398,8 +411,13 @@ def query_knowledge(
                     selected_relation_ids=selected_relations,
                     changed_paths=workspace_changed_paths, target_path=subject,
                     limit=limit, context_truncated=extra["context"]["truncated"],
+                    candidate_claim_ids=tuple(
+                        cid for cid in candidate_claim_ids if cid not in set(selected_claims)),
+                    candidate_relation_ids=tuple(sorted(candidate_relation_ids)),
                 )
-                if extra["context"]["workspace_relevance"]["affected_records_omitted"]:
+                relevance = extra["context"]["workspace_relevance"]
+                if (relevance["affected_records_omitted"]
+                        or relevance["relevance_candidates"]["affected_records_omitted"]):
                     extra_truncated = True
         elif operation == "term":
             assert subject is not None

@@ -96,19 +96,75 @@
     {
       "id": "component:semantic-cli",
       "kind": "component",
-      "statement": "The shipped semantic CLI registers source-pinned knowledge build, query, audit, orientation and architecture-inspection commands.",
+      "statement": "The shipped semantic CLI registers source-pinned knowledge build, query, audit, orientation and architecture-inspection commands, and workspace-query, which resolves the checkout, commit and repository label itself and runs the same read operations over a derived index of that commit.",
       "authority_kind": "code",
       "authority_ref": "src/sensemaking_skills/semantic_cli.py",
       "evidence_refs": [
         "file:src/sensemaking_skills/semantic_cli.py",
+        "file:src/sensemaking_skills/workspace_knowledge.py",
         "file:src/sensemaking_skills/cli.py",
         "file:docs/semantic-architecture/persistent-knowledge-cli.md"
       ],
       "epistemic_status": "observed",
       "attributes": {
         "owned_paths": [
-          "src/sensemaking_skills/semantic_cli.py"
-        ]
+          "src/sensemaking_skills/semantic_cli.py",
+          "src/sensemaking_skills/workspace_knowledge.py"
+        ],
+        "revision_history": "REVISED 2026-11-10: workspace-query and its module src/sensemaking_skills/workspace_knowledge.py were added; the earlier statement named only the explicit-identity commands."
+      }
+    },
+    {
+      "id": "decision:workspace-query-derived-commit-index",
+      "kind": "decision",
+      "statement": "Delegated design: semantic workspace-query is a front door over the existing build and query functions, not a new operation. It resolves the checkout root, a commit (--ref, default HEAD) and a repository label, builds or reuses a derived SQLite index of that committed revision at <index-dir>/<clone-key>/<sha>.sqlite in a per-user cache outside every checkout, and returns the knowledge-query payload plus an additive workspace_index object. Only committed bytes are indexed: the active checkout when it is clean at that commit, otherwise a temporary worktree. knowledge-query stays read-only with explicit identity arguments; changes and history are refused because one cache file holds one commit.",
+      "authority_kind": "delegated",
+      "authority_ref": "src/sensemaking_skills/workspace_knowledge.py",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/workspace_knowledge.py",
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:skills/repository-semantic-steward/references/recall.md"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "scope": "Agent-selected design within the owner's construction delegation under ADR 0031; not an owner-ratified cache, identity or distribution policy.",
+        "decision_changed": "Whether an agent with no prepared index can ask what reviewed records say about a file in one command, and what a later change to the cache location, label derivation, retention or cache trust must preserve.",
+        "safety_basis": "The derived label uses only the last two path segments of the origin URL and is dropped when a kept segment contains @ or :, so the URL's credentials and host are not printed. The clone-key directory and the database path are refused when either is a symlink or resolves elsewhere, which covers a Windows junction. An index directory inside the checkout is refused.",
+        "known_limits": "A reused cache file is trusted as written and is not re-verified against Git; anyone who can write to the index directory can alter answers. At most 8 snapshot files are kept per clone, pruned by modification time after a build. Uncommitted changes to the indexer itself are not detected; --refresh rebuilds. The label is unverified. The first call for a commit pays a build: about 20 s through a temporary worktree and 2 to 5 s on reuse on the development host.",
+        "claim_ceiling": "Exercised through the real CLI on one Windows host at baaec6b9 with the change uncommitted: payload equality with the two-step path for seven operations, and scratch-repository probes of labels, refs, retention, a junction and unreadable cache files. Symlink refusal NOT_RUN (no privilege on the host); POSIX locations and modes NOT_RUN; unit tests NOT_RUN. Whether agents consult reviewed records earlier because of it is NOT TESTED.",
+        "source_pr": "https://github.com/ThorStarlord/sensemaking-skills/pull/801"
+      }
+    },
+    {
+      "id": "alternative:implicit-index-in-knowledge-query",
+      "kind": "alternative",
+      "statement": "Rejected alternative: make --db, --repository and --target-ref optional on knowledge-query and resolve them from --repo. knowledge-query is documented and used as a read-only operation over an explicitly identified index; resolving them implicitly would add a cache write and a temporary worktree to it, and a partly explicit argument matrix to validate. A separate command keeps that contract and confines the new side effects to one name.",
+      "authority_kind": "document",
+      "authority_ref": "src/sensemaking_skills/semantic_cli.py",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ],
+      "epistemic_status": "hypothetical",
+      "attributes": {
+        "disposition": "rejected",
+        "scope": "Engineering alternative for where zero-setup index resolution lives."
+      }
+    },
+    {
+      "id": "alternative:ephemeral-index-per-query",
+      "kind": "alternative",
+      "statement": "Rejected alternative: build a throwaway index on every call and keep no cache. It needs no cache location, retention or trust rule, but every call would pay the build, about 15 to 20 s on the development host whenever the tree is dirty, which is the usual state during work.",
+      "authority_kind": "document",
+      "authority_ref": "src/sensemaking_skills/workspace_knowledge.py",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/workspace_knowledge.py"
+      ],
+      "epistemic_status": "hypothetical",
+      "attributes": {
+        "disposition": "rejected",
+        "scope": "Engineering alternative for whether the derived index persists between calls."
       }
     },
     {
@@ -1283,6 +1339,66 @@
         "file:tests/test_semantic_knowledge_self_repo.py"
       ],
       "epistemic_status": "observed"
+    },
+    {
+      "id": "rel:semantic-cli-decided-by-workspace-query-index",
+      "subject": "component:semantic-cli",
+      "predicate": "decided_by",
+      "object": "decision:workspace-query-derived-commit-index",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/workspace_knowledge.py"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:workspace-query-decision-overlay-boundary",
+      "subject": "decision:workspace-query-derived-commit-index",
+      "predicate": "constrained_by",
+      "object": "inv:index-snapshot-vs-working-overlay",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/workspace_knowledge.py"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:workspace-query-decision-uses-temporary-worktree",
+      "subject": "decision:workspace-query-derived-commit-index",
+      "predicate": "references",
+      "object": "decision:index-from-temporary-worktree",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/workspace_knowledge.py"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:workspace-query-decision-implicit-index-alternative",
+      "subject": "decision:workspace-query-derived-commit-index",
+      "predicate": "references",
+      "object": "alternative:implicit-index-in-knowledge-query",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_cli.py"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:workspace-query-decision-git-objects-alternative",
+      "subject": "decision:workspace-query-derived-commit-index",
+      "predicate": "references",
+      "object": "alternative:read-committed-bytes-from-git-objects",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_sources.py"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:workspace-query-decision-ephemeral-index-alternative",
+      "subject": "decision:workspace-query-derived-commit-index",
+      "predicate": "references",
+      "object": "alternative:ephemeral-index-per-query",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/workspace_knowledge.py"
+      ],
+      "epistemic_status": "declared"
     },
     {
       "id": "rel:validator-router-layer",

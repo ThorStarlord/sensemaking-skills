@@ -72,7 +72,7 @@ The version-2 constructs have exact constraints (checked by `knowledge-proposal-
 | Construct | Constraint |
 | --- | --- |
 | any claim or relation | `epistemic_status` is one of `declared`, `observed`, `hypothetical`, `contested`, `superseded`, `invalidated`. An inference across sources is `hypothetical`, not `derived` |
-| `component.owned_paths` | Exact, distinct, tracked repository files; no directories and no globs (list the files). File-level `context-for` matches these paths exactly |
+| `component.owned_paths` | Exact, distinct, tracked repository files; no directories and no globs (list the files). File-level `context-for` matches these paths exactly. A file no component owns can still receive verification relevance from a `verification` claim that names it as `authority_ref` or cites it as `file:` evidence; that link is never ownership |
 | `architecture_rule` | `rule_type` is one of `convention`, `dependency_direction`, `forbidden_term`, `naming`, `placement`; `severity` is `warning` or `error`; `applies_to` lists repository paths or globs (scope a directory as `dir/**`; a bare `dir/` matches no file) or is empty with an `applies_to` relation. `dependency_direction` needs `allowed_targets` or `forbidden_targets`; `naming` and `placement` need `pattern`; `forbidden_term` needs `terms`. A path-scoped authority boundary is a `convention`; one without a path scope is an `invariant` or `constraint` |
 | `flows_to` | component -> component, with `attributes.carries` naming a `contract` claim. A progression between domain concepts uses `derived_from` or `references` with `attributes.conceptual_relation` |
 | `belongs_to`, `transitions_to`, `exposes`, `applies_to` | target `layer` or `bounded_context`; `lifecycle_state` -> `lifecycle_state`; `component` -> `contract`; `architecture_rule` -> `component`, `layer` or `bounded_context` |
@@ -153,4 +153,4 @@ sensemaking-skills semantic knowledge-query --db /outside/index.sqlite --reposit
 sensemaking-skills semantic knowledge-audit --db /outside/index.sqlite --repo . --repository owner/repo --indexed-ref "$OLD_SHA" --current-ref "$REF" --json
 ```
 
-No `knowledge-build` operation accepts a dirty checkout; use a clean detached snapshot/worktree. The database path must stay outside target checkout; the generated SQLite file is not a reviewed semantic source. Query results describe declared edges and indexed source, not a validated complete graph.
+None of `knowledge-build`, `knowledge-orient`, `knowledge-check-rules` and exact-source `knowledge-audit` reads dirty bytes; each reads a clean committed revision, from the active checkout when it is clean or from a temporary worktree with `--temporary-checkout`. The database path must stay outside target checkout; the generated SQLite file is not a reviewed semantic source. Query results describe declared edges and indexed source, not a validated complete graph.

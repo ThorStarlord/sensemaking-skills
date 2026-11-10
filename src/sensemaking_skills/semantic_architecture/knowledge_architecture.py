@@ -11,6 +11,7 @@ import re
 from typing import Any, Iterable, Mapping
 
 from .knowledge import _valid_repo_path, is_path_scope
+from .knowledge_sources import _local_evidence_path
 
 OPERATIONS = frozenset({"rules-for", "term", "orientation-summary", "context-for"})
 NOT_ASSESSED_NOTE = (
@@ -145,6 +146,229 @@ def _context_item(cid: str, claim: Mapping[str, Any], matched_by: set[str]) -> d
     }
 
 
+def _test_evidence_verifications(claims: Mapping[str, dict], path: str) -> dict[str, list[str]]:
+    """Verification records that explicitly name this file as authority or evidence.
+
+    A reviewed verification claim whose ``authority_ref`` is the file, or whose
+    ``evidence_refs`` identify the file (plain, line-qualified or fragment-
+    qualified), is verification context for it when the file is unowned.
+    This is provenance, never ownership: no component is created, and claim kinds
+    other than verification that merely cite the file do not qualify.
+    """
+    found: dict[str, list[str]] = {}
+    for cid, claim in claims.items():
+        if claim.get("kind") != "verification":
+            continue
+        reasons = []
+        if claim.get("authority_ref") == path:
+            reasons.append("authority_ref: this file is the authority of this verification claim")
+        if any(
+            isinstance(reference, str) and _local_evidence_path(reference) == path
+            for reference in claim.get("evidence_refs", [])
+        ):
+            reasons.append("evidence_ref: this file is cited in this verification claim's evidence")
+        if reasons:
+            found[cid] = reasons
+    return found
+
+
+RELEVANCE_NOTE = (
+    "Candidates only. Each record reaches this file through a capability that an owning "
+    "component implements, or by citing the file as evidence or authority. Neither route "
+    "establishes that the record applies to this file: a capability can hold constraints "
+    "that bind other implementation files, and a citation is provenance, not ownership. "
+    "Inspect the route and the original source; a record that does apply is anchored to "
+    "the owner through reviewed knowledge, not by this listing."
+)
+_CANDIDATE_CATEGORY = {
+    "contract": "contracts", "invariant": "constraints", "constraint": "constraints",
+    "decision": "decisions", "alternative": "alternatives", "incident": "history",
+    "lesson": "history", "observation": "history", "verification": "verification_refs",
+}
+_CATEGORY_ORDER = ("contracts", "constraints", "decisions", "alternatives", "history",
+                   "verification_refs")
+_CAPABILITY_TARGET_KINDS = {
+    "constrained_by": CONSTRAINT_KINDS, "decided_by": frozenset({"decision"}),
+    "tested_by": frozenset({"verification"}),
+}
+_HISTORY_PREDICATES = frozenset({"references", "learned_from", "contradicts"})
+
+
+def _evidence_paths(claim: Mapping[str, Any]) -> set[str]:
+    """Supported file evidence identities; retain original citations in the record."""
+    paths: set[str] = set()
+    for reference in claim.get("evidence_refs", []):
+        if isinstance(reference, str):
+            path = _local_evidence_path(reference)
+            if path is not None:
+                paths.add(path)
+    return paths
+
+
+def _mechanical(record: Mapping[str, Any]) -> bool:
+    return record.get("authority_kind") == "mechanical" or record.get("derivation") == "mechanical"
+
+
+def relevance_candidates(
+    claims: Mapping[str, dict], relations: Iterable[dict], *, path: str,
+    owners: set[str], excluded: set[str], limit: int,
+) -> dict:
+    """Indexed records that reach a file without a link the context categories follow.
+
+    Two explicit routes, both read from record fields and never from names or
+    neighbouring files: a capability that an owning component implements
+    (``implemented_by``) and its constraint, decision, verification and history
+    links; and a claim whose ``evidence_refs`` or ``authority_ref`` name the file.
+    Mechanical claims and relations never qualify, and records the context
+    categories already hold are excluded. The result is a separate candidate
+    section: it adds no owner, and applicability to the file stays unestablished.
+    The caller's own returned claim and relation IDs are not changed by it.
+    """
+    edges = [rel for rel in relations if not _mechanical(rel)]
+
+    def kind(cid: str) -> str | None:
+        return claims.get(cid, {}).get("kind")
+
+    implementers: dict[str, set[str]] = {}
+    owner_links: dict[str, dict[str, set[str]]] = {}
+    for rel in edges:
+        if (rel["predicate"] == "implemented_by" and kind(rel["subject"]) == "capability"
+                and kind(rel["object"]) == "component"):
+            implementers.setdefault(rel["subject"], set()).add(rel["object"])
+            if rel["object"] in owners:
+                owner_links.setdefault(rel["subject"], {}).setdefault(rel["object"], set()).add(rel["id"])
+
+    reasons: dict[str, set[str]] = {}
+    routes: dict[str, set[str]] = {}
+    route_relations: dict[str, set[str]] = {}
+    route_capabilities: dict[str, set[str]] = {}
+
+    def capability_candidate(target: str, capability: str, rel: Mapping[str, Any]) -> None:
+        if target in excluded or kind(target) not in _CANDIDATE_CATEGORY or _mechanical(claims[target]):
+            return
+        shared = len(implementers[capability])
+        for owner, link_ids in sorted(owner_links[capability].items()):
+            text = (f"capability route: {capability} implemented_by {owner} "
+                    f"({', '.join(sorted(link_ids))}); relation {rel['id']}: "
+                    f"{rel['subject']} {rel['predicate']} {rel['object']}")
+            if shared > 1:
+                text += f"; {shared} components implement this capability"
+            reasons.setdefault(target, set()).add(text)
+            route_relations.setdefault(target, set()).update(link_ids)
+        routes.setdefault(target, set()).add("capability")
+        route_relations.setdefault(target, set()).add(rel["id"])
+        route_capabilities.setdefault(target, set()).add(capability)
+
+    for rel in edges:
+        s, p, o = rel["subject"], rel["predicate"], rel["object"]
+        if s in owner_links:
+            if kind(o) in _CAPABILITY_TARGET_KINDS.get(p, ()):
+                capability_candidate(o, s, rel)
+            elif p in _HISTORY_PREDICATES and kind(o) in HISTORY_KINDS:
+                capability_candidate(o, s, rel)
+        elif o in owner_links:
+            if p == "decided_by" and kind(s) == "decision":
+                capability_candidate(s, o, rel)
+            elif p in _HISTORY_PREDICATES and kind(s) in HISTORY_KINDS:
+                capability_candidate(s, o, rel)
+
+    other_citing: dict[str, int] = {}
+    for cid, claim in claims.items():
+        if cid in excluded or _mechanical(claim):
+            continue
+        cited_as = []
+        if claim.get("authority_ref") == path:
+            cited_as.append("citation route: authority_ref of this record is this file")
+        if path in _evidence_paths(claim):
+            cited_as.append("citation route: evidence_refs of this record cite this file")
+        if not cited_as:
+            continue
+        if claim["kind"] not in _CANDIDATE_CATEGORY:
+            other_citing[claim["kind"]] = other_citing.get(claim["kind"], 0) + 1
+            continue
+        reasons.setdefault(cid, set()).update(cited_as)
+        routes.setdefault(cid, set()).add("citation")
+
+    def category(cid: str) -> str:
+        return _CANDIDATE_CATEGORY[claims[cid]["kind"]]
+
+    ordered = sorted(reasons, key=lambda cid: (_CATEGORY_ORDER.index(category(cid)), cid))
+    shown = ordered[:limit]
+    by_category: dict[str, int] = {}
+    returned_by_category: dict[str, int] = {}
+    for position, cid in enumerate(ordered):
+        by_category[category(cid)] = by_category.get(category(cid), 0) + 1
+        if position < limit:
+            returned_by_category[category(cid)] = returned_by_category.get(category(cid), 0) + 1
+    items = [{
+        **_context_item(cid, claims[cid], reasons[cid]),
+        "category": category(cid),
+        "routes": sorted(routes[cid]),
+        "applicability": "NOT_ESTABLISHED",
+    } for cid in shown]
+    capabilities = [{
+        "claim_id": capability,
+        "epistemic_status": claims[capability].get("epistemic_status"),
+        "implemented_by": sorted(owner_links[capability]),
+        "relation_ids": sorted({rid for ids in owner_links[capability].values() for rid in ids}),
+        "implementing_component_total": len(implementers[capability]),
+    } for capability in sorted(owner_links)]
+    if ordered:
+        note = RELEVANCE_NOTE
+    else:
+        note = ("No indexed record of a context kind reaches this file through an implemented "
+                "capability or a citation beyond the context above. This is not evidence that "
+                "nothing else applies.")
+        if other_citing:
+            note += " Records of other kinds cite the file; see other_citing_kinds."
+    return {
+        "status": "CANDIDATES_NOT_ESTABLISHED" if ordered else "NONE_RECORDED",
+        "items": items, "total": len(ordered), "omitted": max(0, len(ordered) - limit),
+        "by_category": by_category, "returned_by_category": returned_by_category,
+        "route_relation_ids": sorted({rid for cid in shown for rid in route_relations.get(cid, ())}),
+        "route_capability_ids": sorted({cap for cid in shown for cap in route_capabilities.get(cid, ())}),
+        "implemented_capabilities": capabilities[:limit],
+        "implemented_capabilities_omitted": max(0, len(capabilities) - limit),
+        "other_citing_kinds": dict(sorted(other_citing.items())),
+        "note": note,
+    }
+
+
+def _disclose_relevance_candidates(context: dict, section: Mapping[str, Any], *, limit: int) -> None:
+    """Record candidates in the context's own gap, omission and truncation fields."""
+    gaps = context["knowledge_gaps"]
+    total, omitted = section["total"], section["omitted"]
+    if total:
+        for gap in gaps:
+            category = "verification_refs" if gap["category"] == "owner_verification" else gap["category"]
+            count = section["by_category"].get(category, 0)
+            if gap["status"] == "NOT_ASSESSED" and count:
+                returned = section["returned_by_category"].get(category, 0)
+                gap["note"] += (f" {count} relevance candidate(s) of this kind exist ({returned} returned "
+                                "under relevance_candidates); their applicability to this file is not "
+                                "established.")
+        caveats = sorted(item["claim_id"] for item in section["items"]
+                         if item["epistemic_status"] in INACTIVE_STATUSES | {"hypothetical"})
+        note = (f"{total} indexed record(s) reach this file only through an implemented capability "
+                f"or a citation; {len(section['items'])} are returned under relevance_candidates, not "
+                "in the categories above. Applicability to this file is NOT established.")
+        if caveats:
+            note += (f" {len(caveats)} returned candidate(s) are hypothetical, superseded, contested "
+                     f"or invalidated: {', '.join(caveats[:8])}.")
+        gaps.append({"category": "relevance_candidates", "status": "CANDIDATES_NOT_ESTABLISHED",
+                     "note": note})
+    capabilities_omitted = section["implemented_capabilities_omitted"]
+    context["omitted"]["relevance_candidates"] = omitted
+    if omitted or capabilities_omitted:
+        context["truncated"] = True
+        cut = [f"{count} {label}" for count, label in (
+            (omitted, "relevance candidate(s)"),
+            (capabilities_omitted, "implemented capability record(s)")) if count]
+        gaps.append({"category": "relevance_candidates", "status": "TRUNCATED",
+                     "note": f"{' and '.join(cut)} beyond the limit of {limit} are not returned. "
+                             "Omitted candidates are neither listed nor checked for source overlap."})
+
+
 def context_for(
     claims: Mapping[str, dict], relations: Iterable[dict], *, path: str, limit: int,
 ) -> tuple[dict, list[str], list[str]]:
@@ -159,13 +383,21 @@ def context_for(
     records, and linked decision -> constrained_by -> constraint. Returns the context
     and the claim and relation IDs grounding the visible, bounded result, both
     in deterministic order. Category totals may include omitted records.
+
+    A file that no component owns can also reach verification records that name it
+    as authority or evidence, and the components those records verify. Both are
+    relevance, never ownership, and are reported as such.
     """
     edges = list(relations)
     base = rules_for(claims, edges, path=path, limit=len(claims) + len(edges) + 1)
     owners = set(base["owning_components"])
     rule_ids = {rule["claim_id"] for rule in base["applicable_rules"]}
     layer_ids = set(base["layers"]) | set(base["bounded_contexts"])
-    anchors = owners | rule_ids
+    # Verification relevance applies only to a file no component owns, so owned paths
+    # keep their existing response. A component verified by such a record anchors its
+    # decisions, constraints and history; it never becomes an owner of contracts or rules.
+    test_verifications = {} if owners else _test_evidence_verifications(claims, path)
+    base_anchors = owners | rule_ids
     buckets: dict[str, dict[str, set[str]]] = {
         "contracts": {}, "constraints": {}, "decisions": {}, "alternatives": {},
         "history": {}, "verification_refs": {},
@@ -179,6 +411,40 @@ def context_for(
         text = f"{via}relation {rel['subject']} {rel['predicate']} {rel['object']}"
         buckets[bucket].setdefault(target, set()).add(text)
         link_relation_ids[bucket].setdefault(target, set()).add(rel["id"])
+
+    # The verification bucket has two sources: file matches, and tested_by links from
+    # owners and applicable rules. Only owners and rules expand to their verification
+    # records; a verified component adds its decisions, constraints and history, not
+    # every test of it. Built before the verified-component derivation below, because
+    # that derivation must read the bucket's displayed selection.
+    for cid, reasons in test_verifications.items():
+        buckets["verification_refs"][cid] = set(reasons)
+    for rel in edges:
+        if (rel["predicate"] == "tested_by" and rel["subject"] in base_anchors
+                and claims.get(rel["object"], {}).get("kind") == "verification"):
+            link("verification_refs", rel["object"], rel)
+    # A verified component is returned only with a supporting verification record that
+    # this response displays: the first `limit` of the whole verification bucket in
+    # deterministic order. A rule-added record can sort before a file match and displace
+    # it, so visibility comes from that displayed selection, not from file matches alone.
+    # Components supported only by hidden records are counted as omitted, never returned.
+    displayed_verifications = set(sorted(buckets["verification_refs"])[:limit])
+    verified_all: set[str] = set()
+    supported_text: dict[str, set[str]] = {}
+    supported_rel_ids: dict[str, set[str]] = {}
+    for rel in edges:
+        if (rel["predicate"] == "tested_by" and rel["object"] in test_verifications
+                and claims.get(rel["subject"], {}).get("kind") == "component"):
+            verified_all.add(rel["subject"])
+            if rel["object"] in displayed_verifications:
+                supported_text.setdefault(rel["subject"], set()).add(
+                    f"relation {rel['id']}: {rel['subject']} tested_by {rel['object']} "
+                    "(this component is verified by the file's verification record; not ownership)")
+                supported_rel_ids.setdefault(rel["subject"], set()).add(rel["id"])
+    verified_components = sorted(supported_text)[:limit]
+    verified_text = {cid: supported_text[cid] for cid in verified_components}
+    verified_rel_ids = {cid: supported_rel_ids[cid] for cid in verified_components}
+    anchors = base_anchors | set(verified_components)
 
     for rel in edges:
         s, p, o = rel["subject"], rel["predicate"], rel["object"]
@@ -200,8 +466,6 @@ def context_for(
                 link("history", o, rel)
             elif o in anchors and s_kind in HISTORY_KINDS:
                 link("history", s, rel)
-        elif p == "tested_by" and s in anchors and o_kind == "verification":
-            link("verification_refs", o, rel)
         elif p == "belongs_to" and s in owners and o in layer_ids:
             structural_relation_ids.add(rel["id"])
         elif p == "applies_to" and s in rule_ids and o in owners | layer_ids:
@@ -230,12 +494,17 @@ def context_for(
     lists = {"contracts": contracts, "constraints": constraints, "decisions": decisions,
              "alternatives": alternatives, "history": history,
              "verification_refs": verification}
+    verified_list = [_context_item(cid, claims[cid], verified_text[cid]) for cid in verified_components]
     totals = {
         "owning_components": len(owners), "architecture_rules": len(rule_ids),
         "layers": len(base["layers"]), "bounded_contexts": len(base["bounded_contexts"]),
+        "verified_components": len(verified_all),
         **{name: len(group) for name, group in lists.items()},
     }
     omitted = {name: max(0, total - limit) for name, total in totals.items()}
+    # Every verified component not returned counts, including components supported
+    # only by an omitted verification record; the limit arithmetic would undercount.
+    omitted["verified_components"] = len(verified_all) - len(verified_list)
     truncated = any(omitted.values())
 
     gaps: list[dict] = []
@@ -246,6 +515,21 @@ def context_for(
         gaps.append({"category": "ownership", "status": "AMBIGUOUS",
                      "note": f"{len(owners)} reviewed components declare this path; "
                              f"{shown} shown, {len(owners) - shown} omitted by limit."})
+    if test_verifications:
+        gaps.append({"category": "verification_relevance", "status": "NOT_AN_OWNER",
+                     "note": f"No component owns this file. {len(test_verifications)} verification "
+                             "record(s) name it as authority or evidence; those links show relevance only. "
+                             "They do not establish ownership, architectural dependency or runtime behaviour."})
+        if not verified_all:
+            gaps.append({"category": "verified_components", "status": "NOT_ASSESSED",
+                         "note": "No component records a tested_by relation to the verification "
+                                 "record(s) above, so no verified component context is available."})
+        elif len(verified_all) > len(verified_list):
+            gaps.append({"category": "verified_components", "status": "TRUNCATED",
+                         "note": f"{len(verified_all) - len(verified_list)} verified component(s) are "
+                                 "not returned: beyond the limit, or supported only by verification "
+                                 "record(s) the limit omitted. Their decisions, constraints and history "
+                                 "are not expanded."})
     if not rule_ids:
         gaps.append({"category": "architecture_rules", "status": "NOT_ASSESSED",
                      "note": "No rule matched this path by declared scope or graph link. "
@@ -257,7 +541,7 @@ def context_for(
             gaps.append({"category": name, "status": "NOT_ASSESSED", "note": note})
     # Include owner and layer claims as well as the expanded linked categories:
     # a hypothetical owner or constraint is not an established obligation.
-    considered_ids = owners | layer_ids | rule_ids | {
+    considered_ids = owners | layer_ids | rule_ids | set(verified_components) | {
         item["claim_id"] for group in lists.values() for item in group
     }
     inactive = sorted(cid for cid in considered_ids
@@ -294,12 +578,14 @@ def context_for(
         "decisions": decisions[:limit],
         "alternatives": alternatives[:limit],
         "history": history[:limit], "verification_refs": verification[:limit],
+        "verified_components": verified_list[:limit],
         "knowledge_gaps": gaps, "omitted": omitted, "truncated": truncated,
         "note": CONTEXT_NOTE,
     }
     returned: set[str] = {*owner_list, *layer_list, *context_list, *(r["claim_id"] for r in rule_list)}
     for group in (contracts, constraints, decisions, alternatives, history, verification):
         returned.update(item["claim_id"] for item in group[:limit])
+    returned.update(item["claim_id"] for item in verified_list[:limit])
 
     # The global relation envelope should describe visible context, not entries
     # omitted by the independent category limits. Keep every link for a shown
@@ -308,11 +594,35 @@ def context_for(
         rid for name in lists for item in context[name]
         for rid in link_relation_ids[name].get(item["claim_id"], ())
     }
+    selected_relations.update(rid for item in verified_list[:limit]
+                              for rid in verified_rel_ids.get(item["claim_id"], ()))
     selected_relations.update(
         rel["id"] for rel in edges
         if rel["id"] in structural_relation_ids
         and rel["subject"] in returned and rel["object"] in returned
     )
+
+    # A rule's own test can fill the verification category for every file the rule
+    # applies to. That says nothing about tests of the owning component, so say so.
+    if owners and verification and not any(
+        rel["predicate"] == "tested_by" and rel["subject"] in owners
+        and claims.get(rel["object"], {}).get("kind") == "verification" for rel in edges
+    ):
+        gaps.append({"category": "owner_verification", "status": "NOT_ASSESSED",
+                     "note": "Every verification record above is linked from an applicable rule. "
+                             "No verification record is linked from an owning component, so tests "
+                             "of the owner itself are NOT ASSESSED here."})
+    # Records that reach the file without a link the categories follow stay outside them:
+    # listing must not turn a capability relation or a citation into established
+    # applicability. The returned claim and relation IDs below stay those of the context
+    # categories; the section carries its own IDs for the caller to append.
+    candidates = relevance_candidates(
+        claims, edges, path=path, owners=owners,
+        excluded=owners | layer_ids | rule_ids | {cid for group in buckets.values() for cid in group},
+        limit=limit,
+    )
+    context["relevance_candidates"] = candidates
+    _disclose_relevance_candidates(context, candidates, limit=limit)
     return context, sorted(returned), sorted(selected_relations)
 
 
