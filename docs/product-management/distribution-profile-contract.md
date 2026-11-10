@@ -66,7 +66,7 @@ The public Python signature `setup_skills` is frozen and unchanged. The selector
 ## 5. Compatibility
 
 - With no flag, the installed set is every packaged Skill, the same as before M3. The installed tree is byte-identical to the previous release.
-- Nothing deletes an installed Skill. `copy_skill` replaces a same-named tree only under `--force`. A divergent tree is still refused without it. Later, `setup-skills --update` also replaces a tree that the root's install record shows unchanged since `setup-skills` wrote or verified it; see [INSTALLATION.md](../../INSTALLATION.md#updating-installed-skills).
+- Nothing deletes an installed Skill. `copy_skill` replaces a same-named tree only under `--force`. A divergent tree is still refused without it. Later, `setup-skills --update` also replaces a tree that the root's install record shows unchanged since `setup-skills` wrote or verified it, or, run from a Git checkout, an unrecorded tree identical to a committed version of the Skill; see [INSTALLATION.md](../../INSTALLATION.md#updating-installed-skills).
 - `--dry-run` creates nothing and reports the planned set.
 - Unknown profiles and add-ons, and profile members that are not packaged, fail before anything is copied.
 

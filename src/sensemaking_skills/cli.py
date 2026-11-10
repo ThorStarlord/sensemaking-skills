@@ -437,8 +437,9 @@ def test(repos):
     is_flag=True,
     help=(
         "Replace installed Skill copies that are unchanged since setup-skills "
-        "recorded them in the root's install record. Changed or unrecorded "
-        "copies still need --force."
+        "recorded them in the root's install record and, when run from a Git "
+        "checkout, unrecorded copies identical to a committed version of their "
+        "Skill. Changed copies and other unrecorded copies still need --force."
     ),
 )
 @click.option(

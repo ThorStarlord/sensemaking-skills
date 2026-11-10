@@ -159,8 +159,11 @@ shows unchanged since `setup-skills` wrote or verified it, explicit:
 
 A different copy is classified against that record as `outdated` (still the
 recorded tree), `changed` (record exists, tree no longer matches) or
-`unrecorded`. `--update` replaces only `outdated` copies, which hold no local
-modification; `changed` and `unrecorded` copies still require `--force`.
+`unrecorded`. When setup-skills runs from a Git checkout, an `unrecorded` copy
+whose tree equals a committed version of `skills/<name>` (byte for byte or
+apart from CRLF line endings) is `historical` instead. `--update` replaces only
+`outdated` and `historical` copies, which hold nothing that replacing them
+would lose; `changed` and other `unrecorded` copies still require `--force`.
 See [INSTALLATION.md](../INSTALLATION.md#updating-installed-skills).
 
 Therefore:
@@ -260,7 +263,7 @@ A qualified P10 candidate must prove at least:
 6. unknown target/scope combinations fail closed;
 7. `all` deduplicates shared project roots deterministically;
 8. exact complete packaged Skill trees are copied;
-9. divergent installed copies are never overwritten without `--force`, except that `--update` replaces a copy whose tree still matches the install record (no local modification); changed or unrecorded copies still require `--force`;
+9. divergent installed copies are never overwritten without `--force`, except that `--update` replaces a copy whose tree still matches the install record (no local modification) or, from a Git checkout and with no record, equals a committed version of the Skill; changed copies and other unrecorded copies still require `--force`;
 10. dry-run creates no destination state;
 11. setup creates no Campaign state and emits no Skill selection, execution authority, semantic score, or next-action decision;
 12. existing `agents`, `custom`, `claude-superpowers`, and user-scope `all` compatibility behavior remains available;

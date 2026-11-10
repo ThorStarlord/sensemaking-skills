@@ -104,7 +104,8 @@ When an installed copy differs from the packaged version, the record says why:
 |---|---|---|
 | `unchanged since setup-skills <version> recorded it` | outdated: nothing changed the copy since it was installed or verified | `--update` or `--force` |
 | `changed since setup-skills <version> recorded it` | edited locally, or rewritten by another tool | `--force` only |
-| `installed copy diverged` | no record for this copy (installed before records existed, or by another mechanism) | `--force` only |
+| `no install record, but identical to skills/<name> in commit <sha>` | no record, but the copy is a version committed in this checkout (only when setup-skills runs from a Git checkout; see below) | `--update` or `--force` |
+| `installed copy diverged` | no record for this copy (installed before records existed, or by another mechanism) and, from a checkout, no committed version matches it | `--force` only |
 
 After upgrading the package:
 
@@ -113,9 +114,22 @@ sensemaking-skills setup-skills --target claude --scope user --dry-run --update
 sensemaking-skills setup-skills --target claude --scope user --update
 ```
 
-`--update` never replaces a changed or unrecorded copy, nor a Skill directory
+**Roots installed before install records existed.** When `setup-skills` runs
+from a source checkout (an editable install, or `python -m
+sensemaking_skills.cli setup-skills ...` with `src` on `PYTHONPATH`), a divergent copy
+with no record is compared with every version of `skills/<name>` committed on
+the checkout's branches, tags and remote-tracking branches. A copy whose tree
+equals one of them, byte for byte or apart from CRLF line endings (what a
+Windows checkout writes), holds nothing that is not in Git, so `--update`
+replaces it and the report names the commit. A copy with any other difference,
+such as a hand edit, an extra file or a nested directory, matches no commit and
+still needs `--force`. A wheel install has no Git history, so this comparison
+does not run there. Only read-only Git commands are used.
+
+`--update` never replaces a changed or unmatched unrecorded copy, nor a Skill directory
 that is a symlink or junction; inspect those before using `--force`, which
-takes precedence when both flags are given. Copies that already match get recorded on the next
+takes precedence when both flags are given. When only those copies are left,
+`--force` replaces just them, because current copies are never rewritten. Copies that already match get recorded on the next
 non-dry run, so a root installed before records existed gains them for every
 current copy. The record is `setup-skills` bookkeeping only: it does not show
 what a host loaded, and `scripts/probe_skill_distribution.py --sync` does not
@@ -233,7 +247,7 @@ The shipped product dependencies are intentionally small. To run retained resear
 ## Troubleshooting
 
 - **`0+unknown` from a raw source import:** install the project/distribution so `importlib.metadata` can resolve `sensemaking-skills` version metadata.
-- **Skill tree differs:** run setup with `--dry-run`. If the report says the copy is unchanged since it was recorded, `--update` replaces it; otherwise use `--force` only if replacement is intentional.
+- **Skill tree differs:** run setup with `--dry-run`. If the report says the copy is unchanged since it was recorded, or identical to a committed version, `--update` replaces it; otherwise use `--force` only if replacement is intentional.
 - **Project-scoped setup fails:** provide an explicit existing `--project-root`; the tool does not infer it from cwd/editor/git state.
 - **Artifact validation runtime error:** reinstall the package or explicitly select a valid source checkout with `--framework-root`.
 
