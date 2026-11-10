@@ -1,0 +1,143 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-11-10-context-for-relevance-candidates
+state: final
+created_at: "2026-11-10T02:40:00Z"
+updated_at: "2026-11-10T02:40:00Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: 53b667c17c3e2e65ef2e344ccedfc60296f8d7cd
+  end_ref: 08d39d30b9ae1fa5fec22f7ad208556967f7700b
+  worktree_clean_at_end: true
+skill_identity:
+  load_mode: manual_explicit_load
+  sensemaking_source_ref: 53b667c17c3e2e65ef2e344ccedfc60296f8d7cd
+goal:
+  statement: Deliver a substantial, useful improvement to retrieving and revalidating source-grounded engineering context for a file, after determining the correct product-level response to the Challenge 01 finding; act as Architect and Builder.
+  source: owner_message
+  source_ref: pasted owner brief "Frontier Challenge 02 - Cross-System Semantic Engineering" in this session
+delegation:
+  granted: [read, local_write, run_local_commands, commit, push, open_pr, knowledge_edit]
+  withheld: [merge, release, deploy]
+continuity:
+  resumes: 2026-11-09-context-for-anchoring-forensics
+  campaign_ref: null
+  resolves_questions: ["2026-11-09-context-for-anchoring-forensics#Q-1"]
+responsibilities:
+  - id: R-1
+    responsibility: Re-establish revision, policy, open PRs, consumers and hosted checks before selecting
+    capability: using-sensemaking
+    status: completed
+    reason: origin/main was still 53b667c1 and PR 795 still an unreviewed draft. No test on main covers context-for; the hosted consumer workflow asserts no truncation at limit 50 on eleven real paths, which bounded the design.
+    artifact_refs: [.github/workflows/semantic-context-reentry.yml, src/sensemaking_skills/campaign_knowledge_context.py]
+    validation: []
+  - id: R-2
+    responsibility: Compare design approaches and select the warranted responsibility
+    capability: using-sensemaking
+    status: completed
+    reason: Compared no change, authored anchoring only, a capability hop into the categories, citation as ownership, new vocabulary, and bounded candidates with disclosure. Chose the last; the comparison is in the PR description and in the decision record.
+    artifact_refs: [.sensemaking/knowledge/stewardship.json, docs/semantic-architecture/persistent-knowledge-cli.md]
+    validation: []
+  - id: R-3
+    responsibility: Build relevance candidates, their disclosure and their source-overlap block
+    capability: ordinary_coding
+    status: completed
+    reason: context-for gains a separate relevance_candidates section (capability and citation routes), an owner_verification gap and a candidate block in workspace_relevance. The IDs context_for returns and every earlier key keep their values.
+    artifact_refs: [src/sensemaking_skills/semantic_architecture/knowledge_architecture.py, src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py, src/sensemaking_skills/semantic_architecture/knowledge_store.py]
+    validation:
+      - command: py_compile and ruff check on semantic_architecture; validate-docs-currentness.py; validate-skill-hygiene.py; git diff --check
+        result: PASS
+      - command: differential of base 53b667c1 and head query_knowledge(context-for) over the real index, 168 paths x limits 1,2,5,50 x clean/changed (1344 cases)
+        result: PASS
+      - command: replica of the eleven hosted consumer queries and assertions through the CLI at 08d39d30
+        result: PASS
+      - command: CLI cases at 08d39d30 - positive, negative, truncated, stale source (older index and uncommitted edit), unassessed coverage, two-path query
+        result: PASS
+      - command: unit and synthetic tests (construction direction in CLAUDE.md; none added)
+        result: NOT_RUN
+  - id: R-4
+    responsibility: Independent review of commit e248b75d by a separate subagent and repair of confirmed findings
+    capability: ordinary_coding
+    status: completed
+    reason: The review confirmed candidate displacement at small limits in the relation envelope and the overlap list, a capability missing from the envelope, overstated gap notes and a test conflict with PR 795. Commit 08d39d30 repairs them; the differential was extended to check each.
+    artifact_refs: [src/sensemaking_skills/semantic_architecture/knowledge_store.py, src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py]
+    validation:
+      - command: scratch keep-both merge with PR 795 head 718ea34f; the two flagged PR 795 assertions evaluated without pytest
+        result: PASS
+  - id: R-5
+    responsibility: RECONCILE reviewed knowledge for the change
+    capability: repository-semantic-steward
+    status: completed
+    reason: Revised the lesson whose revisit_when named this change; added the decision, two rejected alternatives and the ownership-edit observation; anchored component:knowledge-store to the decision and to verification:knowledge-tests after source checks.
+    artifact_refs: [.sensemaking/knowledge/stewardship.json, .sensemaking/receipts/2026-11-10-context-for-relevance-candidates.query.yaml]
+    validation:
+      - command: knowledge-proposal-check on every pack; knowledge-build at 08d39d30 with --include-repository-structure
+        result: PASS
+findings:
+  - id: F-1
+    statement: This session supersedes the next step of the resumed receipt. That receipt withheld knowledge_edit and deferred Q-1 until PR 795 settled. The new owner brief delegated the product-level determination and retained knowledge, so the choice was made now and is open to owner review in PR 796.
+    epistemic_status: OBSERVED
+    evidence_refs:
+      - .sensemaking/receipts/2026-11-09-context-for-anchoring-forensics.session.yaml
+    disposition: resolved
+  - id: F-2
+    statement: At 08d39d30 context-for on knowledge_store.py returns the decision, two constraints, two alternatives, five history records and two verification records as context, and seven labelled candidates. At 53b667c1 it returned no constraint or decision and only the ASCII guard as verification.
+    epistemic_status: OBSERVED
+    evidence_refs:
+      - src/sensemaking_skills/semantic_architecture/knowledge_architecture.py
+      - .sensemaking/knowledge/stewardship.json
+    disposition: resolved
+  - id: F-3
+    statement: Over 1344 real-index cases, base and head agree on the IDs context_for returns, on every earlier context and workspace key, and on the envelope prefix. No candidate is mechanical or appears in a category, and every candidate omission is disclosed.
+    epistemic_status: OBSERVED
+    evidence_refs:
+      - src/sensemaking_skills/semantic_architecture/knowledge_store.py
+      - src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py
+    disposition: resolved
+  - id: F-4
+    statement: PR 795 and this branch conflict textually in one hunk of knowledge_architecture.py. On a keep-both scratch merge the flagged PR 795 assertions hold and no record is reported twice. PR 795's full test file was not run against the merge.
+    epistemic_status: OBSERVED
+    evidence_refs:
+      - src/sensemaking_skills/semantic_architecture/knowledge_architecture.py
+    disposition: handed_off
+  - id: F-5
+    statement: Candidates count toward the envelope the hosted consumer asserts untruncated at limit 50. The largest workflow path now selects 25 claims and 21 relations. Growth of citing records could reach the limit later.
+    epistemic_status: DERIVED
+    evidence_refs:
+      - .github/workflows/semantic-context-reentry.yml
+    disposition: handed_off
+  - id: F-6
+    statement: No capability in this repository has more than one implementing component, so the multi-implementer note was not exercised on real records. Candidate usefulness to an agent decision and independent-agent use are not tested.
+    epistemic_status: OBSERVED
+    evidence_refs:
+      - .sensemaking/knowledge/stewardship.json
+    disposition: no_action
+  - id: F-7
+    statement: The companion query receipt lists the final-head queries. Earlier runs against indices of 53b667c1, e248b75d and dbeebd63, and the eleven consumer-replica queries, are summarised as validation commands here and not listed one by one.
+    epistemic_status: OBSERVED
+    evidence_refs:
+      - .sensemaking/receipts/2026-11-10-context-for-relevance-candidates.query.yaml
+    disposition: no_action
+open_questions:
+  - id: Q-1
+    question: In which order should PR 796 and PR 795 merge, given that both edit context_for and the second needs a one-hunk rebase?
+    source: owner_intent
+    blocking: false
+    options:
+      - option: Merge PR 796 first
+        consequence: PR 795 rebases one hunk; its test file should be run against the merge because only two of its assertions were evaluated here.
+      - option: Merge PR 795 first
+        consequence: PR 796 rebases the same hunk; the guide sentence on what each category follows already reads correctly for both.
+      - option: Hold PR 796
+        consequence: Main keeps ownership-only output and the misdirecting gap notes until the owner rules on path relevance.
+    durable_ref: null
+stop:
+  disposition: GOAL_SATISFIED
+  reason: The selected capability is built, reviewed, repaired, verified through the CLI and published as draft PR 796. It is not merged; merge order with PR 795 is the owner's decision.
+next:
+  warranted_responsibility: Owner decision on merge order. After merge, read hosted CI on the merge commit and anchor further cap:semantic-queries records to component:knowledge-store only where a source check supports each link.
+  blocked_on: ["Q-1", "authority:merge"]
+persistence: committed
+claim_ceiling: Shows query behaviour on this repository's records at 08d39d30 through the CLI and a base-versus-head differential. Unit tests NOT_RUN and none added. Does not show agent decision benefit, behaviour on other repositories, Linux output, or PR 795's test file against a merge.
+action_authorized_by_receipt: false
+immutable: true

@@ -1,0 +1,199 @@
+artifact_id: semantic_query_receipt
+schema_version: 1
+session_ref: 2026-11-10-context-for-relevance-candidates
+state: final
+created_at: "2026-11-10T02:40:00Z"
+updated_at: "2026-11-10T02:40:00Z"
+target_repository: ThorStarlord/sensemaking-skills
+modes: [RECALL, RECONCILE]
+decision: "Which product response to unanchored reviewed knowledge is warranted for context-for, and whether the built change returns it without presenting it as context that applies."
+cli_identity:
+  sensemaking_source_ref: 08d39d30b9ae1fa5fec22f7ad208556967f7700b
+  invocation_prefix: "PYTHONPATH=src python -m sensemaking_skills.cli (worktree source)"
+  version_output: "python -m sensemaking_skills.cli, version 1.0.0rc5.dev0"
+index:
+  indexed_ref: 08d39d30b9ae1fa5fec22f7ad208556967f7700b
+  current_head: 08d39d30b9ae1fa5fec22f7ad208556967f7700b
+  worktree_clean: true
+  uncommitted_changes_not_indexed: false
+queries:
+  - id: QY-1
+    operation: build
+    terms: []
+    subject: null
+    expect_kinds: []
+    target_ref: 08d39d30b9ae1fa5fec22f7ad208556967f7700b
+    result:
+      hit_count: 0
+      claim_ids: []
+      truncated: false
+      not_assessed_kinds: []
+    outcome: NOT_APPLICABLE
+    decision_relevant: false
+  - id: QY-2
+    operation: proposal-check
+    terms: []
+    subject: .sensemaking/knowledge/stewardship.json
+    expect_kinds: []
+    target_ref: null
+    result:
+      hit_count: 0
+      claim_ids: []
+      truncated: false
+      not_assessed_kinds: []
+    outcome: NOT_APPLICABLE
+    decision_relevant: false
+  - id: QY-3
+    operation: context-for
+    terms: []
+    subject: src/sensemaking_skills/semantic_architecture/knowledge_store.py
+    expect_kinds: []
+    target_ref: 08d39d30b9ae1fa5fec22f7ad208556967f7700b
+    result:
+      hit_count: 25
+      claim_ids: [component:knowledge-store, rule:console-output-ascii, rule:stable-core-no-lab-imports, layer:knowledge-plane, bounded_context:knowledge-stewardship, inv:bounded-query-disclosure, inv:source-boundary, decision:relevance-candidates-separate-from-context, alternative:authored-anchoring-only, alternative:capability-hop-into-context-categories, lesson:console-guard-literal-print-arguments-only, lesson:distinguish-provenance-content-and-meaning, lesson:query-completeness-is-evidence, lesson:uncited-change-is-coverage-gap, observation:ownership-edit-stranded-store-verification, verification:console-output-ascii-guard, verification:knowledge-tests, inv:index-snapshot-vs-working-overlay, adr:0031, decision:granular-indexed-delta-classification, decision:workspace-impact-path-overlap, incident:shared-authored-pack-fingerprint-fanout, observation:knowledge-query-closed-operations, verification:granular-delta-classification-tests, cap:semantic-queries]
+      truncated: false
+      not_assessed_kinds: [contracts]
+    outcome: HIT
+    decision_relevant: true
+  - id: QY-4
+    operation: context-for
+    terms: []
+    subject: src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py
+    expect_kinds: []
+    target_ref: 08d39d30b9ae1fa5fec22f7ad208556967f7700b
+    result:
+      hit_count: 2
+      claim_ids: [component:knowledge-store, rule:console-output-ascii]
+      truncated: true
+      not_assessed_kinds: [contracts]
+    outcome: PARTIAL
+    decision_relevant: true
+  - id: QY-5
+    operation: context-for
+    terms: []
+    subject: scripts/validate-and-report.py
+    expect_kinds: []
+    target_ref: 08d39d30b9ae1fa5fec22f7ad208556967f7700b
+    result:
+      hit_count: 6
+      claim_ids: [component:validator-router, rule:console-output-ascii, rule:validators-placement, layer:validation, lesson:console-guard-literal-print-arguments-only, verification:console-output-ascii-guard]
+      truncated: false
+      not_assessed_kinds: [contracts, constraints, decisions, alternatives, owner_verification]
+    outcome: PARTIAL
+    decision_relevant: false
+  - id: QY-6
+    operation: context-for
+    terms: []
+    subject: tests/test_cli.py
+    expect_kinds: []
+    target_ref: 08d39d30b9ae1fa5fec22f7ad208556967f7700b
+    result:
+      hit_count: 0
+      claim_ids: []
+      truncated: false
+      not_assessed_kinds: [ownership, architecture_rules, contracts, constraints, decisions, alternatives, history, verification_refs]
+    outcome: NOT_ASSESSED
+    decision_relevant: false
+  - id: QY-7
+    operation: context-for
+    terms: []
+    subject: tests/test_semantic_knowledge.py
+    expect_kinds: []
+    target_ref: 08d39d30b9ae1fa5fec22f7ad208556967f7700b
+    result:
+      hit_count: 3
+      claim_ids: [inv:bounded-query-disclosure, verification:knowledge-tests, verification:semantic-knowledge-tests]
+      truncated: false
+      not_assessed_kinds: [ownership, architecture_rules, contracts, constraints, decisions, alternatives, history, verification_refs]
+    outcome: PARTIAL
+    decision_relevant: true
+  - id: QY-8
+    operation: build
+    terms: []
+    subject: null
+    expect_kinds: []
+    target_ref: 22d15d94c281579cd7e67a591068372c84edef60
+    result:
+      hit_count: 0
+      claim_ids: []
+      truncated: false
+      not_assessed_kinds: []
+    outcome: NOT_APPLICABLE
+    decision_relevant: false
+  - id: QY-9
+    operation: context-for
+    terms: []
+    subject: src/sensemaking_skills/semantic_architecture/knowledge_store.py
+    expect_kinds: []
+    target_ref: 22d15d94c281579cd7e67a591068372c84edef60
+    result:
+      hit_count: 21
+      claim_ids: [component:knowledge-store, rule:console-output-ascii, rule:stable-core-no-lab-imports, layer:knowledge-plane, bounded_context:knowledge-stewardship, lesson:console-guard-literal-print-arguments-only, lesson:distinguish-provenance-content-and-meaning, lesson:query-completeness-is-evidence, lesson:uncited-change-is-coverage-gap, verification:console-output-ascii-guard, inv:bounded-query-disclosure, inv:index-snapshot-vs-working-overlay, inv:source-boundary, adr:0031, decision:granular-indexed-delta-classification, decision:workspace-impact-path-overlap, incident:shared-authored-pack-fingerprint-fanout, observation:knowledge-query-closed-operations, verification:granular-delta-classification-tests, verification:knowledge-tests, cap:semantic-queries]
+      truncated: false
+      not_assessed_kinds: [contracts, constraints, decisions, alternatives, owner_verification]
+    outcome: PARTIAL
+    decision_relevant: true
+source_checks:
+  - claim_id: inv:bounded-query-disclosure
+    sources: ["src/sensemaking_skills/semantic_architecture/knowledge_architecture.py", "src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py", "src/sensemaking_skills/semantic_architecture/knowledge_store.py"]
+    result: SUPPORTED
+  - claim_id: verification:knowledge-tests
+    sources: ["tests/test_semantic_knowledge.py:13-18"]
+    result: SUPPORTED
+  - claim_id: lesson:source-anchored-context-reentry
+    sources: [".sensemaking/knowledge/stewardship.json", "docs/semantic-architecture/persistent-knowledge-cli.md"]
+    result: STALE
+  - claim_id: observation:ownership-edit-stranded-store-verification
+    sources: [".sensemaking/knowledge/architecture.json", ".sensemaking/receipts/2026-11-09-context-for-anchoring-forensics.session.yaml"]
+    result: SUPPORTED
+misses:
+  - id: M-1
+    query_ref: QY-7
+    needed_for: "Anchored verification and component context for the store's main test file"
+    kind: NOT_ASSESSED
+    resolved_by: "Three citation candidates are returned with applicability NOT_ESTABLISHED; anchoring for a file no component owns is the subject of open PR 795"
+    follow_up: DEFERRED
+    proposal_ref: null
+  - id: M-2
+    query_ref: QY-9
+    needed_for: "Anchored constraints and decisions for the store at the older indexed revision"
+    kind: NOT_ASSESSED
+    resolved_by: "Ten candidates are returned at that revision; the anchors were added at 08d39d30, where QY-3 returns them as context"
+    follow_up: ADDED
+    proposal_ref: .sensemaking/knowledge/stewardship.json
+reconcile:
+  - claim_id: lesson:source-anchored-context-reentry
+    disposition: REVISE
+    applied: true
+    proposal_ref: .sensemaking/knowledge/stewardship.json
+    proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID
+  - claim_id: decision:relevance-candidates-separate-from-context
+    disposition: ADD
+    applied: true
+    proposal_ref: .sensemaking/knowledge/stewardship.json
+    proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID
+  - claim_id: alternative:capability-hop-into-context-categories
+    disposition: ADD
+    applied: true
+    proposal_ref: .sensemaking/knowledge/stewardship.json
+    proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID
+  - claim_id: alternative:authored-anchoring-only
+    disposition: ADD
+    applied: true
+    proposal_ref: .sensemaking/knowledge/stewardship.json
+    proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID
+  - claim_id: observation:ownership-edit-stranded-store-verification
+    disposition: ADD
+    applied: true
+    proposal_ref: .sensemaking/knowledge/stewardship.json
+    proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID
+  - claim_id: component:knowledge-store
+    disposition: CONFIRM
+    applied: true
+    proposal_ref: .sensemaking/knowledge/stewardship.json
+    proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID
+persistence: committed
+action_authorized: false
+semantic_truth_established: false
+immutable: true
