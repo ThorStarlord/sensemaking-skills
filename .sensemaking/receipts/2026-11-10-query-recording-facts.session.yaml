@@ -1,0 +1,153 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-11-10-query-recording-facts
+state: final
+created_at: "2026-11-10T03:05:00Z"
+updated_at: "2026-11-10T04:29:00Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: 53b667c17c3e2e65ef2e344ccedfc60296f8d7cd
+  end_ref: 2bc809b5fd5477a6c6db6155c3fd1c40a4c27a5f
+  worktree_clean_at_end: true
+skill_identity:
+  load_mode: manual_explicit_load
+  sensemaking_source_ref: 53b667c17c3e2e65ef2e344ccedfc60296f8d7cd
+goal:
+  statement: Investigate what meaningful new outcome the product could enable for its intended user, choose the strongest warranted opportunity if one exists, and realize a bounded vertical capability within the accepted thesis and existing construction authority, or give a rigorous no-selection result.
+  source: owner_message
+  source_ref: pasted owner brief "Frontier Challenge 03 - Original Product Discovery and Realization" in this session
+delegation:
+  granted: [read, local_write, run_local_commands, commit, push, open_pr, knowledge_edit]
+  withheld: [merge, release, deploy]
+continuity:
+  resumes: null
+  campaign_ref: null
+  resolves_questions: ["2026-10-23-observe-skills#Q-2", "2026-11-06-harness-maturity-reconciliation#Q-1"]
+responsibilities:
+  - id: R-1
+    responsibility: Establish thesis, authority, prior possibilities and recorded frictions
+    capability: using-sensemaking
+    status: completed
+    reason: Read the accepted ADRs, strategy, plan and status. Two independent subagents reduced about 160 earlier ideas to 39 possibilities and mined 61 receipts and the normal-use reports for recorded frictions.
+    artifact_refs: [docs/adr/0034-ontology-first-adaptive-sensemaking.md, docs/product-strategy.md, docs/persistent-semantic-stewardship-plan.md, STATUS.md]
+    validation: []
+  - id: R-2
+    responsibility: Develop distinct user outcomes and test the leading interpretation
+    capability: using-sensemaking
+    status: completed
+    reason: The first lead, a staleness flag from source drift, failed its own measurement. Structural reach and recorded use were then measured on the real records before any candidate was preferred.
+    artifact_refs: [.sensemaking/knowledge/possibilities.json, artifacts/history/2026-10-23-strategic-repository-analysis.md]
+    validation: []
+  - id: R-3
+    responsibility: Independent adversarial critique of four candidate outcomes and selection
+    capability: using-sensemaking
+    status: completed
+    reason: A separate critic rechecked the figures, rejected the staleness flag, deferred reach assurance, reduced the owner docket to a maintenance pass and accepted only a narrowed form of recorded retrieval, calling it marginal. Selection followed that verdict.
+    artifact_refs: [docs/adr/0032-session-and-query-receipts.md, docs/strategic-candidate-directions.md]
+    validation: []
+  - id: R-4
+    responsibility: Build, review twice and reduce the receipt reader change
+    capability: ordinary_coding
+    status: completed
+    reason: Version one added retrieval tallies and query receipt entries; review showed both misled. Version two kept a recording block and a per-record listing; a second review cut it again. The final reader adds one block of recording facts.
+    artifact_refs: [scripts/summarize-receipts.py, skills/using-sensemaking/references/session-receipt-v1.md, skills/repository-semantic-steward/references/query-receipt.md, skills/workflow-planner/references/artifact-contracts.yaml]
+    validation:
+      - command: py_compile and ruff check on the reader; validate-docs-currentness.py; validate-skill-hygiene.py; validate-contract-authority.py; git diff --check
+        result: PASS
+      - command: reader at 53b667c1 - default text grows by 4 lines and all 13 existing JSON keys keep their values
+        result: PASS
+      - command: reader on a shallow clone, a non-Git copy, no receipts, a target tie, and seven synthetic Git histories from the review findings
+        result: PASS
+      - command: replica of the eleven hosted consumer queries and assertions at 2bc809b5
+        result: PASS
+      - command: unit and synthetic repository tests (construction direction in CLAUDE.md; none added)
+        result: NOT_RUN
+  - id: R-5
+    responsibility: RECONCILE reviewed knowledge for the change
+    capability: repository-semantic-steward
+    status: completed
+    reason: Added the observation, the decision and two alternatives (retrieval tallies rejected, query-written entries deferred to the owner) and linked the decision to the reader's owning component.
+    artifact_refs: [.sensemaking/knowledge/architecture.json, .sensemaking/receipts/2026-11-10-query-recording-facts.query.yaml]
+    validation:
+      - command: knowledge-proposal-check on architecture.json; knowledge-build at 2bc809b5 with --include-repository-structure
+        result: PASS
+findings:
+  - id: F-1
+    statement: STATUS names whether accreted knowledge is reached and changes later decisions as PATH-1's decision-changing uncertainty, and the governing analysis expects ordinary work to produce the evidence. Query receipts are the only record of retrieval, and the reader read only their misses.
+    epistemic_status: OBSERVED
+    evidence_refs:
+      - STATUS.md
+      - artifacts/history/2026-10-23-strategic-repository-analysis.md
+      - scripts/summarize-receipts.py
+    disposition: handed_off
+  - id: F-2
+    statement: At 53b667c1 the last query receipt dates from 2026-10-30. Sixteen later-dated non-merge commits changed reviewed knowledge, and 8 of 21 Steward-naming sessions left no query receipt, 3 of them after it. No receipt or report found mentions this. The reader now prints these facts.
+    epistemic_status: OBSERVED
+    evidence_refs:
+      - .sensemaking/receipts/2026-10-30-console-ascii-report-output.query.yaml
+      - scripts/summarize-receipts.py
+    disposition: resolved
+  - id: F-3
+    statement: A staleness flag from source drift was rejected. Of 42 records with a resolvable revision anchor at 53b667c1, between 23 and 36 show a changed cited source, depending on whether added files and authority paths count. Every variant is a majority, so the flag discriminates little.
+    epistemic_status: OBSERVED
+    evidence_refs:
+      - .sensemaking/knowledge/possibilities.json
+      - skills/repository-semantic-steward/references/recall.md
+    disposition: no_action
+  - id: F-4
+    statement: Retrieval tallies were built and withdrawn. The claim IDs a receipt lists are chosen by its session - 15 of 94 query entries with a positive hit_count list fewer IDs than that count - so a tally measures recording habits. The reviewer moved a headline from 101 to 135 with one broad entry.
+    epistemic_status: OBSERVED
+    evidence_refs:
+      - .sensemaking/receipts/2026-10-30-console-ascii-report-output.query.yaml
+      - .sensemaking/knowledge/architecture.json
+    disposition: resolved
+  - id: F-5
+    statement: The selected outcome, evidence of reuse from normal work, is not delivered. Receipts as written cannot support it, and making retrieval observed needs an owner decision on how query receipts are recorded.
+    epistemic_status: DERIVED
+    evidence_refs:
+      - docs/adr/0032-session-and-query-receipts.md
+      - .sensemaking/knowledge/architecture.json
+    disposition: handed_off
+  - id: F-6
+    statement: At 53b667c1, 76 of 188 authored records are returned by no file, term or orientation query. 44 are product-level records reached by ID or search by design, 29 are engineering records and 3 are source records. Open PR 796 addresses part of this.
+    epistemic_status: OBSERVED
+    evidence_refs:
+      - src/sensemaking_skills/semantic_architecture/knowledge_architecture.py
+      - .sensemaking/knowledge/stewardship.json
+    disposition: handed_off
+  - id: F-7
+    statement: Receipts hold 14 unresolved owner-intent questions that reduce to about 8 decisions; platform gating was asked three times and Skill-copy synchronisation four times. The two remaining ADR 0032 copies were answered on 2026-11-06 and are resolved by this receipt.
+    epistemic_status: OBSERVED
+    evidence_refs:
+      - .sensemaking/receipts/2026-11-06-post-merge-constraint-surfacing.session.yaml
+      - .sensemaking/receipts/2026-11-06-harness-maturity-reconciliation.session.yaml
+    disposition: handed_off
+  - id: F-8
+    statement: The companion query receipt lists the queries the final decision rests on. Exploratory queries and those run against the two withdrawn versions are not listed one by one. The critic and review reports exist only in the session transcript and the pull request text.
+    epistemic_status: OBSERVED
+    evidence_refs:
+      - .sensemaking/receipts/2026-11-10-query-recording-facts.query.yaml
+    disposition: no_action
+open_questions:
+  - id: Q-1
+    question: Should knowledge-query recording continue, and if it does, who records what a query returned?
+    source: owner_intent
+    blocking: false
+    options:
+      - option: Keep agent-written query receipts as they are
+        consequence: No contract change. The reader shows gaps, but lists stay selected by each session and cannot support any statement about retrieval.
+      - option: Have the query emit or append its mechanical entry
+        consequence: Retrieval becomes observed and cheap to record. Needs decisions on the 120-character subject cap, on what hit_count means per operation, and on ADR 0032.
+      - option: Stop requiring query receipts
+        consequence: Less ceremony per session. ASSUMPTION-1 of the governing analysis stays unobservable except through staged independent sessions.
+    durable_ref: docs/adr/0032-session-and-query-receipts.md
+stop:
+  disposition: NO_FURTHER_WARRANT
+  reason: The investigation is complete and one small capability survived a critique and two independent reviews. Building further toward the selected outcome is unwarranted until the owner decides how query receipts are recorded.
+next:
+  warranted_responsibility: Owner decision on Q-1. If recording continues by machine, settle the receipt contract points first. Independent-session evidence (S5) remains unexecuted and is not advanced by this session.
+  blocked_on: ["Q-1"]
+persistence: committed
+claim_ceiling: Shows reader behaviour on this repository's receipts and on synthetic histories. Unit tests NOT_RUN. Shows no retrieval rate, reuse, decision benefit or independent-session behaviour, and does not test the consultation hypothesis. Subagent reports are not committed.
+action_authorized_by_receipt: false
+immutable: true
