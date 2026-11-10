@@ -193,19 +193,11 @@ as unresolved. A repeated miss is evidence that a source-linked ADD may be
 warranted. It is not by itself proof, and not a quota.
 
 The same reader reports whether query recording is still alive, and with
-`--knowledge-use` it reads `queries[].result.claim_ids`, `source_checks` and
-`reconcile` to show recorded retrieval per record
-(`../../using-sensemaking/references/session-receipt-v1.md` section 4). Those
-fields are therefore read, not only validated: record what the query actually
-returned, and do not add IDs a query did not return.
-
-**Mechanical fields from the query itself.** Every `knowledge-query` response
-carries `receipt_entries.queries`: one entry per subject or path with
-`operation`, `terms`, `subject`, `expect_kinds`, `target_ref` and `result`
-(`hit_count`, `claim_ids`, `truncated`, `not_assessed_kinds`), derived from
-that response by the field notes above. Copy the entry into `queries` and add
-`id`, `outcome` and `decision_relevant` yourself; those are judgments the query
-cannot make. The query writes nothing.
+`--claim <id>` it lists the queries, source checks and reconcile entries that
+name one record (`../../using-sensemaking/references/session-receipt-v1.md`
+section 4). `queries`, `source_checks` and `reconcile` are therefore read, not
+only validated. Record what the query returned and what you checked; the
+reader counts none of it.
 
 ## 6. Validate
 

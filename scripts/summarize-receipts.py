@@ -17,14 +17,14 @@ It reports, mechanically and without judging meaning:
   - declared non-durable receipts that HEAD does contain (reported separately);
   - receipts that fail validation;
   - whether knowledge-query recording is still alive: the last query receipt,
-    knowledge commits since it, and Steward sessions that left no query receipt.
+    knowledge commits made after the commit that recorded it, Steward sessions
+    that left no query receipt, and contradicted or stale source checks that no
+    later applied revision answered.
 
-With --knowledge-use (opt-in) it also joins the query receipts to the authored
-knowledge packs and reports recorded retrieval per record, split by how the
-record was reached, with source checks and reconcile dispositions. That view is
-descriptive: it shows retention and recorded retrieval only, never that a record
-was used, helped a decision or is unused. It gives no score and no ordering by
-count.
+With --claim <id> it also lists what the query receipts record about
+one knowledge record. That is a list of pointers into receipts. It prints no
+tally: the IDs a receipt lists are chosen by the session that wrote it, so a
+count of them would measure recording habits, not retrieval or use.
 
 Exit codes: 0 = every receipt valid (or no receipts), 1 = at least one invalid receipt,
 2 = usage error. Output is ASCII-only.
@@ -100,33 +100,11 @@ def _committed_receipt_names(repo_root: Path | None, receipt_dir: Path) -> set[s
 
 _KNOWLEDGE_DIR = ".sensemaking/knowledge"
 _STEWARD = "repository-semantic-steward"
-# How a recorded query reached the records it returned. `by_id` operations start
-# from a claim ID the agent already held; `listing` operations enumerate records
-# mechanically. Everything else found the record from a path, a term or a phrase.
-_ROUTE_BY_OPERATION = {
-    "explain": "by_id", "why": "by_id", "history": "by_id",
-    "snapshot": "listing", "orientation-summary": "listing", "changes": "listing",
-    "contradictions": "listing", "audit": "listing", "build": "listing", "orient": "listing",
-    "proposal-check": "listing",
-}
-_ROUTES = ("discovery", "by_id_only", "listing_only")
-_ROUTE_LABELS = {
-    "discovery": "found from a path, term, phrase or change",
-    "by_id_only": "only from a claim ID already held",
-    "listing_only": "only in a mechanical listing",
-}
-_PROPOSING = ("ADD", "REVISE", "SUPERSEDE", "CONTEST")
-_USE_LIMITS = (
-    "Recorded use only: a session that read the packs directly, ran no recorded query or left no "
-    "query receipt is invisible here.",
-    "Retrieval is not use: no entry shows that a record informed, helped or changed a decision.",
-    "A later day is not a different agent or an independent session.",
-    "No recorded retrieval is not non-use and is no reason to remove a record.",
-    "Receipts are written by the session that ran the queries; they are not observed host events.",
-)
-_HIT_RULE_NOTE = (
-    "The receipt rules exclude HIT for a file whose ownership or a needed category is NOT_ASSESSED, "
-    "so few context-for HIT outcomes do not show that the query failed."
+_REVISING = ("REVISE", "SUPERSEDE", "CONTEST")
+_HISTORY_LIMITS = (
+    "A receipt lists what its session chose to record. A listed record was not thereby used, "
+    "and a record no receipt lists was not thereby unused.",
+    "Sessions that left no query receipt do not appear here.",
 )
 
 
@@ -144,207 +122,135 @@ def _git_lines(repo_root: Path | None, *args: str) -> list[str] | None:
     return result.stdout.splitlines() if result.returncode == 0 else None
 
 
-def _local_target(sessions: list[dict], queries: list[dict], override: str | None) -> str | None:
-    """The repository these receipts describe: the override, else the commonest declared target."""
+def _receipt_target(sessions: list[dict], queries: list[dict], override: str | None) -> tuple[str | None, list[str]]:
+    """The repository these receipts describe, and the rivals when that is ambiguous.
+
+    Without an override it is the target most receipts declare. A tie is not
+    resolved by name: the caller is told and counts nothing.
+    """
     if override:
-        return override
-    for records in (sessions, queries):
-        counts: dict[str, int] = defaultdict(int)
-        for record in records:
-            counts[record["data"]["target_repository"]] += 1
-        if counts:
-            return sorted(counts, key=lambda name: (-counts[name], name))[0]
-    return None
+        return override, []
+    counts: dict[str, int] = defaultdict(int)
+    for record in sessions + queries:
+        counts[record["data"]["target_repository"]] += 1
+    if not counts:
+        return None, []
+    top = max(counts.values())
+    leaders = sorted(name for name, count in counts.items() if count == top)
+    return (leaders[0], []) if len(leaders) == 1 else (None, leaders)
+
+
+def _knowledge_commits_after(repo_root: Path | None, receipt_dir: Path, file_name: str) -> tuple[int | None, str | None]:
+    """Commits that changed reviewed knowledge and are not contained in the commit that added a receipt.
+
+    Ancestry is used, not timestamps: clocks and time zones do not matter, and
+    the commit that carries the receipt itself is never counted. Returns the
+    count, or None with the reason Git cannot answer.
+    """
+    if repo_root is None:
+        return None, "no repository given"
+    shallow = _git_lines(repo_root, "rev-parse", "--is-shallow-repository")
+    if shallow is None:
+        return None, "not a Git repository"
+    if shallow and shallow[0].strip() == "true":
+        return None, "shallow clone"
+    try:
+        relative = (receipt_dir.resolve() / file_name).relative_to(repo_root.resolve()).as_posix()
+    except ValueError:
+        return None, "receipt directory is outside the repository"
+    added = _git_lines(repo_root, "-c", "color.ui=never", "log", "--diff-filter=A", "--format=%H", "-1",
+                       "--", relative)
+    if added is None:
+        return None, "Git could not read the receipt history"
+    if not added:
+        return 0, "the last query receipt is not committed yet"
+    later = _git_lines(repo_root, "rev-list", "--no-merges", f"{added[0].strip()}..HEAD",
+                       "--", _KNOWLEDGE_DIR)
+    if later is None:
+        return None, "Git could not list later commits"
+    return len([line for line in later if line.strip()]), None
 
 
 def _knowledge_recording(
-    sessions: list[dict], queries: list[dict], repo_root: Path | None, target: str | None,
+    sessions: list[dict], queries: list[dict], repo_root: Path | None, receipt_dir: Path,
+    target: str | None, rivals: list[str],
 ) -> dict[str, Any]:
-    """Whether knowledge-query recording is alive. Mechanical facts only."""
-    local = [r for r in queries if r["data"]["target_repository"] == target]
-    # A companion that targets another repository still shows the session recorded its queries.
+    """Whether knowledge-query recording is alive. Mechanical facts only, no tally of use."""
+    local = [r for r in queries if target is not None and r["data"]["target_repository"] == target]
+    last = max(local, key=lambda r: (r["data"]["updated_at"], r["file"]), default=None)
+    commits, reason = (None, None)
+    if last is not None:
+        commits, reason = _knowledge_commits_after(repo_root, receipt_dir, last["file"])
+    # A companion written for another target still shows that the session recorded its queries.
     recorded_refs = {r["data"]["session_ref"] for r in queries}
-    last = max((r["data"]["updated_at"] for r in local), default=None)
     steward = [
         r["data"]["session_ref"] for r in sessions
-        if r["data"]["target_repository"] == target and any(
+        if target is not None and r["data"]["target_repository"] == target and any(
             _STEWARD in (item.get("capability") or "")
             for item in r["data"].get("responsibilities") or [])
     ]
-    commits_since = None
-    if last is not None:
-        lines = _git_lines(repo_root, "log", "--no-merges", "--format=%H", f"--since={last}",
-                           "--", _KNOWLEDGE_DIR)
-        commits_since = None if lines is None else len([line for line in lines if line])
+    revisions: dict[str, list[str]] = defaultdict(list)
+    for record in local:
+        for item in record["data"].get("reconcile") or []:
+            if item.get("claim_id") and item.get("applied") and item["disposition"] in _REVISING:
+                revisions[item["claim_id"]].append(record["data"]["updated_at"])
+    unanswered = [
+        {"claim_id": check["claim_id"], "result": check["result"],
+         "session_ref": record["data"]["session_ref"]}
+        for record in local for check in record["data"].get("source_checks") or []
+        if check["result"] in ("CONTRADICTED", "STALE")
+        and not any(when >= record["data"]["updated_at"] for when in revisions.get(check["claim_id"], []))
+    ]
     return {
         "target_repository": target,
+        "target_ambiguous_between": rivals,
         "query_receipt_total": len(local),
-        "last_query_receipt_updated_at": last,
-        "knowledge_commits_since_last_query_receipt": commits_since,
+        "last_query_receipt": None if last is None else {
+            "receipt": last["file"], "updated_at": last["data"]["updated_at"]},
+        "knowledge_commits_after_last_query_receipt": commits,
+        "knowledge_commits_note": reason,
         "steward_session_total": len(steward),
         "steward_sessions_without_query_receipt": sorted(
             ref for ref in steward if ref not in recorded_refs),
         "other_target_query_receipts": sorted(
-            r["file"] for r in queries if r["data"]["target_repository"] != target),
+            r["file"] for r in queries if target is not None and r["data"]["target_repository"] != target),
+        "contradicted_or_stale_checks_without_later_applied_revision": unanswered,
     }
 
 
-def _pack_claim_kinds(repo_root: Path | None) -> dict[str, str] | None:
-    """Claim ID -> kind for the authored packs in the checkout, or None when there are none."""
-    if repo_root is None:
-        return None
-    packs = sorted((repo_root / _KNOWLEDGE_DIR).glob("*.json"))
-    kinds: dict[str, str] = {}
-    for pack in packs:
-        try:
-            data = json.loads(pack.read_text(encoding="utf-8"))
-        except (OSError, ValueError):
-            continue
-        claims = data.get("claims") if isinstance(data, dict) else None
-        for claim in claims if isinstance(claims, list) else []:
-            if isinstance(claim, dict) and isinstance(claim.get("id"), str):
-                kinds[claim["id"]] = str(claim.get("kind"))
-    return kinds if packs else None
-
-
-def _first_commit_days(repo_root: Path | None) -> dict[str, str] | None:
-    """Commit day on which each record ID first appeared in a pack (one Git call)."""
-    lines = _git_lines(repo_root, "log", "--reverse", "--format=@@%cs", "-p", "--unified=0",
-                       "--", _KNOWLEDGE_DIR)
-    if lines is None:
-        return None
-    first: dict[str, str] = {}
-    day = None
-    for line in lines:
-        if line.startswith("@@") and len(line) == 12:
-            day = line[2:]
-        elif day and line.startswith("+") and '"id": "' in line:
-            first.setdefault(line.split('"id": "', 1)[1].split('"', 1)[0], day)
-    return first
-
-
-def _route_class(operations: set[str]) -> str:
-    routes = {_ROUTE_BY_OPERATION.get(operation, "discovery") for operation in operations}
-    if "discovery" in routes:
-        return "discovery"
-    return "by_id_only" if "by_id" in routes else "listing_only"
-
-
-def _knowledge_use(
-    queries: list[dict], repo_root: Path | None, target: str | None,
-    last_query_at: str | None, wanted: tuple[str, ...],
-) -> dict[str, Any]:
-    """Join query receipts to the authored packs: recorded retrieval, checks and dispositions."""
-    kinds = _pack_claim_kinds(repo_root)
-    if kinds is None:
-        return {"available": False,
-                "reason": f"no authored packs under {_KNOWLEDGE_DIR} in the given repository",
-                "limits": list(_USE_LIMITS)}
-    first_days = _first_commit_days(repo_root)
-    last_day = last_query_at[:10] if last_query_at else None
-    returned: dict[str, list[dict]] = defaultdict(list)
-    checks: dict[str, list[dict]] = defaultdict(list)
-    reconciled: dict[str, list[dict]] = defaultdict(list)
-    absent: set[str] = set()
-    check_results: dict[str, int] = defaultdict(int)
-    dispositions: dict[str, int] = defaultdict(int)
-    not_applied = 0
-    outcomes: dict[str, dict[str, int]] = defaultdict(lambda: defaultdict(int))
+def _claim_history(queries: list[dict], wanted: tuple[str, ...]) -> dict[str, list[dict]]:
+    """What the query receipts record about each requested claim ID, in receipt order."""
+    history: dict[str, list[dict]] = {claim: [] for claim in wanted}
     for record in queries:
         data = record["data"]
-        if data["target_repository"] != target:
-            continue
-        session, day = data["session_ref"], data["updated_at"][:10]
+        common = {"session_ref": data["session_ref"], "updated_at": data["updated_at"],
+                  "target_repository": data["target_repository"]}
         for query in data.get("queries") or []:
-            outcomes[query["operation"]][query["outcome"]] += 1
-            ids = list((query.get("result") or {}).get("claim_ids") or [])
-            if isinstance(query.get("subject"), str) and query["subject"] in kinds:
-                ids.append(query["subject"])
-            for cid in dict.fromkeys(ids):
-                if cid in kinds:
-                    returned[cid].append({"session_ref": session, "day": day,
-                                          "operation": query["operation"]})
-                else:
-                    absent.add(cid)
+            result = query.get("result") or {}
+            for claim in wanted:
+                if query.get("subject") == claim:
+                    history[claim].append({**common, "event": "query_subject",
+                                           "operation": query["operation"],
+                                           "hit_count": result.get("hit_count"),
+                                           "outcome": query["outcome"]})
+                elif claim in (result.get("claim_ids") or []):
+                    history[claim].append({**common, "event": "listed_in_result",
+                                           "operation": query["operation"],
+                                           "query_subject": query.get("subject")})
         for check in data.get("source_checks") or []:
-            check_results[check["result"]] += 1
-            checks[check["claim_id"]].append({"session_ref": session, "day": day,
-                                              "result": check["result"], "sources": check["sources"]})
+            if check["claim_id"] in history:
+                history[check["claim_id"]].append({**common, "event": "source_check",
+                                                   "result": check["result"], "sources": check["sources"]})
         for item in data.get("reconcile") or []:
-            dispositions[item["disposition"]] += 1
-            if item["disposition"] in _PROPOSING and not item.get("applied"):
-                not_applied += 1
-            if item.get("claim_id"):
-                reconciled[item["claim_id"]].append({"session_ref": session, "day": day,
-                                                     "disposition": item["disposition"],
-                                                     "applied": bool(item.get("applied"))})
-
-    def late(cid: str) -> bool | None:
-        if first_days is None or last_day is None:
-            return None
-        # A record no commit contains yet is newer than every query receipt.
-        return cid not in first_days or first_days[cid] > last_day
-
-    by_route = dict.fromkeys(_ROUTES, 0)
-    later_by_route = dict.fromkeys(_ROUTES, 0)
-    later_known = first_days is not None
-    for cid, events in returned.items():
-        by_route[_route_class({event["operation"] for event in events})] += 1
-        if later_known and cid in first_days:
-            later = {event["operation"] for event in events if event["day"] > first_days[cid]}
-            if later:
-                later_by_route[_route_class(later)] += 1
-    unretrieved = [{"id": cid, "kind": kinds[cid], "added_after_last_query_receipt": late(cid)}
-                   for cid in sorted(kinds) if cid not in returned]
-    unresolved = []
-    for cid, events in sorted(checks.items()):
-        for event in events:
-            if event["result"] not in ("CONTRADICTED", "STALE"):
-                continue
-            if not any(item["applied"] and item["day"] >= event["day"]
-                       and item["disposition"] in ("REVISE", "SUPERSEDE", "CONTEST")
-                       for item in reconciled.get(cid, [])):
-                unresolved.append({"claim_id": cid, **event})
-    records = {
-        cid: {
-            "kind": kinds.get(cid), "in_current_packs": cid in kinds,
-            "first_committed": None if first_days is None else first_days.get(cid),
-            "returned": returned.get(cid, []), "source_checks": checks.get(cid, []),
-            "reconcile": reconciled.get(cid, []),
-        }
-        for cid in wanted
-    }
-    return {
-        "available": True,
-        "records_total": len(kinds),
-        "with_recorded_retrieval": {"total": len(returned), "by_route": by_route},
-        "returned_after_first_commit_day": (
-            {"total": sum(later_by_route.values()), "by_route": later_by_route}
-            if later_known else None),
-        "no_recorded_retrieval": {
-            "total": len(unretrieved),
-            "added_after_last_query_receipt": (
-                None if first_days is None or last_day is None
-                else sum(1 for item in unretrieved if item["added_after_last_query_receipt"])),
-            "records": unretrieved,
-        },
-        "returned_ids_not_in_current_packs": sorted(absent),
-        "source_checks": {
-            "total": sum(check_results.values()), "record_total": len(checks),
-            "by_result": dict(sorted(check_results.items())),
-            "contradicted_or_stale_without_later_applied_revision": unresolved,
-        },
-        "reconcile": {"by_disposition": dict(sorted(dispositions.items())),
-                      "proposed_not_applied": not_applied},
-        "query_outcomes": {op: dict(sorted(counts.items())) for op, counts in sorted(outcomes.items())},
-        "query_outcome_note": _HIT_RULE_NOTE,
-        "records": records,
-        "limits": list(_USE_LIMITS),
-    }
+            if item.get("claim_id") in history:
+                history[item["claim_id"]].append({**common, "event": "reconcile",
+                                                  "disposition": item["disposition"],
+                                                  "applied": bool(item.get("applied"))})
+    return history
 
 
 def summarize(
-    receipt_dir: Path, repo_root: Path | None = None, *, knowledge_use: bool = False,
+    receipt_dir: Path, repo_root: Path | None = None, *,
     claims: tuple[str, ...] = (), target_repository: str | None = None,
 ) -> dict[str, Any]:
     files = sorted(
@@ -453,13 +359,9 @@ def summarize(
         for key, refs in sorted(miss_sessions.items()) if len(refs) >= 2
     ]
 
-    target = _local_target(sessions, queries, target_repository)
-    recording = _knowledge_recording(sessions, queries, repo_root, target)
-    use = (
-        _knowledge_use(queries, repo_root, target,
-                       recording["last_query_receipt_updated_at"], tuple(dict.fromkeys(claims)))
-        if knowledge_use or claims else None
-    )
+    target, rivals = _receipt_target(sessions, queries, target_repository)
+    recording = _knowledge_recording(sessions, queries, repo_root, receipt_dir, target, rivals)
+    wanted = tuple(dict.fromkeys(claims))
 
     return {
         "receipt_dir": str(receipt_dir),
@@ -486,89 +388,60 @@ def summarize(
         "declared_but_committed": declared_but_committed,
         "invalid": invalid,
         "knowledge_recording": recording,
-        **({"knowledge_use": use} if use is not None else {}),
+        **({"claim_history": {"records": _claim_history(queries, wanted),
+                              "limits": list(_HISTORY_LIMITS)}} if wanted else {}),
     }
 
 
 def _recording_lines(recording: dict[str, Any]) -> list[str]:
-    target = recording["target_repository"] or "no receipts"
-    last = recording["last_query_receipt_updated_at"]
-    lines = [f"KNOWLEDGE QUERY RECORDING ({target}): {recording['query_receipt_total']} query receipts; "
-             f"last updated {last or 'never'}"]
-    commits = recording["knowledge_commits_since_last_query_receipt"]
-    if last is not None:
-        lines.append(f"  commits changing {_KNOWLEDGE_DIR}/ since then: "
-                     f"{'unknown (Git could not answer)' if commits is None else commits}")
+    if recording["target_ambiguous_between"]:
+        return ["KNOWLEDGE QUERY RECORDING: not counted; receipts name several target repositories equally "
+                f"often ({', '.join(recording['target_ambiguous_between'])}). Pass --target-repository."]
+    last = recording["last_query_receipt"]
+    lines = [f"KNOWLEDGE QUERY RECORDING ({recording['target_repository'] or 'no receipts'}): "
+             f"{recording['query_receipt_total']} query receipts; last "
+             + (f"{last['receipt']} (updated {last['updated_at']})" if last else "none")]
+    if last:
+        commits, note = (recording["knowledge_commits_after_last_query_receipt"],
+                         recording["knowledge_commits_note"])
+        shown = "unknown" if commits is None else str(commits)
+        lines.append(f"  commits changing {_KNOWLEDGE_DIR}/ after the commit that recorded it: {shown}"
+                     + (f" ({note})" if note else ""))
     missing = recording["steward_sessions_without_query_receipt"]
     lines.append(f"  sessions naming {_STEWARD} without a query receipt: "
                  f"{len(missing)} of {recording['steward_session_total']}")
     if recording["other_target_query_receipts"]:
-        lines.append("  query receipts for another target repository (not counted): "
+        lines.append("  query receipts for another target repository (not counted above): "
                      f"{len(recording['other_target_query_receipts'])}")
-    lines.append("  Recorded retrieval per record: --knowledge-use (descriptive; not evidence of use).")
+    unanswered = recording["contradicted_or_stale_checks_without_later_applied_revision"]
+    if unanswered:
+        lines.append("  source checks CONTRADICTED or STALE with no later applied REVISE, SUPERSEDE or "
+                     f"CONTEST: {len(unanswered)}")
+        lines.extend(f"    {item['claim_id']} {item['result']} in {item['session_ref']}" for item in unanswered)
     return lines
 
 
-def _counts(mapping: dict[str, int]) -> str:
-    return ", ".join(f"{key} {value}" for key, value in mapping.items()) or "none"
-
-
-def _routes(mapping: dict[str, int]) -> str:
-    return "; ".join(f"{_ROUTE_LABELS[route]} {mapping[route]}" for route in _ROUTES)
-
-
-def _use_lines(use: dict[str, Any]) -> list[str]:
-    lines = ["RECORDED KNOWLEDGE RETRIEVAL (query receipts joined to authored packs; recorded use only)"]
-    if not use["available"]:
-        return [*lines, f"  not available: {use['reason']}"]
-    found = use["with_recorded_retrieval"]
-    lines.append(f"  records in packs: {use['records_total']}; with a recorded retrieval: "
-                 f"{found['total']} ({_routes(found['by_route'])})")
-    later = use["returned_after_first_commit_day"]
-    lines.append("  returned on a later day than first committed: "
-                 + ("unknown (Git could not answer)" if later is None
-                    else f"{later['total']} ({_routes(later['by_route'])})")
-                 + ". A later day is not a different agent")
-    missing = use["no_recorded_retrieval"]
-    late = missing["added_after_last_query_receipt"]
-    lines.append(f"  NO RECORDED RETRIEVAL: {missing['total']}"
-                 + ("" if late is None else f" ({late} added after the last query receipt, marked *)")
-                 + "; this is not non-use")
-    by_kind: dict[str, list[str]] = defaultdict(list)
-    for item in missing["records"]:
-        by_kind[item["kind"]].append(item["id"] + ("*" if item["added_after_last_query_receipt"] else ""))
-    for kind in sorted(by_kind):
-        ids = by_kind[kind]
-        more = f" (+{len(ids) - 6} more in --json)" if len(ids) > 6 else ""
-        lines.append(f"    {kind} ({len(ids)}): {', '.join(ids[:6])}{more}")
-    absent = use["returned_ids_not_in_current_packs"]
-    lines.append(f"  returned IDs not in the current packs (index-generated or removed): {len(absent)}")
-    checks = use["source_checks"]
-    lines.append(f"  SOURCE CHECKS: {checks['total']} over {checks['record_total']} records "
-                 f"({_counts(checks['by_result'])}); a SUPPORTED share is not an accuracy rate")
-    unresolved = checks["contradicted_or_stale_without_later_applied_revision"]
-    lines.append(f"    CONTRADICTED or STALE with no later applied REVISE, SUPERSEDE or CONTEST: {len(unresolved)}")
-    lines.extend(f"      {item['claim_id']} {item['result']} in {item['session_ref']}" for item in unresolved)
-    reconcile = use["reconcile"]
-    lines.append(f"  RECONCILE: {_counts(reconcile['by_disposition'])}; proposed changes not applied: "
-                 f"{reconcile['proposed_not_applied']}")
-    outcomes = use["query_outcomes"].get("context-for")
-    if outcomes:
-        lines.append(f"  context-for outcomes: {_counts(outcomes)}. {use['query_outcome_note']}")
-    for cid, record in use["records"].items():
-        state = "" if record["in_current_packs"] else " (not in the current packs)"
-        lines.append(f"  RECORD {cid} [{record['kind']}]{state} first committed "
-                     f"{record['first_committed'] or 'unknown'}")
-        lines.extend(f"    returned {event['day']} by {event['operation']} in {event['session_ref']}"
-                     for event in record["returned"])
-        lines.extend(f"    source check {event['day']} {event['result']} in {event['session_ref']}"
-                     for event in record["source_checks"])
-        lines.extend(f"    reconcile {event['day']} {event['disposition']}"
-                     f"{'' if event['applied'] else ' (not applied)'} in {event['session_ref']}"
-                     for event in record["reconcile"])
-        if not (record["returned"] or record["source_checks"] or record["reconcile"]):
-            lines.append("    no recorded retrieval, source check or reconcile entry")
-    lines.extend(f"  Limit: {limit}" for limit in use["limits"])
+def _history_lines(history: dict[str, Any], local_target: str | None) -> list[str]:
+    lines: list[str] = []
+    for claim, events in history["records"].items():
+        lines.append(f"RECEIPT HISTORY OF {claim} (what the query receipts record; not evidence of use)")
+        for event in events:
+            other = "" if event["target_repository"] == local_target else f" [target {event['target_repository']}]"
+            where = f"  {event['updated_at'][:10]} {event['session_ref']}{other}: "
+            if event["event"] == "query_subject":
+                lines.append(f"{where}subject of {event['operation']}, hit_count {event['hit_count']}, "
+                             f"outcome {event['outcome']}")
+            elif event["event"] == "listed_in_result":
+                subject = f" on {event['query_subject']}" if event["query_subject"] else ""
+                lines.append(f"{where}listed in the result of {event['operation']}{subject}")
+            elif event["event"] == "source_check":
+                lines.append(f"{where}source check {event['result']}")
+            else:
+                lines.append(f"{where}reconcile {event['disposition']}"
+                             f"{'' if event['applied'] else ' (not applied)'}")
+        if not events:
+            lines.append("  no query receipt names this record")
+    lines.extend(f"  Limit: {limit}" for limit in history["limits"])
     return lines
 
 
@@ -621,8 +494,9 @@ def _print_text(summary: dict[str, Any]) -> None:
     )
     lines.extend(f"  {n['receipt']} persistence={n['persistence']}" for n in summary["declared_but_committed"])
     lines.extend(_recording_lines(summary["knowledge_recording"]))
-    if "knowledge_use" in summary:
-        lines.extend(_use_lines(summary["knowledge_use"]))
+    if "claim_history" in summary:
+        lines.extend(_history_lines(summary["claim_history"],
+                                    summary["knowledge_recording"]["target_repository"]))
     if summary["invalid"]:
         lines.append("INVALID RECEIPTS (run scripts/validate-receipt.py for detail):")
         lines.extend(f"  {i['file']}: {'; '.join(i['errors'])}" for i in summary["invalid"])
@@ -634,19 +508,17 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--repo", default=".", help="Target repository root (default: current directory)")
     parser.add_argument("--dir", default=None, help=f"Receipt directory (default: <repo>/{_validator.RECEIPT_DIR})")
     parser.add_argument("--json", action="store_true", help="Emit JSON")
-    parser.add_argument("--knowledge-use", action="store_true",
-                        help="Also report recorded retrieval per knowledge record (descriptive only)")
     parser.add_argument("--claim", action="append", default=[], metavar="CLAIM_ID",
-                        help="Show the recorded history of one knowledge record; repeatable; "
-                             "implies --knowledge-use")
+                        help="List what the committed query receipts record about one knowledge "
+                             "record (pointers into receipts, not evidence of use); repeatable")
     parser.add_argument("--target-repository", default=None,
-                        help="Repository identity the receipts describe (default: the commonest "
-                             "target_repository among the session receipts)")
+                        help="Repository identity the receipts describe (default: the target most "
+                             "receipts declare; a tie is reported, not guessed)")
     args = parser.parse_args(argv)
 
     receipt_dir = Path(args.dir) if args.dir else Path(args.repo) / _validator.RECEIPT_DIR
-    summary = summarize(receipt_dir, Path(args.repo), knowledge_use=args.knowledge_use,
-                        claims=tuple(args.claim), target_repository=args.target_repository)
+    summary = summarize(receipt_dir, Path(args.repo), claims=tuple(args.claim),
+                        target_repository=args.target_repository)
     if args.json:
         print(_ascii(json.dumps(summary, indent=2)))
     else:

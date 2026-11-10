@@ -194,11 +194,11 @@ later citation does not show causal contribution, and one episode does not show
 comparative benefit. Evidence can support several classes at once.
 
 When committed query receipts exist and the optional reader is installed,
-`scripts/summarize-receipts.py --knowledge-use` supplies the mechanical part of
-this synthesis: which records a recorded query returned and by which route,
-their source checks and reconcile dispositions, and whether query recording has
-lapsed. It reaches the retention and retrieval classes only. Decision use and
-every stronger class still need the sources above and your judgment.
+`scripts/summarize-receipts.py --claim <id>` lists the receipts that name a
+record, with its source checks and reconcile entries, and the default output
+says whether query recording has lapsed. That only finds the evidence to read.
+Every class above, retrieval included, still needs the receipts themselves, the
+other sources and your judgment.
 
 **Record the channel that carried the information.** Committed repository
 knowledge differs from inherited session handover material, ambient or

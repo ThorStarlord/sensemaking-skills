@@ -283,10 +283,6 @@ def register_semantic_commands(root_cli: click.Group) -> None:
                         item["context"]["workspace_relevance"] = dict(unassessed)
                 else:
                     payload["context"]["workspace_relevance"] = unassessed
-            payload["receipt_entries"] = _receipt_entries(
-                payload, operation=operation, subject=subject, search_terms=search_terms,
-                expected_kinds=expected_kinds, target_ref=target_ref,
-            )
         except (ValueError, OSError, UnicodeError) as exc:
             raise click.ClickException(str(exc)) from exc
         payload["code"] = "SEMANTIC_KNOWLEDGE_QUERY"
@@ -684,68 +680,3 @@ def register_semantic_commands(root_cli: click.Group) -> None:
         _emit(payload, output_json=output_json)
         if result.diagnostics:
             raise click.exceptions.Exit(3)
-
-
-_RECEIPT_ENTRY_NOTE = (
-    "Mechanical fields of semantic_query_receipt queries[] entries for this response, one per "
-    "subject or path. Add id, outcome and decision_relevant yourself: they are judgments. "
-    "Returned records are not evidence that a record was used."
-)
-
-
-def _not_assessed_gaps(context: dict[str, Any]) -> list[str]:
-    return list(dict.fromkeys(
-        gap["category"] for gap in context.get("knowledge_gaps", []) if gap.get("status") == "NOT_ASSESSED"))
-
-
-def _receipt_entries(
-    payload: dict[str, Any], *, operation: str, subject: str | None,
-    search_terms: tuple[str, ...], expected_kinds: tuple[str, ...], target_ref: str,
-) -> dict[str, Any]:
-    """Derive the mechanical part of a query receipt entry from the response itself.
-
-    Nothing is written anywhere: the agent copies an entry into its query receipt and
-    adds the judgment fields. Field names follow
-    skills/repository-semantic-steward/references/query-receipt.md.
-    """
-    def entry(entry_subject: str | None, claim_ids: list[str], truncated: bool,
-              not_assessed: list[str], hit_count: int | None = None) -> dict[str, Any]:
-        return {
-            "operation": operation, "terms": list(search_terms), "subject": entry_subject,
-            "expect_kinds": list(expected_kinds), "target_ref": target_ref,
-            "result": {
-                "hit_count": len(claim_ids) if hit_count is None else hit_count,
-                "claim_ids": claim_ids, "truncated": truncated, "not_assessed_kinds": not_assessed,
-            },
-        }
-
-    if "contexts" in payload:
-        entries = [entry(item["path"], list(item["claim_ids"]), bool(item["truncated"]),
-                         _not_assessed_gaps(item["context"])) for item in payload["contexts"]]
-        return {"queries": entries, "note": _RECEIPT_ENTRY_NOTE}
-    claim_ids = [claim["id"] for claim in payload.get("claims", [])]
-    truncated = bool(payload.get("truncated"))
-    not_assessed: list[str] = []
-    hit_count = None
-    if operation in {"snapshot", "orientation-summary"}:
-        # Index-level summaries are recorded with no hits (query-receipt field notes).
-        claim_ids = []
-        truncated = bool(payload.get("orientation", {}).get("lines_omitted"))
-    elif operation == "history":
-        hit_count = int(payload.get("history_total_entries", 0))
-        claim_ids = [subject] if subject and hit_count else []
-    elif operation == "changes":
-        delta = payload.get("claim_delta", {})
-        claim_ids = list(dict.fromkeys(
-            cid for group in ("added", "changed", "removed") for cid in delta.get(group, [])))
-        hit_count = sum(payload.get("delta_total_counts", {}).get("claims", {}).values())
-    elif operation == "context-for":
-        not_assessed = _not_assessed_gaps(payload["context"])
-    elif operation == "rules-for" and payload["architecture"]["coverage_status"] == "NOT_ASSESSED":
-        not_assessed = ["ownership"]
-    elif operation == "term" and payload["term"]["coverage_status"] == "NOT_ASSESSED":
-        not_assessed = ["term"]
-    if "bounded_coverage" in payload:
-        not_assessed = list(payload["bounded_coverage"]["not_assessed_in_neighborhood"])
-    return {"queries": [entry(subject, claim_ids, truncated, not_assessed, hit_count)],
-            "note": _RECEIPT_ENTRY_NOTE}
