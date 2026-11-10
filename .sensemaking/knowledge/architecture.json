@@ -937,7 +937,7 @@
     {
       "id": "decision:install-record-classifies-divergent-skill-copies",
       "kind": "decision",
-      "statement": "Delegated PR #798 design: setup-skills keeps one install record per destination root holding the tree digest it last wrote or verified for each Skill, so a copy that differs from the packaged tree is outdated (still the recorded tree), changed or unrecorded. --update replaces only outdated copies; changed and unrecorded copies still need --force, and installed trees stay byte-identical to packaged trees.",
+      "statement": "Delegated PR #798 design: setup-skills keeps one install record per destination root holding the tree digest it last wrote or verified for each Skill, so a copy that differs from the packaged tree is outdated (still the recorded tree), changed or unrecorded. --update replaces outdated copies and changed copies need --force; installed trees stay byte-identical to packaged trees. Unrecorded copies needed --force under this decision alone; since PR #799, --update also replaces one that decision:committed-history-identifies-unrecorded-skill-copies classifies as historical.",
       "authority_kind": "delegated",
       "authority_ref": "src/sensemaking_skills/setup_skills.py",
       "evidence_refs": [
@@ -951,9 +951,10 @@
       "attributes": {
         "scope": "Agent-selected design within the owner's construction delegation; not an owner-ratified distribution policy or release qualification change.",
         "decision_changed": "Whether an installed Skill copy that differs from the packaged version can be replaced without risking a local edit, and what a fix to installer drift handling must preserve.",
-        "known_limits": "The record is setup-skills bookkeeping, not evidence of what a host loaded. scripts/probe_skill_distribution.py --sync writes copies without updating it, so a copy synced that way reads as changed. An unknown-format record is ignored and left unchanged.",
+        "known_limits": "The record is setup-skills bookkeeping, not evidence of what a host loaded. scripts/probe_skill_distribution.py --sync writes copies without updating it: a synced copy is current (and re-recorded) when setup-skills next runs from the same source, but reads as changed when it runs from a source whose tree differs. An unknown-format record is ignored and left unchanged.",
         "claim_ceiling": "Exercised through the real CLI on scratch roots on one Windows host at db6f0513; unit tests NOT_RUN. Hosted wheel tests cover only the changed-copy refusal and --force replacement, not outdated or --update.",
-        "source_pr": "https://github.com/ThorStarlord/sensemaking-skills/pull/798"
+        "source_pr": "https://github.com/ThorStarlord/sensemaking-skills/pull/798",
+        "revision_history": "REVISED 2026-11-10 after an independent evaluation: at 71746bd4 the statement still said unrecorded copies need --force, which PR #799 had made untrue, and known_limits said every synced copy reads as changed."
       }
     },
     {
