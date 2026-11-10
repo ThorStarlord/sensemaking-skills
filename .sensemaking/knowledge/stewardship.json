@@ -353,7 +353,7 @@
     {
       "id": "lesson:separate-clone-changes-audited-bytes",
       "kind": "lesson",
-      "statement": "A separate clone is not a neutral clean checkout for knowledge-audit. Source fingerprints are taken from checked-out bytes, so a clone made under another core.autocrlf setting has other line endings and every cited source reads as changed. A temporary worktree of the same repository uses that repository's configuration and checks out the same bytes.",
+      "statement": "A separate clone is not a neutral clean checkout for knowledge-audit. Source fingerprints are taken from checked-out bytes, after any line-ending conversion, so in a clone made under another core.autocrlf setting cited text files read as changed. A temporary worktree of the same repository uses that repository's configuration and checks out the same bytes as its ordinary checkout; the flag does not make differently configured clones agree.",
       "authority_kind": "document",
       "authority_ref": "docs/semantic-architecture/persistent-knowledge-cli.md",
       "evidence_refs": [
@@ -362,7 +362,7 @@
       ],
       "epistemic_status": "observed",
       "attributes": {
-        "scope": "Observed once on one Windows host on 2026-11-10: 442 of 442 records reported changed from a clone made under the system default core.autocrlf=true, against 139 of 442 from a worktree of the repository; other conversions (filters, working-tree-encoding) not probed",
+        "scope": "Observed on one Windows host on 2026-11-10, auditing an index of commit 53b667c1 at commit baaec6b9: 442 of 442 records reported changed from a clone made under the system default core.autocrlf=true, with and without --temporary-checkout, against 139 of 442 from a worktree of the repository. An independent reviewer reproduced both counts. Other conversions (filters, working-tree-encoding) not probed",
         "decision_changed": "Whether an audit run from a hand-made clone can be trusted, and why --temporary-checkout materializes a worktree rather than a clone"
       }
     },
