@@ -880,19 +880,75 @@
     {
       "id": "component:distribution-setup",
       "kind": "component",
-      "statement": "At db821c25, the explicit installer maps a host and scope chosen by the caller to a filesystem discovery root, copies packaged Skill trees there, and classifies each destination as missing, current or different by file fingerprint. It never detects the active host and does not establish what a host loaded.",
+      "statement": "At 04648638, the explicit installer maps a host and scope chosen by the caller to a filesystem discovery root and copies packaged Skill trees there. A destination is missing, current or different by tree fingerprint; against the root's install record (.sensemaking-skills-install.json) a different copy is outdated, changed or unrecorded, and only --update (outdated) or --force replaces it. It never detects the active host and does not establish what a host loaded.",
       "epistemic_status": "observed",
       "authority_kind": "code",
       "authority_ref": "src/sensemaking_skills/setup_skills.py",
       "evidence_refs": [
         "file:src/sensemaking_skills/setup_skills.py",
-        "file:src/sensemaking_skills/harness_adapters.py"
+        "file:src/sensemaking_skills/harness_adapters.py",
+        "file:INSTALLATION.md"
       ],
       "attributes": {
         "owned_paths": [
           "src/sensemaking_skills/setup_skills.py",
           "src/sensemaking_skills/harness_adapters.py"
-        ]
+        ],
+        "revision_history": "REVISED 2026-11-10 (PR #798): the db821c25 statement named only missing/current/different; install-record classification and --update were added."
+      }
+    },
+    {
+      "id": "decision:install-record-classifies-divergent-skill-copies",
+      "kind": "decision",
+      "statement": "Delegated PR #798 design: setup-skills keeps one install record per destination root holding the tree digest it last wrote or verified for each Skill, so a copy that differs from the packaged tree is outdated (still the recorded tree), changed or unrecorded. --update replaces only outdated copies; changed and unrecorded copies still need --force, and installed trees stay byte-identical to packaged trees.",
+      "authority_kind": "delegated",
+      "authority_ref": "src/sensemaking_skills/setup_skills.py",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/setup_skills.py",
+        "file:src/sensemaking_skills/cli.py",
+        "file:INSTALLATION.md",
+        "file:docs/harness-adapters.md",
+        "file:scripts/probe_skill_distribution.py"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "scope": "Agent-selected design within the owner's construction delegation; not an owner-ratified distribution policy or release qualification change.",
+        "decision_changed": "Whether an installed Skill copy that differs from the packaged version can be replaced without risking a local edit, and what a fix to installer drift handling must preserve.",
+        "known_limits": "The record is setup-skills bookkeeping, not evidence of what a host loaded. scripts/probe_skill_distribution.py --sync writes copies without updating it, so a copy synced that way reads as changed. An unknown-format record is ignored and left unchanged.",
+        "claim_ceiling": "Exercised through the real CLI on scratch roots on one Windows host at 04648638; unit tests NOT_RUN. Hosted wheel tests cover only the changed-copy refusal and --force replacement, not outdated or --update.",
+        "source_pr": "https://github.com/ThorStarlord/sensemaking-skills/pull/798"
+      }
+    },
+    {
+      "id": "alternative:per-skill-install-marker",
+      "kind": "alternative",
+      "statement": "Rejected PR #798 alternative: write install provenance inside each installed Skill directory. Every installed tree would then differ from its packaged tree, so skill_state could never report current and installed-copy parity checks would need an exclusion; the root-level record keeps Skill trees byte-identical.",
+      "authority_kind": "document",
+      "authority_ref": "src/sensemaking_skills/setup_skills.py",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/setup_skills.py",
+        "file:scripts/repo_probes.py"
+      ],
+      "epistemic_status": "hypothetical",
+      "attributes": {
+        "disposition": "rejected",
+        "scope": "Engineering alternative for where install provenance lives; reconsider only if a host requires metadata inside the Skill directory."
+      }
+    },
+    {
+      "id": "alternative:replace-outdated-skill-copies-by-default",
+      "kind": "alternative",
+      "statement": "Deferred PR #798 alternative: replace outdated (record-matching) Skill copies on a plain setup-skills run. It would change the documented fail-closed default that a different copy is reported and kept, so an explicit --update flag was chosen instead.",
+      "authority_kind": "document",
+      "authority_ref": "docs/harness-adapters.md",
+      "evidence_refs": [
+        "file:docs/harness-adapters.md",
+        "file:src/sensemaking_skills/setup_skills.py"
+      ],
+      "epistemic_status": "hypothetical",
+      "attributes": {
+        "disposition": "deferred",
+        "revisit_when": "Users or agents routinely run --update after every package or checkout update, or an owner decides the installer default should change."
       }
     },
     {
@@ -1799,6 +1855,36 @@
       "attributes": {
         "scope": "Source-grounded local lesson on explicit file-first historical re-entry; no general agent-use claim"
       }
+    },
+    {
+      "id": "rel:distribution-setup-decided-by-install-record",
+      "subject": "component:distribution-setup",
+      "predicate": "decided_by",
+      "object": "decision:install-record-classifies-divergent-skill-copies",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/setup_skills.py"
+      ]
+    },
+    {
+      "id": "rel:install-record-decision-per-skill-marker-alternative",
+      "subject": "decision:install-record-classifies-divergent-skill-copies",
+      "predicate": "references",
+      "object": "alternative:per-skill-install-marker",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/setup_skills.py"
+      ]
+    },
+    {
+      "id": "rel:install-record-decision-default-replacement-alternative",
+      "subject": "decision:install-record-classifies-divergent-skill-copies",
+      "predicate": "references",
+      "object": "alternative:replace-outdated-skill-copies-by-default",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:docs/harness-adapters.md"
+      ]
     }
   ]
 }
