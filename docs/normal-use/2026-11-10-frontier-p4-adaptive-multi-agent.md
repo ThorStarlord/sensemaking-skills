@@ -101,7 +101,7 @@ The two ran concurrently because the planner had fixed the interface they shared
 | Implemented | Six commits on `claude/temporary-checkout-pinned-readers`, head `a344381e`: one source file, six guidance files, one knowledge pack |
 | Checked by the planner | 19 of 19 real-CLI probes on the final code; seven repository validators and `ruff` before and after; `knowledge-proposal-check` valid |
 | Independently verified | At `3c6ba4fc` only: eight of nine conditions passed. The three repair commits after it were not independently re-reviewed |
-| Hosted CI | All nine checks passed at `3c6ba4fc`, including the full test suite. At `a344381e`, seven had passed and two were pending when this was written |
+| Hosted CI | All nine checks passed at `3c6ba4fc` and again at the final head `a344381e`, including the full test suite. No hosted test exercises the new flag |
 | Integrated | No. PR #804 is open and unmerged |
 | User-beneficial | Used once in this session: the new audit, run from a dirty checkout at the base commit, flagged exactly the three records the planner had revised. Use by another agent is `NOT TESTED` |
 
