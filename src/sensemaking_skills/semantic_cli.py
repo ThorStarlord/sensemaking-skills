@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Callable, Iterator
@@ -72,7 +73,13 @@ def _pinned_source(repo_root: Path, ref: str, temporary_checkout: bool) -> Itera
 
 
 def _temporary_checkout_disclosure(repo_root: Path, ref: str) -> dict[str, Any]:
-    """Describe the active checkout's relation to the committed ref; read Git metadata only."""
+    """Describe the active checkout's relation to the committed ref; read Git metadata only.
+
+    Runs before the temporary checkout exists. The ref check repeats the message
+    that temporary_commit_checkout gives, so a malformed ref keeps the same error.
+    """
+    if not re.fullmatch(r"[0-9a-f]{40}", ref):
+        raise ValueError("target_ref must be a full 40-character Git SHA")
     context = inspect_worktree_context(repo_root, ref)
     return {
         "source_checkout": "temporary_worktree",
@@ -83,6 +90,7 @@ def _temporary_checkout_disclosure(repo_root: Path, ref: str) -> dict[str, Any]:
             "modified_tracked_count": context["modified_tracked_count"],
             "untracked_count": context["untracked_count"],
             "working_changes_read": False,
+            "note": "The active checkout was not read; its uncommitted and untracked changes are not part of this result.",
         },
     }
 
@@ -162,7 +170,7 @@ def register_semantic_commands(root_cli: click.Group) -> None:
                 snapshot = build(repo_root)
             payload = store_snapshot(db_path, snapshot, source_root=repo_root)
         except (ValueError, OSError, UnicodeError, KeyError, TypeError) as exc:
-            raise click.ClickException(str(exc)) from exc
+            raise _refusal(exc, temporary_checkout=temporary_checkout) from exc
         payload["code"] = "SEMANTIC_KNOWLEDGE_INDEXED"
         payload["source_checkout"] = "temporary_worktree" if temporary_checkout else "active_checkout"
         payload["source_scope"] = list(snapshot.source_scope)
@@ -185,6 +193,7 @@ def register_semantic_commands(root_cli: click.Group) -> None:
     ) -> None:
         """Orient at pinned Git HEAD without reading unreviewed semantics or mutating sources."""
         try:
+            disclosure = _temporary_checkout_disclosure(repo_root, target_ref) if temporary_checkout else {}
             with _pinned_source(repo_root, target_ref, temporary_checkout) as source_root:
                 root, tracked = verified_tracked_sources(source_root, target_ref)
                 payload = orient_repository(
@@ -202,8 +211,7 @@ def register_semantic_commands(root_cli: click.Group) -> None:
                         "limits": indexed["explicit_limits"],
                         "semantic_truth_established": False,
                     }
-                if temporary_checkout:
-                    payload.update(_temporary_checkout_disclosure(repo_root, target_ref))
+                payload.update(disclosure)
         except (ValueError, OSError, UnicodeError, KeyError, TypeError) as exc:
             raise _refusal(exc, temporary_checkout=temporary_checkout) from exc
         payload["code"] = "SEMANTIC_REPOSITORY_ORIENTATION"
@@ -222,6 +230,7 @@ def register_semantic_commands(root_cli: click.Group) -> None:
         from .semantic_architecture.knowledge_sources import _authored_records, _source
 
         try:
+            disclosure = _temporary_checkout_disclosure(repo_root, target_ref) if temporary_checkout else {}
             with _pinned_source(repo_root, target_ref, temporary_checkout) as source_root:
                 root, tracked = verified_tracked_sources(source_root, target_ref)
                 claims, relations = _authored_records(root, tracked)
@@ -232,8 +241,7 @@ def register_semantic_commands(root_cli: click.Group) -> None:
                     tracked=tracked,
                     relations=[record_dict(r) for r in relations],
                 )
-                if temporary_checkout:
-                    payload.update(_temporary_checkout_disclosure(repo_root, target_ref))
+                payload.update(disclosure)
         except (ValueError, OSError, UnicodeError) as exc:
             raise _refusal(exc, temporary_checkout=temporary_checkout) from exc
         payload.update({"repository_target_ref": target_ref, "action_authorized": False,
@@ -452,13 +460,13 @@ def register_semantic_commands(root_cli: click.Group) -> None:
     ) -> None:
         """Audit source drift without deciding whether historical claims remain valid."""
         try:
+            disclosure = _temporary_checkout_disclosure(repo_root, current_ref) if temporary_checkout else {}
             with _pinned_source(repo_root, current_ref, temporary_checkout) as source_root:
                 payload = audit_knowledge_sources(
                     db_path, repository=repository_id, indexed_ref=indexed_ref,
                     current_repo_root=source_root, current_ref=current_ref, limit=limit,
                 )
-                if temporary_checkout:
-                    payload.update(_temporary_checkout_disclosure(repo_root, current_ref))
+                payload.update(disclosure)
         except (ValueError, OSError, UnicodeError) as exc:
             raise _refusal(exc, temporary_checkout=temporary_checkout) from exc
         payload["code"] = "SEMANTIC_KNOWLEDGE_SOURCE_AUDIT"
