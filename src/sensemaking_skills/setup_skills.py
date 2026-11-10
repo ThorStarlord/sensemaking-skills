@@ -42,6 +42,7 @@ import json
 import os
 import shutil
 import sys
+import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import List, Mapping, Sequence, Tuple
@@ -213,7 +214,7 @@ def _valid_record_entry(entry: object) -> bool:
 
 def _recorded_version(entry: Mapping | None) -> str:
     """Return the recorded package version as short printable ASCII."""
-    version = entry.get("package_version") if entry else None
+    version = entry.get("package_version") if isinstance(entry, Mapping) else None
     if not isinstance(version, str) or not version:
         return "an earlier run"
     cleaned = "".join(char for char in version[:40] if " " <= char <= "~")
@@ -266,12 +267,29 @@ def _write_install_record(dest_skills_dir: Path, entries: Mapping[str, Mapping])
         "skills": {name: dict(entries[name]) for name in sorted(entries)},
     }
     path = dest_skills_dir / INSTALL_RECORD_NAME
-    temporary = dest_skills_dir / (INSTALL_RECORD_NAME + ".tmp")
-    temporary.write_text(
-        json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=True) + "\n",
-        encoding="utf-8",
+    # mkstemp creates a new file exclusively, so a planted link at a fixed
+    # temporary name cannot redirect the write outside the root.
+    descriptor, temporary_name = tempfile.mkstemp(
+        prefix=INSTALL_RECORD_NAME + ".", suffix=".tmp", dir=dest_skills_dir
     )
-    os.replace(temporary, path)
+    temporary = Path(temporary_name)
+    try:
+        with os.fdopen(descriptor, "w", encoding="utf-8", newline="\n") as handle:
+            handle.write(
+                json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=True) + "\n"
+            )
+        os.replace(temporary, path)
+    except BaseException:
+        temporary.unlink(missing_ok=True)
+        raise
+
+
+def _is_link_like(path: Path) -> bool:
+    """True for a symlink or (Windows, Python 3.12+) a directory junction."""
+    if path.is_symlink():
+        return True
+    is_junction = getattr(os.path, "isjunction", None)
+    return bool(is_junction and is_junction(path))
 
 
 def install_state(
@@ -286,14 +304,16 @@ def install_state(
       writing or verifying there, so nothing has changed it since;
     - ``changed`` when a record exists but the tree no longer matches it
       (edited locally, or rewritten by another tool);
-    - ``unrecorded`` when there is no usable record for it.
+    - ``unrecorded`` when there is no usable record for it, or when the
+      destination is a symlink or junction (its bytes live elsewhere, so a
+      record cannot vouch for them).
     """
     if not dest_skill.exists():
         return "missing"
     dest_fingerprint = _skill_tree_fingerprint(dest_skill)
     if _skill_tree_fingerprint(src_skill) == dest_fingerprint:
         return "current"
-    if not _valid_record_entry(recorded):
+    if _is_link_like(dest_skill) or not _valid_record_entry(recorded):
         return "unrecorded"
     if _tree_digest(dest_fingerprint) == recorded["tree_sha256"]:
         return "outdated"
@@ -401,6 +421,8 @@ def _refresh_record_entry(
     already matched); an entry whose digest, version and source are unchanged
     is left as it was, so ``action`` and ``recorded_at`` keep their first values.
     """
+    if _is_link_like(dest_skill):
+        return False
     dest_fingerprint = _skill_tree_fingerprint(dest_skill)
     if not dest_fingerprint or dest_fingerprint != _skill_tree_fingerprint(src_skill):
         return False
@@ -688,7 +710,10 @@ def setup_skill_profile(
                 print(f"  [{symbol}] {message}")
                 if not success:
                     all_success = False
-                    if before in refused:
+                    # Count policy refusals only; a copy that was allowed but
+                    # failed (for example rmtree on a link) is not a refusal.
+                    allowed = force or (update and before == "outdated")
+                    if before in refused and not allowed:
                         refused[before] += 1
                 elif not dry_run and record_problem is None:
                     action = {"missing": "installed", "current": "verified"}.get(
@@ -709,8 +734,9 @@ def setup_skill_profile(
                     _write_install_record(dest_dir, records)
                 except OSError as exc:
                     print(
-                        f"  [!] Install record not written ({type(exc).__name__}: {exc}); "
-                        "a later run cannot tell outdated copies here from changed ones."
+                        f"  [!] Install record not updated ({type(exc).__name__}: {exc}); "
+                        "any earlier record is unchanged, and this run's copies are "
+                        "not recorded."
                     )
                 else:
                     if verbose:
@@ -755,12 +781,13 @@ def setup_skill_profile(
             )
         else:
             print("\nStatus: PARTIAL FAILURE - Some installations failed")
-            print("Existing divergent Skill copies are reported above and are")
-            print("NOT overwritten. Use --force to deliberately replace them.")
+            if any(refused.values()):
+                print("Divergent Skill copies refused above were NOT overwritten.")
+                print("Use --force to deliberately replace them.")
             if refused["outdated"]:
                 print(
-                    f"{refused['outdated']} of them are unchanged since setup-skills "
-                    "recorded them; --update replaces only those."
+                    f"Unchanged since recorded: {refused['outdated']}; "
+                    "--update replaces only these."
                 )
             if refused["changed"] or refused["unrecorded"]:
                 print(

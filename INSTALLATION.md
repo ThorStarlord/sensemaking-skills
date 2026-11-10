@@ -113,8 +113,9 @@ sensemaking-skills setup-skills --target claude --scope user --dry-run --update
 sensemaking-skills setup-skills --target claude --scope user --update
 ```
 
-`--update` never replaces a changed or unrecorded copy; inspect those before
-using `--force`. Copies that already match get recorded on the next
+`--update` never replaces a changed or unrecorded copy, nor a Skill directory
+that is a symlink or junction; inspect those before using `--force`, which
+takes precedence when both flags are given. Copies that already match get recorded on the next
 non-dry run, so a root installed before records existed gains them for every
 current copy. The record is `setup-skills` bookkeeping only: it does not show
 what a host loaded, and `scripts/probe_skill_distribution.py --sync` does not

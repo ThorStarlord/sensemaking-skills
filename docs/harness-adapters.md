@@ -24,7 +24,8 @@ sensemaking-skills setup-skills \
   [--project-root <repo>] \
   [--skills-dir <custom-root>] \
   [--dry-run] \
-  [--force | --update]
+  [--force] \
+  [--update]
 ```
 
 The caller chooses the adapter explicitly. P10 performs **no active-harness auto-detection**.
