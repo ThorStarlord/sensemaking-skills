@@ -18,8 +18,11 @@ from typing import Any
 from urllib.parse import urlsplit
 
 from .semantic_architecture.knowledge import KnowledgeSnapshot
-from .semantic_architecture.knowledge_sources import build_knowledge_snapshot, temporary_commit_checkout
+from .semantic_architecture.knowledge_sources import (
+    build_knowledge_snapshot, temporary_commit_checkout, verified_tracked_sources,
+)
 from .semantic_architecture.knowledge_store import query_context_paths, query_knowledge, store_snapshot
+from .semantic_architecture.repository_bootstrap import orient_repository
 from .semantic_architecture.worktree_context import changed_paths_since_indexed_ref, inspect_worktree_context
 
 OPERATIONS = (
@@ -242,6 +245,53 @@ def _normalize_path(text: str) -> str:
     if value.startswith("./"):
         value = value[2:]
     return value
+
+
+def run_workspace_orient(
+    *, repo: str | Path, ref: str = "HEAD", repository: str | None = None,
+    max_files: int = 5000, sample_limit: int = 16,
+) -> dict[str, Any]:
+    """Orient a checkout from committed paths without a prepared knowledge index.
+
+    Reuse bounded source-pinned orientation, resolving Git identity and using
+    a safe detached checkout when the active workspace is dirty or off-ref.
+    """
+    if not 1 <= max_files <= 20000:
+        raise ValueError("max_files must be 1..20000")
+    if not 1 <= sample_limit <= 50:
+        raise ValueError("sample_limit must be 1..50")
+    _validate_ref_text(ref)
+    repo_dir = Path(repo).expanduser().resolve()
+    if not repo_dir.is_dir():
+        raise ValueError(f"repository directory not found: {repo_dir}")
+    root = _checkout_root(repo_dir)
+    sha = _resolve_commit(root, ref)
+    label, label_source = _repository_label(root, repository)
+    context = inspect_worktree_context(root, sha)
+
+    if context["head_matches_indexed_ref"] and context["worktree_clean"]:
+        source_root, tracked = verified_tracked_sources(root, sha)
+        payload = orient_repository(
+            source_root, tracked, repository=label, target_ref=sha,
+            max_files=max_files, sample_limit=sample_limit,
+        )
+        source_checkout = "active_checkout"
+    else:
+        with temporary_commit_checkout(root, sha) as checkout:
+            source_root, tracked = verified_tracked_sources(checkout, sha)
+            payload = orient_repository(
+                source_root, tracked, repository=label, target_ref=sha,
+                max_files=max_files, sample_limit=sample_limit,
+            )
+        source_checkout = "temporary_worktree"
+
+    payload["source_checkout"] = source_checkout
+    payload["workspace_context"] = context
+    payload["repository_identity_source"] = label_source
+    payload["repository_label_verified"] = False
+    payload["working_changes_read"] = False
+    payload["code"] = "SEMANTIC_REPOSITORY_ORIENTATION"
+    return payload
 
 
 def run_workspace_query(

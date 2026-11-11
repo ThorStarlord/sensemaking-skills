@@ -535,6 +535,19 @@ no unit or synthetic evidence tests were run.
 
 ## Current next step
 
+**2026-11-11 zero-setup first-visit source orientation (PR #813):**
+`semantic workspace-orient --json` makes the existing RSB-1 bounded
+`orient_repository` available without a manually supplied repository label,
+Git SHA or prebuilt knowledge index. It uses the protected committed-source
+inspector and a temporary committed checkout for dirty/non-HEAD work, reports
+`source_checkout`, working-overlay state and unverified label derivation,
+and leaves explicit `knowledge-orient` fail-closed defaults unchanged.
+The result is path discovery only: no architecture inference, source truth
+from uncommitted files or new ontology. Construction evidence is source/diff
+review; local unit/synthetic tests NOT_RUN under `CLAUDE.md`, independent
+agent-use benefit NOT ASSESSED. Hosted verification must be read from the
+exact candidate. Existing PATH-1 continuation and ADR authority remain current.
+
 **2026-11-10 zero-setup recall command (`semantic workspace-query`):** [PR #801](https://github.com/ThorStarlord/sensemaking-skills/pull/801) adds one command that resolves the checkout, the commit and a repository label, builds or reuses a derived index of the committed revision in a per-user cache, and runs the existing read operations (`context-for` by default; `--operation workspace-impact --ref <base>` before finishing). It removes the prepared-index precondition that made RECALL skip the query; `knowledge-query` is unchanged. Evidence is construction-level: payloads identical to the two-step path for seven operations and scratch-repository probes on one Windows host, with unit tests NOT_RUN. Whether agents consult reviewed records earlier because of it is NOT TESTED, so R6/R7 and the record-benefit question below are unchanged.
 
 **2026-11-10 separately instantiated re-entry (R6-shaped): continuity `POSITIVE`, record benefit `NOT DEMONSTRATED`:** [One run](docs/normal-use/2026-11-10-frontier-04-semantic-continuity.md) used a separate fresh-context desktop session, so R6's "independent executor unavailable" no longer holds on this host. Phase A merged install records and `--update` ([PR #798](https://github.com/ThorStarlord/sensemaking-skills/pull/798)). The second session found that work through `git log` and the PR description and extended it correctly ([PR #799](https://github.com/ThorStarlord/sensemaking-skills/pull/799)). It read the reviewed records only after its design was set, and used neither RECALL nor a Sensemaking Skill. No decision is shown to have changed because of a record, and no source-only comparison ran. Phase A chose the task, so a selection confound remains. Shared memory and app notes are cross-session channels to check on this host. A follow-up test of record value needs a fact held only in a record, or a matched source-only session; it is not an automatic next step.

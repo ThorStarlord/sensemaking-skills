@@ -187,6 +187,32 @@ implementation behavior at the tested revision; they do not establish
 independent-session cumulative value, cross-repository transfer, release
 readiness, or a benchmark advantage.
 
+## Zero-setup first-visit orientation (workspace-orient)
+
+`semantic workspace-orient --json` is the source-path first-visit command.
+It resolves the current checkout, committed revision and an **unverified**
+repository label without a preceding `git rev-parse`, prebuilt index or
+`--temporary-checkout` flag. It uses the same `orient_repository` as
+`knowledge-orient`, with the protected exact-source check and automatic
+temporary committed checkout on dirty or non-HEAD worktrees. It builds no
+SQLite index, interprets no uncommitted bytes and changes no repository
+files or Git refs.
+
+The bounded orientation result retains paths, language/manifest/document
+examples, source and test examples, truncation and source limitations.
+Additive fields identify `source_checkout`, `workspace_context`,
+`repository_identity_source`, `repository_label_verified: false`,
+`working_changes_read: false` and the orientation code. Submodule worktrees
+are not assessed; external Git filters are disabled during source-state
+inspection. Neither the path inventory nor a repository label establishes
+product architecture, semantic authority or decisions.
+
+Options: `--repo DIR` (default `.`), `--ref REV` (default `HEAD`),
+`--repository LABEL`, `--max-files N` (1..20000, default 5000),
+`--sample-limit N` (1..50, default 16) and `--json`.
+Use the existing `knowledge-orient --db` for optional indexed counts and
+`workspace-query` for reviewed claims and relationships.
+
 ## Zero-setup workspace query (workspace-query)
 
 `semantic workspace-query` answers a reviewed-knowledge query without a prior

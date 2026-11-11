@@ -348,6 +348,34 @@ def register_semantic_commands(root_cli: click.Group) -> None:
         payload["code"] = "SEMANTIC_KNOWLEDGE_QUERY"
         _emit(payload, output_json=output_json)
 
+    @semantic_group.command(name="workspace-orient")
+    @click.option("--repo", "repo_dir",
+                  type=click.Path(exists=True, file_okay=False, path_type=Path),
+                  default=Path("."), show_default=True,
+                  help="Any directory inside the Git working tree")
+    @click.option("--ref", default="HEAD", show_default=True,
+                  help="Local committed revision to orient (uncommitted bytes excluded)")
+    @click.option("--repository", "repository_label", default=None,
+                  help="Optional label; otherwise derived from origin or checkout directory")
+    @click.option("--max-files", type=click.IntRange(1, 20000), default=5000, show_default=True)
+    @click.option("--sample-limit", type=click.IntRange(1, 50), default=16, show_default=True)
+    @click.option("--json", "output_json", is_flag=True)
+    def semantic_workspace_orient(
+        repo_dir: Path, ref: str, repository_label: str | None,
+        max_files: int, sample_limit: int, output_json: bool,
+    ) -> None:
+        """Orient a Git checkout without prepared identity, clean tree or knowledge index."""
+        from .workspace_knowledge import run_workspace_orient
+
+        try:
+            payload = run_workspace_orient(
+                repo=repo_dir, ref=ref, repository=repository_label,
+                max_files=max_files, sample_limit=sample_limit,
+            )
+        except (ValueError, OSError, UnicodeError, KeyError, TypeError) as exc:
+            raise click.ClickException(str(exc)) from exc
+        _emit(payload, output_json=output_json)
+
     @semantic_group.command(name="workspace-query")
     @click.argument("paths", nargs=-1)
     @click.option("--operation", default="context-for", show_default=True,
