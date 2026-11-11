@@ -357,6 +357,48 @@ original results and ordering; no schema or cache format changes occur.
 overlays separately. Ranked lexical matching is **not semantic search** and
 does not demonstrate improved agent decision-making.
 
+## Product-level goal orientation (`product-outline`)
+
+For an engineering responsibility spanning more than one source file, retrieve
+reviewed product intent and the **directly declared** relationships between its
+goals, capabilities, opportunities and governing constraints:
+
+```bash
+sensemaking-skills semantic workspace-query --operation product-outline --json
+
+sensemaking-skills semantic knowledge-query --operation product-outline \
+  --db /outside-checkout/knowledge.sqlite --repository owner/repository \
+  --target-ref <exact-indexed-sha> --json
+```
+
+Both entrypoints use the existing exact-commit knowledge index. The
+`product_outline` response groups `goal` claims with `serving_records`
+reached by explicitly authored `serves_goal` edges and
+`governing_constraints` reached by direct `constrained_by` edges to
+invariant/constraint claims. It separately lists reviewed `non_goal` claims.
+Each visible goal/non-goal carries its statement, source reference and
+authority/epistemic labels. Each linked record carries its actual declared
+relation ID and claim kind; an opportunity is **not** a shipped capability.
+
+This is a **read-only projection**, not a planner, a derived ontology, a
+dependency inference or an assessment of which goals are achieved. Missing
+goals or missing links are `NOT_ASSESSED`; the query cannot discover all
+implicit product purposes or establish the applicability of an old decision.
+Open original evidence sources and perform warranted engineering comparison
+before acting.
+
+`--limit 1..250` bounds each category of goals, non-goals and relationship
+rows. `total_counts`, `omitted_counts`, `serving_omitted`,
+`constraint_omitted`, `truncated` and `envelope_reference_coverage`
+disclose category and top-level record omissions. The bounded top-level
+`claims`/`relations` envelope may omit records referenced in a grouped
+entry; their original source and relation identity remain in the grouped
+projection. The operation does not accept `--subject` or query-text/term
+search options. Empty results are not evidence that the actual product has
+no goals or capabilities.
+
+No new reviewed knowledge schema, cache format or authority grant is needed.
+
 ## Change granularity and shared authored-pack limitation
 
 Source change and semantic change are different questions:
