@@ -1,0 +1,68 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-11-11-query-provenance-contract-compatibility
+state: final
+created_at: "2026-11-11T22:31:48Z"
+updated_at: "2026-11-11T22:31:48Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: cfa98389d82ae4a132c9bd8ce456dda478a24bf3
+  end_ref: 20638d0bab58ad2bbaa15892878660094804f8d0
+  worktree_clean_at_end: null
+skill_identity:
+  load_mode: manual_explicit_load
+  sensemaking_source_ref: null
+goal:
+  statement: "Continue PATH-1 product construction by preserving query provenance for product-outline and question-friendly semantic retrieval."
+  source: owner_message
+  source_ref: null
+delegation:
+  granted: [read, local_write, commit, push, open_pr, merge]
+  withheld: [release, deploy, external_publication]
+continuity:
+  resumes: 2026-11-11-source-grounded-product-outline
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: Identify a warranted next producer-consumer integration gap
+    capability: using-sensemaking
+    status: completed
+    reason: "Reviewed canonical goals, Level-3 PATH-1, current CLI, query receipt validator and summarizer. Recent query modes cannot be fully represented by the durable receipt contract."
+    artifact_refs: [docs/product-strategy.md, src/sensemaking_skills/semantic_cli.py, scripts/validate-receipt.py, skills/repository-semantic-steward/references/query-receipt.md]
+    validation: []
+  - id: R-2
+    responsibility: Align optional query receipts with current retrieval operations
+    capability: ordinary_coding
+    status: completed
+    reason: "Added product-outline to the validator vocabulary, optional exact query_text with CLI-compatible option exclusions, and normalized exact-question repeated-miss grouping. Old finalized receipts remain untouched."
+    artifact_refs: [scripts/validate-receipt.py, scripts/summarize-receipts.py, skills/repository-semantic-steward/references/query-receipt.md, STATUS.md]
+    validation:
+      - command: Exact GitHub source and diff inspection against CLI and receipt consumers
+        result: PASS
+      - command: Local unit and synthetic tests under current owner construction policy
+        result: NOT_RUN
+      - command: Live installed CLI query-receipt producer-consumer exercise
+        result: NOT_RUN
+findings:
+  - id: F-1
+    statement: "query-receipt validator lacked the implemented product-outline operation and no query_text field preserved the exact ranked lexical question; summarizer could only group subject and term misses."
+    epistemic_status: OBSERVED
+    evidence_refs: [scripts/validate-receipt.py, scripts/summarize-receipts.py, src/sensemaking_skills/semantic_cli.py]
+    disposition: resolved
+  - id: F-2
+    statement: "The compatible optional receipt contract now retains these modes; an absent receipt still cannot establish that an agent did not retrieve or apply knowledge."
+    epistemic_status: DERIVED
+    evidence_refs: [skills/repository-semantic-steward/references/query-receipt.md, scripts/validate-receipt.py, scripts/summarize-receipts.py]
+    disposition: handed_off
+open_questions: []
+stop:
+  disposition: GOAL_SATISFIED
+  reason: "One bounded source-grounded query-provenance integration increment completed. Hosted CI, actual CLI invocation and independent agent-use benefit remain separately qualified."
+next:
+  warranted_responsibility: null
+  blocked_on: []
+persistence: committed
+claim_ceiling: "Source/diff review only for this construction increment; local unit/synthetic and live CLI checks NOT_RUN; hosted checks must be inspected on the exact PR head. No automatic query logging or measured agent benefit."
+action_authorized_by_receipt: false
+immutable: true

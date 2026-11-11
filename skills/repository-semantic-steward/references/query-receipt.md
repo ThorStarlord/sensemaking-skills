@@ -28,8 +28,9 @@ NO_MODEL_CHANGE   = valid, and recorded so it is visible
 ## 2. When to write it
 
 When a session receipt is available, Steward invocations that run
-`orient`, `build`, a `knowledge-query` operation, `knowledge-audit` or
-`knowledge-proposal-check` write or update **one** companion query receipt per
+`orient`, `build`, a `knowledge-query` or equivalent `workspace-query`
+operation, `knowledge-audit` or `knowledge-proposal-check` write or update
+**one** companion query receipt per
 session, beside the session receipt:
 
 ```text
@@ -99,9 +100,10 @@ index:
   uncommitted_changes_not_indexed: true | false
 queries:                                   # >=1 required in RECALL mode
   - id: QY-1
-    operation: orient | build | snapshot | search | explain | why | impact | workspace-impact | changes | contradictions | history | rules-for | term | orientation-summary | context-for | audit | proposal-check
+    operation: orient | build | snapshot | search | explain | why | impact | workspace-impact | changes | contradictions | history | rules-for | term | orientation-summary | context-for | product-outline | audit | proposal-check
     terms: ["literal phrase"]              # <=8, <=80 chars each; [] when not a search
     subject: <claim id, repository-relative path (rules-for, context-for), or term> | null
+    query_text: <exact --query-text question> | null  # optional; search only, <=300 chars, no subject/terms
     expect_kinds: [alternative, architecture_rule] # only explain/why; v1/v2 kinds
     target_ref: <40-hex> | null
     result:
@@ -142,10 +144,17 @@ Field notes:
   `PARTIAL` means some of what was needed came back, for example claims
   returned while an `--expect-kind` was NOT ASSESSED. Use `NOT_APPLICABLE` for
   `orient`, `build` and `proposal-check`, which retrieve nothing.
-- `rules-for`, `term` and `orientation-summary` are existing architecture
-  query operations. For `rules-for`, `subject` is one repository-relative file
-  path (not a glob); for `term`, it is the literal term. `snapshot` and
-  `orientation-summary` do not require a subject.
+- `rules-for`, `term`, `orientation-summary` and `product-outline` are existing
+  architecture query operations. For `rules-for`, `subject` is one repository-relative
+  file path (not a glob); for `term`, it is the literal term. `snapshot`,
+  `orientation-summary` and `product-outline` do not require a subject.
+- For opt-in `search --query-text`, record the **exact original question** in
+  optional `query_text`, with `subject: null` and `terms: []`. Do not
+  relabel query tokens as explicit `--term` values or truncate a question
+  merely to fit the smaller subject field. The validator accepts legacy
+  entries without `query_text`, and rejects combinations that the actual CLI
+  forbids. Query text is 300 characters at most and must not contain control
+  characters; it is a lexical question, not proof of semantic retrieval.
 - `context-for` takes one repository-relative file path as `subject` or 2..8
   distinct paths via repeated CLI `--path` flags (not both). For a batch,
   record one `context-for` query receipt entry **per path** using that path
@@ -173,6 +182,13 @@ Field notes:
   bounded list of claim hits. Record `hit_count: 0`, `claim_ids: []` and
   `outcome: NOT_APPLICABLE` for them. For `orientation-summary`, mark
   `truncated: true` if `lines_omitted` is positive.
+- `product-outline` is a bounded product-level knowledge query, **not** an
+  index-only summary. Record `result.claim_ids` from the returned top-level
+  `claims` and `hit_count` as their count; propagate top-level `truncated`.
+  Inspect `product_outline.omitted_counts` and `envelope_reference_coverage`:
+  visible grouped links do not mean every referenced claim was returned or
+  verified. Record a decision-relevant omission as `PARTIAL` or
+  `NOT_ASSESSED`, not a complete `HIT` or proof that a goal is achieved.
 - `expect_kinds` accepts version-1 and version-2 claim kinds for `explain` and
   `why`, with the same one-hop coverage and NOT ASSESSED limits as before.
 - `reconcile[].applied` says whether the disposition's change was written to
@@ -187,8 +203,8 @@ disposable by design. The pins (`indexed_ref`, `current_head`,
 ## 5. How misses feed RECONCILE
 
 When available, `scripts/summarize-receipts.py` lists misses recorded as
-`ADD_PROPOSED` or `DEFERRED` in their original receipts and any subject or
-term missed in **two or more sessions**. Those statuses are historical: the
+`ADD_PROPOSED` or `DEFERRED` in their original receipts and any subject, literal term or exact question
+missed in **two or more sessions**. Those statuses are historical: the
 reader does not reconcile later resolutions. Its JSON `pending_misses` field
 retains its existing name and has the same historical meaning, disclosed in
 `pending_misses_note`. During RECONCILE (`references/reconciliation.md`),
