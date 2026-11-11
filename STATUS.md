@@ -535,6 +535,17 @@ no unit or synthetic evidence tests were run.
 
 ## Current next step
 
+**2026-11-11 current-query receipt provenance compatibility:** The optional
+`semantic_query_receipt` now recognizes `product-outline` and can preserve the
+exact opt-in `search --query-text` question, distinct from literal `--term`
+and `--subject`. The existing summarizer can group repeated literal questions
+across sessions. Older receipts remain valid and unchanged; absence of a query
+receipt is still not evidence that no retrieval happened. This is a bounded
+producer/consumer contract repair, not automatic query logging, semantic
+similarity, independent agent-use proof or a new knowledge schema. Source/diff
+review is construction evidence; local unit/synthetic tests NOT_RUN; hosted
+qualification and real consumer uptake must be assessed separately.
+
 **2026-11-11 product-goal and capability outline:** `semantic
 workspace-query --operation product-outline --json` (also supported in
 explicit-index `knowledge-query`) now projects reviewed product goals,
