@@ -316,6 +316,47 @@ capability; decision benefit, independent agent uptake and semantic truth are
 not established by its presence. Use it to identify records meriting source
 inspection, not to replace that inspection.
 
+## Question-friendly lexical discovery (`--query-text`)
+
+When an agent has a question but not the exact claim ID or literal phrase, the
+existing `search` operation offers an **opt-in ranked lexical** mode in both
+the zero-setup and explicit-index entrypoints:
+
+```bash
+sensemaking-skills semantic workspace-query --operation search \
+  --query-text "Which decisions protect repository source knowledge?" --json
+
+sensemaking-skills semantic knowledge-query --operation search \
+  --db /tmp/semantic-knowledge.sqlite --repository owner/repository \
+  --target-ref <exact-commit-sha> \
+  --query-text "Which decisions protect repository source knowledge?" --json
+```
+
+This mode tokenizes Unicode letters/numbers (splitting punctuation and
+underscores), folds case, removes duplicate tokens and ignores one-character
+tokens. Input is bounded to 300 characters and 1..24 distinct words of length
+at least two. A claim is a candidate when at least one query token is a literal
+substring of its ID or statement. Results are ordered by number of distinct
+matching tokens, then their combined length, then claim ID. No embedding,
+language-model call, inferred graph edge or semantic authority is used.
+
+JSON reports `search_mode: ranked_lexical_tokens_any`,
+`search_hit_total`, `query_tokens` and bounded `match_details` with
+each returned claim's literal `matched_tokens`. The normal
+`truncated` flag applies when the result exceeds `--limit`; a missing
+or weak lexical match is **NOT ASSESSED**, not proof that relevant reviewed
+knowledge is absent. Stop words are not semantically analyzed, so a broad
+question may return noisy candidates. Check exact cited sources before
+relying on a result.
+
+`--query-text` works only with `--operation search`, and cannot be combined
+with `--subject`, repeated `--term` or multi-file path queries. Existing
+literal `--subject` search and explicit OR `--term` search preserve their
+original results and ordering; no schema or cache format changes occur.
+`workspace-query` continues to index only committed sources and marks working
+overlays separately. Ranked lexical matching is **not semantic search** and
+does not demonstrate improved agent decision-making.
+
 ## Change granularity and shared authored-pack limitation
 
 Source change and semantic change are different questions:

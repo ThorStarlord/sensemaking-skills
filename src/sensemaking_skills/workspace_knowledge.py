@@ -299,6 +299,7 @@ def run_workspace_query(
     *, repo: str | Path, ref: str, operation: str,
     paths: tuple[str, ...] = (), subject: str | None = None,
     search_terms: tuple[str, ...] = (), expected_kinds: tuple[str, ...] = (),
+    query_text: str | None = None,
     limit: int = 50, depth: int = 2, repository: str | None = None,
     index_dir: str | Path | None = None, refresh: bool = False,
 ) -> dict[str, Any]:
@@ -307,6 +308,8 @@ def run_workspace_query(
         raise ValueError(_REFUSED_OPERATIONS[operation])
     if operation not in OPERATIONS:
         raise ValueError(f"unsupported workspace query operation: {operation}")
+    if query_text is not None and (operation != "search" or paths):
+        raise ValueError("--query-text is supported only for search without positional paths")
     if operation == "context-for":
         if paths and subject is not None:
             raise ValueError("pass positional PATHS or --subject for context-for, not both")
@@ -343,7 +346,7 @@ def run_workspace_query(
                 database, repository=label, target_ref=sha, operation=operation,
                 subject=query_paths[0] if operation == "context-for" else subject,
                 limit=limit, depth=depth, search_terms=search_terms, expected_kinds=expected_kinds,
-                workspace_changed_paths=changed,
+                query_text=query_text, workspace_changed_paths=changed,
             )
     except sqlite3.Error as exc:
         raise ValueError(f"cannot read cache file {database}: {exc}; retry with --refresh") from exc

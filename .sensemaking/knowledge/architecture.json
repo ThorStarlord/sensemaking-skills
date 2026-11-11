@@ -1286,6 +1286,26 @@
         "known_limits": "Two resolvable local commits required; all source bytes are committed, the working overlay is excluded, cache data is derived/trusted as stored, and Git ancestry, semantic correctness, independent agent uptake and decision-quality benefit are not inferred.",
         "claim_ceiling": "Source/diff-reviewed implementation at the candidate revision. Local unit and synthetic tests NOT_RUN under CLAUDE construction policy; hosted CI and normal-use benefit require separate observations."
       }
+    },
+    {
+      "id": "decision:ranked-lexical-question-search",
+      "kind": "decision",
+      "statement": "Delegated design: semantic knowledge-query and workspace-query preserve legacy literal and explicit OR phrase search, and offer an opt-in --query-text mode that ranks matching reviewed claims by transparent case-folded word-substring overlap. No semantic relevance, source validity, authority or improved engineering choice is inferred from rank.",
+      "authority_kind": "delegated",
+      "authority_ref": "src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_store.py",
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:skills/repository-semantic-steward/references/recall.md"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "scope": "Opt-in lexical discovery over source-pinned reviewed knowledge at current PATH-1 authority; no new ontology, embedding layer, search service or semantic selector.",
+        "decision_changed": "A coding agent can enter a longer question, retrieve bounded ranked source-linked candidates and inspect matching tokens without first guessing exact literal phrases.",
+        "known_limits": "Matches are literal substrings of ID/statement, including incidental common words; maximum 300 characters and 24 distinct tokens; source checking is necessary and misses are NOT_ASSESSED.",
+        "claim_ceiling": "Construction source/diff review completed; local unit/synthetic tests NOT_RUN; hosted validation and independent benefit remain separate."
+      }
     }
   ],
   "relations": [
@@ -2148,6 +2168,17 @@
       "evidence_refs": [
         "file:src/sensemaking_skills/semantic_cli.py",
         "file:src/sensemaking_skills/workspace_knowledge.py"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:semantic-cli-decided-by-lexical-question-search",
+      "subject": "component:semantic-cli",
+      "predicate": "decided_by",
+      "object": "decision:ranked-lexical-question-search",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py"
       ],
       "epistemic_status": "declared"
     }

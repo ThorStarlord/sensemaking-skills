@@ -535,6 +535,24 @@ no unit or synthetic evidence tests were run.
 
 ## Current next step
 
+**2026-11-11 question-friendly reviewed knowledge retrieval:** Both
+`semantic knowledge-query` and zero-setup `semantic workspace-query` offer
+opt-in `--operation search --query-text TEXT` ranked lexical discovery.
+Word-substring matches are transparent through bounded `match_details`; the
+legacy literal `--subject` and explicit OR `--term` contracts remain intact.
+No semantic similarity or source authority is inferred from rank. This is
+source/diff-reviewed construction, with local unit/synthetic checks NOT_RUN;
+hosted checks and actual agent benefit remain separate evidence. ADR and PATH-1
+authority do not change.
+
+**PR #818 live invocation (this environment):** `ENVIRONMENT_BLOCKED`.
+The actual checkout and installed CLI were unavailable and the Git remote
+could not be reached (github.com DNS). PR #818's final-head hosted Product
+Validation, Semantic Context Re-entry and Release Candidate Distribution did
+pass, but the specified two-SHA command was **not executed** here. This is not
+a demonstrated product defect; live JSON and cache behavior remain unverified
+in this environment.
+
 **2026-11-11 `workspace-changes` live verification and agent routing repair:** the command was run through the repository's own CLI entrypoint at `origin/main` `fa0651db` (the PATH `sensemaking-skills` binary on this host predates the command and must be reinstalled from the checkout to expose it). For `--base-ref 48b7cd0 --ref fa0651db` it returned both exact revisions, lists `decision:workspace-changes-committed-revision-pair` and `rel:semantic-cli-decided-by-workspace-changes-pair` under `added`, reports zero authored-field changes to pre-existing records (the `architecture.json` diff is insertion-only), and a forced rebuild from a dirty checkout reproduced the clean result from committed bytes with `uncommitted_changes_not_indexed` set. Its headline `changed` counts (101 claims, 111 relations) include provenance-only container churn; `change_classification.counts` carries the authored-field facts. The check found that `workspace-query --operation changes` and the Steward RECONCILE guidance still prescribed the manual multi-database build; both now route to `workspace-changes`. Source/diff review is the construction evidence; local unit tests NOT_RUN; agent uptake and decision benefit NOT ASSESSED.
 
 **2026-11-11 zero-setup historical semantic comparison (`semantic workspace-changes`):**
