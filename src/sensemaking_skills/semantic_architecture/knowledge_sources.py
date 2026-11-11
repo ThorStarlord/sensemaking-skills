@@ -23,7 +23,7 @@ from .knowledge import (
 )
 from .models import ObservationKind
 from .probes import probe_python_imports
-from .worktree_context import _configured_external_filters
+from .worktree_context import _configured_external_filters, inspect_worktree_context
 
 _TAG = re.compile(r"(?:\[(policy|code|test|owner|delegated):\s*([^\]]+)\]|\[(hypothesis)\])\s*$")
 _STATUS = re.compile(r"^\*\*Status:?\*\*:?\s*(.+)$", re.IGNORECASE)
@@ -56,9 +56,13 @@ def verified_tracked_sources(repo_root: str | Path, target_ref: str) -> tuple[Pa
         raise ValueError("target_ref must be a full 40-character Git SHA")
     if Path(_git(root, "rev-parse", "--show-toplevel")).resolve() != root:
         raise ValueError("repo_root must be the exact Git checkout root")
-    if _git(root, "rev-parse", "HEAD") != target_ref:
+    # Use the same filter-safe, non-mutating source-state inspection as query
+    # context. A bare git status can invoke configured external clean/process
+    # filters while checking worktree bytes.
+    context = inspect_worktree_context(root, target_ref)
+    if not context["head_matches_indexed_ref"]:
         raise ValueError("target_ref does not equal the checked-out Git HEAD")
-    if _git(root, "status", "--porcelain", "--untracked-files=all"):
+    if not context["worktree_clean"]:
         raise ValueError("dirty or untracked worktree: source bytes cannot be pinned")
     tracked = set(_git(root, "ls-files", "-z").split("\0"))
     tracked.discard("")

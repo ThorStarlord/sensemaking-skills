@@ -20,12 +20,16 @@ It does not infer owner intent from code, infer semantic dependencies from word 
 
 ## Build and query
 
-From a CLEAN target Git checkout, store the SQLite index outside the checkout:
+From a CLEAN target Git checkout, store the SQLite index outside the checkout.
+The command verifies HEAD and refuses tracked or untracked changes itself;
+there is no need to run a separate raw `git status` precheck. Its shared
+worktree inspector disables configured external Git clean/smudge/process
+filters and the filesystem monitor while inspecting source state. It does
+not assess nested submodule worktrees (which are outside the indexed
+repository's tracked-file source scope).
 
     cd /path/to/repository
     REF="$(git rev-parse HEAD)"
-    test -z "$(git status --porcelain --untracked-files=all)"
-
     sensemaking-skills semantic knowledge-build --repo . \
       --repository "ThorStarlord/sensemaking-skills" \
       --target-ref "$REF" --db /tmp/semantic-knowledge.sqlite --json
@@ -202,8 +206,11 @@ Two main uses:
 Facts that bound its use:
 
 - Only committed bytes are indexed. A dirty checkout is indexed from a
-  temporary worktree. `workspace_context` discloses uncommitted changes that
+  temporary worktree. Both fast-path selection and exact-HEAD source checks
+  reuse filter-safe worktree inspection, without running external Git filter
+  commands for status. `workspace_context` discloses uncommitted changes that
   are not indexed; the working overlay is never indexed and never authority.
+  Submodule worktree state is not assessed.
 - The derived index lives at `<index-dir>/<clone-key>/<sha>.sqlite`. The default
   index directory is `%LOCALAPPDATA%\sensemaking-skills\index` on Windows and
   `$XDG_CACHE_HOME/sensemaking-skills/index` (else `~/.cache/sensemaking-skills/index`)
