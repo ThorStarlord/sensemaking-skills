@@ -262,6 +262,55 @@ agent judgment
 != unexplained intuition
 ```
 
+### Conditional comparison of responsibility scope
+
+Use this composition **only** when a credible narrower or broader responsibility
+could change the current outcome, a downstream consequence calls the local
+boundary into question, or a previously deferred responsibility is being
+reselected. A clear authorized local repair needs no separate scope exercise.
+
+For the **actual decision to support**:
+
+1. Name the governing product objective and present authority, then the
+   contemplated local responsibility. Distinguish its successful completion
+   from the larger product or architectural outcome it might serve.
+2. Compare only materially credible alternatives: a narrower repair,
+   cross-component contract work, architecture-level responsibility,
+   repository-level evolution, owner-reserved thesis review, or inquiry/no
+   change. These are possible *scopes*, not mandatory stages or candidates.
+3. For each material alternative, identify the decisive source or uncertainty,
+   relevant consumers/invariants, what it addresses that the local change does
+   not, opportunity/deferral cost, reversibility, and authority. Do not treat
+   uninspected downstream behavior as a proven failure.
+4. Select the **smallest scope sufficient for the warranted product outcome**,
+   not the smallest diff or the broadest imaginable redesign. Explain why a
+   more local response would be insufficient *if* broadening is selected, or
+   why no broader investigation can change this decision *now* if it is not.
+5. Name the premise, consequence, changed owner intent or new evidence that
+   would warrant reconsidering the boundary. Preserve `NO_SELECTION`,
+   `MORE_EVIDENCE_REQUIRED` and owner escalation when appropriate.
+
+For a **previously deferred or declined responsibility**, distinguish the
+earlier recorded reason/condition from the present justification. Cite the
+predecessor and say whether that condition was observed, revised under new
+delegation or product-value judgment, or remains `NOT_ASSESSED`. Reselection
+can be warranted without a new source event, but must not pretend such an event
+occurred. If only a post-work account survives, report the selection as an
+*authored rationale*, not proof of the agent's decision-time causal process.
+
+Use a compact source-linked explanation or an existing receipt/PR decision note
+when future reconstruction matters. Do not create a mandatory comparison
+artifact, numerical local/global score, hidden-reasoning trace, new runtime
+policy, or Level-3/4 escalation merely because a local task exists.
+
+```text
+local implementation passes
+!= selected responsibility scope was necessarily sufficient
+
+broader consequence considered
+!= broader responsibility warranted or authorized
+```
+
 ## 7. Currency and defeasibility
 
 Warrant is relative to **current** canonical evidence/state.
