@@ -535,6 +535,24 @@ no unit or synthetic evidence tests were run.
 
 ## Current next step
 
+**2026-11-11 question-friendly reviewed knowledge retrieval:** Both
+`semantic knowledge-query` and zero-setup `semantic workspace-query` offer
+opt-in `--operation search --query-text TEXT` ranked lexical discovery.
+Word-substring matches are transparent through bounded `match_details`; the
+legacy literal `--subject` and explicit OR `--term` contracts remain intact.
+No semantic similarity or source authority is inferred from rank. This is
+source/diff-reviewed construction, with local unit/synthetic checks NOT_RUN;
+hosted checks and actual agent benefit remain separate evidence. ADR and PATH-1
+authority do not change.
+
+**PR #818 live invocation (this environment):** `ENVIRONMENT_BLOCKED`.
+The actual checkout and installed CLI were unavailable and the Git remote
+could not be reached (github.com DNS). PR #818's final-head hosted Product
+Validation, Semantic Context Re-entry and Release Candidate Distribution did
+pass, but the specified two-SHA command was **not executed** here. This is not
+a demonstrated product defect; live JSON and cache behavior remain unverified
+in this environment.
+
 **2026-11-11 zero-setup historical semantic comparison (`semantic workspace-changes`):**
 A dedicated two-commit command resolves `--base-ref` and `--ref`, builds or
 reuses the existing protected per-commit cached knowledge indexes, and returns
