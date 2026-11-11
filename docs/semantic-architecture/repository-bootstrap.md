@@ -36,9 +36,27 @@ inherited. Whether ontology-first entry improves decisions is not yet observed.
 
 ## First-visit contract — RSB-1
 
-On a **clean checkout**, pin the full Git HEAD. From a dirty checkout, add
-`--temporary-checkout` to the command below, which reads the committed HEAD from
-a temporary worktree. Then run:
+For an installed CLI, no prebuilt index, repository label or Git SHA is needed:
+
+```bash
+sensemaking-skills semantic workspace-orient --json
+```
+
+It resolves the checkout root and committed HEAD, derives an **unverified**
+repository label from `origin` or the local directory, and returns the same
+bounded tracked-path orientation as `knowledge-orient`. When the active
+checkout is dirty or `--ref` selects a different local commit, it reads a
+safe temporary committed checkout, leaving working files untouched.
+`source_checkout`, `workspace_context` and
+`working_changes_read: false` disclose what was actually inspected.
+It builds **no SQLite index**, reads no document meaning and grants no
+architectural or action authority. Optional flags: `--repo DIR`, `--ref REV`,
+`--repository LABEL`, `--max-files N` and `--sample-limit N`.
+
+The explicit-identity `knowledge-orient` is still available when an existing
+knowledge index or a deliberately supplied repository label is needed. On a
+**clean checkout**, pin the full Git HEAD; from a dirty checkout add
+`--temporary-checkout` to the original command below. Then run:
 
 ```bash
 REF="$(git rev-parse HEAD)"
