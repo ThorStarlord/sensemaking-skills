@@ -14,7 +14,7 @@ from pathlib import Path
 from urllib.parse import quote
 
 from .knowledge import KnowledgeSnapshot, fingerprint, record_dict, validate_snapshot, SCHEMA_VERSION
-from .knowledge_architecture import context_for, is_repository_file_path, orientation_summary, rules_for, term
+from .knowledge_architecture import context_for, is_repository_file_path, orientation_summary, product_outline, rules_for, term
 from .knowledge_retrieval import (
     assess_current_authored_record, bounded_kind_coverage, classify_indexed_changes,
     context_workspace_overlap, search_matches, validate_retrieval_options,
@@ -179,7 +179,7 @@ def query_knowledge(
     if not 1 <= limit <= 250 or not 0 <= depth <= 4:
         raise ValueError("query limit must be 1..250 and depth 0..4")
     valid = {"search", "explain", "impact", "why", "contradictions", "history", "changes", "snapshot",
-             "workspace-impact", "rules-for", "term", "orientation-summary", "context-for"}
+             "workspace-impact", "rules-for", "term", "orientation-summary", "product-outline", "context-for"}
     if operation not in valid:
         raise ValueError(f"unsupported semantic knowledge query: {operation}")
     if operation in {"explain", "impact", "why", "history"} and not subject:
@@ -196,6 +196,8 @@ def query_knowledge(
                          "(no globs, absolute paths, traversal or trailing slash)")
     if operation == "term" and not subject:
         raise ValueError("term requires --subject <term>")
+    if operation == "product-outline" and subject is not None:
+        raise ValueError("product-outline lists reviewed goals and does not accept --subject")
     if operation == "changes" and not base_ref:
         raise ValueError("changes requires explicit base_ref")
     if base_db_path is not None and operation != "changes":
@@ -441,6 +443,25 @@ def query_knowledge(
             extra_truncated = extra["term"]["truncated"]
         elif operation == "orientation-summary":
             extra["orientation"] = orientation_summary(claims, relations)
+        elif operation == "product-outline":
+            extra["product_outline"], selected_ids, relation_ids = product_outline(
+                claims, relations, limit=limit,
+            )
+            found_claims = [claims[cid] for cid in selected_ids]
+            related = set(relation_ids)
+            found_relations = [r for r in relations if r["id"] in related]
+            claim_omitted = max(0, len(found_claims) - limit)
+            relation_omitted = max(0, len(found_relations) - limit)
+            extra["product_outline"]["envelope_reference_coverage"] = {
+                "selected_claim_total": len(found_claims),
+                "returned_claim_total": min(len(found_claims), limit),
+                "omitted_claim_total": claim_omitted,
+                "selected_relation_total": len(found_relations),
+                "returned_relation_total": min(len(found_relations), limit),
+                "omitted_relation_total": relation_omitted,
+                "note": "Outline references may not appear in the bounded top-level records; consult original sources.",
+            }
+            extra_truncated = extra["product_outline"]["truncated"] or bool(claim_omitted or relation_omitted)
 
         if expected_kinds:
             extra["bounded_coverage"] = bounded_kind_coverage(

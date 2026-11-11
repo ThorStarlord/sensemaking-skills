@@ -13,7 +13,7 @@ from typing import Any, Iterable, Mapping
 from .knowledge import _valid_repo_path, is_path_scope
 from .knowledge_sources import _local_evidence_path
 
-OPERATIONS = frozenset({"rules-for", "term", "orientation-summary", "context-for"})
+OPERATIONS = frozenset({"rules-for", "term", "orientation-summary", "product-outline", "context-for"})
 NOT_ASSESSED_NOTE = (
     "NOT ASSESSED: no declared component covers this path. Absence here is not evidence "
     "that no rule applies; inspect the code and governing documents before editing."
@@ -652,6 +652,105 @@ def term(claims: Mapping[str, dict], relations: Iterable[dict], *, name: str, li
         "note": None if matches else "NOT ASSESSED: no reviewed definition matches this term.",
         "truncated": any(len(items) > limit for items in (matches, synonyms, distinct)),
     }
+
+
+def product_outline(
+    claims: Mapping[str, dict], relations: Iterable[dict], *, limit: int,
+) -> tuple[dict, list[str], list[str]]:
+    """Project explicit reviewed product goals, non-goals and declared direct links.
+
+    A recorded serves_goal edge is a documentary relationship, not proof of
+    implementation, outcome or the adequacy of the modeled product. Missing
+    edges and goals remain NOT ASSESSED.
+    """
+    goal_ids = sorted(cid for cid, claim in claims.items() if claim["kind"] == "goal")
+    non_goal_ids = sorted(cid for cid, claim in claims.items() if claim["kind"] == "non_goal")
+    visible_goals = goal_ids[:limit]
+    visible_non_goals = non_goal_ids[:limit]
+    goal_set = set(goal_ids)
+    visible_goal_set = set(visible_goals)
+
+    edges = tuple(relations)
+    serving = sorted(
+        (r for r in edges if r["predicate"] == "serves_goal"
+         and r["object"] in goal_set and r["subject"] in claims),
+        key=lambda r: (r["object"], r["subject"], r["id"]),
+    )
+    constrained = sorted(
+        (r for r in edges if r["predicate"] == "constrained_by"
+         and r["subject"] in goal_set and r["object"] in claims
+         and claims[r["object"]]["kind"] in {"constraint", "invariant"}),
+        key=lambda r: (r["subject"], r["object"], r["id"]),
+    )
+    served_visible = [r for r in serving if r["object"] in visible_goal_set][:limit]
+    constrained_visible = [r for r in constrained if r["subject"] in visible_goal_set][:limit]
+
+    def record(cid: str) -> dict:
+        claim = claims[cid]
+        return {
+            "claim_id": cid, "kind": claim["kind"], "statement": claim["statement"],
+            "epistemic_status": claim["epistemic_status"],
+            "authority_kind": claim["authority_kind"], "source_ref": claim["source_ref"],
+        }
+
+    def link(r: dict, other: str) -> dict:
+        claim = claims[other]
+        return {
+            "claim_id": other, "kind": claim["kind"], "relation_id": r["id"],
+            "relation_epistemic_status": r["epistemic_status"],
+        }
+
+    goals = []
+    for cid in visible_goals:
+        linked = [link(r, r["subject"]) for r in served_visible if r["object"] == cid]
+        bounds = [link(r, r["object"]) for r in constrained_visible if r["subject"] == cid]
+        total_linked = sum(r["object"] == cid for r in serving)
+        total_bounds = sum(r["subject"] == cid for r in constrained)
+        goals.append({
+            **record(cid),
+            "serving_records": linked, "serving_total": total_linked,
+            "serving_omitted": total_linked - len(linked),
+            "governing_constraints": bounds, "constraint_total": total_bounds,
+            "constraint_omitted": total_bounds - len(bounds),
+            "serving_link_not_assessed": total_linked == 0,
+        })
+
+    omitted = {
+        "goals": len(goal_ids) - len(visible_goals),
+        "non_goals": len(non_goal_ids) - len(visible_non_goals),
+        "serves_goal_edges": len(serving) - len(served_visible),
+        "goal_constraint_edges": len(constrained) - len(constrained_visible),
+    }
+    selected_claim_ids = list(dict.fromkeys([
+        *visible_goals, *visible_non_goals,
+        *(r["subject"] for r in served_visible),
+        *(r["object"] for r in constrained_visible),
+    ]))
+    selected_relation_ids = [
+        *(r["id"] for r in served_visible),
+        *(r["id"] for r in constrained_visible),
+    ]
+    result = {
+        "goals": goals, "non_goals": [record(cid) for cid in visible_non_goals],
+        "total_counts": {
+            "goals": len(goal_ids), "non_goals": len(non_goal_ids),
+            "serves_goal_edges": len(serving), "goal_constraint_edges": len(constrained),
+        },
+        "omitted_counts": omitted,
+        "truncated": any(omitted.values()),
+        "coverage_complete": False,
+        "explicit_limits": [
+            "Only exact reviewed goal and non-goal claims, direct serves_goal edges and "
+            "goal constrained_by invariant/constraint edges are included.",
+            "A serving record can be a capability or opportunity, but a declared edge "
+            "does not prove implementation, value, applicability or priority.",
+            "Unlinked goals, absent goals and unrecorded relationships are NOT ASSESSED, "
+            "never evidence of no need, no support or no product intent.",
+            "Independent per-category and global record limits can omit references; "
+            "inspect original source evidence before choosing engineering work.",
+        ],
+    }
+    return result, selected_claim_ids, selected_relation_ids
 
 
 def orientation_summary(claims: Mapping[str, dict], relations: Iterable[dict], *, max_lines: int = 200) -> dict:
