@@ -30,8 +30,9 @@ OPERATIONS = (
     "contradictions", "snapshot", "workspace-impact", "changes", "history",
 )
 _REFUSED_OPERATIONS = {
-    "changes": "changes needs several indexed revisions in one database; run knowledge-build for each "
-               "revision with an explicit --db, then knowledge-query with that --db",
+    "changes": "changes compares two committed revisions; run 'semantic workspace-changes --base-ref REV "
+               "--ref REV' (no prepared database), or run knowledge-build for each revision with an explicit "
+               "--db, then knowledge-query with that --db",
     "history": "history needs several indexed revisions in one database; run knowledge-build for each "
                "revision with an explicit --db, then knowledge-query with that --db",
 }

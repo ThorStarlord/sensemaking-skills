@@ -256,9 +256,10 @@ Facts that bound its use:
   label is not a verified identity; `--repository` sets it explicitly.
 - Supported operations: `context-for`, `rules-for`, `search`, `explain`, `why`,
   `impact`, `term`, `orientation-summary`, `contradictions`, `snapshot` and
-  `workspace-impact`. `changes` and `history` are refused, because they need
-  several indexed revisions in one database; use `knowledge-build` and
-  `knowledge-query` with an explicit `--db` for those.
+  `workspace-impact`. `changes` is refused: for a two-revision comparison use
+  `semantic workspace-changes --base-ref REV --ref REV` (see below). `history`
+  is refused, because it needs several indexed revisions in one database; use
+  `knowledge-build` and `knowledge-query` with an explicit `--db` for it.
 - Options: `--ref REV` (rejected when it starts with `-` or contains whitespace or
   control characters), `--repository LABEL`, `--index-dir DIR` (must lie outside
   the checkout), `--refresh` (delete this commit's cache file and rebuild it) and
