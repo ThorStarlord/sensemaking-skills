@@ -165,6 +165,7 @@ def query_knowledge(
     base_ref: str | None = None, base_db_path: str | Path | None = None,
     limit: int = 50, depth: int = 2,
     search_terms: tuple[str, ...] = (), expected_kinds: tuple[str, ...] = (),
+    query_text: str | None = None,
     workspace_changed_paths: frozenset[str] | None = None,
 ) -> dict:
     """Retrieve exact, explicitly declared links; never infer semantic closure.
@@ -205,7 +206,7 @@ def query_knowledge(
         raise ValueError("workspace changed paths are supported only for workspace-impact or context-for")
     validate_retrieval_options(
         operation=operation, subject=subject, search_terms=search_terms,
-        expected_kinds=expected_kinds,
+        expected_kinds=expected_kinds, query_text=query_text,
     )
     conn = _read_only(db_path)
     try:
@@ -223,6 +224,7 @@ def query_knowledge(
         elif operation == "search":
             found_claims, search_metadata = search_matches(
                 claims, subject=subject, search_terms=search_terms,
+                query_text=query_text, limit=limit,
             )
             extra.update(search_metadata)
         elif operation in {"explain", "why"}:

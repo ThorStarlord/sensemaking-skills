@@ -1,6 +1,7 @@
 """Deterministic lookup helpers; neither search nor coverage proves semantic truth."""
 from __future__ import annotations
 
+import re
 from collections.abc import Mapping
 
 from .knowledge import (
@@ -9,11 +10,31 @@ from .knowledge import (
 )
 
 
+_QUESTION_WORD = re.compile(r"[^\W_]+", re.UNICODE)
+
+
+def _query_tokens(text: str) -> tuple[str, ...]:
+    """Case-folded distinct words for lexical discovery, not semantic analysis."""
+    return tuple(dict.fromkeys(
+        word for word in _QUESTION_WORD.findall(text.casefold()) if len(word) >= 2
+    ))
+
+
 def validate_retrieval_options(
     *, operation: str, subject: str | None,
     search_terms: tuple[str, ...], expected_kinds: tuple[str, ...],
+    query_text: str | None = None,
 ) -> None:
     """Reject misleading or ambiguous targeted-query option combinations."""
+    if query_text is not None:
+        if operation != "search":
+            raise ValueError("query text is supported only for search")
+        if subject is not None or search_terms:
+            raise ValueError("query text cannot be combined with subject or --term")
+        if (not isinstance(query_text, str) or len(query_text) > 300
+                or any(ord(char) < 32 or ord(char) == 127 for char in query_text)
+                or not 1 <= len(_query_tokens(query_text)) <= 24):
+            raise ValueError("query text must contain 1..24 distinct words (length 2+) within 300 characters")
     if search_terms:
         if operation != "search":
             raise ValueError("search terms are supported only for search")
@@ -33,13 +54,43 @@ def validate_retrieval_options(
 
 def search_matches(
     claims: Mapping[str, dict], *, subject: str | None,
-    search_terms: tuple[str, ...] = (),
+    search_terms: tuple[str, ...] = (), query_text: str | None = None,
+    limit: int = 50,
 ) -> tuple[list[dict], dict]:
-    """Case-insensitive literal substring matching, with explicit OR expansion."""
+    """Literal search, explicit OR phrases, or opt-in ranked lexical question tokens."""
     validate_retrieval_options(
         operation="search", subject=subject, search_terms=search_terms,
-        expected_kinds=(),
+        expected_kinds=(), query_text=query_text,
     )
+    if query_text is not None:
+        tokens = _query_tokens(query_text)
+        ranked: list[tuple[int, int, str, dict, tuple[str, ...]]] = []
+        for claim in claims.values():
+            id_text = claim["id"].casefold()
+            statement = claim["statement"].casefold()
+            matched = tuple(word for word in tokens if word in id_text or word in statement)
+            if matched:
+                ranked.append((
+                    -len(matched), -sum(len(word) for word in matched),
+                    claim["id"], claim, matched,
+                ))
+        ranked.sort(key=lambda item: (item[0], item[1], item[2]))
+        found = [item[3] for item in ranked]
+        return found, {
+            "search_mode": "ranked_lexical_tokens_any",
+            "search_hit_total": len(found),
+            "query_tokens": list(tokens),
+            "match_details": [
+                {"claim_id": item[2], "matched_tokens": list(item[4])}
+                for item in ranked[:limit]
+            ],
+            "match_details_truncated": len(ranked) > limit,
+            "ranking_limit": (
+                "Ranked by number and total length of matching distinct literal "
+                "word substrings, then claim ID; matches are discovery candidates, "
+                "not semantic similarity, verified applicability or authority."
+            ),
+        }
     if not search_terms:
         needle = (subject or "").casefold()
         found = [c for c in claims.values()
