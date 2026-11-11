@@ -65,6 +65,11 @@ def _miss_keys(query: dict | None) -> list[str]:
     for term in query.get("terms") or []:
         if isinstance(term, str) and term.strip():
             keys.append(f"term:{term.strip().lower()}")
+    question = query.get("query_text")
+    if isinstance(question, str) and question.strip():
+        # A repeated question is a literal historical observation, not a
+        # semantic-similarity or inferred-relevance judgment.
+        keys.append(f"question:{' '.join(question.split()).casefold()}")
     return keys
 
 
@@ -262,7 +267,7 @@ def _print_text(summary: dict[str, Any]) -> None:
     for m in summary["pending_misses"]:
         ref = f" proposal={m['proposal_ref']}" if m["proposal_ref"] else ""
         lines.append(f"  {m['ref']} {m['follow_up']}: {m['needed_for']}{ref}")
-    lines.append(f"REPEATED MISSES (same subject/term in 2+ sessions): {len(summary['repeated_misses'])}")
+    lines.append(f"REPEATED MISSES (same subject/term/question in 2+ sessions): {len(summary['repeated_misses'])}")
     lines.extend(f"  {m['key']}: {', '.join(m['sessions'])}" for m in summary["repeated_misses"])
     lines.append(f"NOT DURABLE (declared non-durable; not confirmed committed in HEAD): {len(summary['not_durable'])}")
     lines.extend(f"  {n['receipt']} persistence={n['persistence']}" for n in summary["not_durable"])
