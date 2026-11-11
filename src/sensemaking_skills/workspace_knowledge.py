@@ -171,11 +171,10 @@ def _ensure_directory(path: Path) -> None:
 
 
 def _snapshot_for(root: Path, sha: str, label: str) -> tuple[KnowledgeSnapshot, str]:
-    head = _git_text(root, "rev-parse", "HEAD", message="cannot read the checkout HEAD")
-    status = _git(root, "status", "--porcelain", "--untracked-files=all")
-    if status.returncode:
-        raise ValueError("cannot inspect worktree status")
-    if head == sha and not status.stdout:
+    # Preserve the fast clean-HEAD path without running configured Git
+    # clean/process filters during the dirtiness decision.
+    context = inspect_worktree_context(root, sha)
+    if context["head_matches_indexed_ref"] and context["worktree_clean"]:
         return build_knowledge_snapshot(root, repository=label, target_ref=sha), "active_checkout"
     with temporary_commit_checkout(root, sha) as checkout:
         snapshot = build_knowledge_snapshot(checkout, repository=label, target_ref=sha)
