@@ -77,8 +77,13 @@ when topology itself is decision-relevant.
 
 ## `semantic`
 
-`catalog`, `conformance`, `probe`, `map-build`, `state-append`, `state-show`.
-Never decides semantic truth or Skill quality.
+`catalog`, `conformance`, `probe`, `map-build`, `state-append`, `state-show`;
+`workspace-orient` (source-pinned path inventory), `workspace-query`
+(one-revision knowledge retrieval), and `workspace-changes --base-ref REV`
+(two-commit semantic delta without manual index preparation).
+See `docs/semantic-architecture/persistent-knowledge-cli.md` for exact scope,
+cache, source-identity and evidence limits. Never decides semantic truth,
+Git ancestry, engineering priority or Skill quality.
 
 ## `release`
 

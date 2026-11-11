@@ -420,6 +420,39 @@ def register_semantic_commands(root_cli: click.Group) -> None:
             raise click.ClickException(str(exc)) from exc
         _emit(payload, output_json=output_json)
 
+
+    @semantic_group.command(name="workspace-changes")
+    @click.option("--base-ref", required=True,
+                  help="Local committed revision to compare with --ref (required)")
+    @click.option("--ref", default="HEAD", show_default=True,
+                  help="Local committed revision being inspected")
+    @click.option("--repo", "repo_dir", type=click.Path(exists=True, file_okay=False, path_type=Path),
+                  default=Path("."), show_default=True, help="Any directory inside the Git worktree")
+    @click.option("--repository", "repository_label", default=None,
+                  help="Optional label; otherwise derived from origin or checkout directory")
+    @click.option("--index-dir", "index_dir", type=click.Path(path_type=Path), default=None,
+                  help="Derived cache directory outside checkout (default: per-user cache)")
+    @click.option("--refresh", is_flag=True, help="Rebuild both committed revision caches")
+    @click.option("--limit", type=click.IntRange(1, 250), default=50)
+    @click.option("--json", "output_json", is_flag=True)
+    def semantic_workspace_changes(
+        base_ref: str, ref: str, repo_dir: Path, repository_label: str | None,
+        index_dir: Path | None, refresh: bool, limit: int, output_json: bool,
+    ) -> None:
+        """Compare reviewed semantic knowledge at two commits without preparing a database."""
+        from .workspace_knowledge import run_workspace_changes
+
+        try:
+            payload = run_workspace_changes(
+                repo=repo_dir, base_ref=base_ref, ref=ref,
+                repository=repository_label, index_dir=index_dir,
+                refresh=refresh, limit=limit,
+            )
+        except (ValueError, OSError, UnicodeError) as exc:
+            raise click.ClickException(str(exc)) from exc
+        _emit(payload, output_json=output_json)
+
+
     @semantic_group.command(name="knowledge-view-export")
     @click.option("--db", "db_path", required=True, type=click.Path(exists=True, dir_okay=False, path_type=Path))
     @click.option("--repository", "repository_id", required=True)
