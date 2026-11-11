@@ -280,6 +280,8 @@ def register_semantic_commands(root_cli: click.Group) -> None:
                   help="Optional current Git worktree; does not index uncommitted source")
     @click.option("--term", "search_terms", multiple=True,
                   help="Repeat explicit literal OR phrase (search operation only)")
+    @click.option("--query-text", default=None,
+                  help="Opt-in ranked lexical word overlap (search only; no semantic inference)")
     @click.option("--expect-kind", "expected_kinds", multiple=True,
                   help="Repeat v1/v2 claim kinds to assess in the explicit one-hop explain/why neighborhood")
     @click.option("--limit", type=click.IntRange(1, 250), default=50)
@@ -289,12 +291,14 @@ def register_semantic_commands(root_cli: click.Group) -> None:
         db_path: Path, repository_id: str, target_ref: str, operation: str,
         subject: str | None, path_subjects: tuple[str, ...],
         base_ref: str | None, repo_root: Path | None,
-        search_terms: tuple[str, ...], expected_kinds: tuple[str, ...],
+        search_terms: tuple[str, ...], query_text: str | None, expected_kinds: tuple[str, ...],
         limit: int, depth: int, output_json: bool,
     ) -> None:
         """Read committed semantic records; optionally report active worktree state."""
         try:
             if path_subjects:
+                if query_text is not None:
+                    raise ValueError("--query-text cannot be used with multi-path context")
                 if operation != "context-for":
                     raise ValueError("--path is supported only for context-for")
                 if subject is not None:
@@ -327,7 +331,7 @@ def register_semantic_commands(root_cli: click.Group) -> None:
                     operation=operation, subject=subject, base_ref=base_ref,
                     limit=limit, depth=depth,
                     search_terms=search_terms, expected_kinds=expected_kinds,
-                    workspace_changed_paths=changed_paths,
+                    query_text=query_text, workspace_changed_paths=changed_paths,
                 )
             if repo_root is not None:
                 payload["workspace_context"] = inspect_worktree_context(repo_root, target_ref)
@@ -384,6 +388,8 @@ def register_semantic_commands(root_cli: click.Group) -> None:
                                      "changes", "history"]))
     @click.option("--subject", default=None, help="One repository-relative file path or the operation's subject")
     @click.option("--term", "search_terms", multiple=True, help="Repeat explicit literal OR phrase (search operation only)")
+    @click.option("--query-text", default=None,
+                  help="Opt-in ranked lexical word overlap (search only; no semantic inference)")
     @click.option("--expect-kind", "expected_kinds", multiple=True,
                   help="Repeat claim kinds to assess in the explicit one-hop explain/why neighborhood")
     @click.option("--limit", type=click.IntRange(1, 250), default=50)
@@ -399,7 +405,7 @@ def register_semantic_commands(root_cli: click.Group) -> None:
     @click.option("--json", "output_json", is_flag=True)
     def semantic_workspace_query(
         paths: tuple[str, ...], operation: str, subject: str | None, search_terms: tuple[str, ...],
-        expected_kinds: tuple[str, ...], limit: int, depth: int, repo_dir: Path, ref: str,
+        query_text: str | None, expected_kinds: tuple[str, ...], limit: int, depth: int, repo_dir: Path, ref: str,
         repository_label: str | None, index_dir: Path | None, refresh: bool, output_json: bool,
     ) -> None:
         """Query committed reviewed knowledge with no prior build or identity arguments.
@@ -413,7 +419,8 @@ def register_semantic_commands(root_cli: click.Group) -> None:
         try:
             payload = run_workspace_query(
                 repo=repo_dir, ref=ref, operation=operation, paths=paths, subject=subject,
-                search_terms=search_terms, expected_kinds=expected_kinds, limit=limit, depth=depth,
+                search_terms=search_terms, expected_kinds=expected_kinds,
+                query_text=query_text, limit=limit, depth=depth,
                 repository=repository_label, index_dir=index_dir, refresh=refresh,
             )
         except (ValueError, OSError, UnicodeError) as exc:

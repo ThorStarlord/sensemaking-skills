@@ -81,6 +81,9 @@ when topology itself is decision-relevant.
 `workspace-orient` (source-pinned path inventory), `workspace-query`
 (one-revision knowledge retrieval), and `workspace-changes --base-ref REV`
 (two-commit semantic delta without manual index preparation).
+For `knowledge-query` and `workspace-query`, `--operation search --query-text TEXT`
+provides opt-in ranked lexical question matching; it never infers semantic
+relevance. Existing `--subject` literal and `--term` OR search are unchanged.
 See `docs/semantic-architecture/persistent-knowledge-cli.md` for exact scope,
 cache, source-identity and evidence limits. Never decides semantic truth,
 Git ancestry, engineering priority or Skill quality.
