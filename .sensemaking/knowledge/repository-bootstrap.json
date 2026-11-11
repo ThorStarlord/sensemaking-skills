@@ -58,6 +58,22 @@
       "attributes": {
         "scope": "Current candidate construction policy, not a new Level-4 thesis"
       }
+    },
+    {
+      "id": "decision:zero-setup-workspace-orientation",
+      "kind": "decision",
+      "authority_kind": "delegated",
+      "authority_ref": "docs/semantic-architecture/repository-bootstrap.md",
+      "statement": "A separate workspace-orient command resolves local checkout, commit and an unverified repository label, and reads clean committed source automatically when the active checkout is dirty or at another revision. The explicit knowledge-orient default remains fail-closed.",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/repository-bootstrap.md",
+        "file:src/sensemaking_skills/workspace_knowledge.py",
+        "file:src/sensemaking_skills/semantic_cli.py"
+      ],
+      "attributes": {
+        "scope": "Delegated first-visit usability decision; the earlier rejection of implicit fallback remains valid for four explicit-identity commands.",
+        "claim_ceiling": "Source implementation and integration only; real fresh-agent decision benefit not yet established."
+      }
     }
   ],
   "relations": [
@@ -131,6 +147,42 @@
       ],
       "attributes": {
         "scope": "Compatible with owner-selected strategy; not new thesis authority"
+      }
+    },
+    {
+      "id": "rel:bootstrap-zero-setup-decision",
+      "subject": "cap:repository-orientation",
+      "predicate": "decided_by",
+      "object": "decision:zero-setup-workspace-orientation",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/repository-bootstrap.md"
+      ],
+      "attributes": {
+        "scope": "Source-grounded first-visit convenience within the existing RSB-1 capability"
+      }
+    },
+    {
+      "id": "rel:bootstrap-zero-setup-source-boundary",
+      "subject": "decision:zero-setup-workspace-orientation",
+      "predicate": "constrained_by",
+      "object": "inv:index-snapshot-vs-working-overlay",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/workspace_knowledge.py"
+      ],
+      "attributes": {
+        "scope": "Only committed checkout bytes are oriented; dirty overlays remain unindexed"
+      }
+    },
+    {
+      "id": "rel:bootstrap-zero-setup-explicit-command-boundary",
+      "subject": "decision:zero-setup-workspace-orientation",
+      "predicate": "references",
+      "object": "alternative:automatic-temporary-checkout-fallback",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ],
+      "attributes": {
+        "scope": "The prior rejection covers automatic fallback inside explicit-identity commands, not a separate workspace-orient entrypoint"
       }
     }
   ]
