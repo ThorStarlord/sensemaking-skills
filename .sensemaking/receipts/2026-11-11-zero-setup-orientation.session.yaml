@@ -1,13 +1,13 @@
 artifact_id: sensemaking_session_receipt
 schema_version: 1
 session_ref: 2026-11-11-zero-setup-orientation
-state: in_progress
+state: final
 created_at: "2026-11-11T03:36:41Z"
-updated_at: "2026-11-11T03:36:41Z"
+updated_at: "2026-11-11T03:41:04Z"
 target_repository: ThorStarlord/sensemaking-skills
 source_identity:
   start_ref: 1e198d6f8d0bf6769e220b7028ab7009debc012b
-  end_ref: null
+  end_ref: d47ebe0ac5d8482c0b2db416f81e57b29bb223ee
   worktree_clean_at_end: null
 skill_identity:
   load_mode: manual_explicit_load
@@ -28,30 +28,39 @@ responsibilities:
     responsibility: Reconstruct current product boundary and select one warranted product improvement
     capability: using-sensemaking
     status: completed
-    reason: "First-visit orientation exists but needs explicit identity, SHA and dirty-checkout flag. Selected a zero-setup orientation wrapper for direct retained usability; no new ontology or architecture parser."
+    reason: "First-visit orientation exists but needs explicit identity, SHA and dirty-checkout flag. Selected a separate zero-setup wrapper, not a new ontology or parser. Prior rejection of implicit fallback still governs explicit-identity commands."
     artifact_refs: [STATUS.md, docs/product-strategy.md, docs/semantic-architecture/repository-bootstrap.md, src/sensemaking_skills/semantic_architecture/repository_bootstrap.py]
     validation: []
   - id: R-2
     responsibility: Make source-pinned first-visit orientation callable without prepared identity or index
     capability: ordinary_coding
-    status: in_progress
-    reason: "Reuse proven orient_repository and protected exact-revision source selection; preserve source-only evidence, no execution authority, and dirty-overlay disclosure."
-    artifact_refs: [src/sensemaking_skills/workspace_knowledge.py, src/sensemaking_skills/semantic_cli.py]
-    validation: []
+    status: completed
+    reason: "Added workspace-orient using bounded orient_repository and filter-safe committed checkout; updated Steward entry, docs, STATUS and scoped reviewed decision. Source and diff reviewed on PR #813; hosted CI separate."
+    artifact_refs: [src/sensemaking_skills/workspace_knowledge.py, src/sensemaking_skills/semantic_cli.py, docs/semantic-architecture/repository-bootstrap.md, .sensemaking/knowledge/repository-bootstrap.json]
+    validation:
+      - command: GitHub exact-commit source and diff inspection
+        result: PASS
+      - command: Local unit and synthetic tests under construction policy
+        result: NOT_RUN
 findings:
   - id: F-1
-    statement: "knowledge-orient offers bounded source-path orientation, but requires explicit repository identity, exact Git SHA, and a flag when active checkout is dirty; workspace-query's model summary does not replace it."
+    statement: "First-visit path orientation was accessible only with explicit checkout identity and clean-ref management. The new separate command resolves those values and discloses the working overlay; existing explicit command behavior is preserved."
+    epistemic_status: DERIVED
+    evidence_refs: [src/sensemaking_skills/workspace_knowledge.py, src/sensemaking_skills/semantic_cli.py, docs/semantic-architecture/repository-bootstrap.md]
+    disposition: resolved
+  - id: F-2
+    statement: "The prior rejected automatic fallback covers explicit-identity commands. The new separate workspace-orient command deliberately opts into committed checkout selection and records the distinction without revising the older decision."
     epistemic_status: OBSERVED
-    evidence_refs: [src/sensemaking_skills/semantic_cli.py, src/sensemaking_skills/workspace_knowledge.py, src/sensemaking_skills/semantic_architecture/repository_bootstrap.py]
-    disposition: open
+    evidence_refs: [.sensemaking/knowledge/repository-bootstrap.json, .sensemaking/knowledge/stewardship.json, docs/semantic-architecture/persistent-knowledge-cli.md]
+    disposition: resolved
 open_questions: []
 stop:
-  disposition: IN_PROGRESS
-  reason: "Selected zero-setup read-only orientation capability; implementation and source review pending."
+  disposition: GOAL_SATISFIED
+  reason: "One retained first-visit capability completed with source/diff and reviewed-knowledge reconciliation. PR #813 merge and hosted checks remain independent observations outside this final receipt."
 next:
   warranted_responsibility: null
   blocked_on: []
-persistence: pending
-claim_ceiling: "Existing source and CLI friction observed; no future-agent usability benefit or tested live command yet. Unit and synthetic tests are NOT_RUN under construction policy."
+persistence: committed
+claim_ceiling: "Source integration is reviewed; no actual zero-setup CLI run or independent-agent usability benefit was observed. Local unit/synthetic tests NOT_RUN; hosted CI status and integration must be checked separately."
 action_authorized_by_receipt: false
-immutable: false
+immutable: true
