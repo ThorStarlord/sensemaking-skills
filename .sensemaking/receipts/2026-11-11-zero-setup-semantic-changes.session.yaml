@@ -1,13 +1,13 @@
 artifact_id: sensemaking_session_receipt
 schema_version: 1
 session_ref: 2026-11-11-zero-setup-semantic-changes
-state: in_progress
+state: final
 created_at: "2026-11-11T20:51:25Z"
-updated_at: "2026-11-11T20:51:25Z"
+updated_at: "2026-11-11T20:58:25Z"
 target_repository: ThorStarlord/sensemaking-skills
 source_identity:
   start_ref: 48b7cd0feeaffc54ea05e2a5c6b184d93ee66532
-  end_ref: null
+  end_ref: 876abf729cf0064ede5e9929c3d403f7c6ebb973
   worktree_clean_at_end: null
 skill_identity:
   load_mode: manual_explicit_load
@@ -17,7 +17,7 @@ goal:
   source: owner_message
   source_ref: null
 delegation:
-  granted: [read, local_write, commit, push, open_pr, merge]
+  granted: [read, local_write, commit, push, open_pr, merge, knowledge_edit]
   withheld: [release, deploy, external_publication, tracker_write]
 continuity:
   resumes: 2026-11-11-decision-time-responsibility-depth
@@ -25,33 +25,47 @@ continuity:
   resolves_questions: []
 responsibilities:
   - id: R-1
-    responsibility: Reconstruct current product needs and compare credible bounded engineering opportunities
+    responsibility: Reconstruct product state and compare credible bounded engineering responsibilities
     capability: using-sensemaking
     status: completed
-    reason: "Checked main, strategy/PATH-1, recent semantic orientation/query work, open issues/PRs and real CLI. Selected first-use historical semantic revision diff over receipt work or further decision research."
-    artifact_refs: [docs/product-strategy.md, docs/persistent-semantic-stewardship-plan.md, src/sensemaking_skills/workspace_knowledge.py, src/sensemaking_skills/semantic_architecture/knowledge_store.py]
+    reason: "Reviewed main, current PATH-1, the semantic CLI and recent zero-setup work, issues and PRs. Chose source-pinned revision changes because the existing no-setup query refuses history while the same operation already exists."
+    artifact_refs: [docs/product-strategy.md, docs/persistent-semantic-stewardship-plan.md, src/sensemaking_skills/workspace_knowledge.py]
     validation: []
   - id: R-2
-    responsibility: Deliver a zero-setup committed-revision semantic changes query using existing indexed differences
+    responsibility: Implement and source-review two-commit semantic knowledge comparison without preparing a shared database
     capability: ordinary_coding
-    status: in_progress
-    reason: "Current knowledge-query changes needs two indexed revisions in one DB; zero-setup workspace-query refuses changes/history. Provide a read-only pair of source-pinned cached snapshots with existing delta semantics, without schema changes."
-    artifact_refs: [src/sensemaking_skills/semantic_cli.py, src/sensemaking_skills/workspace_knowledge.py, src/sensemaking_skills/semantic_architecture/knowledge_store.py]
-    validation: []
+    status: completed
+    reason: "Added workspace-changes using two protected per-commit indexes and optional read-only base_db_path in the established changes query. Preserved original callers and scope. Updated CLI docs, STATUS and one reviewed design record."
+    artifact_refs: [src/sensemaking_skills/semantic_cli.py, src/sensemaking_skills/workspace_knowledge.py, src/sensemaking_skills/semantic_architecture/knowledge_store.py, docs/semantic-architecture/persistent-knowledge-cli.md, .sensemaking/knowledge/architecture.json]
+    validation:
+      - command: Exact-GitHub source and diff inspection, JSON parse and original interface contract review
+        result: PASS
+      - command: Local unit and synthetic tests (construction policy)
+        result: NOT_RUN
 findings:
   - id: F-1
-    statement: "Semantic knowledge changes already classifies raw and authored-field/fingerprint deltas, but workspace-query refuses changes because its per-SHA cache has only one revision. Direct use requires manual multi-revision setup."
+    statement: "The existing one-index semantic changes query was available, but workspace-query explicitly refused changes and history. Agents needed manual multiple-revision database preparation for a semantic diff."
     epistemic_status: OBSERVED
+    evidence_refs: [src/sensemaking_skills/workspace_knowledge.py, src/sensemaking_skills/semantic_architecture/knowledge_store.py]
+    disposition: resolved
+  - id: F-2
+    statement: "The workspace-changes implementation resolves two commits and uses existing per-SHA caches with a second read-only index; original changes semantics, overlay exclusion and explicit comparison limits are retained."
+    epistemic_status: DERIVED
     evidence_refs: [src/sensemaking_skills/workspace_knowledge.py, src/sensemaking_skills/semantic_architecture/knowledge_store.py, docs/semantic-architecture/persistent-knowledge-cli.md]
-    disposition: open
+    disposition: resolved
+  - id: F-3
+    statement: "A reviewed delegated design record preserves why pairwise cached indexes were chosen instead of a new schema or mutable combined history. No independent user uptake or better decision quality was demonstrated."
+    epistemic_status: DERIVED
+    evidence_refs: [.sensemaking/knowledge/architecture.json, docs/semantic-architecture/persistent-knowledge-cli.md]
+    disposition: handed_off
 open_questions: []
 stop:
-  disposition: IN_PROGRESS
-  reason: "Product capability selected and pre-implementation decision receipt committed. Implementation and exact-head review pending."
+  disposition: GOAL_SATISFIED
+  reason: "Implemented, source-reviewed and opened PR 818 for one new historical semantic query capability. Hosted CI and merge outcome require separate observation; no release or further task is automatically authorized."
 next:
   warranted_responsibility: null
   blocked_on: []
-persistence: pending
-claim_ceiling: "Source-verified gap and pre-code selection only. No new feature verified yet; retained source knowledge is not semantic truth, Git ancestry is not inferred by the underlying historical delta."
+persistence: committed
+claim_ceiling: "Source/diff and JSON review only; no live CLI or local unit/synthetic behavior tests were run. Hosted CI, wheel delivery and independent agent benefit must be assessed at exact revision; no semantic truth or causal gain inferred."
 action_authorized_by_receipt: false
-immutable: false
+immutable: true
