@@ -535,6 +535,8 @@ no unit or synthetic evidence tests were run.
 
 ## Current next step
 
+**2026-11-11 `workspace-changes` live verification and agent routing repair:** the command was run through the repository's own CLI entrypoint at `origin/main` `fa0651db` (the PATH `sensemaking-skills` binary on this host predates the command and must be reinstalled from the checkout to expose it). For `--base-ref 48b7cd0 --ref fa0651db` it returned both exact revisions, lists `decision:workspace-changes-committed-revision-pair` and `rel:semantic-cli-decided-by-workspace-changes-pair` under `added`, reports zero authored-field changes to pre-existing records (the `architecture.json` diff is insertion-only), and a forced rebuild from a dirty checkout reproduced the clean result from committed bytes with `uncommitted_changes_not_indexed` set. Its headline `changed` counts (101 claims, 111 relations) include provenance-only container churn; `change_classification.counts` carries the authored-field facts. The check found that `workspace-query --operation changes` and the Steward RECONCILE guidance still prescribed the manual multi-database build; both now route to `workspace-changes`. Source/diff review is the construction evidence; local unit tests NOT_RUN; agent uptake and decision benefit NOT ASSESSED.
+
 **2026-11-11 zero-setup historical semantic comparison (`semantic workspace-changes`):**
 A dedicated two-commit command resolves `--base-ref` and `--ref`, builds or
 reuses the existing protected per-commit cached knowledge indexes, and returns
