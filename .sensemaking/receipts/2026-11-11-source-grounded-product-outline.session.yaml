@@ -1,0 +1,57 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-11-11-source-grounded-product-outline
+state: in_progress
+created_at: "2026-11-11T22:10:54Z"
+updated_at: "2026-11-11T22:10:54Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: 26e319fcc07a9b8deffa4424f9de3dce692a1330
+  end_ref: null
+  worktree_clean_at_end: null
+skill_identity:
+  load_mode: manual_explicit_load
+  sensemaking_source_ref: null
+goal:
+  statement: Construct a source-grounded product-goal and capability outline over existing reviewed semantic knowledge for ordinary autonomous engineering orientation.
+  source: owner_message
+  source_ref: null
+delegation:
+  granted: [read, local_write, commit, push, open_pr, merge, knowledge_edit]
+  withheld: [release, deploy, external_publication, tracker_write]
+continuity:
+  resumes: 2026-11-11-pr820-receipt-enum-repair
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: Compare warranted product increments and select a direct goal-centred reviewed knowledge consumer
+    capability: using-sensemaking
+    status: completed
+    reason: "Current orientation summarizes layers/components while reviewed goal, non-goal and serves_goal links are scattered across packs. Product-level source-grounded outline best leverages existing knowledge with low authority risk."
+    artifact_refs: [docs/product-strategy.md, src/sensemaking_skills/semantic_architecture/knowledge_architecture.py, .sensemaking/knowledge/possibilities.json]
+    validation: []
+  - id: R-2
+    responsibility: Implement bounded goal-to-capability and opportunity outline with source evidence and explicit limits
+    capability: ordinary_coding
+    status: in_progress
+    reason: "A new opt-in product-outline query will project existing serves_goal and goal constrained_by edges, plus reviewed non-goals; it will not infer unrecorded relationships, select priorities or change the ontology."
+    artifact_refs: [src/sensemaking_skills/semantic_architecture/knowledge_architecture.py, src/sensemaking_skills/semantic_architecture/knowledge_store.py, src/sensemaking_skills/semantic_cli.py]
+    validation: []
+findings:
+  - id: F-1
+    statement: "Actual reviewed packs include goal claims, non-goals, capabilities, opportunities, serves_goal and constrained_by edges. Existing orientation-summary shows mainly layers/components and context-for is path-centred."
+    epistemic_status: OBSERVED
+    evidence_refs: [.sensemaking/knowledge/product.json, .sensemaking/knowledge/stewardship.json, .sensemaking/knowledge/possibilities.json, src/sensemaking_skills/semantic_architecture/knowledge_architecture.py]
+    disposition: open
+open_questions: []
+stop:
+  disposition: IN_PROGRESS
+  reason: "Stage A independent repair PR821 merged and hosted validation succeeded. Stage B coherent product-outline implementation selected; source and PR integration pending."
+next:
+  warranted_responsibility: null
+  blocked_on: []
+persistence: pending
+claim_ceiling: "Stage B is source-selected, not yet implemented or verified. Derived goal links will report authored relations only, never semantic correctness, complete coverage or automatic engineering priority."
+action_authorized_by_receipt: false
+immutable: false
