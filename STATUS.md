@@ -535,6 +535,25 @@ no unit or synthetic evidence tests were run.
 
 ## Current next step
 
+**2026-11-11 product-goal and capability outline:** `semantic
+workspace-query --operation product-outline --json` (also supported in
+explicit-index `knowledge-query`) now projects reviewed product goals,
+non-goals, direct `serves_goal` links to capabilities/opportunities and
+direct goal constraints. It retains authority/source references, declared
+relation identities, source uncertainty and bounded omission accounting.
+It is a useful repository-level complement to file-centred `context-for` and
+structural `orientation-summary`, not a new ontology, product goal
+completeness claim or priority selector. Source/diff review is construction
+evidence; local unit/synthetic tests NOT_RUN, live CLI agent uptake and
+decision benefit NOT ASSESSED until observed.
+
+**2026-11-11 PR #820 receipt-contract correction (PR #821):** The one
+invalid machine-readable validation enum for an attempted Git DNS check was
+corrected from `ENVIRONMENT_BLOCKED` to `FAIL` under explicit one-time owner
+authorization, preserving the unchanged original revision and a separate
+audit receipt. Hosted Product Validation and Release Candidate Distribution
+passed on the repair head. General finalized-receipt immutability remains.
+
 **2026-11-11 question-friendly reviewed knowledge retrieval:** Both
 `semantic knowledge-query` and zero-setup `semantic workspace-query` offer
 opt-in `--operation search --query-text TEXT` ranked lexical discovery.
