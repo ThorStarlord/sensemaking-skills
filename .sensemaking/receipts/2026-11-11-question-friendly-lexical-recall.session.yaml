@@ -1,0 +1,66 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-11-11-question-friendly-lexical-recall
+state: in_progress
+created_at: "2026-11-11T21:17:41Z"
+updated_at: "2026-11-11T21:17:41Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: fa0651db25aa5b337276e9f32b79d73d82c2890a
+  end_ref: null
+  worktree_clean_at_end: null
+skill_identity:
+  load_mode: manual_explicit_load
+  sensemaking_source_ref: null
+goal:
+  statement: Record the blocked live verification of PR 818 and deliver one next product-value-directed increment for question-friendly lexical discovery of reviewed knowledge.
+  source: owner_message
+  source_ref: null
+delegation:
+  granted: [read, local_write, commit, push, open_pr, merge]
+  withheld: [release, deploy, external_publication, tracker_write]
+continuity:
+  resumes: 2026-11-11-zero-setup-semantic-changes
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: Attempt one genuine live invocation of the newly merged workspace-changes capability
+    capability: ordinary_operational_verification
+    status: completed
+    reason: "GitHub confirmed main at fa0651db and hosted PR 818 checks successful. Container has no checkout or installed CLI; one git remote probe failed on DNS resolution of github.com. The live command was not run."
+    artifact_refs: [src/sensemaking_skills/workspace_knowledge.py, docs/semantic-architecture/persistent-knowledge-cli.md]
+    validation:
+      - command: git ls-remote https://github.com/ThorStarlord/sensemaking-skills.git HEAD
+        result: ENVIRONMENT_BLOCKED
+      - command: PR 818 final-head hosted workflows
+        result: PASS
+  - id: R-2
+    responsibility: Add an explicit ranked lexical multi-token query to current reviewed knowledge retrieval
+    capability: ordinary_coding
+    status: in_progress
+    reason: "Existing RECALL says long questions can miss source-linked claims; literal search and manual OR phrase extraction impose retrieval friction. Opt-in token overlap can improve discovery without changing current search modes, ontology, or authority."
+    artifact_refs: [skills/repository-semantic-steward/references/recall.md, src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py, src/sensemaking_skills/semantic_architecture/knowledge_store.py, src/sensemaking_skills/semantic_cli.py]
+    validation: []
+findings:
+  - id: F-1
+    statement: "PR 818 live invocation remains unverified: current environment has Git and Python but no repository checkout or installed CLI, and cannot resolve github.com through Git. Hosted PR 818 workflows passed."
+    epistemic_status: OBSERVED
+    evidence_refs: [docs/semantic-architecture/persistent-knowledge-cli.md]
+    disposition: handed_off
+  - id: F-2
+    statement: "The supported search API is case-insensitive literal substring or explicit OR phrases. The RECALL guide warns that long questions miss relevant claims and currently requires manual phrase selection."
+    epistemic_status: OBSERVED
+    evidence_refs: [src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py, skills/repository-semantic-steward/references/recall.md]
+    disposition: open
+open_questions: []
+stop:
+  disposition: IN_PROGRESS
+  reason: "A separate source-grounded construction responsibility is selected; no conceptual study or test campaign will be initiated."
+next:
+  warranted_responsibility: null
+  blocked_on: []
+persistence: pending
+claim_ceiling: "Stage A ENVIRONMENT_BLOCKED, not a demonstrated product defect. Stage B lexical ranked retrieval is source-selected, not yet implemented or behavior-verified; CI passing does not imply model benefit."
+action_authorized_by_receipt: false
+immutable: false
