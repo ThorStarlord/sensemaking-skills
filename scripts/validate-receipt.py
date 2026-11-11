@@ -95,7 +95,7 @@ STEWARD_MODES = ("RECALL", "AUDIT", "RECONCILE", "BOOTSTRAP")
 QUERY_OPERATIONS = (
     "orient", "build", "search", "explain", "why", "impact", "workspace-impact",
     "changes", "contradictions", "history", "snapshot", "rules-for", "term",
-    "orientation-summary", "context-for", "audit", "proposal-check",
+    "orientation-summary", "context-for", "product-outline", "audit", "proposal-check",
 )
 QUERY_OUTCOMES = ("HIT", "PARTIAL", "MISS", "NOT_ASSESSED", "NOT_APPLICABLE")
 SOURCE_CHECK_RESULTS = ("SUPPORTED", "CONTRADICTED", "STALE", "NOT_CHECKED")
@@ -513,6 +513,20 @@ def _check_query(c: Checker, data: dict, target_repo: Path | None) -> None:
                 c.error("RECEIPT_FORMAT", f"{field}.terms", "at most 8 literal terms (the CLI's own limit)")
         if c.require(entry, "subject", f"{field}.subject"):
             c.text(entry["subject"], f"{field}.subject", MAX_LABEL, nullable=True)
+        # Optional for older receipts; preserves the exact opt-in lexical search
+        # question without misrepresenting it as a literal --term or --subject.
+        if "query_text" in entry and entry["query_text"] is not None:
+            query_text = entry["query_text"]
+            c.text(query_text, f"{field}.query_text", MAX_TEXT)
+            if isinstance(query_text, str) and any(
+                ord(char) < 32 or ord(char) == 127 for char in query_text
+            ):
+                c.error("RECEIPT_FORMAT", f"{field}.query_text", "query text must not contain control characters")
+            if entry.get("operation") != "search" or entry.get("subject") is not None or entry.get("terms"):
+                c.error(
+                    "RECEIPT_FORMAT", f"{field}.query_text",
+                    "query text is supported only for search without subject or literal terms",
+                )
         if c.require(entry, "expect_kinds", f"{field}.expect_kinds"):
             c.string_list(entry["expect_kinds"], f"{field}.expect_kinds")
         if c.require(entry, "target_ref", f"{field}.target_ref"):
