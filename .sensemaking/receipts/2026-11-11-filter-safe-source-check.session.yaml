@@ -1,13 +1,13 @@
 artifact_id: sensemaking_session_receipt
 schema_version: 1
 session_ref: 2026-11-11-filter-safe-source-check
-state: in_progress
+state: final
 created_at: "2026-11-11T02:46:03Z"
-updated_at: "2026-11-11T02:46:03Z"
+updated_at: "2026-11-11T02:48:38Z"
 target_repository: ThorStarlord/sensemaking-skills
 source_identity:
   start_ref: da223b37fd706e8700636d465c6263c9ab028362
-  end_ref: null
+  end_ref: 2b2742c2de134d06f7f8298d9fe41920c2376328
   worktree_clean_at_end: null
 skill_identity:
   load_mode: manual_explicit_load
@@ -34,24 +34,33 @@ responsibilities:
   - id: R-2
     responsibility: Reuse filter-safe worktree inspection in committed knowledge-build entrypoints
     capability: ordinary_coding
-    status: in_progress
-    reason: "Protect read-only exact-revision knowledge construction from configured external Git filters while retaining HEAD, cleanliness, untracked-source and source authority invariants."
-    artifact_refs: [src/sensemaking_skills/semantic_architecture/knowledge_sources.py, src/sensemaking_skills/workspace_knowledge.py]
-    validation: []
+    status: completed
+    reason: "Replaced bare Git status in both source verification and workspace-query selection with existing safe inspector. Removed user-facing raw status precheck. PR #812 opened; merge and hosted checks are separate."
+    artifact_refs: [src/sensemaking_skills/semantic_architecture/knowledge_sources.py, src/sensemaking_skills/workspace_knowledge.py, docs/semantic-architecture/persistent-knowledge-cli.md]
+    validation:
+      - command: GitHub exact-commit diff and branch source review
+        result: PASS
+      - command: Local unit and synthetic tests (construction policy)
+        result: NOT_RUN
 findings:
   - id: F-1
-    statement: "Clean-source and zero-setup query decisions call git status without the configured-filter protections already used by worktree_context, risking external-command effects during read-only inspection."
+    statement: "Original exact-source and workspace-query clean checks called raw git status unlike the existing configured-filter-safe worktree inspector. The source discrepancy was corrected."
     epistemic_status: OBSERVED
     evidence_refs: [src/sensemaking_skills/semantic_architecture/knowledge_sources.py, src/sensemaking_skills/workspace_knowledge.py, src/sensemaking_skills/semantic_architecture/worktree_context.py]
-    disposition: open
+    disposition: resolved
+  - id: F-2
+    statement: "The implementation reuses the protected inspector without changing indexed knowledge schemas or CLI payloads. No external-filter execution was independently observed or reproduced."
+    epistemic_status: DERIVED
+    evidence_refs: [src/sensemaking_skills/semantic_architecture/knowledge_sources.py, src/sensemaking_skills/workspace_knowledge.py, docs/semantic-architecture/persistent-knowledge-cli.md]
+    disposition: resolved
 open_questions: []
 stop:
-  disposition: IN_PROGRESS
-  reason: Implementing one bounded source-path correction with no new runtime or ontology.
+  disposition: GOAL_SATISFIED
+  reason: "One bounded source and documentation repair completed and source-reviewed. PR #812 integration and hosted qualification are independent observations, not claimed completed by this receipt."
 next:
   warranted_responsibility: null
   blocked_on: []
-persistence: pending
-claim_ceiling: "Inconsistent call sites are source-observed; actual external filter execution, behavioral effect, and release qualification are NOT ASSESSED."
+persistence: committed
+claim_ceiling: "Source/diff confirms protected inspector reuse. No external filter incident was reproduced; local unit and synthetic tests NOT_RUN. Hosted checks pending; downstream agent benefit NOT ASSESSED."
 action_authorized_by_receipt: false
-immutable: false
+immutable: true
