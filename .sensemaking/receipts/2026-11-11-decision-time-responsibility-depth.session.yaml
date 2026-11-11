@@ -1,0 +1,76 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-11-11-decision-time-responsibility-depth
+state: final
+created_at: "2026-11-11T20:08:49Z"
+updated_at: "2026-11-11T20:17:24Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: b175ee6bd74abf5721f32fe977c39b7e081838c0
+  end_ref: e8c8989da24d26148d8bb2455b42ede962c9e4c9
+  worktree_clean_at_end: null
+skill_identity:
+  load_mode: manual_explicit_load
+  sensemaking_source_ref: null
+goal:
+  statement: Investigate authentic decision-time responsibility selection, distinguish opportunity discovery, knowledge retrieval/interpretation, comparative failure, justified local work and unobservable histories; retain only source-grounded construction implications.
+  source: owner_message
+  source_ref: null
+delegation:
+  granted: [read, local_write, commit, push, open_pr, merge]
+  withheld: [release, deploy, external_publication, tracker_write, knowledge_edit]
+continuity:
+  resumes: 2026-11-11-consequential-decision-traceability-convergent
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: Inspect authentic PR 812 and 813 evidence plus current decision-time producer-consumer relationships
+    capability: using-sensemaking
+    status: completed
+    reason: "Source-checked original PR 812 guidance, two raw Git status sites, existing safe helper and pre-implementation choice. PR 813 is a later distinct authentic source-pinned episode, not a matched counterfactual."
+    artifact_refs: [docs/explorations/2026-11-11-decision-time-responsibility-selection-depth.md, skills/using-sensemaking/references/warrant-choice-policy-v0.md, src/sensemaking_skills/decision_journey_cli.py]
+    validation: []
+  - id: R-2
+    responsibility: Resolve rival diagnoses and intervention warrants with bounded consequences and an adversarial source critique
+    capability: connected-prospective-inquiry-v1
+    status: completed
+    reason: "Report gives H1-H6 rival evidence, decision-time producer-consumer map, conditional consequence chains and A-G gap dispositions. Independent reviewer unavailable; critical review attributed to current agent."
+    artifact_refs: [docs/explorations/2026-11-11-decision-time-responsibility-selection-depth.md, skills/strategic-repository-analysis/references/connected-prospective-inquiry-v1.md]
+    validation:
+      - command: Exact-GitHub original source inspection and report/source/diff QA
+        result: PASS
+      - command: Local unit and synthetic tests (construction policy)
+        result: NOT_RUN
+findings:
+  - id: F-1
+    statement: "PR 812's local source-inspection repair was defensible and originally recorded before code; its record does not prove comprehensive opportunity discovery, wrong comparative judgment, or Local Completion Bias."
+    epistemic_status: OBSERVED
+    evidence_refs: [.sensemaking/receipts/2026-11-11-filter-safe-source-check.session.yaml, docs/explorations/2026-11-11-decision-time-responsibility-selection-depth.md]
+    disposition: handed_off
+  - id: F-2
+    statement: "Conditional local/broader responsibility comparison existed under Warrant/Choice at PR 812's starting source. Whether it was applied or changed the original choice remains unqualified."
+    epistemic_status: DERIVED
+    evidence_refs: [skills/using-sensemaking/references/warrant-choice-policy-v0.md, docs/explorations/2026-11-11-decision-time-responsibility-selection-depth.md]
+    disposition: handed_off
+  - id: F-3
+    statement: "Normal receipt and Git history retain source-timed evidence, but current journey inspect does not automatically assemble ordinary PR/receipt/Git episodes. This is a distinct consumer gap, not proof of bad original selection."
+    epistemic_status: OBSERVED
+    evidence_refs: [src/sensemaking_skills/decision_journey_cli.py, scripts/summarize-receipts.py, docs/explorations/2026-11-11-decision-time-responsibility-selection-depth.md]
+    disposition: handed_off
+  - id: F-4
+    statement: "Evidence warrants NO_NEW_MECHANISM_WARRANTED for primary decision-quality problem now; method use and causal benefit remain unqualified. Separate read-only reviewer use needs a named consumer."
+    epistemic_status: DERIVED
+    evidence_refs: [docs/explorations/2026-11-11-decision-time-responsibility-selection-depth.md, docs/explorations/2026-11-11-consequential-decision-traceability-convergent-evaluation.md]
+    disposition: handed_off
+open_questions: []
+stop:
+  disposition: GOAL_SATISFIED
+  reason: "Focused Depth report was committed and PR 817 opened. No architecture synthesis, implementation, host experiment or change to authority begun. Integration and hosted checks remain independent evidence."
+next:
+  warranted_responsibility: "Ordinary product construction under separately granted scope, using existing conditional Warrant/Choice; reconsider a targeted mechanism only if normal-use evidence identifies a genuine decision or reader gap."
+  blocked_on: []
+persistence: committed
+claim_ceiling: "Source-based historical and implementation analysis only; no causal diagnosis of hidden cognition, original global optimality, independent review, demonstrated decision uplift, host event completeness or new schema warrant. Local unit/synthetic tests NOT_RUN."
+action_authorized_by_receipt: false
+immutable: true
