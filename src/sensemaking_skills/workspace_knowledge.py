@@ -360,3 +360,87 @@ def run_workspace_query(
         "equivalent_operations": ["build", operation] if state == "built" else [operation],
     }
     return payload
+
+def run_workspace_changes(
+    *, repo: str | Path, base_ref: str, ref: str = "HEAD",
+    repository: str | None = None, index_dir: str | Path | None = None,
+    refresh: bool = False, limit: int = 50,
+) -> dict[str, Any]:
+    """Compare two committed semantic snapshots without manual multi-revision setup.
+
+    Each revision uses the existing per-commit derived cache. Querying the base
+    through a second read-only index preserves the established changes/delta
+    classifier without a new schema or a mutable combined history database.
+    """
+    if not 1 <= limit <= 250:
+        raise ValueError("changes limit must be 1..250")
+    _validate_ref_text(base_ref)
+    _validate_ref_text(ref)
+    repo_dir = Path(repo).expanduser().resolve()
+    if not repo_dir.is_dir():
+        raise ValueError(f"repository directory not found: {repo_dir}")
+    root = _checkout_root(repo_dir)
+    base_sha = _resolve_commit(root, base_ref)
+    sha = _resolve_commit(root, ref)
+    label, label_source = _repository_label(root, repository)
+
+    base_dir, base_db = _cache_paths(root, index_dir, base_sha)
+    clone_dir, database = _cache_paths(root, index_dir, sha)
+    base_state, base_source = _ensure_snapshot(
+        root, base_sha, label, base_dir, base_db, refresh,
+    )
+    if base_sha == sha:
+        state, build_source = base_state, base_source
+    else:
+        state, build_source = _ensure_snapshot(
+            root, sha, label, clone_dir, database, refresh,
+        )
+
+    try:
+        payload = query_knowledge(
+            database, repository=label, target_ref=sha, operation="changes",
+            base_ref=base_sha, base_db_path=base_db if base_sha != sha else None,
+            limit=limit,
+        )
+    except sqlite3.Error as exc:
+        raise ValueError(
+            f"cannot read cached revision indexes; retry with --refresh: {exc}"
+        ) from exc
+
+    payload["code"] = "SEMANTIC_KNOWLEDGE_QUERY"
+    payload["workspace_context"] = inspect_worktree_context(root, sha)
+    payload["workspace_comparison"] = {
+        "base_ref": base_sha,
+        "base_ref_requested": base_ref,
+        "target_ref": sha,
+        "target_ref_requested": ref,
+        "git_ancestry_assessed": False,
+        "working_changes_read": False,
+        "semantic_change_inferred": False,
+        "note": (
+            "Differences between two exact committed knowledge snapshots; "
+            "not proof of Git ancestry, semantic impact or decision validity."
+        ),
+    }
+    payload["workspace_index"] = {
+        "indexed_ref": sha,
+        "ref_requested": ref,
+        "repository": label,
+        "repository_identity_source": label_source,
+        "repository_label_verified": False,
+        "index_path": str(database),
+        "index_state": state,
+        "build_source": build_source,
+        "equivalent_operations": ["build", "changes"] if state == "built" else ["changes"],
+    }
+    payload["workspace_base_index"] = {
+        "indexed_ref": base_sha,
+        "ref_requested": base_ref,
+        "repository": label,
+        "repository_identity_source": label_source,
+        "repository_label_verified": False,
+        "index_path": str(base_db),
+        "index_state": base_state,
+        "build_source": base_source,
+    }
+    return payload

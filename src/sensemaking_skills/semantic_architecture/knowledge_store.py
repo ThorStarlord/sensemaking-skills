@@ -162,7 +162,7 @@ def query_knowledge(
     db_path: str | Path, *,
     repository: str, target_ref: str, operation: str,
     subject: str | None = None,
-    base_ref: str | None = None,
+    base_ref: str | None = None, base_db_path: str | Path | None = None,
     limit: int = 50, depth: int = 2,
     search_terms: tuple[str, ...] = (), expected_kinds: tuple[str, ...] = (),
     workspace_changed_paths: frozenset[str] | None = None,
@@ -197,6 +197,8 @@ def query_knowledge(
         raise ValueError("term requires --subject <term>")
     if operation == "changes" and not base_ref:
         raise ValueError("changes requires explicit base_ref")
+    if base_db_path is not None and operation != "changes":
+        raise ValueError("base_db_path is supported only for changes")
     if operation == "workspace-impact" and workspace_changed_paths is None:
         raise ValueError("workspace-impact requires workspace changed paths (CLI --repo)")
     if workspace_changed_paths is not None and operation not in {"workspace-impact", "context-for"}:
@@ -272,10 +274,18 @@ def query_knowledge(
             extra["history_limit"] = "Indexed order is not proven Git ancestry or chronology."
         elif operation == "changes":
             assert base_ref is not None
-            _snapshot(conn, repository, base_ref)
-            old_key = (repository, base_ref)
-            old_claims = _read_claims(conn, old_key)
-            old_relations = {r["id"]: r for r in _read_relations(conn, old_key)}
+            # The original single-index path remains unchanged. A zero-setup
+            # caller may instead read a second, exact-revision cached index;
+            # neither database is modified or treated as source authority.
+            base_conn = conn if base_db_path is None else _read_only(base_db_path)
+            try:
+                _snapshot(base_conn, repository, base_ref)
+                old_key = (repository, base_ref)
+                old_claims = _read_claims(base_conn, old_key)
+                old_relations = {r["id"]: r for r in _read_relations(base_conn, old_key)}
+            finally:
+                if base_conn is not conn:
+                    base_conn.close()
             new_relations = {r["id"]: r for r in relations}
             claim_deltas = {
                 "added": sorted(claims.keys() - old_claims.keys()),

@@ -273,6 +273,48 @@ Facts that bound its use:
   source-pinned answers. Whether agents consult reviewed records earlier because of
   it is NOT TESTED.
 
+## Zero-setup semantic revision comparison (workspace-changes)
+
+Use `semantic workspace-changes` when an agent needs to know which **reviewed
+semantic knowledge records** differ between two committed revisions, without
+manually creating a shared multi-revision SQLite database:
+
+```bash
+sensemaking-skills semantic workspace-changes --base-ref HEAD~1 --ref HEAD --json
+```
+
+The command resolves both refs to exact **local commits**, builds or reuses the
+existing per-commit, per-clone cached indexes outside the checkout and reads
+them without modifying repository contents or combining mutable index history.
+The target defaults to `HEAD`; `--base-ref` is required. Either revision can
+be read from a temporary committed worktree when the active checkout is dirty
+or points at the other revision. The working overlay is **never** indexed or
+used as source truth; `workspace_context` describes its state.
+
+The result preserves the **existing** `knowledge-query --operation changes`
+payload: `claim_delta`, `relation_delta`, `delta_total_counts` and
+`change_classification` distinguish raw payload/fingerprint changes from
+authored-field and cited-evidence changes, with bounded result counts. Additive
+`workspace_comparison`, `workspace_index` and `workspace_base_index`
+identify both source revisions, requested refs, cache states and scope.
+It does **not** establish Git ancestry, semantic invalidation, a historical
+causal sequence, or better engineering decisions; both refs may be unrelated.
+For a query of one claim across **multiple** previously indexed revisions,
+the original `knowledge-query --operation history` remains available.
+
+Flags: `--base-ref REV` (required), `--ref REV` (default `HEAD`),
+`--repo DIR`, `--repository LABEL`, `--index-dir DIR`, `--refresh`,
+`--limit 1..250` and `--json`. `--refresh` rebuilds both caches.
+A reused cache is trusted as written under the same caveat as
+`workspace-query`; both commit refs must exist locally. `workspace-query`
+continues to refuse `changes` and `history` because its single-query
+contract operates on one snapshot.
+
+**Implementation claim ceiling:** this is a source/diff-reviewed construction
+capability; decision benefit, independent agent uptake and semantic truth are
+not established by its presence. Use it to identify records meriting source
+inspection, not to replace that inspection.
+
 ## Change granularity and shared authored-pack limitation
 
 Source change and semantic change are different questions:
