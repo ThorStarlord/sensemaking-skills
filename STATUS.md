@@ -535,6 +535,18 @@ no unit or synthetic evidence tests were run.
 
 ## Current next step
 
+**2026-11-11 zero-setup historical semantic comparison (`semantic workspace-changes`):**
+A dedicated two-commit command resolves `--base-ref` and `--ref`, builds or
+reuses the existing protected per-commit cached knowledge indexes, and returns
+the established `changes` delta and authored-field/source-fingerprint
+classification without a prepared multi-revision database. Exact source
+revisions, cache status and incomplete/unknown semantics remain visible;
+active working changes are not indexed. The existing `workspace-query` and
+`knowledge-query` contracts are unchanged. The relevant source/diff review
+is construction evidence; local unit/synthetic tests NOT_RUN under `CLAUDE.md`.
+Hosted CI and independent normal-use decision benefit remain separate and
+NOT ASSESSED until observed. PATH-1 and ADR 0029/0031/0034 stay unchanged.
+
 **2026-11-11 zero-setup first-visit source orientation (PR #813):**
 `semantic workspace-orient --json` makes the existing RSB-1 bounded
 `orient_repository` available without a manually supplied repository label,

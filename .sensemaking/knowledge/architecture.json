@@ -1266,6 +1266,26 @@
         "observed_revision": "bb77dac13fa4212d11f414176c9a37071dcc0a7f",
         "claim_ceiling": "Source text only; independent hosted reasoning and comparative creative benefit not established"
       }
+    },
+    {
+      "id": "decision:workspace-changes-committed-revision-pair",
+      "kind": "decision",
+      "statement": "Delegated design: semantic workspace-changes accepts two local committed refs and reuses the existing per-commit derived indexes outside the checkout. The existing changes classifier reads the base through an independently opened read-only index; no combined mutable multi-revision cache, new ontology or schema is introduced. The normal knowledge-query and single-snapshot workspace-query contracts remain unchanged.",
+      "authority_kind": "delegated",
+      "authority_ref": "src/sensemaking_skills/workspace_knowledge.py",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/workspace_knowledge.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_store.py",
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "scope": "Engineering choice within current PATH-1/ADR 0031 construction authority; not a product-thesis revision or new semantic decision engine.",
+        "decision_changed": "An agent can inspect the changes in reviewed knowledge between two committed revisions with one command and no manual multi-commit SQLite database preparation.",
+        "known_limits": "Two resolvable local commits required; all source bytes are committed, the working overlay is excluded, cache data is derived/trusted as stored, and Git ancestry, semantic correctness, independent agent uptake and decision-quality benefit are not inferred.",
+        "claim_ceiling": "Source/diff-reviewed implementation at the candidate revision. Local unit and synthetic tests NOT_RUN under CLAUDE construction policy; hosted CI and normal-use benefit require separate observations."
+      }
     }
   ],
   "relations": [
@@ -2119,6 +2139,17 @@
       "evidence_refs": [
         "file:src/sensemaking_skills/setup_skills.py"
       ]
+    },
+    {
+      "id": "rel:semantic-cli-decided-by-workspace-changes-pair",
+      "subject": "component:semantic-cli",
+      "predicate": "decided_by",
+      "object": "decision:workspace-changes-committed-revision-pair",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:src/sensemaking_skills/workspace_knowledge.py"
+      ],
+      "epistemic_status": "declared"
     }
   ]
 }
