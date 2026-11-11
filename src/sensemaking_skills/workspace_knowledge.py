@@ -26,7 +26,7 @@ from .semantic_architecture.repository_bootstrap import orient_repository
 from .semantic_architecture.worktree_context import changed_paths_since_indexed_ref, inspect_worktree_context
 
 OPERATIONS = (
-    "context-for", "rules-for", "search", "explain", "why", "impact", "term", "orientation-summary",
+    "context-for", "rules-for", "search", "explain", "why", "impact", "term", "orientation-summary", "product-outline",
     "contradictions", "snapshot", "workspace-impact", "changes", "history",
 )
 _REFUSED_OPERATIONS = {
