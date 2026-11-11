@@ -32,7 +32,7 @@ responsibilities:
     artifact_refs: [docs/semantic-architecture/persistent-knowledge-cli.md, src/sensemaking_skills/workspace_knowledge.py]
     validation:
       - command: git ls-remote https://github.com/ThorStarlord/sensemaking-skills.git HEAD
-        result: ENVIRONMENT_BLOCKED
+        result: FAIL
       - command: Hosted Product Validation, Semantic Context Re-entry and Release Candidate Distribution for PR 818 final head
         result: PASS
   - id: R-2
