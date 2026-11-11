@@ -81,6 +81,7 @@ when topology itself is decision-relevant.
 `workspace-orient` (source-pinned path inventory), `workspace-query`
 (one-revision knowledge retrieval), and `workspace-changes --base-ref REV`
 (two-commit semantic delta without manual index preparation).
+Both `knowledge-query` and `workspace-query` support `--operation product-outline` for a bounded, source-linked view of reviewed goals, non-goals and their explicitly linked serving records and constraints; it does not select engineering priorities.
 For `knowledge-query` and `workspace-query`, `--operation search --query-text TEXT`
 provides opt-in ranked lexical question matching; it never infers semantic
 relevance. Existing `--subject` literal and `--term` OR search are unchanged.

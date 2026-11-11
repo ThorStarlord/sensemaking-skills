@@ -1306,6 +1306,26 @@
         "known_limits": "Matches are literal substrings of ID/statement, including incidental common words; maximum 300 characters and 24 distinct tokens; source checking is necessary and misses are NOT_ASSESSED.",
         "claim_ceiling": "Construction source/diff review completed; local unit/synthetic tests NOT_RUN; hosted validation and independent benefit remain separate."
       }
+    },
+    {
+      "id": "decision:product-goal-outline-projection",
+      "kind": "decision",
+      "statement": "Delegated design: semantic product-outline projects existing reviewed goal and non-goal claims, direct serves_goal edges and direct goal constrained_by invariant/constraint edges in a source-linked, bounded view. It does not infer relationships, assess achieved goals, promote an opportunity to a shipped capability or select engineering priorities.",
+      "authority_kind": "delegated",
+      "authority_ref": "src/sensemaking_skills/semantic_architecture/knowledge_architecture.py",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_architecture.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_store.py",
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "scope": "Direct, source-linked product intent projection over indexed reviewed knowledge, with no schema, new controller or inferred product authority.",
+        "decision_changed": "An autonomous agent can inspect goals, non-goals, explicit supporting claims and constraints as one product-level view before selecting consequential engineering work.",
+        "known_limits": "Category limits and top-level envelope limits may omit records; missing edges and goals remain NOT_ASSESSED, and reviewed relationships do not establish product success, actual dependencies or ranking.",
+        "claim_ceiling": "Source/diff-reviewed construction, with local unit/synthetic tests NOT_RUN under current policy. Hosted CI, live CLI behavior and actual agent usefulness require their own evidence."
+      }
     }
   ],
   "relations": [
@@ -2179,6 +2199,17 @@
       "evidence_refs": [
         "file:src/sensemaking_skills/semantic_cli.py",
         "file:src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:semantic-cli-decided-by-product-outline",
+      "subject": "component:semantic-cli",
+      "predicate": "decided_by",
+      "object": "decision:product-goal-outline-projection",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_architecture.py"
       ],
       "epistemic_status": "declared"
     }

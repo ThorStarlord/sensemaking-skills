@@ -268,7 +268,7 @@ def register_semantic_commands(root_cli: click.Group) -> None:
     @click.option("--target-ref", required=True, help="Exact indexed revision to examine")
     @click.option("--operation", required=True,
                   type=click.Choice(["snapshot", "search", "explain", "impact", "why", "contradictions", "history", "changes",
-                                     "workspace-impact", "rules-for", "term", "orientation-summary", "context-for"]))
+                                     "workspace-impact", "rules-for", "term", "orientation-summary", "product-outline", "context-for"]))
     @click.option("--subject", default=None,
                   help="Exact claim id; literal search text (search); one repository-relative "
                        "file path (rules-for, context-for); literal term (term)")
@@ -384,7 +384,7 @@ def register_semantic_commands(root_cli: click.Group) -> None:
     @click.argument("paths", nargs=-1)
     @click.option("--operation", default="context-for", show_default=True,
                   type=click.Choice(["context-for", "rules-for", "search", "explain", "why", "impact", "term",
-                                     "orientation-summary", "contradictions", "snapshot", "workspace-impact",
+                                     "orientation-summary", "product-outline", "contradictions", "snapshot", "workspace-impact",
                                      "changes", "history"]))
     @click.option("--subject", default=None, help="One repository-relative file path or the operation's subject")
     @click.option("--term", "search_terms", multiple=True, help="Repeat explicit literal OR phrase (search operation only)")
