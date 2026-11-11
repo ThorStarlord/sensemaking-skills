@@ -167,6 +167,19 @@ supports stopping that subsystem but not a concrete alternative, say so;
 leave the next responsibility open rather than manufacture one. A previously
 authorized bounded task does not require re-selection.
 
+When a new session **materially reselects a previously deferred responsibility**,
+use the existing `responsibilities[].reason` and relevant prior receipt in
+`artifact_refs` to state the earlier deferral boundary and what now warrants
+the choice: a newly observed condition, revised owner intent, or a dated,
+explicit reassessment of product value. Keep it brief and within the existing
+text caps; longer analysis belongs in an already authorized source/PR note.
+A prior condition that was not observed must not be reported as fulfilled.
+A later final receipt establishes what was **authored**, not when the model
+internally considered alternatives or which hidden thought caused its choice.
+If no contemporaneous record or host events exist, leave that chronology
+`NOT_ASSESSED`. This adds no new receipt field, mandatory reasoning log or
+authority to act.
+
 ## 5. Schema (all fields required unless marked nullable)
 
 ```yaml
