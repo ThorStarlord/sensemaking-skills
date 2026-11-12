@@ -1,7 +1,7 @@
 # Sensemaking Skills Product Strategy
 
 **Status:** current product hypothesis and strategic authority  
-**Updated:** 2026-10-28  
+**Updated:** 2026-11-12  
 **Control level:** Level 4 — Product Thesis / Strategy Revision  
 **Scope:** public repository strategy; empirical claims retain the ceilings of their source evidence
 
@@ -39,6 +39,32 @@ product's primary output.** A warranted next responsibility, an architecture
 synthesis, a strategic disposition, retained knowledge, and a justified
 no-change conclusion are all complete outcomes. This is a selected product
 direction, not a claim that durable semantic memory already improves outcomes.
+
+### Level-4 extension 2026-11-12: Sensemaking Continuous Learning (ADR 0035)
+
+The owner selected **Sensemaking Continuous Learning (SCL)** as an explicit,
+first-class intended product capability **within** Persistent Semantic
+Stewardship. Ordinary real engineering episodes should be eligible for
+proportionate learning consideration: improve source-grounded product/domain
+understanding and, where experience supports it, the context-sensitive
+effectiveness of the agent's reasoning methods. **Every observable episode is
+eligible; every episode does not require a persistent lesson.** Selectively
+retain evidence that future actors need, permit justified rejection of past
+methods and retain `NO_MODEL_CHANGE` for routine outcomes.
+
+SCL reuses the existing `using-sensemaking` controller, Learning/Reconciliation
+policy, Git-reviewed knowledge records, original source evidence and bounded
+Steward recall. A later agent must check source, context, applicability and
+authority before using a precedent. Lessons do not grant permission across
+repositories. Higher-order methodological guidance changes require
+independent corroboration, counterevidence and ordinary protected review.
+
+The owner's [ADR 0035](adr/0035-sensemaking-continuous-learning.md) records the
+scope and evidence ceiling; the [SCL development program](superpowers/plans/2026-11-12-sensemaking-continuous-learning.md)
+separates current retrieval/guidance capabilities from still-unqualified
+independent use, feedback, comparative benefit and possible later automation.
+This **does not** declare an automatic learning runtime, new semantic controller,
+model training or self-modification. ADRs 0029, 0031 and 0034 remain operative.
 
 ### Level-4 revision 2026-10-28: ontology-first adaptive Sensemaking (ADR 0034)
 
