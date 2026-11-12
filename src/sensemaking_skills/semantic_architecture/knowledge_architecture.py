@@ -770,8 +770,8 @@ def product_outline(
         "truncated": any(omitted.values()),
         "coverage_complete": False,
         "explicit_limits": [
-            "Only exact reviewed goal and non-goal claims, direct serves_goal edges and "
-            "goal constrained_by invariant/constraint edges are included.",
+            "Default coverage includes reviewed goals/non-goals, direct serves_goal "
+            "and goal constrained_by edges; optional candidates are separate.",
             "A serving record can be a capability or opportunity, but a declared edge "
             "does not prove implementation, value, applicability or priority.",
             "Unlinked goals, absent goals and unrecorded relationships are NOT ASSESSED, "
