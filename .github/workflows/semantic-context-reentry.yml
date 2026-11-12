@@ -183,4 +183,72 @@ jobs:
                   "semantic_truth_established": False,
                   "agent_decision_benefit_established": False,
               }, sort_keys=True))
+
+          # Real source-index consumer of the optional historical lesson-kind
+          # filter. This checks query mechanics, not cognition or lesson benefit.
+          question = ["--query-text", "query completeness evidence"]
+          base_search = [
+              "sensemaking-skills", "semantic", "knowledge-query",
+              "--db", db, "--repository", "ThorStarlord/sensemaking-skills",
+              "--target-ref", revision, "--operation", "search",
+              "--limit", "250", "--json",
+          ]
+
+          def search(args):
+              result = subprocess.run(args, check=True, capture_output=True, text=True)
+              return json.loads(result.stdout)
+
+          filtered = search(base_search + ["--search-kind", "lesson", *question])
+          unfiltered = search(base_search + question)
+          lesson_ids = {claim["id"] for claim in filtered["claims"]}
+          assert "lesson:query-completeness-is-evidence" in lesson_ids
+          assert all(claim["kind"] == "lesson" for claim in filtered["claims"])
+          assert filtered["search_kind_filter"] == ["lesson"]
+          assert filtered["search_hit_total"] >= len(filtered["claims"])
+          assert unfiltered["search_hit_total"] >= filtered["search_hit_total"]
+          assert "search_kind_filter" not in unfiltered
+          assert filtered["target_ref"] == revision
+          assert filtered["semantic_truth_established"] is False
+          assert filtered["action_authorized"] is False
+
+          combined = search(base_search + [
+              "--search-kind", "lesson", "--search-kind", "incident", *question,
+          ])
+          assert combined["search_kind_filter"] == ["incident", "lesson"]
+          assert all(c["kind"] in {"lesson", "incident"} for c in combined["claims"])
+          assert combined["search_hit_total"] >= filtered["search_hit_total"]
+
+          invalid = subprocess.run(
+              base_search + ["--search-kind", "not-a-real-kind", *question],
+              check=False, capture_output=True, text=True,
+          )
+          assert invalid.returncode != 0
+          assert "unknown search claim kind" in invalid.stderr
+
+          # Independent zero-setup entrypoint, same checked-out source commit.
+          workspace = search([
+              "sensemaking-skills", "semantic", "workspace-query",
+              "--operation", "search", "--search-kind", "lesson",
+              *question, "--ref", revision, "--repo", ".",
+              "--repository", "ThorStarlord/sensemaking-skills",
+              "--index-dir", os.path.join(os.environ["RUNNER_TEMP"], "scl-recall-index"),
+              "--limit", "250", "--json",
+          ])
+          assert workspace["workspace_index"]["indexed_ref"] == revision
+          assert workspace["search_kind_filter"] == ["lesson"]
+          assert "lesson:query-completeness-is-evidence" in {
+              claim["id"] for claim in workspace["claims"]
+          }
+          assert all(claim["kind"] == "lesson" for claim in workspace["claims"])
+          assert workspace["semantic_truth_established"] is False
+          assert workspace["action_authorized"] is False
+          print(json.dumps({
+              "consumer": "source-pinned historical lesson discovery",
+              "source_revision": revision,
+              "search_hit_total": filtered["search_hit_total"],
+              "workspace_index_state": workspace["workspace_index"]["index_state"],
+              "mechanical_reentry": "PASS",
+              "independent_agent_reuse_established": False,
+              "decision_benefit_established": False,
+          }, sort_keys=True))
           PY
