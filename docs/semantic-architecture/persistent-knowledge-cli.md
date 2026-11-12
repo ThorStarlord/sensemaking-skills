@@ -399,6 +399,44 @@ original results and ordering; no schema or cache format changes occur.
 overlays separately. Ranked lexical matching is **not semantic search** and
 does not demonstrate improved agent decision-making.
 
+## Search only reviewed lessons or other claim kinds (`--search-kind`)
+
+When a coding agent needs a historical lesson about a real question, lexical
+search may return many unrelated goals, decisions or components. The optional,
+repeated `--search-kind` flag limits candidates **before matching, ranking and
+bounding** to exact claim kinds supported by the existing authored schema.
+This is especially useful for finding source-addressed `lesson` claims without
+already knowing a `lesson:` ID:
+
+```bash
+sensemaking-skills semantic workspace-query --operation search \
+  --search-kind lesson --query-text "query completeness missing evidence" --json
+
+sensemaking-skills semantic knowledge-query --operation search \
+  --db /tmp/semantic-knowledge.sqlite --repository owner/repository \
+  --target-ref <exact-commit-sha> \
+  --search-kind lesson --term "completeness" --json
+```
+
+Both existing query entrypoints accept repeated kinds (OR between exact kind
+names) with `--subject` literal text, `--term` phrases or `--query-text`
+lexical discovery. Search matches are still lexical; no embedding, causal
+inference, relevance judgment or owner authority is introduced.
+Invalid kinds and use outside `--operation search` are rejected. The optional
+`search_kind_filter` field reports the normalized sorted kinds actually
+applied; without the filter the prior output contract remains unchanged.
+`search_hit_total`, bounded `match_details` and top-level `truncated`
+refer to matches **after** the kind filter. A zero-hit filtered search means
+**no indexed lexical hit in those kinds**, not that the repository has no
+relevant experience. Inspect original source/revision, contextual suitability,
+contradictions and negative cases before using a returned lesson.
+
+This is a narrower decision-time discovery aid for [Longitudinal Engineering
+Learning](../superpowers/plans/2026-11-02-longitudinal-engineering-learning.md)
+and [SCL](../superpowers/specs/2026-11-12-sensemaking-continuous-learning-design.md);
+a retrieval improvement does **not** establish independent lesson use or
+continuous learning benefit.
+
 ## Product-level goal orientation (`product-outline`)
 
 For an engineering responsibility spanning more than one source file, retrieve
