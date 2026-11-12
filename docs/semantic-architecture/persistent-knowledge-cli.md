@@ -334,20 +334,39 @@ be read from a temporary committed worktree when the active checkout is dirty
 or points at the other revision. The working overlay is **never** indexed or
 used as source truth; `workspace_context` describes its state.
 
+For PR-oriented semantic knowledge deltas, opt in to the same explicit baseline
+selection as `workspace-review-context`:
+
+```bash
+sensemaking-skills semantic workspace-changes --base-ref BASE_TIP \
+  --ref TOPIC_HEAD --pr-merge-base --json
+```
+
+This computes the **unique Git merge base** of the supplied commits and
+compares that ancestor's reviewed knowledge to the topic head. The direct
+two-tree mode remains the default. In PR mode, `workspace_comparison`
+preserves the supplied base tip separately from the effective `base_ref`,
+labels `comparison_mode: pr_merge_base`, and discloses
+`merge_base_calculated: true`. If history is missing, unrelated or
+ambiguous, the command rejects the PR mode rather than choosing a baseline.
+Fetch sufficient history or use an intentional direct comparison; GitHub PR
+identity and its authoritative changed-file list are still not verified.
+
 The result preserves the **existing** `knowledge-query --operation changes`
 payload: `claim_delta`, `relation_delta`, `delta_total_counts` and
 `change_classification` distinguish raw payload/fingerprint changes from
 authored-field and cited-evidence changes, with bounded result counts. Additive
 `workspace_comparison`, `workspace_index` and `workspace_base_index`
 identify both source revisions, requested refs, cache states and scope.
-It does **not** establish Git ancestry, semantic invalidation, a historical
-causal sequence, or better engineering decisions; both refs may be unrelated.
+Default direct mode does **not** establish Git ancestry; PR mode establishes
+only the unique shared ancestor, not GitHub PR identity, semantic invalidation,
+a historical causal sequence, or better engineering decisions.
 For a query of one claim across **multiple** previously indexed revisions,
 the original `knowledge-query --operation history` remains available.
 
 Flags: `--base-ref REV` (required), `--ref REV` (default `HEAD`),
-`--repo DIR`, `--repository LABEL`, `--index-dir DIR`, `--refresh`,
-`--limit 1..250` and `--json`. `--refresh` rebuilds both caches.
+`--pr-merge-base` (opt-in PR scope), `--repo DIR`, `--repository LABEL`,
+`--index-dir DIR`, `--refresh`, `--limit 1..250` and `--json`. `--refresh` rebuilds both caches.
 A reused cache is trusted as written under the same caveat as
 `workspace-query`; both commit refs must exist locally. `workspace-query`
 continues to refuse `changes` and `history` because its single-query
@@ -1108,7 +1127,9 @@ its output contract is unchanged. A change to an authored JSON pack can flag
 many records due to shared-pack fingerprints without changing those records'
 authored meaning. An uncited change is a coverage gap, **not clearance**.
 Use `workspace-changes` when the review also needs to compare authored records
-across two independently indexed source revisions.
+across two independently indexed source revisions. For a PR, give both
+commands `--pr-merge-base` with the same base tip and topic head; verify the
+effective base SHA agrees before interpreting the separate outputs.
 
 This is **review evidence preparation**, not a violation classifier, PR
 approval, verification of GitHub PR identity or its file list, complete Git
