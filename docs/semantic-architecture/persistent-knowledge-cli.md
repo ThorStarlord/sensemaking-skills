@@ -497,6 +497,21 @@ Both entrypoints use the existing exact-commit knowledge index. The
 reached by explicitly authored `serves_goal` edges and
 `governing_constraints` reached by direct `constrained_by` edges to
 invariant/constraint claims. It separately lists reviewed `non_goal` claims.
+For prospective planning, opt in to explicitly linked **possible futures**:
+
+```bash
+sensemaking-skills semantic workspace-query --operation product-outline --include-candidates --json
+```
+
+The optional `candidate_opportunities` group contains only direct
+`candidate_opportunity_for` links to reviewed `opportunity` claims. It is
+separate from `serving_records`, with each candidate's claim and relation
+epistemic status, source and bounded omission counts visible. It does not
+imply a selected strategy, implementation readiness, achieved goal or
+permission to act. A missing candidate edge remains `NOT_ASSESSED`. The
+flag works with both `workspace-query` and `knowledge-query`, is rejected
+for other operations, and leaves the default committed-review outline unchanged.
+
 Each visible goal/non-goal carries its statement, source reference and
 authority/epistemic labels. Each linked record carries its actual declared
 relation ID and claim kind; an opportunity is **not** a shipped capability.
@@ -510,7 +525,8 @@ before acting.
 
 `--limit 1..250` bounds each category of goals, non-goals and relationship
 rows. `total_counts`, `omitted_counts`, `serving_omitted`,
-`constraint_omitted`, `truncated` and `envelope_reference_coverage`
+`constraint_omitted`, optional `candidate_omitted`, `truncated` and
+`envelope_reference_coverage`
 disclose category and top-level record omissions. The bounded top-level
 `claims`/`relations` envelope may omit records referenced in a grouped
 entry; their original source and relation identity remain in the grouped
