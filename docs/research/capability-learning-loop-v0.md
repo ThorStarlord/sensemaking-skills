@@ -224,6 +224,40 @@ REVISIT / RETIRE TRIGGER
 
 This is a reasoning checklist, not a mandatory persisted object.
 
+### Context-qualified methodological learning and transfer
+
+A lesson may concern the **effectiveness or limits of a reasoning method**, not
+only a repository capability. An observed success or failure after `ACT`,
+`INQUIRE`, `CHALLENGE`, `EXPLORE`, `VERIFY`, `ESCALATE`, or `STOP` is not
+by itself proof that the method caused the outcome or should be favored elsewhere.
+
+For consequential reuse of such a lesson, distinguish four boundaries:
+
+- **Origin:** the source episode and revision, observed activity versus later
+  interpretation, and material task, agent, or host conditions.
+- **Retention:** the authorized durable source of the lesson, distinct from
+  whether a later agent actually retrieved and source-checked it.
+- **Applicability:** the proposed mechanism, present goal and decision context,
+  relevant similarities, exclusions, contrary cases, and changed conditions.
+- **Authority:** the active agent's warranted method choice and the receiving
+  repository's governing intent; origin-repository experience grants neither
+  cross-repository authority nor permission to change shared doctrine.
+
+A relevant lesson may **qualitatively influence** an active agent's preference
+among control moves after it checks current evidence, expected decision value,
+cost, reversibility, and applicability. The agent may use, adapt, or reject the
+precedent; even an applicable lesson does not mandate a mode switch. Keep the
+original observation intact when later evidence narrows, challenges, or retires
+its interpretation. Retention, retrieval, decision influence, outcome support,
+and comparative benefit remain different claims (see
+[Learning / Reconciliation](../../skills/using-sensemaking/references/learning-reconciliation-policy-v0.md),
+section 13A).
+
+This is an interpretive bridge to the existing
+[Metareasoning Policy](../../skills/using-sensemaking/references/metareasoning-policy-v0.md),
+not a new ontology kind, artifact, numeric method preference, mandatory step,
+automatic router, self-modifying policy, or evidence of improved agent behavior.
+
 ## 6A. Artifact production and ownership
 
 Capability learning does not require every Skill to emit a second, generic
