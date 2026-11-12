@@ -457,10 +457,13 @@ def register_semantic_commands(root_cli: click.Group) -> None:
                   help="Derived cache directory outside checkout (default: per-user cache)")
     @click.option("--refresh", is_flag=True, help="Rebuild both committed revision caches")
     @click.option("--limit", type=click.IntRange(1, 250), default=50)
+    @click.option("--pr-merge-base", is_flag=True,
+                  help="Use the unique Git merge base of --base-ref and --ref as the baseline")
     @click.option("--json", "output_json", is_flag=True)
     def semantic_workspace_changes(
         base_ref: str, ref: str, repo_dir: Path, repository_label: str | None,
-        index_dir: Path | None, refresh: bool, limit: int, output_json: bool,
+        index_dir: Path | None, refresh: bool, limit: int, pr_merge_base: bool,
+        output_json: bool,
     ) -> None:
         """Compare reviewed semantic knowledge at two commits without preparing a database."""
         from .workspace_knowledge import run_workspace_changes
@@ -469,7 +472,7 @@ def register_semantic_commands(root_cli: click.Group) -> None:
             payload = run_workspace_changes(
                 repo=repo_dir, base_ref=base_ref, ref=ref,
                 repository=repository_label, index_dir=index_dir,
-                refresh=refresh, limit=limit,
+                refresh=refresh, limit=limit, pr_merge_base=pr_merge_base,
             )
         except (ValueError, OSError, UnicodeError) as exc:
             raise click.ClickException(str(exc)) from exc
