@@ -349,6 +349,16 @@ warranted, keep three intellectual responsibilities distinct:
   Metareasoning/Exploration guidance to broaden, challenge, restart or stop
   *when warranted*, not after every expression.
 
+**AMS purpose-fit trigger (conditional):** Before a consequential
+handoff, commitment or closure, when apparently successful local work may not
+answer the original user/product question, compare the actual result and
+inspected scope with that question. A correctly answered Q0 can also expose a
+different consequential Q1 without making Q0 wrong. Preserve the valid answer;
+do not silently replace the selected question or owner intent. When this
+distinction would change the next move, load
+`references/metareasoning-policy-v0.md` for its bounded question/method
+fitness guidance. Do not add a checkpoint to routine, already well-scoped work.
+
 **Scope-at-closure backstop:** compare the original requested target and
 outcome with the systems/relationships actually inspected and the final
 claim. A source-grounded result about one component does not establish that
@@ -690,7 +700,7 @@ already stated above, so skipping a file never loses the rule.
 | `references/warrant-choice-policy-v0.md` | several credible targets compete and the choice matters | one obvious target | warrant for A != warrant for B |
 | `references/learning-reconciliation-policy-v0.md` | returned evidence could change claims, strategy or continuation | `NO_MODEL_CHANGE` is evident | result returned != state update |
 | `references/exploration-policy-v0.md` | several search attempts and the next search move is unclear | one-shot or local work | Exploration Policy != Strategic Frontier ranking |
-| `references/metareasoning-policy-v0.md` | how to spend the next unit of effort is genuinely unclear | acting is clearly cheaper | control move != responsibility authorized |
+| `references/metareasoning-policy-v0.md` | how to spend effort is genuinely unclear, or a consequential result's question/purpose fitness is disputed | an adequately scoped direct action is clearly better | control move != responsibility authorized; opened question != revised question |
 | `references/adaptive-guidance-v0.md` | choosing how much scaffolding, rigor or durability to use | direct work is obvious | supervision capability != expertise class |
 | `references/adaptive-policy-coordinator-v0.md` | several policy questions matter at once | one policy question or none | policy available != policy must activate |
 | `references/practical-agent-architecture-v0.md` | challenge vs exploration, delegated evidence return, persistence | no delegation or challenge in play | worker recommendation != parent decision |
