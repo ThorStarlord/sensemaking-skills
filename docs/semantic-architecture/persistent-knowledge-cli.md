@@ -437,6 +437,14 @@ and [SCL](../superpowers/specs/2026-11-12-sensemaking-continuous-learning-design
 a retrieval improvement does **not** establish independent lesson use or
 continuous learning benefit.
 
+The existing [hosted Semantic Context Re-entry consumer](../../.github/workflows/semantic-context-reentry.yml)
+now exercises the **real committed knowledge packs** with both
+`knowledge-query` and `workspace-query`, restricted and unrestricted
+search, repeated kinds, a rejected invalid kind, and exact source identity.
+Its passing run qualifies query mechanics at that tested commit only. It
+does **not** observe a later agent's predecision encounter or an improved
+engineering outcome.
+
 ## Product-level goal orientation (`product-outline`)
 
 For an engineering responsibility spanning more than one source file, retrieve
