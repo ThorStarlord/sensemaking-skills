@@ -88,7 +88,8 @@ sensemaking-skills semantic knowledge-build \
   --repo . --repository "owner/repository" --target-ref "$REF" \
   --db /outside-checkout/semantic.sqlite \
   --include-repository-structure --max-structural-files 600 \
-  --include-python-imports --max-imports 1000 --json
+  --include-python-imports --max-imports 1000 \
+  --include-manifest-dependencies --max-manifest-dependencies 1000 --json
 ```
 
 The existing rebuildable SQLite index retains the current schema and history.
@@ -97,8 +98,12 @@ placement only*, not runtime dependency or component responsibility.
 Indexed file records store exact source SHA256 fingerprints for later audit.
 Structural scope covers recognized entry documents, manifests and Python source
 under known source/test roots, with explicit truncation and no broad content
-extraction. The Python import probe remains independent and opt-in; both options
-may be combined without duplicate source claims.
+extraction. The Python import probe remains independent and opt-in. The existing supported
+manifest parser can now optionally retain only declarative dependency strings
+as source-linked `domain_concept` claims and `references` edges. Both
+projections can be combined with structural containment without duplicate
+source identities. No package resolution, runtime import, installation,
+dependency completeness or architecture ownership is inferred.
 
 Path and metadata extraction cannot establish application entrypoints, package
 semantics, database correctness, tests executed, or product intent.
