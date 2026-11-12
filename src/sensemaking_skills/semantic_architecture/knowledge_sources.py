@@ -359,7 +359,13 @@ def _import_syntax(root: Path, tracked: set[str], target_ref: str, limit: int) -
     truncated = len(items) > limit or result.completeness.value != "complete"
     claims: dict[str, KnowledgeClaim] = {}
     edges: list[KnowledgeRelation] = []
+    fingerprints: dict[str, dict[str, str]] = {}
     for item in sorted(items, key=lambda x: x.id)[:limit]:
+        if item.subject not in fingerprints:
+            fingerprints[item.subject] = _source_hashes(
+                root, tracked, (f"file:{item.subject}",),
+            )
+        hashes = fingerprints[item.subject]
         source_id = stable_id("file", item.subject)
         module_id = stable_id("module", item.object)
         for key, kind, statement in ((source_id, "source", item.subject), (module_id, "domain_concept", "Imported module syntax: " + item.object)):
@@ -368,13 +374,20 @@ def _import_syntax(root: Path, tracked: set[str], target_ref: str, limit: int) -
                     id=key, kind=kind, statement=statement, epistemic_status="observed",
                     authority_kind="mechanical", authority_ref="probe:python-imports-v1",
                     source_ref=f"file:{item.subject}", evidence_refs=item.evidence_refs,
-                    attributes={"scope": "Python AST import syntax only", "authority_verified": False},
+                    attributes={
+                        "scope": "Python AST import syntax only",
+                        "authority_verified": False,
+                        "source_sha256": hashes,
+                    },
                 )
         edges.append(KnowledgeRelation(
             id=stable_id("import", item.id), subject=source_id, predicate="references",
             object=module_id, epistemic_status="observed", derivation="mechanical",
             source_ref=f"file:{item.subject}", evidence_refs=item.evidence_refs,
-            attributes={"scope": "import syntax, not runtime or architecture"},
+            attributes={
+                "scope": "import syntax, not runtime or architecture",
+                "source_sha256": hashes,
+            },
         ))
     return list(claims.values()), edges, truncated
 
@@ -394,7 +407,13 @@ def _manifest_dependency_declarations(
     partial = len(items) > limit or result.completeness.value != "complete"
     claims: dict[str, KnowledgeClaim] = {}
     relations: dict[str, KnowledgeRelation] = {}
+    fingerprints: dict[str, dict[str, str]] = {}
     for item in sorted(items, key=lambda ob: ob.id)[:limit]:
+        if item.subject not in fingerprints:
+            fingerprints[item.subject] = _source_hashes(
+                root, tracked, (f"file:{item.subject}",),
+            )
+        hashes = fingerprints[item.subject]
         source_id = stable_id("file", item.subject)
         field = str(item.metadata.get("manifest_field", "unknown"))
         declaration_id = stable_id("manifest-dependency", item.subject, field, item.object)
@@ -405,8 +424,11 @@ def _manifest_dependency_declarations(
                 epistemic_status="observed", authority_kind="mechanical",
                 authority_ref="probe:manifest-dependencies-v1",
                 source_ref=source, evidence_refs=item.evidence_refs,
-                attributes={"scope": "Git-tracked manifest declaration source",
-                            "authority_verified": False},
+                attributes={
+                    "scope": "Git-tracked manifest declaration source",
+                    "authority_verified": False,
+                    "source_sha256": hashes,
+                },
             )
         claims[declaration_id] = KnowledgeClaim(
             id=declaration_id, kind="domain_concept",
@@ -414,8 +436,12 @@ def _manifest_dependency_declarations(
             epistemic_status="observed", authority_kind="mechanical",
             authority_ref="probe:manifest-dependencies-v1",
             source_ref=source, evidence_refs=item.evidence_refs,
-            attributes={"scope": "manifest declaration, not installed/runtime dependency",
-                        "manifest_field": field, "authority_verified": False},
+            attributes={
+                "scope": "manifest declaration, not installed/runtime dependency",
+                "manifest_field": field,
+                "authority_verified": False,
+                "source_sha256": hashes,
+            },
         )
         relation_id = stable_id("manifest-dependency-reference", item.id)
         relations[relation_id] = KnowledgeRelation(
@@ -423,8 +449,11 @@ def _manifest_dependency_declarations(
             subject=source_id, predicate="references", object=declaration_id,
             epistemic_status="observed", derivation="mechanical",
             source_ref=source, evidence_refs=item.evidence_refs,
-            attributes={"manifest_field": field,
-                        "scope": "declared dependency only; installation/import not established"},
+            attributes={
+                "manifest_field": field,
+                "scope": "declared dependency only; installation/import not established",
+                "source_sha256": hashes,
+            },
         )
     return list(claims.values()), list(relations.values()), partial
 
