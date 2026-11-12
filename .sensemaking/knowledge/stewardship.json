@@ -603,6 +603,44 @@
         "claim_ceiling": "Source and PR diff inspection. Local unit and synthetic evidence tests NOT_RUN under CLAUDE.md; no standalone future-commit equivalence claim.",
         "staleness_condition": "Reinspect if proposal-check begins consuming other dirty packs, staged blobs, structural/import modes, or a new source-state contract."
       }
+    },
+    {
+      "id": "incident:pr-review-diverged-tip-scope-20261112",
+      "kind": "incident",
+      "epistemic_status": "observed",
+      "statement": "On PR #838, the initially successful hosted committed-review consumer reported 10 changed paths for a seven-file PR because the caller compared a diverged topic head to the moving main tip. A corrected merge-base/head review reported seven paths on the later exact PR head.",
+      "authority_kind": "document",
+      "authority_ref": "docs/normal-use/2026-11-12-scl-pr-review-baseline-feedback.md",
+      "evidence_refs": [
+        "file:docs/normal-use/2026-11-12-scl-pr-review-baseline-feedback.md",
+        "file:.github/workflows/semantic-context-reentry.yml",
+        "file:.sensemaking/receipts/2026-11-12-committed-review-evidence-overlap.session.yaml"
+      ],
+      "attributes": {
+        "initial_pr_head": "8121ed5508efc1c3d3747986f3009aa97c61c303",
+        "corrected_pr_head": "ed6391547cc096023a12b54b5a4c5651b434f27e",
+        "initial_hosted_run": "https://github.com/ThorStarlord/sensemaking-skills/actions/runs/43175086527",
+        "corrected_hosted_run": "https://github.com/ThorStarlord/sensemaking-skills/actions/runs/43175430045",
+        "claim_ceiling": "Authentic hosted source-review scope failure and correction; not independent agent reuse or improved cognitive judgment."
+      }
+    },
+    {
+      "id": "lesson:pr-review-merge-base-is-scope-evidence",
+      "kind": "lesson",
+      "epistemic_status": "declared",
+      "statement": "When a PR-review consumer needs the PR change set, compare the topic head against its Git merge base with the target branch, not the moving base tip. Record the actual comparison refs and reconcile the reported changed paths with the PR's file set before interpreting source-overlap results; intentional arbitrary two-tree comparisons are different legitimate questions.",
+      "authority_kind": "document",
+      "authority_ref": "docs/normal-use/2026-11-12-scl-pr-review-baseline-feedback.md",
+      "evidence_refs": [
+        "file:docs/normal-use/2026-11-12-scl-pr-review-baseline-feedback.md",
+        "file:.github/workflows/semantic-context-reentry.yml",
+        "file:src/sensemaking_skills/workspace_knowledge.py"
+      ],
+      "attributes": {
+        "scope": "PR-scoped review consumers with potentially diverged branches; does not change workspace-review-context's explicit arbitrary revision-pair semantics.",
+        "claim_ceiling": "Context-qualified interpretation of one observed hosted caller failure. No cross-repository transfer, causal cognitive improvement or general method superiority established.",
+        "revisit_when": "A later reviewed PR consumer uses a different comparison question, or actual normal use establishes this lesson is misleading, noisy or stale."
+      }
     }
   ],
   "relations": [
@@ -1241,6 +1279,48 @@
         "file:src/sensemaking_skills/semantic_architecture/stewardship_validation.py",
         "file:docs/semantic-architecture/persistent-knowledge-cli.md"
       ]
+    },
+    {
+      "id": "rel:pr-review-merge-base-lesson-from-incident",
+      "subject": "lesson:pr-review-merge-base-is-scope-evidence",
+      "predicate": "learned_from",
+      "object": "incident:pr-review-diverged-tip-scope-20261112",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:docs/normal-use/2026-11-12-scl-pr-review-baseline-feedback.md"
+      ],
+      "attributes": {
+        "scope": "New interpretation after the original PR #838 receipt; does not backdate its pre-implementation rationale."
+      }
+    },
+    {
+      "id": "rel:semantic-cli-references-pr-review-scope-incident",
+      "subject": "component:semantic-cli",
+      "predicate": "references",
+      "object": "incident:pr-review-diverged-tip-scope-20261112",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:docs/normal-use/2026-11-12-scl-pr-review-baseline-feedback.md",
+        "file:.github/workflows/semantic-context-reentry.yml"
+      ],
+      "attributes": {
+        "scope": "Relevant only to this semantic CLI's committed PR-review wrapper and caller, not to arbitrary source file changes."
+      }
+    },
+    {
+      "id": "rel:semantic-cli-references-pr-review-merge-base-lesson",
+      "subject": "component:semantic-cli",
+      "predicate": "references",
+      "object": "lesson:pr-review-merge-base-is-scope-evidence",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:docs/normal-use/2026-11-12-scl-pr-review-baseline-feedback.md",
+        "file:src/sensemaking_skills/workspace_knowledge.py",
+        "file:.github/workflows/semantic-context-reentry.yml"
+      ],
+      "attributes": {
+        "scope": "Optional file-first historical context for the workspace-review-context consumer; source-verification and applicability remain required."
+      }
     }
   ]
 }
