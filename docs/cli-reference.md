@@ -87,7 +87,9 @@ provides opt-in ranked lexical question matching; it never infers semantic
 relevance. Existing `--subject` literal and `--term` OR search are unchanged.
 Use `semantic workspace-review-context --base-ref BASE --ref HEAD --json` to prepare
 BASE-revision product intent and per-changed-file architectural context from two
-committed Git revisions. It also exposes path-level overlaps with BASE cited
+committed Git revisions. For PR reviews, add `--pr-merge-base` with BASE as the
+target-branch tip to select the unique Git merge base; the default remains the
+explicit two-commit comparison. Missing or ambiguous merge bases fail closed. It also exposes path-level overlaps with BASE cited
 evidence and uncited changed-path gaps, without inferring semantic staleness.
 This is review evidence, not a drift/violation verdict.
 See `docs/semantic-architecture/persistent-knowledge-cli.md` for exact scope,

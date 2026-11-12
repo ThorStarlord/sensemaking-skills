@@ -458,12 +458,15 @@ def run_workspace_review_context(
     *, repo: str | Path, base_ref: str, ref: str = "HEAD",
     repository: str | None = None, index_dir: str | Path | None = None,
     refresh: bool = False, limit: int = 25, depth: int = 2, max_paths: int = 8,
+    pr_merge_base: bool = False,
 ) -> dict[str, Any]:
     """Review committed changed paths against source-pinned BASE product knowledge.
 
     This is evidence preparation, not architectural anomaly detection. The
     baseline is intentional: a deletion still has its prior file context, and
     code newly added at the target cannot silently create accepted intent.
+    An explicit PR-style mode uses the unique Git merge base as that baseline;
+    otherwise the given commits are compared exactly as supplied.
     """
     if not 1 <= limit <= 100 or not 0 <= depth <= 4 or not 1 <= max_paths <= 32:
         raise ValueError("review-context requires limit 1..100, depth 0..4 and max-paths 1..32")
@@ -473,8 +476,19 @@ def run_workspace_review_context(
     if not repo_dir.is_dir():
         raise ValueError(f"repository directory not found: {repo_dir}")
     root = _checkout_root(repo_dir)
-    base_sha = _resolve_commit(root, base_ref)
+    base_tip_sha = _resolve_commit(root, base_ref)
     sha = _resolve_commit(root, ref)
+    base_sha = base_tip_sha
+    if pr_merge_base:
+        merge = _git(root, "merge-base", "--all", base_tip_sha, sha)
+        ancestors = [line for line in merge.stdout.splitlines() if line]
+        if merge.returncode or len(ancestors) != 1 or not _SHA.fullmatch(ancestors[0]):
+            raise ValueError(
+                "cannot establish a unique PR merge base for the supplied commits; "
+                "fetch sufficient Git history or use an explicit --base-ref "
+                "without --pr-merge-base"
+            )
+        base_sha = ancestors[0]
     label, label_source = _repository_label(root, repository)
 
     # Both operands are commit trees. Git does not read the worktree or execute
@@ -563,6 +577,9 @@ def run_workspace_review_context(
         "committed_evidence_reinspection": committed_overlap,
         "review_scope": {
             "base_ref_requested": base_ref, "target_ref_requested": ref,
+            "base_tip_ref": base_tip_sha,
+            "comparison_mode": "pr_merge_base" if pr_merge_base else "explicit_commits",
+            "merge_base_calculated": pr_merge_base,
             "changed_paths_total": len(raw_paths),
             "changed_paths_with_valid_context": len(paths),
             "source_overlap_paths_assessed": len(committed_changed_paths),
@@ -571,11 +588,15 @@ def run_workspace_review_context(
             "omitted_path_sample": paths[max_paths:max_paths + 16],
             "per_path_limit": limit, "max_paths": max_paths,
             "source_intent_revision": base_sha,
-            "git_ancestry_assessed": False, "working_changes_indexed": False,
+            "git_ancestry_assessed": pr_merge_base, "working_changes_indexed": False,
             "source_diff_semantics_assessed": False,
             "architectural_drift_established": False,
             "note": (
-                "Only committed changed path names were compared. Product "
+                ("PR scope uses the unique Git merge base, not the moving base "
+                 "tip; GitHub PR identity and its server file list are not "
+                 "verified. " if pr_merge_base else
+                 "Two explicit committed trees were compared. ")
+                + "Only committed changed path names were compared. Product "
                 "intent, evidence fingerprints and per-file contexts are "
                 "from the BASE revision. Cited-source overlap marks "
                 "re-inspection candidates, not stale knowledge or changed "
@@ -595,8 +616,9 @@ def run_workspace_review_context(
             "Source-overlap inspection covers every valid changed path even "
             "when per-path context is omitted; capped record and uncited-path "
             "lists remain truncated. A source overlap is not semantic drift.",
-            "Uncommitted changes, rename attribution, Git ancestry, runtime "
-            "behavior and architectural drift are not assessed.",
+            "Uncommitted changes, rename attribution, GitHub PR identity and "
+            "file-list equality, complete Git ancestry, runtime behavior and "
+            "architectural drift are not assessed.",
         ],
         "workspace_context": inspect_worktree_context(root, base_sha),
         "workspace_index": {
