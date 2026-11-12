@@ -1111,8 +1111,10 @@ Use `workspace-changes` when the review also needs to compare authored records
 across two independently indexed source revisions.
 
 This is **review evidence preparation**, not a violation classifier, PR
-approval, proof of Git ancestry, source-behavior analysis, observed runtime
-impact or semantic truth. The agent must inspect original sources, actual
+approval, verification of GitHub PR identity or its file list, complete Git
+ancestry analysis, source-behavior analysis, observed runtime impact or semantic
+truth. Opt-in merge-base selection establishes the comparison's shared
+ancestor only; it does not qualify the review or substitute for source checks. The agent must inspect original sources, actual
 code changes and authoritative decisions before making a judgment. Unlike
 `workspace-changes`, this command compares code path names rather than
 knowledge-record payloads. Neither command replaces the other.
