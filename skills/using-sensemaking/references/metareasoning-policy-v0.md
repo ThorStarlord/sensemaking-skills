@@ -237,6 +237,62 @@ no move expected to improve the decision enough to justify cost
 Select the **smallest control move** likely to improve the decision or safely advance
 the already-selected responsibility.
 
+## 5a. AMS question/method fitness when consequential
+
+**Activation:** An apparently successful local result is being used to justify
+an important continuation, stopping decision or larger-scope conclusion,
+but its relevance to the originally authorized purpose is uncertain; or a
+poor result makes a consequential method/question change plausible. This is
+**not** a periodic reflection stage. Ordinary narrow, adequately scoped work
+continues to ACT / VERIFY / STOP without extra ceremony.
+
+At the consequential choice, compare (from actual sources and observable
+work, not claimed private reasoning):
+
+- **Purpose:** the original requested target, question, beneficiary, scope and
+  current authority. Preserve genuinely open ends separately from ratified ones.
+- **Progress:** what the work actually answered, which sources/components were
+  examined, and what remains materially unassessed.
+- **Fitness:** whether the result supports *that* decision; technically correct
+  source detail does not establish repository-wide completion, and more
+  alternatives do not establish better reasoning.
+
+Distinguish three different responses rather than calling every new question
+a correction:
+
+- **Corrective reframing:** source or scope evidence shows Q0's premise/frame
+  was inadequate for the governing purpose. Retain valid findings, identify the
+  specific inadequacy, and change only the warranted question/method boundary.
+- **Productive question evolution:** Q0 remains valid and its answer is useful,
+  but the result reveals a separate, potentially consequential Q1. Preserve Q0,
+  treat Q1 as a provisional inquiry subject to its own relevance, cost, warrant
+  and authority; no automatic goal selection or continuation.
+- **Tangent / adequate closure:** Q1 is not consequential to the current purpose,
+  or Q0 is already sufficiently answered. Do not expand the task; ACT, VERIFY
+  or STOP as appropriate.
+
+When an observed inadequacy **actually** calls for diagnosis, distinguish
+competing causes only as far as they could change the next action: missing or
+stale evidence, faulty inference, unsuitable or misexecuted method, poor method
+composition, inadequate question/frame, unavailable Skill/tool or host,
+and external/owner authority. A disappointing result is not proof of method
+failure. Prefer a cheap source read or other discriminating observation
+before a wholesale restart; use existing abductive guidance when a real
+multi-explanation inquiry is warranted.
+
+If a *specific* retained methodological lesson could change the choice,
+use existing SCL/Steward RECALL to inspect its source, currentness,
+applicability and counterevidence **before** applying, adapting or rejecting
+it. Lesson retrieval is not instruction priority, host proof, or authority.
+A relevant lesson may justify preserving the current method rather than
+switching.
+
+**Output only when material:** the retained Q0 result, the specific observed
+fit/mismatch, the smallest justified control move, any provisional Q1 and
+why it is or is not currently warranted. Use existing question/frame and
+provenance semantics when durable continuity is necessary; no new machine
+record, status, score or automatic prompt chain follows.
+
 ## 6. Tie handling
 
 Several moves may be plausible.
@@ -315,6 +371,9 @@ Would acting now be cheap, reversible, and sufficiently warranted?
 Do consequence or irreversibility justify challenge?
 
 Is the option/frame set too narrow?
+
+If apparently successful progress is consequential, does it answer the
+original question, justify a correction, or merely open a separate question?
 
 Is there a result/claim that should be verified before further commitment?
 

@@ -171,3 +171,51 @@ Current CLAUDE.md controls branch naming, PR source/diff review, NOT_RUN local u
 **Verification:** exact GitHub source/diff review; no local unit/synthetic tests added or manually run under current CLAUDE.md policy (**NOT_RUN**). No hosted checks are asserted unless reviewed at exact revision. A merge does not qualify metareasoning efficacy.
 
 **Continuation:** When independently worthwhile repository work naturally presents a consequential question/method choice with accessible original evidence, evaluate it using the existing control and Learning/Reconciliation guidance. Do not create a synthetic episode or another policy solely to check a milestone. Otherwise STOP the AMS-specific construction slice and continue ordinary PATH-1 product work when warranted.
+
+## 2026-11-12 AMS question/method fitness implementation continuation
+
+**Source baseline:** main 393a2f5b3a32a1c9610f6172bbfcbccb4014a791
+(PR #840 merge); source/authority reviewed at the current revision before
+this bounded change.
+
+**Actual product responsibility:** The owner asked to advance AMS beyond
+product naming. The canonical Metareasoning Policy already chooses
+ACT / INQUIRE / CHALLENGE / EXPLORE / VERIFY / ESCALATE / STOP, and the core
+Skill already has a scope-at-closure backstop. However, the portable
+policy did not provide a compact **decision-time distinction** among an
+inadequately framed Q0, a valid answer that opens Q1, and a non-consequential
+tangent, or a conditional cause check before switching methods. These
+distinctions were developed in the existing Stage 3/4 research but most
+worked examples lived outside the portable agent policy. The 2026-10-27
+owner-shared repository-target scope miss is a relevant bounded historical
+failure; it does not establish prevalence or that this intervention fixes it.
+
+**Selected reversible product improvement:** Keep the single controller,
+add one **conditional purpose-fit activation cue** in using-sensemaking,
+extend the existing Metareasoning Policy with source/purpose comparison,
+corrective-reframe vs productive-new-question vs tangent differentiation,
+minimum causal diagnosis, proportional correction and optional
+source-checked SCL methodological precedent. No separate AMS Skill,
+automatic router, method score, new semantic type or mandatory audit is added.
+
+**Alternatives / value:**
+- No action preserves minimal text but leaves the owner-selected AMS
+  question-fitness distinction mostly in repository-specific research.
+- An AMS engine or broad controller rewrite would exceed observed
+  consumer need, increase process cost and duplicate current authority.
+- A conditional portable addition uses the existing reference that is
+  only loaded when the decision is consequential.
+
+**Evidence ceiling / AMS milestones:** This is a real source-reviewed
+agent-facing improvement serving M1 and the *guidance/application aspect*
+of M2, M3 and M4. It is not an independent fresh-agent execution, an
+empirical demonstration of question/method correction, SCL decision benefit,
+or a validated causal improvement. The original behavioral qualification
+checklists remain open, especially M2-M6. M5 tracing extensions and M7
+mechanical assistance are not warranted merely by this guidance change.
+
+**Verification:** Source/diff inspection only. Under current CLAUDE.md,
+local unit and synthetic tests were not added or manually run (NOT_RUN);
+hosted CI remains the repository validation surface. Any later independent
+evaluation must verify exact Skill availability/loading and preserve original
+observable events; do not reconstruct private cognition.
