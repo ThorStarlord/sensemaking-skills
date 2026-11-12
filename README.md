@@ -27,6 +27,7 @@ catalog.
 | Need | Start here |
 | --- | --- |
 | Human installation / first use | [`GETTING_STARTED.md`](GETTING_STARTED.md) |
+| **Learn from engineering episodes**: recover relevant historical lessons and revisit them as the next decision changes | [Sensemaking Continuous Learning (SCL)](docs/adr/0035-sensemaking-continuous-learning.md) and the [first-use lesson recall](GETTING_STARTED.md#learn-from-prior-engineering-episodes-scl) |
 | **Any repository request**: understand it, explore what it could become, choose a direction, or (when authorized) implement | [`skills/using-sensemaking/SKILL.md`](skills/using-sensemaking/SKILL.md), the single entrypoint |
 | Optional downstream implementation in any repository, including ones without Sensemaking docs | the [portable construction reference](skills/using-sensemaking/references/portable-construction-loop-v1.md), loaded by `using-sensemaking` |
 | Maintainers: resume a long-horizon or full-autonomy terminal mission directly | [`skills/strategic-sensemaking-loop/SKILL.md`](skills/strategic-sensemaking-loop/SKILL.md) (normally composed by `using-sensemaking`) |
@@ -68,6 +69,32 @@ references, journey, Organization, semantic-architecture, and historical
 surfaces are **advanced/reference material**, not prerequisites for normal use.
 
 For the retained detailed control-architecture crosswalk, see `docs/adaptive-semantic-control-architecture-v0.md`; it is an advanced reference, not a required navigation step.
+
+### Continuous learning: retain useful experience, not every event
+
+[Sensemaking Continuous Learning (SCL)](docs/adr/0035-sensemaking-continuous-learning.md)
+is an **owner-selected intended product capability**: every observable engineering
+episode is eligible for proportionate learning consideration, while only
+consequential, source-grounded experience needs durable retention. Product and
+methodological lessons remain distinct. A later agent may retrieve, use,
+qualify or **reject** historical experience after checking the original source,
+current circumstances and authority.
+
+For example, with a compatible source-installed CLI in a target repository:
+
+```bash
+sensemaking-skills semantic workspace-query --operation search \
+  --search-kind lesson --query-text "query completeness evidence" --json
+```
+
+This is optional, exact-revision lexical **discovery** over reviewed records,
+not an automated lesson extractor or a reliable semantic match. A returned
+candidate must be source-checked; no result does **not** imply there are no
+lessons. The CLI is not required for ordinary agent work. Follow the
+[human first-use guide](GETTING_STARTED.md#learn-from-prior-engineering-episodes-scl)
+for the full question-to-feedback example. Independent later-agent benefit,
+cross-episode methodological improvement and automatic learning remain
+**unqualified**.
 
 ### Choose the lightest useful process
 
