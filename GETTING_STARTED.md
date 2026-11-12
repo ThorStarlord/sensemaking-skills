@@ -177,6 +177,55 @@ assuming historical information is complete. See the
 This discovery guidance does not install Skills or enable other harnesses
 automatically.
 
+### Learn from prior engineering episodes (SCL)
+
+[Sensemaking Continuous Learning](docs/adr/0035-sensemaking-continuous-learning.md)
+is the selected future-facing capability for making engineering experience
+useful across sessions. Every real, observable engineering episode is
+**eligible** for a cheap learning consideration; not every task needs a new
+lesson, new file or a time-consuming postmortem.
+
+Ask the active coding agent a consequential, source-oriented question such as
+*"What did previous work teach us about query completeness, and does that
+experience apply to the code I am modifying?"* If reviewed lesson records
+exist, the current source-installed CLI can narrow lexical discovery to them,
+without requiring the historical lesson's ID up front:
+
+```bash
+sensemaking-skills semantic workspace-query --operation search \
+  --search-kind lesson --query-text "query completeness evidence" --json
+```
+
+The no-setup command builds or reuses a **derived** index of a committed Git
+revision outside the checkout; on a dirty worktree it indexes committed
+source rather than uncommitted edits. It is a read-only source-backed query
+from the user's point of view, with a separately cached index; it is **not**
+a passive monitor of every work session. Search is lexical, so zero hits
+mean no matching indexed text, **not** no relevant experience.
+
+A useful next step is to ask the agent to open the returned lesson's original
+`authority_ref` and `evidence_refs`, inspect the current target file, and
+explain whether the original failure mechanism still applies. The agent may
+**apply, narrow or reject** the historical method/knowledge. The source
+episode and current repository retain distinct revisions and authority.
+
+After the real task, use the **existing** Learning/Reconciliation guidance to
+decide whether new evidence materially changes product knowledge, the old
+lesson's interpretation, the responsibility or the agent's conditional
+reasoning method. Preserve only changes future sessions need in the narrowest
+existing Git-reviewed or execution surface. A routine correct edit can finish
+with implicit `NO_MODEL_CHANGE` and no extra artifact. Never infer causal
+benefit merely from a query hit, an agent's post-hoc account or passing CI.
+
+Current implementation includes reviewed lesson retrieval, source/revision
+disclosure, and agent-facing eligibility/reconciliation guidance. **A
+fully automatic learning engine, independent reuse, comparative benefit and
+cross-repository method transfer have not been established.** See the
+[SCL program](docs/superpowers/plans/2026-11-12-sensemaking-continuous-learning.md)
+for evidence gates and
+[the CLI contract](docs/semantic-architecture/persistent-knowledge-cli.md#search-only-reviewed-lessons-or-other-claim-kinds---search-kind)
+for query details. No additional Skill or Campaign is required for this use.
+
 ### Optional: attach the view to an active Campaign
 
 Use this only when a Campaign already binds the target and its responsibility is
