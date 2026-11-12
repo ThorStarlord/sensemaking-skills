@@ -1,14 +1,14 @@
 # Sensemaking Continuous Learning (SCL) — Product Design v0
 
 **Date:** 2026-11-12
-**Status:** owner-endorsed proposed product direction; planning, **not implemented behavior or ratified new ADR**.
+**Status:** owner-ratified intended product capability via ADR 0035; design/planning only, **not evidence of end-to-end behavior or benefit**.
 **Assessed repository:** `ThorStarlord/sensemaking-skills@3a5658b58029535dd5400388343cac8e760c3468`. Recheck current `main` before execution.
 **Companion:** [SCL development plan](../plans/2026-11-12-sensemaking-continuous-learning.md).
 **Existing authority:** [product strategy](../../product-strategy.md), ADRs [0029](../../adr/0029-current-product-boundary.md), [0031](../../adr/0031-persistent-semantic-stewardship.md), [0034](../../adr/0034-ontology-first-adaptive-sensemaking.md), [Level-4 contract](../../product-thesis-revision.md), [Capability Learning Loop v0](../../research/capability-learning-loop-v0.md), [Learning/Reconciliation](../../../skills/using-sensemaking/references/learning-reconciliation-policy-v0.md).
 
 ## 1. Desired end
 
-**Sensemaking Continuous Learning (SCL)** is the proposed first-class capability through which ordinary engineering work contributes to progressively better, source-grounded understanding of a product and better context-sensitive engineering judgment across sessions, agents and repositories.
+**Sensemaking Continuous Learning (SCL)** is the intended first-class capability through which ordinary engineering work contributes to progressively better, source-grounded understanding of a product and better context-sensitive engineering judgment across sessions, agents and repositories.
 
 The owner favors deliberate learning from **every engineering episode**. Interpret "every" as **every in-scope observable episode is eligible for lightweight learning consideration**, not "persist a new lesson or modify doctrine every time." This protects the intended user end: better subsequent decisions, not more records or compulsory reasoning ceremony.
 
@@ -104,5 +104,5 @@ NORMAL ENGINEERING EPISODE
 
 **Later conditional opportunities:** deliberate cross-episode synthesis, targeted skill/reference improvements, safe cross-repository transfer, human-readable learning explanation, and eventually mechanized assistance at a proven narrow seam. An automatic extractor, background monitor or generalized learning engine requires a separate warrant, governance and safety decision.
 
-The owner accepted the direction conversationally; this design does not silently change `docs/product-strategy.md` or an ADR. A canonical Level-4 ratification uses `docs/product-thesis-revision.md` and an explicit owner-authorized update, separate from product construction and empirical qualification.
+The owner's explicit direction is recorded in [ADR 0035](../../adr/0035-sensemaking-continuous-learning.md) and the canonical product strategy. This design remains a program for qualifying and constructing that selected capability, **not** evidence that independent experience-driven learning or comparative benefit has occurred.
 
