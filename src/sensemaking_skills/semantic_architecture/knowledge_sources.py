@@ -429,7 +429,7 @@ def _manifest_dependency_declarations(
 
 
 def build_knowledge_snapshot(
-    repo_root: str | Path, *
+    repo_root: str | Path, *,
     repository: str, target_ref: str,
     include_python_imports: bool = False,
     max_imports: int = 1000,
