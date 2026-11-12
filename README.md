@@ -28,6 +28,7 @@ catalog.
 | --- | --- |
 | Human installation / first use | [`GETTING_STARTED.md`](GETTING_STARTED.md) |
 | **Learn from engineering episodes**: recover relevant historical lessons and revisit them as the next decision changes | [Sensemaking Continuous Learning (SCL)](docs/adr/0035-sensemaking-continuous-learning.md) and the [first-use lesson recall](GETTING_STARTED.md#learn-from-prior-engineering-episodes-scl) |
+| **Choose how to reason**: check question/method fitness and allocate intellectual effort without a second controller | [Adaptive Metareasoning System (AMS)](docs/adr/0036-adaptive-metareasoning-system.md) and [first-use example](GETTING_STARTED.md#regulate-reasoning-with-ams) |
 | **Any repository request**: understand it, explore what it could become, choose a direction, or (when authorized) implement | [`skills/using-sensemaking/SKILL.md`](skills/using-sensemaking/SKILL.md), the single entrypoint |
 | Optional downstream implementation in any repository, including ones without Sensemaking docs | the [portable construction reference](skills/using-sensemaking/references/portable-construction-loop-v1.md), loaded by `using-sensemaking` |
 | Maintainers: resume a long-horizon or full-autonomy terminal mission directly | [`skills/strategic-sensemaking-loop/SKILL.md`](skills/strategic-sensemaking-loop/SKILL.md) (normally composed by `using-sensemaking`) |
@@ -95,6 +96,23 @@ lessons. The CLI is not required for ordinary agent work. Follow the
 for the full question-to-feedback example. Independent later-agent benefit,
 cross-episode methodological improvement and automatic learning remain
 **unqualified**.
+
+### Adaptive metareasoning: the right intellectual move, not more ceremony
+
+[Adaptive Metareasoning System (AMS)](docs/adr/0036-adaptive-metareasoning-system.md)
+is the **owner-selected intended cognitive-regulation capability** of the
+existing using-sensemaking entrypoint. Its policies help an active agent judge
+whether the governing question and method still fit the purpose, distinguish
+misleading progress from valid inquiry, and choose a proportional next move
+including direct action, reframing or stopping. See the [AMS design](docs/superpowers/specs/2026-11-12-adaptive-metareasoning-system-design.md)
+and [implementation program](docs/superpowers/plans/2026-11-12-adaptive-metareasoning-system.md).
+
+AMS and SCL cooperate but do not merge: **AMS chooses how to reason now; SCL
+selectively retains and retrieves experience that might help later.** AMS has
+existing agent-facing policies and ordinary execution tools, but reliable
+independent question/method adaptation and comparative benefit remain
+**not qualified**. No new controller, mode-ranking engine or mandatory
+reflection phase has been implemented.
 
 ### Choose the lightest useful process
 
