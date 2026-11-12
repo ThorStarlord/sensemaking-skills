@@ -492,6 +492,9 @@ def run_workspace_review_context(
     ]
     unrepresentable_count = len(raw_paths) - len(paths)
     selected = paths[:max_paths]
+    # Include every representable changed path in source-overlap review even if
+    # per-file context is bounded to the first max_paths paths.
+    committed_changed_paths = frozenset(paths)
 
     clone_dir, database = _cache_paths(root, index_dir, base_sha)
     state, build_source = _ensure_snapshot(
@@ -502,14 +505,44 @@ def run_workspace_review_context(
             database, repository=label, target_ref=base_sha,
             operation="product-outline", limit=limit,
         )
+        # Reuse the same reviewed-source fingerprint overlap as workspace-impact.
+        # Here its changed paths come from TWO COMMITS, not the working overlay.
+        impact = query_knowledge(
+            database, repository=label, target_ref=base_sha,
+            operation="workspace-impact", limit=limit,
+            workspace_changed_paths=committed_changed_paths,
+        )
+        committed_overlap = dict(impact["workspace_impact"])
+        committed_overlap.pop("workspace_impact_limit", None)
+        committed_overlap["source_ref"] = base_sha
+        committed_overlap["compared_ref"] = sha
+        committed_overlap["note"] = (
+            "Path-level overlap of BASE reviewed source fingerprints with "
+            "committed changed paths (not worktree changes). A cited file "
+            "changing warrants re-inspection, not a stale or invalid claim "
+            "verdict. Uncited paths are coverage gaps; absent fingerprints, "
+            "mechanical observations and unrepresentable paths are NOT ASSESSED."
+        )
         contexts = []
         for path in selected:
             result = query_knowledge(
                 database, repository=label, target_ref=base_sha,
                 operation="context-for", subject=path, limit=limit, depth=depth,
+                workspace_changed_paths=committed_changed_paths,
             )
+            context = result["context"]
+            relevance = context.pop("workspace_relevance")
+            relevance["note"] = (
+                "BASE context and its unanchored relevance candidates are "
+                "compared with committed changed path names, not working-tree "
+                "bytes. Fingerprint overlap flags original sources for "
+                "re-inspection but cannot establish relevance, staleness, "
+                "architectural meaning or changed behavior. Missing links "
+                "remain NOT ASSESSED."
+            )
+            context["committed_change_relevance"] = relevance
             contexts.append({
-                "path": path, "context": result["context"],
+                "path": path, "context": context,
                 "claims": result["claims"], "relations": result["relations"],
                 "truncated": result["truncated"],
             })
@@ -527,10 +560,12 @@ def run_workspace_review_context(
         "product_claims": outline["claims"],
         "product_relations": outline["relations"],
         "contexts": contexts,
+        "committed_evidence_reinspection": committed_overlap,
         "review_scope": {
             "base_ref_requested": base_ref, "target_ref_requested": ref,
             "changed_paths_total": len(raw_paths),
             "changed_paths_with_valid_context": len(paths),
+            "source_overlap_paths_assessed": len(committed_changed_paths),
             "selected_paths": selected, "omitted_path_count": omitted,
             "unrepresentable_path_count": unrepresentable_count,
             "omitted_path_sample": paths[max_paths:max_paths + 16],
@@ -541,20 +576,25 @@ def run_workspace_review_context(
             "architectural_drift_established": False,
             "note": (
                 "Only committed changed path names were compared. Product "
-                "intent and per-file contexts are from the BASE revision. "
-                "Files added at target may have no baseline context; missing "
-                "links are NOT ASSESSED. Open original sources and inspect "
-                "the actual diff before judging the change."
+                "intent, evidence fingerprints and per-file contexts are "
+                "from the BASE revision. Cited-source overlap marks "
+                "re-inspection candidates, not stale knowledge or changed "
+                "meaning. Files added at target may have no baseline context; "
+                "missing links are NOT ASSESSED. Inspect the actual diff."
             ),
         },
         "truncated": bool(
-            outline["truncated"] or omitted or unrepresentable_count
+            outline["truncated"] or impact["truncated"]
+            or omitted or unrepresentable_count
             or any(entry["truncated"] for entry in contexts)
         ),
         "source_scope": outline["source_scope"],
         "explicit_limits": [
             *outline["explicit_limits"],
             "Only the first max-paths Git changed paths receive BASE context.",
+            "Source-overlap inspection covers every valid changed path even "
+            "when per-path context is omitted; capped record and uncited-path "
+            "lists remain truncated. A source overlap is not semantic drift.",
             "Uncommitted changes, rename attribution, Git ancestry, runtime "
             "behavior and architectural drift are not assessed.",
         ],
@@ -565,7 +605,7 @@ def run_workspace_review_context(
             "repository_label_verified": False,
             "index_path": str(database), "index_state": state,
             "build_source": build_source,
-            "equivalent_operations": ["product-outline", "context-for"],
+            "equivalent_operations": ["product-outline", "context-for", "workspace-impact"],
         },
         "semantic_truth_established": False, "action_authorized": False,
     }

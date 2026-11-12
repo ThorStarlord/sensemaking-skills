@@ -254,3 +254,60 @@ jobs:
               "decision_benefit_established": False,
           }, sort_keys=True))
           PY
+
+      - name: Read committed source-overlap review packet for the actual PR
+        if: github.event_name == 'pull_request'
+        shell: bash
+        env:
+          REVIEW_BASE: ${{ github.event.pull_request.base.sha }}
+          REVIEW_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          # PR changes are relative to merge-base, NOT the moving main tip.
+          # Otherwise a diverged head wrongly includes changes made on main.
+          git fetch --no-tags --depth=64 origin "$REVIEW_BASE" "$REVIEW_HEAD"
+          if ! REVIEW_START="$(git merge-base "$REVIEW_BASE" "$REVIEW_HEAD")"; then
+            git fetch --no-tags --unshallow origin
+            REVIEW_START="$(git merge-base "$REVIEW_BASE" "$REVIEW_HEAD")"
+          fi
+          test -n "$REVIEW_START"
+          export REVIEW_START
+          sensemaking-skills semantic workspace-review-context \
+            --repo . --repository ThorStarlord/sensemaking-skills \
+            --base-ref "$REVIEW_START" --ref "$REVIEW_HEAD" \
+            --index-dir "$RUNNER_TEMP/committed-review-index" \
+            --max-paths 8 --limit 25 --json > "$RUNNER_TEMP/review-context.json"
+          REVIEW_PACKET="$RUNNER_TEMP/review-context.json" python - <<'PY'
+          import json
+          import os
+
+          with open(os.environ['REVIEW_PACKET'], encoding='utf-8') as stream:
+              packet = json.load(stream)
+          scope = packet['review_scope']
+          overlap = packet['committed_evidence_reinspection']
+          assert packet['base_ref'] == os.environ['REVIEW_START']
+          assert packet['target_ref'] == os.environ['REVIEW_HEAD']
+          assert overlap['source_ref'] == packet['base_ref']
+          assert overlap['compared_ref'] == packet['target_ref']
+          assert overlap['changed_path_total'] == scope['source_overlap_paths_assessed']
+          assert len(packet['contexts']) == min(
+              scope['changed_paths_with_valid_context'], scope['max_paths'],
+          )
+          assert overlap['affected_record_total'] >= len(overlap['affected_records'])
+          assert overlap['uncited_changed_path_total'] >= len(overlap['uncited_changed_paths'])
+          assert all('committed_change_relevance' in item['context'] for item in packet['contexts'])
+          assert packet['semantic_truth_established'] is False
+          assert packet['action_authorized'] is False
+          print(json.dumps({
+              'consumer': 'committed-source-evidence-review',
+              'source_ref': packet['base_ref'],
+              'pr_base_tip': os.environ['REVIEW_BASE'],
+              'target_ref': packet['target_ref'],
+              'changed_paths': scope['changed_paths_total'],
+              'uncited_changed_paths': overlap['uncited_changed_path_total'],
+              'affected_reviewed_records': overlap['affected_record_total'],
+              'truncated': packet['truncated'],
+              'review_packet_valid': True,
+              'agent_benefit_established': False,
+          }, sort_keys=True))
+          PY
