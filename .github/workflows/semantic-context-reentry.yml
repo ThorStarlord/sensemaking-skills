@@ -283,7 +283,9 @@ jobs:
           assert overlap['source_ref'] == packet['base_ref']
           assert overlap['compared_ref'] == packet['target_ref']
           assert overlap['changed_path_total'] == scope['source_overlap_paths_assessed']
-          assert scope['changed_paths_total'] > 0
+          assert len(packet['contexts']) == min(
+              scope['changed_paths_with_valid_context'], scope['max_paths'],
+          )
           assert overlap['affected_record_total'] >= len(overlap['affected_records'])
           assert overlap['uncited_changed_path_total'] >= len(overlap['uncited_changed_paths'])
           assert all('committed_change_relevance' in item['context'] for item in packet['contexts'])
