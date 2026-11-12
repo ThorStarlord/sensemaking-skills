@@ -263,11 +263,18 @@ jobs:
           REVIEW_HEAD: ${{ github.event.pull_request.head.sha }}
         run: |
           set -euo pipefail
-          # The original baseline may not be in checkout's shallow HEAD history.
-          git fetch --no-tags --depth=1 origin "$REVIEW_BASE"
+          # PR changes are relative to merge-base, NOT the moving main tip.
+          # Otherwise a diverged head wrongly includes changes made on main.
+          git fetch --no-tags --depth=64 origin "$REVIEW_BASE" "$REVIEW_HEAD"
+          if ! REVIEW_START="$(git merge-base "$REVIEW_BASE" "$REVIEW_HEAD")"; then
+            git fetch --no-tags --unshallow origin
+            REVIEW_START="$(git merge-base "$REVIEW_BASE" "$REVIEW_HEAD")"
+          fi
+          test -n "$REVIEW_START"
+          export REVIEW_START
           sensemaking-skills semantic workspace-review-context \
             --repo . --repository ThorStarlord/sensemaking-skills \
-            --base-ref "$REVIEW_BASE" --ref "$REVIEW_HEAD" \
+            --base-ref "$REVIEW_START" --ref "$REVIEW_HEAD" \
             --index-dir "$RUNNER_TEMP/committed-review-index" \
             --max-paths 8 --limit 25 --json > "$RUNNER_TEMP/review-context.json"
           REVIEW_PACKET="$RUNNER_TEMP/review-context.json" python - <<'PY'
@@ -278,7 +285,7 @@ jobs:
               packet = json.load(stream)
           scope = packet['review_scope']
           overlap = packet['committed_evidence_reinspection']
-          assert packet['base_ref'] == os.environ['REVIEW_BASE']
+          assert packet['base_ref'] == os.environ['REVIEW_START']
           assert packet['target_ref'] == os.environ['REVIEW_HEAD']
           assert overlap['source_ref'] == packet['base_ref']
           assert overlap['compared_ref'] == packet['target_ref']
@@ -294,6 +301,7 @@ jobs:
           print(json.dumps({
               'consumer': 'committed-source-evidence-review',
               'source_ref': packet['base_ref'],
+              'pr_base_tip': os.environ['REVIEW_BASE'],
               'target_ref': packet['target_ref'],
               'changed_paths': scope['changed_paths_total'],
               'uncited_changed_paths': overlap['uncited_changed_path_total'],
