@@ -25,8 +25,8 @@ Do not create a second controller, another Skill package, automatic cognitive ro
 
 | ID | Outcome | Prerequisite / acceptance | Status at planning |
 | --- | --- | --- | --- |
-| M0 / AMS-P0 | First-class capability contract and authority alignment | Accepted owner decision, design/plan and Level-3 applicability reconciliation | This initial product slice |
-| M1 / AMS-P1 | Discoverable operating entry and authentic vertical | First-use path through existing Skill; actual independent-worthy engineering work; correctly bounded evidence | First-use guidance in initial slice; authentic qualification OPEN |
+| M0 / AMS-P0 | First-class capability contract and authority alignment | Accepted owner decision, design/plan and Level-3 applicability reconciliation | **INTEGRATED** via PR #839 |
+| M1 / AMS-P1 | Discoverable operating entry and authentic vertical | First-use path through existing Skill; actual independent-worthy engineering work; correctly bounded evidence | **DISCOVERABILITY INTEGRATED** by PR #839 and this follow-up; authentic behavioral evidence OPEN |
 | M2 / AMS-P2 | Purpose/question fitness in real work | A consequential drift or valid-answer/new-question case, original source and discrimination | Conditional |
 | M3 / AMS-P3 | Method-failure diagnosis and minimum correction | A genuine inadequate outcome with plausible competing causes | Conditional |
 | M4 / AMS-P4 | Learning-informed decision using SCL | Relevant earlier methodological experience and actual later decision-time consumer | SCL foundation exists; AMS effect OPEN |
@@ -39,12 +39,12 @@ Do not create a second controller, another Skill package, automatic cognitive ro
 **Files:** Create docs/adr/0036-adaptive-metareasoning-system.md, docs/superpowers/specs/2026-11-12-adaptive-metareasoning-system-design.md, and this plan. Reconcile docs/product-strategy.md, STATUS.md, docs/adr/README.md, and relevant navigation only.
 
 **Tasks:**
-- [ ] Verify current main, existing ADRs, Skill/controller ownership and SCL status.
-- [ ] Record the explicitly owner-selected AMS product end without inventing a new product category or independent actor.
-- [ ] Distinguish AMS present cognitive control from SCL experience retention/feedback.
-- [ ] State seven competency questions and A/B/C/D evidence classes.
-- [ ] Reconcile PATH-1, highest-leverage boundary and authority; no automatic new frontier.
-- [ ] Review the exact proposed source diff, integrate within owner/repository policy and preserve unrun test status.
+- [x] Verify current main, existing ADRs, Skill/controller ownership and SCL status.
+- [x] Record the explicitly owner-selected AMS product end without inventing a new product category or independent actor.
+- [x] Distinguish AMS present cognitive control from SCL experience retention/feedback.
+- [x] State seven competency questions and A/B/C/D evidence classes.
+- [x] Reconcile PATH-1, highest-leverage boundary and authority; no automatic new frontier.
+- [x] Review the exact proposed source diff, integrate within owner/repository policy and preserve unrun test status.
 
 **Completion:** product alignment and user-visible future direction are durable; no empirical metareasoning claim is implied.
 
@@ -53,11 +53,11 @@ Do not create a second controller, another Skill package, automatic cognitive ro
 **Existing consumers:** using-sensemaking, its core reference table, README and GETTING_STARTED. No additional engine or public Skill.
 
 **Initial implementable scope:**
-- [ ] Make the AMS name discoverable from human documentation without forcing another CLI install.
-- [ ] Provide one practical prompt showing purpose/question-fit and proportional control while keeping the active Skill the sole controller.
-- [ ] Ensure the Skill's initial load unambiguously identifies AMS as existing cognitive control, not a new router.
-- [ ] Preserve low-ceremony default and the ability to finish with source-grounded understanding or STOP.
-- [ ] Verify links and correct source/diff only; do not claim fresh-host load or performance benefit.
+- [x] Make the AMS name discoverable from human documentation without forcing another CLI install.
+- [x] Provide one practical prompt showing purpose/question-fit and proportional control while keeping the active Skill the sole controller.
+- [x] Ensure the Skill's initial load unambiguously identifies AMS as existing cognitive control, not a new router.
+- [x] Preserve low-ceremony default and the ability to finish with source-grounded understanding or STOP.
+- [x] Verify links and correct source/diff only; do not claim fresh-host load or performance benefit.
 
 **Authentic-use continuation (not automatically manufactured):**
 - [ ] Select a genuinely worthwhile task from source and accepted product goal, independent of the desire to demonstrate AMS.
@@ -155,3 +155,19 @@ Current CLAUDE.md controls branch naming, PR source/diff review, NOT_RUN local u
 - **OWNER/EXTERNAL:** only genuinely reserved authority/host blockers stop that protected action; other independent work may proceed.
 
 **Definition of success:** users and agents can exercise AMS through the current single Skill, and genuine engineering behavior progressively justifies stronger claims that its purpose/effort/question regulation improves decisions economically. A selected product end is not a proven outcome.
+
+## 2026-11-12 initial construction reconciliation
+
+**Source identity:** starting main c644323abab5f9ca7808f1f2369b2ccb22286828; [PR #839](https://github.com/ThorStarlord/sensemaking-skills/pull/839) merged as fdd3533239f1c0894851f8010b3c8f9aa7d633fd. The follow-up discovery metadata and checklist are a separate bounded correction; inspect their exact integration revision when the PR merges.
+
+**Implemented and source-reviewed (not behavioral qualification):**
+- AMS owner-selected Level-4 direction is now in ADR 0036 and product strategy, preserving ADRs 0029/0031/0034/0035 and the Level-3 PATH-1.
+- Human-facing README, Getting Started example, docs index and existing using-sensemaking core body make AMS identity and the AMS/SCL separation discoverable.
+- Skill frontmatter now additionally includes AMS-style current-question/method reasoning requests, using the same single entrypoint.
+- Existing Metareasoning/Inquiry/Exploration/Warrant policies and semantic knowledge queries were reused. No competing runtime, parsed schema, automatic policy routing, or learning engine was constructed.
+
+**Evidence ceiling:** This is a real retained product/documentation integration with a meaningful consumer-facing discovery path. It does **not** demonstrate that a fresh host discovers/loads the Skill, that an agent made a better question/method decision, or that AMS improves outcomes. Stage M1 authentic-use continuation and M2-M6 remain conditional. M7 automation remains deferred until a concrete missing consumer is established.
+
+**Verification:** exact GitHub source/diff review; no local unit/synthetic tests added or manually run under current CLAUDE.md policy (**NOT_RUN**). No hosted checks are asserted unless reviewed at exact revision. A merge does not qualify metareasoning efficacy.
+
+**Continuation:** When independently worthwhile repository work naturally presents a consequential question/method choice with accessible original evidence, evaluate it using the existing control and Learning/Reconciliation guidance. Do not create a synthetic episode or another policy solely to check a milestone. Otherwise STOP the AMS-specific construction slice and continue ordinary PATH-1 product work when warranted.
