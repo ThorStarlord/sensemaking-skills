@@ -1075,6 +1075,25 @@ paths than `--max-paths`, the summary is truncated and omitted paths require
 independent inspection. Snapshot truncation is separate from changed-path
 truncation; the final flag reports either.
 
+The `committed_evidence_reinspection` summary reuses the existing
+`workspace-impact` fingerprint-overlap calculation, but its source is the
+**committed BASE-to-target changed path set**, not a dirty worktree. It covers
+**all representable changed paths**, including those omitted from per-file
+context by `--max-paths`. The summary reports affected reviewed record IDs,
+uncited changed path coverage gaps, mechanical-only overlaps, exact source
+revisions and independently capped omission counts. Each selected path's
+`context.committed_change_relevance` separately flags whether its BASE
+context records and less-certain relevance candidates cite changed sources.
+
+These results are **re-inspection candidates**, not a content comparison,
+semantic staleness finding or proof of changed architecture. The original
+`workspace-impact` operation continues to describe active worktree overlap;
+its output contract is unchanged. A change to an authored JSON pack can flag
+many records due to shared-pack fingerprints without changing those records'
+authored meaning. An uncited change is a coverage gap, **not clearance**.
+Use `workspace-changes` when the review also needs to compare authored records
+across two independently indexed source revisions.
+
 This is **review evidence preparation**, not a violation classifier, PR
 approval, proof of Git ancestry, source-behavior analysis, observed runtime
 impact or semantic truth. The agent must inspect original sources, actual
