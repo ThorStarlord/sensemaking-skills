@@ -40,6 +40,28 @@ synthesis, a strategic disposition, retained knowledge, and a justified
 no-change conclusion are all complete outcomes. This is a selected product
 direction, not a claim that durable semantic memory already improves outcomes.
 
+### Level-4 extension 2026-11-12: Adaptive Metareasoning System (ADR 0036)
+
+The owner selected **Adaptive Metareasoning System (AMS)** as an explicit,
+first-class **cognitive regulation capability** within the existing
+ontology-grounded, agent-native reasoning system. AMS evaluates purpose,
+question and method fitness; distinguishes productive inquiry from misleading
+but technically correct progress; and allocates the next unit of cognitive or
+engineering effort proportionately, including justified direct action or
+stopping. It is exercised through the single **using-sensemaking** controller
+and existing Inquiry, Metareasoning, Exploration and Warrant/Choice policies.
+
+AMS does not replace **Sensemaking Continuous Learning (SCL)**. AMS owns
+current reasoning and method selection; SCL supports selective retention,
+source-checked reuse and feedback on earlier product or methodological
+experience. Neither historical lessons nor AMS inferences transfer authority
+from another repository. [ADR 0036](adr/0036-adaptive-metareasoning-system.md)
+records the selected product outcome; the [AMS design](superpowers/specs/2026-11-12-adaptive-metareasoning-system-design.md)
+and [development program](superpowers/plans/2026-11-12-adaptive-metareasoning-system.md)
+separate the existing policy/knowledge infrastructure from unqualified
+authentic adaptive-behavior and comparative-benefit claims. No second
+controller, numeric method ranker or self-modifying runtime is authorized.
+
 ### Level-4 extension 2026-11-12: Sensemaking Continuous Learning (ADR 0035)
 
 The owner selected **Sensemaking Continuous Learning (SCL)** as an explicit,

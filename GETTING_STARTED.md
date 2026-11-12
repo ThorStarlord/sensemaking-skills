@@ -177,6 +177,40 @@ assuming historical information is complete. See the
 This discovery guidance does not install Skills or enable other harnesses
 automatically.
 
+### Regulate reasoning with AMS
+
+**Adaptive Metareasoning System (AMS)** names the existing using-sensemaking
+agent's intended cognitive-regulation capability. It is useful when the hard
+part is deciding *which question, method or next intellectual move* is
+appropriate, not merely retrieving another fact. It does not require a new
+installation, CLI mode, Skill package, periodic reflection or log.
+
+For a consequential task, you can ask:
+
+> Use using-sensemaking with Adaptive Metareasoning System (AMS) on this
+> repository. Recover my actual purpose and the current decision; assess
+> whether the question and method still fit that purpose; choose the
+> smallest warranted ACT, INQUIRE, CHALLENGE, EXPLORE, VERIFY, ESCALATE
+> or STOP move. If the existing question is valid but reveals another
+> consequential question, preserve the original answer and assess the new
+> question separately. Do the authorized useful work without mandatory
+> reflection or inventing a new product goal.
+
+For a clearly scoped change, simply ask for the change: AMS should remain
+implicit and let the coding agent act. For an apparent mismatch, distinguish
+source or host problems from an inadequate method or problem frame before
+proposing a fix. The optional [decision transparency](#optional-decision-transparency)
+feature is available when you specifically need an observable decision audit;
+self-reported rationale cannot reveal private reasoning or prove benefit.
+
+[AMS capability contract](docs/adr/0036-adaptive-metareasoning-system.md) |
+[Canonical metareasoning policy](skills/using-sensemaking/references/metareasoning-policy-v0.md) |
+[AMS development program](docs/superpowers/plans/2026-11-12-adaptive-metareasoning-system.md)
+
+**Evidence limit:** This first-use path establishes how to request existing
+agent guidance. It does not demonstrate independent method-selection
+reliability or improved engineering outcomes.
+
 ### Learn from prior engineering episodes (SCL)
 
 [Sensemaking Continuous Learning](docs/adr/0035-sensemaking-continuous-learning.md)

@@ -67,11 +67,15 @@ disagree, the ADR file is authoritative.
 | [0032](0032-session-and-query-receipts.md) | Session and Query Receipts | Proposed (owner ratification pending) |
 | [0033](0033-architecture-and-ontology-vocabulary.md) | Architecture and Ontology Vocabulary for Reviewed Knowledge | Proposed (owner acceptance pending) |
 | [0034](0034-ontology-first-adaptive-sensemaking.md) | Ontology-First Adaptive Sensemaking: Product Identity and Single Entrypoint | Accepted (owner-selected product identity, not yet implemented) |
+| [0035](0035-sensemaking-continuous-learning.md) | Sensemaking Continuous Learning as a First-Class Product Capability | Accepted (owner-selected; independent benefit not qualified) |
+| [0036](0036-adaptive-metareasoning-system.md) | Adaptive Metareasoning System as a First-Class Cognitive Capability | Accepted (owner-selected; behavioral benefit not qualified) |
 
 For the current **external product boundary** read ADR 0029, not 0014.
 For the **owner-selected product destination**, read ADR 0031; for the
 current **product identity and public entrypoint**, read ADR 0034.
 For the optional **compact target-repository Grounding Pack**, read ADR 0030.
+For **continuous learning** read ADR 0035; for the **adaptive metareasoning
+capability** read ADR 0036. Both preserve the single-controller authority.
 ADR 0031 extends the product direction without weakening the strict source,
 authority, and currentness distinctions. It does not assert that the semantic
 platform has been implemented or empirically proven.

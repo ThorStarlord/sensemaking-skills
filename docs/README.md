@@ -33,6 +33,17 @@ default reading path. Open it only when the current decision needs that detail.
 
 ## Advanced current references
 
+### Adaptive reasoning and learning (owner-selected product capabilities)
+
+[Adaptive Metareasoning System (AMS)](adr/0036-adaptive-metareasoning-system.md):
+current question/method fitness and proportionate cognitive effort through
+existing using-sensemaking. [AMS design](superpowers/specs/2026-11-12-adaptive-metareasoning-system-design.md)
+and [program](superpowers/plans/2026-11-12-adaptive-metareasoning-system.md)
+describe intended maturity, not proof of autonomous behavioral gain.
+[Sensemaking Continuous Learning (SCL)](adr/0035-sensemaking-continuous-learning.md)
+concerns experience retention, contextual re-use and learning feedback.
+Neither creates a second semantic controller.
+
 ### Control model and strategy
 `strategic-outer-loop.md`, `policy-hierarchy-v0.md`, `strategic-state-contract.md`,
 `product-thesis-revision.md`, `product-operating-model.md`,

@@ -12,6 +12,16 @@ entrypoint ([ADR 0034](../../docs/adr/0034-ontology-first-adaptive-sensemaking.m
 when present) and guides that judgment. It is not a planner, it invokes nothing
 by itself, and no artifact field selects or dispatches a downstream Skill.
 
+**Adaptive Metareasoning System (AMS)** is the owner-selected name for this
+controller's existing cognitive-regulation capability: orient to purpose,
+judge whether the current question/method fits, and allocate the next useful
+unit of effort through the existing conditional policies. It does **not**
+instantiate another Skill, runtime or automatic router. **Sensemaking
+Continuous Learning (SCL)** separately owns selective experience retention
+and later source-checked recall; its lessons may inform but never dictate
+this agent's current method or authority. See [ADR 0036](../../docs/adr/0036-adaptive-metareasoning-system.md)
+for the product boundary; do not add reflection to an already clear task.
+
 > **Top rule:** Resolve the nearest unresolved decision-changing uncertainty
 > before committing to the eventual solution.
 
