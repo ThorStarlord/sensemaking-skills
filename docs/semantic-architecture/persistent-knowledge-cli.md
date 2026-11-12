@@ -1001,3 +1001,37 @@ multi-pack edits must be checked by the exact-commit builder after commit.
 Neither command establishes semantic truth, current owner authority or
 permission to act.
 For source-pinned indexing, commit the reviewed source/knowledge changes and rebuild the SQLite snapshot at the exact new SHA in the **same current checkout when naturally clean**. A fresh agent or separate clean-room worktree is not a construction prerequisite.
+
+## Committed-change product and architecture review context
+
+When reviewing an actual committed change, an agent can obtain the baseline
+product intent and source-linked context for files changed between two commits
+without guessing paths or preparing a knowledge database:
+
+    sensemaking-skills semantic workspace-review-context --base-ref BASE --ref HEAD --json
+
+This read-only convenience command resolves both exact local commits, uses Git
+diff to list committed changed **path names** (no rename inference), and
+retrieves the product outline plus bounded per-file `context-for` results
+from the **BASE revision**. The baseline matters for deleted files and prevents
+code newly introduced in the target from silently becoming declared intent.
+The target revision contributes changed paths, **not** presumed architectural
+meaning. Derived BASE SQLite cache resides outside the checkout as in
+`workspace-query`; no uncommitted bytes are indexed.
+
+Use `--max-paths` (1..32, default 8), `--limit` (1..100, default 25),
+`--depth`, `--repository`, `--index-dir` and `--refresh` when appropriate.
+The response reports exact base/target identities, selected and omitted path
+counts, invalid/unrepresentable path count, source scope, retrieval omission,
+source-linked product goals/non-goals and per-path claims/relations. A path with
+no recorded ownership remains NOT_ASSESSED, never "safe". If the diff has more
+paths than `--max-paths`, the summary is truncated and omitted paths require
+independent inspection. Snapshot truncation is separate from changed-path
+truncation; the final flag reports either.
+
+This is **review evidence preparation**, not a violation classifier, PR
+approval, proof of Git ancestry, source-behavior analysis, observed runtime
+impact or semantic truth. The agent must inspect original sources, actual
+code changes and authoritative decisions before making a judgment. Unlike
+`workspace-changes`, this command compares code path names rather than
+knowledge-record payloads. Neither command replaces the other.
