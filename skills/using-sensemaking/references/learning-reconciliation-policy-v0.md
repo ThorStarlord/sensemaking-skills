@@ -45,6 +45,40 @@ Make it explicit when returned evidence could materially change:
 
 The policy reconciles explicit repository-domain state. It does not require a universal cognitive model.
 
+### Continuous episode-learning eligibility (SCL)
+
+For **every actual engineering episode whose result becomes observable**, leave
+room for a *cheap* learning consideration as part of this existing evidence-return
+judgment. Do not add a mandatory stage or artifact. Ask only whether the
+result has altered a consequential claim, falsified an assumption, changed
+an uncertainty or responsibility, or exposed a potentially transferable lesson.
+
+Keep two possible learning subjects separate:
+
+- **Product knowledge:** what changed or was clarified about the repository's
+  behavior, domain, architecture, intent or constraints?
+- **Methodological knowledge:** what did the episode support or challenge about
+  the *conditional usefulness* of ACT, INQUIRE, CHALLENGE, EXPLORE, VERIFY,
+  ESCALATE or STOP, including what that method caused the agent to observe?
+
+An ordinary small edit that confirms expectations can remain **implicit
+NO_MODEL_CHANGE**, with no memory write. A consequential surprise, negative
+result or blocked responsibility may deserve a source-grounded correction or
+uncertainty, not a generalized method rule. If no result was observed, do not
+infer learning from the mere existence of an opened task or plan.
+
+When another context would materially benefit, retain the relevant subset in
+the narrowest *existing* durable source with original episode/revision and
+scope. A real episode is **eligible** for interpretation; it is not evidence
+that an agent consulted prior knowledge, improved a decision, or earned a new
+permanent lesson. In the absence of adequate evidence, record the limit rather
+than filling a learning quota.
+
+This gives [Sensemaking Continuous Learning](../../../docs/superpowers/specs/2026-11-12-sensemaking-continuous-learning-design.md)
+a default agent-facing consideration within existing Learning/Reconciliation.
+It is guidance, not an automatic recorder, runtime, doctrine editor, or
+demonstration of autonomous capability learning.
+
 ## 3. Inputs
 
 Use the smallest current state needed to interpret the evidence:
