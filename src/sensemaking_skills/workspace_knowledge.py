@@ -84,6 +84,19 @@ def _resolve_commit(root: Path, ref: str) -> str:
     return sha
 
 
+def _unique_pr_merge_base(root: Path, base_tip_sha: str, sha: str) -> str:
+    """Return a unique common ancestor or reject ambiguous/incomplete PR history."""
+    merge = _git(root, "merge-base", "--all", base_tip_sha, sha)
+    ancestors = [line for line in merge.stdout.splitlines() if line]
+    if merge.returncode or len(ancestors) != 1 or not _SHA.fullmatch(ancestors[0]):
+        raise ValueError(
+            "cannot establish a unique PR merge base for the supplied commits; "
+            "fetch sufficient Git history or use an explicit --base-ref "
+            "without --pr-merge-base"
+        )
+    return ancestors[0]
+
+
 def _remote_path(url: str) -> str:
     if _DRIVE.match(url):
         return url
@@ -372,13 +385,14 @@ def run_workspace_query(
 def run_workspace_changes(
     *, repo: str | Path, base_ref: str, ref: str = "HEAD",
     repository: str | None = None, index_dir: str | Path | None = None,
-    refresh: bool = False, limit: int = 50,
+    refresh: bool = False, limit: int = 50, pr_merge_base: bool = False,
 ) -> dict[str, Any]:
     """Compare two committed semantic snapshots without manual multi-revision setup.
 
     Each revision uses the existing per-commit derived cache. Querying the base
     through a second read-only index preserves the established changes/delta
     classifier without a new schema or a mutable combined history database.
+    The optional PR mode compares the merge-base snapshot to the topic head.
     """
     if not 1 <= limit <= 250:
         raise ValueError("changes limit must be 1..250")
@@ -388,8 +402,9 @@ def run_workspace_changes(
     if not repo_dir.is_dir():
         raise ValueError(f"repository directory not found: {repo_dir}")
     root = _checkout_root(repo_dir)
-    base_sha = _resolve_commit(root, base_ref)
+    base_tip_sha = _resolve_commit(root, base_ref)
     sha = _resolve_commit(root, ref)
+    base_sha = _unique_pr_merge_base(root, base_tip_sha, sha) if pr_merge_base else base_tip_sha
     label, label_source = _repository_label(root, repository)
 
     base_dir, base_db = _cache_paths(root, index_dir, base_sha)
@@ -420,12 +435,18 @@ def run_workspace_changes(
     payload["workspace_comparison"] = {
         "base_ref": base_sha,
         "base_ref_requested": base_ref,
+        "base_tip_ref": base_tip_sha,
         "target_ref": sha,
         "target_ref_requested": ref,
-        "git_ancestry_assessed": False,
+        "comparison_mode": "pr_merge_base" if pr_merge_base else "two_tree",
+        "merge_base_calculated": pr_merge_base,
+        "git_ancestry_assessed": pr_merge_base,
         "working_changes_read": False,
         "semantic_change_inferred": False,
         "note": (
+            "PR-scoped semantic snapshot differences from the unique Git merge base; "
+            "not proof of GitHub PR identity, semantic impact or decision validity."
+            if pr_merge_base else
             "Differences between two exact committed knowledge snapshots; "
             "not proof of Git ancestry, semantic impact or decision validity."
         ),
@@ -478,17 +499,7 @@ def run_workspace_review_context(
     root = _checkout_root(repo_dir)
     base_tip_sha = _resolve_commit(root, base_ref)
     sha = _resolve_commit(root, ref)
-    base_sha = base_tip_sha
-    if pr_merge_base:
-        merge = _git(root, "merge-base", "--all", base_tip_sha, sha)
-        ancestors = [line for line in merge.stdout.splitlines() if line]
-        if merge.returncode or len(ancestors) != 1 or not _SHA.fullmatch(ancestors[0]):
-            raise ValueError(
-                "cannot establish a unique PR merge base for the supplied commits; "
-                "fetch sufficient Git history or use an explicit --base-ref "
-                "without --pr-merge-base"
-            )
-        base_sha = ancestors[0]
+    base_sha = _unique_pr_merge_base(root, base_tip_sha, sha) if pr_merge_base else base_tip_sha
     label, label_source = _repository_label(root, repository)
 
     # Both operands are commit trees. Git does not read the worktree or execute
