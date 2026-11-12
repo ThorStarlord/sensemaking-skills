@@ -393,7 +393,7 @@ def _manifest_dependency_declarations(
              if ob.kind is ObservationKind.MANIFEST_DEPENDENCY and ob.subject in tracked]
     partial = len(items) > limit or result.completeness.value != "complete"
     claims: dict[str, KnowledgeClaim] = {}
-    relations: list[KnowledgeRelation] = []
+    relations: dict[str, KnowledgeRelation] = {}
     for item in sorted(items, key=lambda ob: ob.id)[:limit]:
         source_id = stable_id("file", item.subject)
         field = str(item.metadata.get("manifest_field", "unknown"))
@@ -417,15 +417,16 @@ def _manifest_dependency_declarations(
             attributes={"scope": "manifest declaration, not installed/runtime dependency",
                         "manifest_field": field, "authority_verified": False},
         )
-        relations.append(KnowledgeRelation(
-            id=stable_id("manifest-dependency-reference", item.id),
+        relation_id = stable_id("manifest-dependency-reference", item.id)
+        relations[relation_id] = KnowledgeRelation(
+            id=relation_id,
             subject=source_id, predicate="references", object=declaration_id,
             epistemic_status="observed", derivation="mechanical",
             source_ref=source, evidence_refs=item.evidence_refs,
             attributes={"manifest_field": field,
                         "scope": "declared dependency only; installation/import not established"},
-        ))
-    return list(claims.values()), relations, partial
+        )
+    return list(claims.values()), list(relations.values()), partial
 
 
 def build_knowledge_snapshot(
