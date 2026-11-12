@@ -253,6 +253,48 @@ jobs:
               "independent_agent_reuse_established": False,
               "decision_benefit_established": False,
           }, sort_keys=True))
+
+          # Actual retained feedback from PR #838: source-linked Git-baseline
+          # lesson must be discoverable from either a question or its owner file.
+          # This is mechanical re-entry, NOT independent agent learning.
+          review_lesson_id = "lesson:pr-review-merge-base-is-scope-evidence"
+          review_incident_id = "incident:pr-review-diverged-tip-scope-20261112"
+          review_source = "docs/normal-use/2026-11-12-scl-pr-review-baseline-feedback.md"
+          review_lessons = search(base_search + [
+              "--search-kind", "lesson", "--query-text",
+              "PR review merge base changed paths",
+          ])
+          indexed = {claim["id"]: claim for claim in review_lessons["claims"]}
+          assert review_lesson_id in indexed, "historical lesson question lookup"
+          assert indexed[review_lesson_id]["authority_ref"] == review_source
+          assert indexed[review_lesson_id]["kind"] == "lesson"
+          assert review_lessons["search_kind_filter"] == ["lesson"]
+          assert review_lessons["target_ref"] == revision
+
+          owner_context = search([
+              "sensemaking-skills", "semantic", "knowledge-query",
+              "--db", db, "--repository", "ThorStarlord/sensemaking-skills",
+              "--target-ref", revision, "--operation", "context-for",
+              "--subject", "src/sensemaking_skills/workspace_knowledge.py",
+              "--limit", "100", "--json",
+          ])
+          history_ids = {item["claim_id"] for item in owner_context["context"]["history"]}
+          assert review_lesson_id in history_ids, "source-file-first lesson recall"
+          assert review_incident_id in history_ids, "source-file-first incident recall"
+          assert "component:semantic-cli" in owner_context["context"]["ownership"]["components"]
+          assert owner_context["semantic_truth_established"] is False
+          assert owner_context["action_authorized"] is False
+          print(json.dumps({
+              "consumer": "SCL later-episode review baseline recall",
+              "indexed_revision": revision,
+              "lesson_id": review_lesson_id,
+              "incident_id": review_incident_id,
+              "source_file": review_source,
+              "historical_source_verification": "original document available",
+              "mechanical_reentry": "PASS",
+              "independent_agent_use_established": False,
+              "causal_benefit_established": False,
+          }, sort_keys=True))
           PY
 
       - name: Read committed source-overlap review packet for the actual PR
