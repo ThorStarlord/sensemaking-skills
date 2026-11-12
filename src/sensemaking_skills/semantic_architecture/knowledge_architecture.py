@@ -656,12 +656,14 @@ def term(claims: Mapping[str, dict], relations: Iterable[dict], *, name: str, li
 
 def product_outline(
     claims: Mapping[str, dict], relations: Iterable[dict], *, limit: int,
+    include_candidates: bool = False,
 ) -> tuple[dict, list[str], list[str]]:
     """Project explicit reviewed product goals, non-goals and declared direct links.
 
     A recorded serves_goal edge is a documentary relationship, not proof of
     implementation, outcome or the adequacy of the modeled product. Missing
-    edges and goals remain NOT ASSESSED.
+    edges and goals remain NOT ASSESSED. Optional candidate links remain
+    separate from declared goal service, selection and implementation.
     """
     goal_ids = sorted(cid for cid, claim in claims.items() if claim["kind"] == "goal")
     non_goal_ids = sorted(cid for cid, claim in claims.items() if claim["kind"] == "non_goal")
@@ -682,6 +684,13 @@ def product_outline(
          and claims[r["object"]]["kind"] in {"constraint", "invariant"}),
         key=lambda r: (r["subject"], r["object"], r["id"]),
     )
+    candidates = sorted(
+        (r for r in edges if r["predicate"] == "candidate_opportunity_for"
+         and r["object"] in goal_set and r["subject"] in claims
+         and claims[r["subject"]]["kind"] == "opportunity"),
+        key=lambda r: (r["object"], r["subject"], r["id"]),
+    ) if include_candidates else []
+    candidate_visible = [r for r in candidates if r["object"] in visible_goal_set][:limit]
     served_visible = [r for r in serving if r["object"] in visible_goal_set][:limit]
     constrained_visible = [r for r in constrained if r["subject"] in visible_goal_set][:limit]
 
@@ -706,14 +715,30 @@ def product_outline(
         bounds = [link(r, r["object"]) for r in constrained_visible if r["subject"] == cid]
         total_linked = sum(r["object"] == cid for r in serving)
         total_bounds = sum(r["subject"] == cid for r in constrained)
-        goals.append({
+        goal = {
             **record(cid),
             "serving_records": linked, "serving_total": total_linked,
             "serving_omitted": total_linked - len(linked),
             "governing_constraints": bounds, "constraint_total": total_bounds,
             "constraint_omitted": total_bounds - len(bounds),
             "serving_link_not_assessed": total_linked == 0,
-        })
+        }
+        if include_candidates:
+            future = [r for r in candidate_visible if r["object"] == cid]
+            goal["candidate_opportunities"] = [
+                {
+                    **link(r, r["subject"]),
+                    "claim_epistemic_status": claims[r["subject"]]["epistemic_status"],
+                    "authority_kind": claims[r["subject"]]["authority_kind"],
+                    "source_ref": claims[r["subject"]]["source_ref"],
+                }
+                for r in future
+            ]
+            total_candidates = sum(r["object"] == cid for r in candidates)
+            goal["candidate_total"] = total_candidates
+            goal["candidate_omitted"] = total_candidates - len(future)
+            goal["candidate_link_not_assessed"] = total_candidates == 0
+        goals.append(goal)
 
     omitted = {
         "goals": len(goal_ids) - len(visible_goals),
@@ -721,14 +746,18 @@ def product_outline(
         "serves_goal_edges": len(serving) - len(served_visible),
         "goal_constraint_edges": len(constrained) - len(constrained_visible),
     }
+    if include_candidates:
+        omitted["candidate_opportunity_edges"] = len(candidates) - len(candidate_visible)
     selected_claim_ids = list(dict.fromkeys([
         *visible_goals, *visible_non_goals,
         *(r["subject"] for r in served_visible),
         *(r["object"] for r in constrained_visible),
+        *(r["subject"] for r in candidate_visible),
     ]))
     selected_relation_ids = [
         *(r["id"] for r in served_visible),
         *(r["id"] for r in constrained_visible),
+        *(r["id"] for r in candidate_visible),
     ]
     result = {
         "goals": goals, "non_goals": [record(cid) for cid in visible_non_goals],
@@ -750,6 +779,12 @@ def product_outline(
             "inspect original source evidence before choosing engineering work.",
         ],
     }
+    if include_candidates:
+        result["total_counts"]["candidate_opportunity_edges"] = len(candidates)
+        result["explicit_limits"].append(
+            "Candidate links are recorded possible futures, not goal service, "
+            "strategic selection, implementation priority or authorization."
+        )
     return result, selected_claim_ids, selected_relation_ids
 
 
