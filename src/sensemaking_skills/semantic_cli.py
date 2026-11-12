@@ -293,6 +293,8 @@ def register_semantic_commands(root_cli: click.Group) -> None:
                   help="Repeat exact reviewed claim kinds to filter search candidates (search only)")
     @click.option("--expect-kind", "expected_kinds", multiple=True,
                   help="Repeat v1/v2 claim kinds to assess in the explicit one-hop explain/why neighborhood")
+    @click.option("--include-candidates", is_flag=True,
+                  help="Include goal-linked possible futures in product-outline only")
     @click.option("--limit", type=click.IntRange(1, 250), default=50)
     @click.option("--depth", type=click.IntRange(0, 4), default=2)
     @click.option("--json", "output_json", is_flag=True)
@@ -301,10 +303,13 @@ def register_semantic_commands(root_cli: click.Group) -> None:
         subject: str | None, path_subjects: tuple[str, ...],
         base_ref: str | None, repo_root: Path | None,
         search_terms: tuple[str, ...], query_text: str | None, search_kinds: tuple[str, ...],
-        expected_kinds: tuple[str, ...], limit: int, depth: int, output_json: bool,
+        expected_kinds: tuple[str, ...], include_candidates: bool,
+        limit: int, depth: int, output_json: bool,
     ) -> None:
         """Read committed semantic records; optionally report active worktree state."""
         try:
+            if include_candidates and operation != "product-outline":
+                raise ValueError("--include-candidates is supported only for product-outline")
             if path_subjects:
                 if query_text is not None:
                     raise ValueError("--query-text cannot be used with multi-path context")
@@ -343,6 +348,7 @@ def register_semantic_commands(root_cli: click.Group) -> None:
                     limit=limit, depth=depth,
                     search_terms=search_terms, expected_kinds=expected_kinds,
                     query_text=query_text, search_kinds=search_kinds,
+                    include_candidates=include_candidates,
                     workspace_changed_paths=changed_paths,
                 )
             if repo_root is not None:
@@ -406,6 +412,8 @@ def register_semantic_commands(root_cli: click.Group) -> None:
                   help="Repeat exact reviewed claim kinds to filter search candidates (search only)")
     @click.option("--expect-kind", "expected_kinds", multiple=True,
                   help="Repeat claim kinds to assess in the explicit one-hop explain/why neighborhood")
+    @click.option("--include-candidates", is_flag=True,
+                  help="Include goal-linked possible futures in product-outline only")
     @click.option("--limit", type=click.IntRange(1, 250), default=50)
     @click.option("--depth", type=click.IntRange(0, 4), default=2)
     @click.option("--repo", "repo_dir", type=click.Path(exists=True, file_okay=False, path_type=Path),
@@ -420,7 +428,7 @@ def register_semantic_commands(root_cli: click.Group) -> None:
     def semantic_workspace_query(
         paths: tuple[str, ...], operation: str, subject: str | None, search_terms: tuple[str, ...],
         query_text: str | None, search_kinds: tuple[str, ...], expected_kinds: tuple[str, ...],
-        limit: int, depth: int, repo_dir: Path, ref: str,
+        include_candidates: bool, limit: int, depth: int, repo_dir: Path, ref: str,
         repository_label: str | None, index_dir: Path | None, refresh: bool, output_json: bool,
     ) -> None:
         """Query committed reviewed knowledge with no prior build or identity arguments.
@@ -436,7 +444,7 @@ def register_semantic_commands(root_cli: click.Group) -> None:
                 repo=repo_dir, ref=ref, operation=operation, paths=paths, subject=subject,
                 search_terms=search_terms, expected_kinds=expected_kinds,
                 query_text=query_text, search_kinds=search_kinds,
-                limit=limit, depth=depth,
+                include_candidates=include_candidates, limit=limit, depth=depth,
                 repository=repository_label, index_dir=index_dir, refresh=refresh,
             )
         except (ValueError, OSError, UnicodeError) as exc:
