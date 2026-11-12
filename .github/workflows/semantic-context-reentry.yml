@@ -316,7 +316,7 @@ jobs:
           export REVIEW_START
           sensemaking-skills semantic workspace-review-context \
             --repo . --repository ThorStarlord/sensemaking-skills \
-            --base-ref "$REVIEW_START" --ref "$REVIEW_HEAD" \
+            --base-ref "$REVIEW_BASE" --ref "$REVIEW_HEAD" --pr-merge-base \
             --index-dir "$RUNNER_TEMP/committed-review-index" \
             --max-paths 8 --limit 25 --json > "$RUNNER_TEMP/review-context.json"
           REVIEW_PACKET="$RUNNER_TEMP/review-context.json" python - <<'PY'
@@ -329,6 +329,10 @@ jobs:
           overlap = packet['committed_evidence_reinspection']
           assert packet['base_ref'] == os.environ['REVIEW_START']
           assert packet['target_ref'] == os.environ['REVIEW_HEAD']
+          assert scope['base_tip_ref'] == os.environ['REVIEW_BASE']
+          assert scope['comparison_mode'] == 'pr_merge_base'
+          assert scope['merge_base_calculated'] is True
+          assert scope['git_ancestry_assessed'] is True
           assert overlap['source_ref'] == packet['base_ref']
           assert overlap['compared_ref'] == packet['target_ref']
           assert overlap['changed_path_total'] == scope['source_overlap_paths_assessed']

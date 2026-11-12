@@ -1056,6 +1056,22 @@ without guessing paths or preparing a knowledge database:
 
     sensemaking-skills semantic workspace-review-context --base-ref BASE --ref HEAD --json
 
+For a **pull request**, pass the target branch tip as `--base-ref` and opt in
+explicitly to the PR's merge-base comparison scope:
+
+    sensemaking-skills semantic workspace-review-context --base-ref MAIN_TIP --ref PR_HEAD --pr-merge-base --json
+
+The default remains an exact two-committed-tree comparison. With
+`--pr-merge-base`, Git must identify exactly one common merge base; absent or
+ambiguous history fails closed rather than silently choosing a baseline. Fetch
+sufficient history in shallow checkouts before invoking it. The result's
+`base_ref` and source-pinned context use the effective merge-base commit;
+`review_scope.base_tip_ref` preserves the supplied target-branch tip, and
+`review_scope.comparison_mode`/`merge_base_calculated` disclose the mode.
+This computes a Git comparison scope, **not** the identity of a GitHub PR or
+a check against its authoritative file set. A caller reviewing a PR should
+still reconcile the returned changed paths with the PR's actual files.
+
 This read-only convenience command resolves both exact local commits, uses Git
 diff to list committed changed **path names** (no rename inference), and
 retrieves the product outline plus bounded per-file `context-for` results
