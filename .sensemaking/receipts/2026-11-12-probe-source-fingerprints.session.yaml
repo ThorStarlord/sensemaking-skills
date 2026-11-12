@@ -1,0 +1,57 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-11-12-probe-source-fingerprints
+state: in_progress
+created_at: "2026-11-12T21:57:29Z"
+updated_at: "2026-11-12T21:57:29Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: 8517ec756c2cc7fb5da4d6b31582741ad875b12c
+  end_ref: null
+  worktree_clean_at_end: null
+skill_identity:
+  load_mode: manual_explicit_load
+  sensemaking_source_ref: null
+goal:
+  statement: "Continue intrinsically worthwhile product construction, with separate independent-SCL qualification where an actual independent actor is available."
+  source: owner_message
+  source_ref: null
+delegation:
+  granted: [read, local_write, commit, push, open_pr, merge]
+  withheld: [release, deploy, external_publication]
+continuity:
+  resumes: null
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: Select the next warranted source-grounded engineering responsibility
+    capability: using-sensemaking
+    status: completed
+    reason: "Source-audit fidelity gap: opt-in Python import and manifest projections omit SHA fingerprints needed to detect later drift."
+    artifact_refs: [src/sensemaking_skills/semantic_architecture/knowledge_sources.py, src/sensemaking_skills/semantic_architecture/knowledge_store.py, docs/product-strategy.md]
+    validation: []
+  - id: R-2
+    responsibility: Preserve original cited-file fingerprints for existing mechanical projection records
+    capability: ordinary_coding
+    status: in_progress
+    reason: "Improves source-currentness auditing even if no independent SCL behavior is observed; no new parser or ontology is required."
+    artifact_refs: [src/sensemaking_skills/semantic_architecture/knowledge_sources.py, docs/semantic-architecture/persistent-knowledge-cli.md]
+    validation: []
+findings:
+  - id: F-1
+    statement: "Opt-in Python-import and manifest-dependency projection records omit source_sha256, so audit_knowledge_sources returns not_assessed for their source drift."
+    epistemic_status: OBSERVED
+    evidence_refs: [src/sensemaking_skills/semantic_architecture/knowledge_sources.py, src/sensemaking_skills/semantic_architecture/knowledge_store.py]
+    disposition: open
+open_questions: []
+stop:
+  disposition: IN_PROGRESS
+  reason: "Selected a bounded source-fingerprint integrity repair; implementation and hosted verification pending."
+next:
+  warranted_responsibility: "Implement source fingerprints for opt-in import and manifest records using the existing source-hash helper."
+  blocked_on: []
+persistence: committed
+claim_ceiling: "Source code inspection only; no actual later-agent use, live CLI run, or independently measured benefit has been demonstrated."
+action_authorized_by_receipt: false
+immutable: false
