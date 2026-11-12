@@ -9,6 +9,8 @@ on:
     paths:
       - '.sensemaking/knowledge/**'
       - 'src/sensemaking_skills/semantic_architecture/**'
+      - 'src/sensemaking_skills/semantic_cli.py'
+      - 'src/sensemaking_skills/workspace_knowledge.py'
       - 'src/sensemaking_skills/workflow_availability.py'
       - 'skills/strategic-repository-analysis/**'
       - 'skills/repository-semantic-steward/**'
