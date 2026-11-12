@@ -82,7 +82,7 @@ when topology itself is decision-relevant.
 (one-revision knowledge retrieval), and `workspace-changes --base-ref REV`
 (two-commit semantic delta without manual index preparation; optional
 `--pr-merge-base` for PR-scoped semantic knowledge changes).
-Both `knowledge-query` and `workspace-query` support `--operation product-outline` for a bounded, source-linked view of reviewed goals, non-goals and their explicitly linked serving records and constraints; it does not select engineering priorities.
+Both `knowledge-query` and `workspace-query` support `--operation product-outline` for a bounded, source-linked view of reviewed goals, non-goals, serving records and constraints. Add `--include-candidates` to expose separately linked possible futures without promoting them to goal service or engineering priority.
 For `knowledge-query` and `workspace-query`, `--operation search --query-text TEXT`
 provides opt-in ranked lexical question matching; it never infers semantic
 relevance. Existing `--subject` literal and `--term` OR search are unchanged.
