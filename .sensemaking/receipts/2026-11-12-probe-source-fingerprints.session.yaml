@@ -1,0 +1,70 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-11-12-probe-source-fingerprints
+state: final
+created_at: "2026-11-12T21:57:29Z"
+updated_at: "2026-11-12T22:00:40Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: 8517ec756c2cc7fb5da4d6b31582741ad875b12c
+  end_ref: f51a3cff32b2a4f0b6bf7621c74b492cf471310d
+  worktree_clean_at_end: null
+skill_identity:
+  load_mode: manual_explicit_load
+  sensemaking_source_ref: null
+goal:
+  statement: "Continue intrinsically worthwhile product construction, with separate independent-SCL qualification where an actual independent actor is available."
+  source: owner_message
+  source_ref: null
+delegation:
+  granted: [read, local_write, commit, push, open_pr, merge]
+  withheld: [release, deploy, external_publication]
+continuity:
+  resumes: null
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: Select the next warranted source-grounded engineering responsibility
+    capability: using-sensemaking
+    status: completed
+    reason: "Source-audit fidelity gap: opt-in Python import and manifest projections omit SHA fingerprints needed to detect later drift."
+    artifact_refs: [src/sensemaking_skills/semantic_architecture/knowledge_sources.py, src/sensemaking_skills/semantic_architecture/knowledge_store.py, docs/product-strategy.md]
+    validation: []
+  - id: R-2
+    responsibility: Preserve original cited-file fingerprints for existing mechanical projection records
+    capability: ordinary_coding
+    status: completed
+    reason: "Source-linked mechanical claims and reference edges now retain audited SHA256 evidence; exact hosted probe consumer passed."
+    artifact_refs: [src/sensemaking_skills/semantic_architecture/knowledge_sources.py, docs/semantic-architecture/persistent-knowledge-cli.md, .github/workflows/semantic-context-reentry.yml]
+    validation:
+      - command: Exact GitHub PR source and diff inspection
+        result: PASS
+      - command: Hosted Semantic Context Re-entry at PR head f51a3cff
+        result: PASS
+      - command: Local unit and synthetic tests (construction exception)
+        result: NOT_RUN
+      - command: Local installed-CLI run (container GitHub DNS unavailable)
+        result: NOT_RUN
+findings:
+  - id: F-1
+    statement: "Opt-in Python-import and manifest-dependency projection records omit source_sha256, so audit_knowledge_sources returns not_assessed for their source drift."
+    epistemic_status: OBSERVED
+    evidence_refs: [src/sensemaking_skills/semantic_architecture/knowledge_sources.py, src/sensemaking_skills/semantic_architecture/knowledge_store.py]
+    disposition: resolved
+  - id: F-2
+    statement: "Hosted exact-head probe indexing checked 130 import claims, 100 import edges, 11 manifest claims and 7 manifest edges against committed source bytes."
+    epistemic_status: OBSERVED
+    evidence_refs: [.github/workflows/semantic-context-reentry.yml, src/sensemaking_skills/semantic_architecture/knowledge_sources.py]
+    disposition: resolved
+open_questions: []
+stop:
+  disposition: NO_FURTHER_WARRANT
+  reason: "Completed a bounded source-fidelity increment; no second independently warranted task selected in this session, and no fresh worker is available."
+next:
+  warranted_responsibility: null
+  blocked_on: []
+persistence: committed
+claim_ceiling: "Source and exact-head hosted probe checks passed; later source drift and independent agent learning or causal decision benefit remain unqualified."
+action_authorized_by_receipt: false
+immutable: true

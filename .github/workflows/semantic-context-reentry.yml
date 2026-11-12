@@ -297,6 +297,72 @@ jobs:
           }, sort_keys=True))
           PY
 
+      - name: Check opt-in source fingerprint continuity on committed sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          REF="$(git rev-parse HEAD)"
+          PROBE_DB="$RUNNER_TEMP/opt-in-probe-index.sqlite"
+          sensemaking-skills semantic knowledge-build \
+            --repo . --repository ThorStarlord/sensemaking-skills \
+            --target-ref "$REF" --db "$PROBE_DB" \
+            --include-python-imports --max-imports 100 \
+            --include-manifest-dependencies --max-manifest-dependencies 100 \
+            --json > "$RUNNER_TEMP/opt-in-probe-build.json"
+          PROBE_DB="$PROBE_DB" PROBE_REF="$REF" python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import sqlite3
+
+          expected = {
+              "probe:python-imports-v1": "python_import",
+              "probe:manifest-dependencies-v1": "manifest_dependency",
+          }
+          edge_scopes = {
+              "import syntax, not runtime or architecture": "python_import",
+              "declared dependency only; installation/import not established": "manifest_dependency",
+          }
+          observed = {
+              "python_import": {"claim": 0, "relation": 0},
+              "manifest_dependency": {"claim": 0, "relation": 0},
+          }
+          with sqlite3.connect(os.environ["PROBE_DB"]) as connection:
+              for table in ("claims", "relations"):
+                  for (raw,) in connection.execute(
+                      f"SELECT payload FROM {table} WHERE target_ref=?",
+                      (os.environ["PROBE_REF"],),
+                  ):
+                      record = json.loads(raw)
+                      group = (
+                          expected.get(record.get("authority_ref"))
+                          if table == "claims"
+                          else edge_scopes.get(record.get("attributes", {}).get("scope"))
+                      )
+                      if group is None:
+                          continue
+                      fingerprints = record["attributes"].get("source_sha256")
+                      assert isinstance(fingerprints, dict) and fingerprints, record["id"]
+                      for path, original_hash in fingerprints.items():
+                          assert original_hash == hashlib.sha256(
+                              Path(path).read_bytes()
+                          ).hexdigest(), (record["id"], path)
+                      kind = "claim" if table == "claims" else "relation"
+                      observed[group][kind] += 1
+
+          assert all(count > 0 for values in observed.values()
+                     for count in values.values()), observed
+          print(json.dumps({
+              "consumer": "opt-in-probe-original-source-fingerprints",
+              "source_ref": os.environ["PROBE_REF"],
+              "observation_counts": observed,
+              "source_bytes_match_pinned_fingerprints": True,
+              "later_source_drift_assessed": False,
+              "independent_agent_benefit_established": False,
+          }, sort_keys=True))
+          PY
+
       - name: Read committed source-overlap review packet for the actual PR
         if: github.event_name == 'pull_request'
         shell: bash
