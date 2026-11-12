@@ -89,12 +89,13 @@ Use `semantic workspace-review-context --base-ref BASE --ref HEAD --json` to pre
 BASE-revision product intent and per-changed-file architectural context from two
 committed Git revisions. For PR reviews, add `--pr-merge-base` with BASE as the
 target-branch tip to select the unique Git merge base; the default remains the
-explicit two-commit comparison. Missing or ambiguous merge bases fail closed. It also exposes path-level overlaps with BASE cited
-evidence and uncited changed-path gaps, without inferring semantic staleness.
+explicit two-commit comparison. Missing or ambiguous merge bases fail closed.
+The review also exposes path-level overlaps with BASE cited evidence and
+uncited changed-path gaps, without inferring semantic staleness.
 This is review evidence, not a drift/violation verdict.
 See `docs/semantic-architecture/persistent-knowledge-cli.md` for exact scope,
-cache, source-identity and evidence limits. Never decides semantic truth,
-Git ancestry, engineering priority or Skill quality.
+cache, source-identity and evidence limits. Even in PR mode, it does not
+verify GitHub PR identity, complete ancestry, semantic truth or Skill quality.
 
 ## `release`
 
