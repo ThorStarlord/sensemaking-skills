@@ -166,6 +166,7 @@ def query_knowledge(
     limit: int = 50, depth: int = 2,
     search_terms: tuple[str, ...] = (), expected_kinds: tuple[str, ...] = (),
     query_text: str | None = None, search_kinds: tuple[str, ...] = (),
+    include_candidates: bool = False,
     workspace_changed_paths: frozenset[str] | None = None,
 ) -> dict:
     """Retrieve exact, explicitly declared links; never infer semantic closure.
@@ -196,6 +197,8 @@ def query_knowledge(
                          "(no globs, absolute paths, traversal or trailing slash)")
     if operation == "term" and not subject:
         raise ValueError("term requires --subject <term>")
+    if include_candidates and operation != "product-outline":
+        raise ValueError("candidate opportunities are supported only for product-outline")
     if operation == "product-outline" and subject is not None:
         raise ValueError("product-outline lists reviewed goals and does not accept --subject")
     if operation == "changes" and not base_ref:
@@ -446,7 +449,7 @@ def query_knowledge(
             extra["orientation"] = orientation_summary(claims, relations)
         elif operation == "product-outline":
             extra["product_outline"], selected_ids, relation_ids = product_outline(
-                claims, relations, limit=limit,
+                claims, relations, limit=limit, include_candidates=include_candidates,
             )
             found_claims = [claims[cid] for cid in selected_ids]
             related = set(relation_ids)
