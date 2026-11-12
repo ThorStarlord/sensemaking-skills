@@ -107,6 +107,11 @@ Other operations: snapshot, search, contradictions, history, changes and
 workspace-impact (see active-workspace recall below).
 Changes also requires --base-ref with a *previously indexed* revision.
 The import-syntax option is `--include-python-imports` with `--max-imports` cap.
+The opt-in Python import syntax projection now attaches the inspected file's
+source SHA256 fingerprint to each retained mechanical claim and reference edge.
+A module concept shared across files retains its first selected evidence source;
+the per-file reference edges preserve their own cited source fingerprints.
+These are byte-currentness anchors, not proof of a runtime dependency.
 
 ### Opt-in manifest dependency knowledge
 
@@ -135,7 +140,10 @@ declaration**, preserving dev/optional roles and differing version strings.
 Existing source file claim identities are reused; a structural index can be
 built with both flags without duplicate source records. Results retain
 mechanical authority and original `file:` evidence; statements are not
-repository intent or architecture dependencies.
+repository intent or architecture dependencies. The generated manifest source,
+declaration and reference records carry the exact cited manifest's SHA256
+fingerprint, so a later source audit can distinguish changed or missing bytes
+from unchanged bytes rather than automatically returning NOT ASSESSED.
 
 Only supported declaration fields are inspected. `requirements.txt` lines are
 not fully resolved, package manifests are not executed, and source imports are
@@ -155,6 +163,12 @@ indexed revision, while standing in a newer clean target checkout (or, with
 This audit distinguishes unchanged source bytes, changed evidence sources,
 missing/unsafe sources, and unassessed fingerprints. A change is a reason to
 inspect the evidence, **not automatic revocation of its original authority**.
+New opt-in Python import and manifest dependency snapshots carry inspectable
+source fingerprints in their generated claims and relations. Previously indexed
+snapshots are **not retroactively backfilled**: missing old fingerprints remain
+NOT ASSESSED and should not be claimed as audited evidence. Even with a matching
+fingerprint, manifest resolution, import execution and semantic applicability
+remain outside the observation.
 The command does not update SQLite or mutate the checkout.
 
 ## Construction: active-workspace recall (no clean-room development gate)
