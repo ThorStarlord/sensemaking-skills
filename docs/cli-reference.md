@@ -80,7 +80,8 @@ when topology itself is decision-relevant.
 `catalog`, `conformance`, `probe`, `map-build`, `state-append`, `state-show`;
 `workspace-orient` (source-pinned path inventory), `workspace-query`
 (one-revision knowledge retrieval), and `workspace-changes --base-ref REV`
-(two-commit semantic delta without manual index preparation).
+(two-commit semantic delta without manual index preparation; optional
+`--pr-merge-base` for PR-scoped semantic knowledge changes).
 Both `knowledge-query` and `workspace-query` support `--operation product-outline` for a bounded, source-linked view of reviewed goals, non-goals and their explicitly linked serving records and constraints; it does not select engineering priorities.
 For `knowledge-query` and `workspace-query`, `--operation search --query-text TEXT`
 provides opt-in ranked lexical question matching; it never infers semantic
