@@ -15,6 +15,10 @@ The source builder ingests only:
 - Tracked docs/adr/NNNN-*.md title, declared status and bounded verbatim rationale/decision excerpts, plus NNN-*.md title/status and bounded literal excerpts (source authority remains unverified; inspect the source).
 - Git-reviewed, tracked .sensemaking/knowledge/*.json records (schema version 1).
 - Optionally bounded Python AST import **syntax** observations through the existing probe.
+- Optionally bounded, source-pinned **manifest dependency declarations** from the existing
+  `probe_manifest_dependencies` parser (`pyproject.toml`, `package.json`,
+  `requirements.txt` supported fields). These are declarations only, not
+  resolved/installed/imported runtime dependencies.
 
 It does not infer owner intent from code, infer semantic dependencies from word matches, inspect all TypeScript relationships, fetch external services, or treat absent relations as proof of absence. Empty/sparse output means NOT ASSESSED.
 
@@ -102,7 +106,45 @@ repository itself.
 Other operations: snapshot, search, contradictions, history, changes and
 workspace-impact (see active-workspace recall below).
 Changes also requires --base-ref with a *previously indexed* revision.
-The import-syntax option is --include-python-imports with --max-imports cap.
+The import-syntax option is `--include-python-imports` with `--max-imports` cap.
+
+### Opt-in manifest dependency knowledge
+
+The existing manifest dependency probe can now feed the persistent knowledge
+index without adding a schema or a language parser. On an exact committed
+revision, select `--include-manifest-dependencies` (default off) and
+`--max-manifest-dependencies 1000` (0..10000):
+
+```bash
+sensemaking-skills semantic knowledge-build --repo . \
+  --repository "owner/repository" --target-ref "$REF" \
+  --db /outside-checkout/manifest-knowledge.sqlite \
+  --include-manifest-dependencies --max-manifest-dependencies 1000 --json
+
+sensemaking-skills semantic knowledge-query \
+  --db /outside-checkout/manifest-knowledge.sqlite \
+  --repository "owner/repository" --target-ref "$REF" \
+  --operation search --term "Declared manifest dependency" --json
+```
+
+For each supported declaration, the read-only source projection records a
+`domain_concept` claim carrying the declared field and exact dependency
+string, plus an observed `references` edge from the tracked manifest's
+`source` claim. The claim's identity is scoped to **manifest path + field +
+declaration**, preserving dev/optional roles and differing version strings.
+Existing source file claim identities are reused; a structural index can be
+built with both flags without duplicate source records. Results retain
+mechanical authority and original `file:` evidence; statements are not
+repository intent or architecture dependencies.
+
+Only supported declaration fields are inspected. `requirements.txt` lines are
+not fully resolved, package manifests are not executed, and source imports are
+not inferred. Output `source_scope` and `limits` report opt-in scope,
+truncation and parse incompleteness. Missing declarations are NOT ASSESSED
+outside that scope. Because the index protects the digest at each
+repository/revision, use a fresh database for a differently configured snapshot
+of a revision that has already been indexed. This option does not affect the
+default `workspace-query` cache or any existing index.
 
 To inspect whether the **original source evidence** has drifted since an
 indexed revision, while standing in a newer clean target checkout (or, with

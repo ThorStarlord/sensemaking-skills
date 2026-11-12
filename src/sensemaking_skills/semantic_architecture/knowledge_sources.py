@@ -22,7 +22,7 @@ from .knowledge import (
     read_authored_relation, stable_id, validate_snapshot,
 )
 from .models import ObservationKind
-from .probes import probe_python_imports
+from .probes import probe_manifest_dependencies, probe_python_imports
 from .worktree_context import _configured_external_filters, inspect_worktree_context
 
 _TAG = re.compile(r"(?:\[(policy|code|test|owner|delegated):\s*([^\]]+)\]|\[(hypothesis)\])\s*$")
@@ -379,11 +379,63 @@ def _import_syntax(root: Path, tracked: set[str], target_ref: str, limit: int) -
     return list(claims.values()), edges, truncated
 
 
+def _manifest_dependency_declarations(
+    root: Path, tracked: set[str], target_ref: str, limit: int,
+) -> tuple[list[KnowledgeClaim], list[KnowledgeRelation], bool]:
+    """Project already-supported manifest declarations as source-linked knowledge.
+
+    A declaration is neither a resolved/installed dependency nor proof that a
+    module imports it. Use one identity per manifest, field and declaration so
+    different versions and optional/dev roles cannot be accidentally merged.
+    """
+    result = probe_manifest_dependencies(root, target_ref=target_ref)
+    items = [ob for ob in result.observations
+             if ob.kind is ObservationKind.MANIFEST_DEPENDENCY and ob.subject in tracked]
+    partial = len(items) > limit or result.completeness.value != "complete"
+    claims: dict[str, KnowledgeClaim] = {}
+    relations: dict[str, KnowledgeRelation] = {}
+    for item in sorted(items, key=lambda ob: ob.id)[:limit]:
+        source_id = stable_id("file", item.subject)
+        field = str(item.metadata.get("manifest_field", "unknown"))
+        declaration_id = stable_id("manifest-dependency", item.subject, field, item.object)
+        source = f"file:{item.subject}"
+        if source_id not in claims:
+            claims[source_id] = KnowledgeClaim(
+                id=source_id, kind="source", statement=item.subject,
+                epistemic_status="observed", authority_kind="mechanical",
+                authority_ref="probe:manifest-dependencies-v1",
+                source_ref=source, evidence_refs=item.evidence_refs,
+                attributes={"scope": "Git-tracked manifest declaration source",
+                            "authority_verified": False},
+            )
+        claims[declaration_id] = KnowledgeClaim(
+            id=declaration_id, kind="domain_concept",
+            statement=f"Declared manifest dependency ({field}): {item.object}",
+            epistemic_status="observed", authority_kind="mechanical",
+            authority_ref="probe:manifest-dependencies-v1",
+            source_ref=source, evidence_refs=item.evidence_refs,
+            attributes={"scope": "manifest declaration, not installed/runtime dependency",
+                        "manifest_field": field, "authority_verified": False},
+        )
+        relation_id = stable_id("manifest-dependency-reference", item.id)
+        relations[relation_id] = KnowledgeRelation(
+            id=relation_id,
+            subject=source_id, predicate="references", object=declaration_id,
+            epistemic_status="observed", derivation="mechanical",
+            source_ref=source, evidence_refs=item.evidence_refs,
+            attributes={"manifest_field": field,
+                        "scope": "declared dependency only; installation/import not established"},
+        )
+    return list(claims.values()), list(relations.values()), partial
+
+
 def build_knowledge_snapshot(
     repo_root: str | Path, *,
     repository: str, target_ref: str,
     include_python_imports: bool = False,
     max_imports: int = 1000,
+    include_manifest_dependencies: bool = False,
+    max_manifest_dependencies: int = 1000,
     include_repository_structure: bool = False,
     max_structural_files: int = 600,
 ) -> KnowledgeSnapshot:
@@ -391,6 +443,8 @@ def build_knowledge_snapshot(
         raise ValueError("explicit repository identity is required")
     if not 0 <= max_imports <= 10000:
         raise ValueError("max_imports must be between 0 and 10000")
+    if not 0 <= max_manifest_dependencies <= 10000:
+        raise ValueError("max_manifest_dependencies must be between 0 and 10000")
     if not 1 <= max_structural_files <= 2000:
         raise ValueError("max_structural_files must be between 1 and 2000")
     root, tracked = verified_tracked_sources(repo_root, target_ref)
@@ -424,6 +478,26 @@ def build_knowledge_snapshot(
         scope.append("opt-in Python AST import syntax")
         if partial:
             limits.append("Python import observations truncated or partially parsed; absence is NOT ASSESSED.")
+    if include_manifest_dependencies:
+        extra_claims, extra_edges, partial = _manifest_dependency_declarations(
+            root, tracked, target_ref, max_manifest_dependencies,
+        )
+        existing = {claim.id: claim for claim in claims}
+        for claim in extra_claims:
+            previous = existing.get(claim.id)
+            if previous is None:
+                claims.append(claim)
+                existing[claim.id] = claim
+            elif not (previous.kind == claim.kind and previous.statement == claim.statement):
+                raise ValueError(f"conflicting knowledge claim identity: {claim.id}")
+        edges.extend(extra_edges)
+        scope.append("opt-in tracked manifest dependency declarations")
+        limits.append(
+            "Only supported pyproject.toml, package.json and requirements.txt fields "
+            "are observed; declarations do not prove resolved, installed or imported dependencies."
+        )
+        if partial:
+            limits.append("Manifest declarations truncated or partially parsed; absence is NOT ASSESSED.")
     snapshot = KnowledgeSnapshot(
         repository=repository.strip(), target_ref=target_ref,
         claims=tuple(sorted(claims, key=lambda x: x.id)),

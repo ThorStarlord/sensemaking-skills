@@ -1,0 +1,73 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-11-11-manifest-dependency-knowledge
+state: final
+created_at: "2026-11-12T00:57:03Z"
+updated_at: "2026-11-12T00:57:03Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: e4b9f5196aff82f2bc5070a2073026585f413073
+  end_ref: 8ec7c9875fab45de3603da82c50d918a84a0d00a
+  worktree_clean_at_end: null
+skill_identity:
+  load_mode: manual_explicit_load
+  sensemaking_source_ref: null
+goal:
+  statement: "Continue real PATH-1 development and assess decision-time cognitive activity without manufacturing a mode-switching demonstration."
+  source: owner_message
+  source_ref: null
+delegation:
+  granted: [read, local_write, commit, push, open_pr, merge]
+  withheld: [release, deploy, external_publication]
+continuity:
+  resumes: 2026-11-11-query-provenance-contract-compatibility
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: Assess current metareasoning coverage and authentic-use evidence
+    capability: using-sensemaking
+    status: completed
+    reason: "Existing policies cover action, exploration, verification and reconciliation; earlier authentic-use trace is partial. No separate independent agent executor is available in this session."
+    artifact_refs: [skills/using-sensemaking/references/metareasoning-policy-v0.md, docs/normal-use/2026-11-08-adaptive-metareasoning-authentic-use-observation.md, docs/idea-library.md]
+    validation: []
+  - id: R-2
+    responsibility: Deliver a separately worthwhile source-grounded knowledge capability
+    capability: ordinary_coding
+    status: completed
+    reason: "Existing manifest dependency probe was excluded from persistent snapshots. Added opt-in source-linked declarations, bounded limits, CLI flag and Steward user guidance without schema/controller change."
+    artifact_refs: [src/sensemaking_skills/semantic_architecture/knowledge_sources.py, src/sensemaking_skills/semantic_cli.py, docs/semantic-architecture/persistent-knowledge-cli.md]
+    validation:
+      - command: GitHub source and exact diff review of manifest projection and CLI integration
+        result: PASS
+      - command: Local unit and synthetic tests under current owner construction policy
+        result: NOT_RUN
+      - command: Live installed CLI manifest knowledge-build and query
+        result: NOT_RUN
+findings:
+  - id: F-1
+    statement: "Existing probe supports pyproject.toml, package.json and requirements.txt but knowledge-build did not retain its declarations as version-pinned queryable claims."
+    epistemic_status: OBSERVED
+    evidence_refs: [src/sensemaking_skills/semantic_architecture/probes.py, src/sensemaking_skills/semantic_architecture/knowledge_sources.py]
+    disposition: resolved
+  - id: F-2
+    statement: "Same-agent work visibly used inquiry, construction and source review, including a pre-PR syntax correction. This does not independently qualify spontaneous mode selection."
+    epistemic_status: DERIVED
+    evidence_refs: [src/sensemaking_skills/semantic_architecture/knowledge_sources.py, docs/normal-use/2026-11-08-adaptive-metareasoning-authentic-use-observation.md]
+    disposition: handed_off
+  - id: F-3
+    statement: "No observed mode-selection failure warrants a new ontology, controller, or policy amendment; any post-success opportunity benefit remains NOT_ASSESSED."
+    epistemic_status: DERIVED
+    evidence_refs: [skills/using-sensemaking/references/metareasoning-policy-v0.md, docs/idea-library.md]
+    disposition: handed_off
+open_questions: []
+stop:
+  disposition: GOAL_SATISFIED
+  reason: "One warranted bounded product integration was source/diff-reviewed; hosted verification and independent agent behavioral qualification remain separately limited."
+next:
+  warranted_responsibility: null
+  blocked_on: []
+persistence: committed
+claim_ceiling: "No independent agent execution, live installed CLI verification, or local unit/synthetic tests in this session; source and diff support construction only. Hosted CI must be evaluated at its exact PR head."
+action_authorized_by_receipt: false
+immutable: true

@@ -147,17 +147,24 @@ def register_semantic_commands(root_cli: click.Group) -> None:
     @click.option("--max-structural-files", type=click.IntRange(1, 2000), default=600)
     @click.option("--include-python-imports", is_flag=True, help="Index syntactic Python imports as mechanical observations")
     @click.option("--max-imports", type=click.IntRange(0, 10000), default=1000)
+    @click.option("--include-manifest-dependencies", is_flag=True,
+                  help="Index supported manifest declarations; not resolved/installed dependencies")
+    @click.option("--max-manifest-dependencies", type=click.IntRange(0, 10000), default=1000)
     @click.option("--json", "output_json", is_flag=True)
     def semantic_knowledge_build(
         repo_root: Path, repository_id: str, target_ref: str, db_path: Path, temporary_checkout: bool,
         include_repository_structure: bool, max_structural_files: int,
-        include_python_imports: bool, max_imports: int, output_json: bool,
+        include_python_imports: bool, max_imports: int,
+        include_manifest_dependencies: bool, max_manifest_dependencies: int,
+        output_json: bool,
     ) -> None:
         """Index source-pinned knowledge while retaining historical revisions."""
         def build(source_root: Path) -> Any:
             return build_knowledge_snapshot(
                 source_root, repository=repository_id, target_ref=target_ref,
                 include_python_imports=include_python_imports, max_imports=max_imports,
+                include_manifest_dependencies=include_manifest_dependencies,
+                max_manifest_dependencies=max_manifest_dependencies,
                 include_repository_structure=include_repository_structure,
                 max_structural_files=max_structural_files,
             )

@@ -535,6 +535,19 @@ no unit or synthetic evidence tests were run.
 
 ## Current next step
 
+**2026-11-11 manifest dependency declarations in reviewed knowledge:**
+`semantic knowledge-build --include-manifest-dependencies` optionally projects
+supported `package.json`, `pyproject.toml` and `requirements.txt`
+dependency declaration observations through existing source-linked
+`domain_concept`/`references` semantics. This connects an already-available
+probe to the retained queryable knowledge snapshot for both Python and
+JavaScript repositories without a new parser, schema or automatic authority.
+The flag is opt-in and off by default; declaration text is not proof of
+installation, runtime import, compatibility or architectural dependency.
+Exact Git source/diff inspection is construction evidence, with local unit and
+synthetic tests NOT_RUN, actual CLI use and independent decision benefit
+not yet established. Existing PATH-1 and ADR 0029/0031/0034 remain unchanged.
+
 **2026-11-11 current-query receipt provenance compatibility:** The optional
 `semantic_query_receipt` now recognizes `product-outline` and can preserve the
 exact opt-in `search --query-text` question, distinct from literal `--term`
