@@ -12,11 +12,11 @@
 
 **Planning baseline:** `ThorStarlord/sensemaking-skills@3a5658b58029535dd5400388343cac8e760c3468` (2026-11-12); current at planning time; must refresh immediately before any task.
 
-**Prerequisite:** The owner agreed in conversation to SCL as a desirable explicit future capability and to learning consideration across engineering episodes. The proposal's details remain subject to normal Level-4 ratification; this plan does not silently update `docs/product-strategy.md` or any ADR.
+**Prerequisite:** The owner selected SCL as an explicit future capability and learning eligibility across engineering episodes; [ADR 0035](../../adr/0035-sensemaking-continuous-learning.md) records that product-end ratification. All implementation/empirical qualification and protected authority gates remain separate; no future capability is presumed to work merely because it is selected.
 
 ## Global Constraints
 
-- Current product thesis, ADR [0029](../../adr/0029-current-product-boundary.md), [0031](../../adr/0031-persistent-semantic-stewardship.md), [0034](../../adr/0034-ontology-first-adaptive-sensemaking.md), `docs/product-thesis-revision.md`, and `STATUS.md` govern. Do not conflate strategy endorsement, implementation permission, knowledge record authority or release authority.
+- Current product thesis, ADR [0029](../../adr/0029-current-product-boundary.md), [0031](../../adr/0031-persistent-semantic-stewardship.md), [0034](../../adr/0034-ontology-first-adaptive-sensemaking.md), [0035](../../adr/0035-sensemaking-continuous-learning.md), `docs/product-thesis-revision.md`, and `STATUS.md` govern. Do not conflate strategy endorsement, implementation permission, knowledge record authority or release authority.
 - [Existing Longitudinal Engineering Learning program](2026-11-02-longitudinal-engineering-learning.md), PRs #702–705, [Capability Learning Loop v0](../../research/capability-learning-loop-v0.md), [Learning/Reconciliation](../../../skills/using-sensemaking/references/learning-reconciliation-policy-v0.md) and [adaptive-methodological divergence](../../explorations/2026-11-12-adaptive-methodological-learning-divergent-exploration.md) are inputs, **not** an unexecuted blank slate.
 - Retained ≠ retrieved ≠ checked ≠ decision-informing ≠ outcome-supported ≠ independently reused ≠ comparatively beneficial. Do not record a semantic inference as source evidence or a retrospective account as a time-ordered original trace.
 - Every *observable* engineering episode is eligible for lightweight interpretation; an episode may warrant `NO_MODEL_CHANGE` and no additional durable document. Learning from every episode ≠ persisting every episode in a central learning log.

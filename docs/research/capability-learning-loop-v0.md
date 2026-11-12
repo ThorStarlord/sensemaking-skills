@@ -5,6 +5,15 @@
 **Authority:** non-authoritative cross-episode learning model; existing product strategy, ADR 0029, Policy Hierarchy, Skill contracts, and protected-transition authority remain controlling  
 **Runtime status:** no learning runtime, no self-modifying agent, no model training, no new state/schema
 
+**2026-11-12 authority/currentness note:** [ADR 0035](../adr/0035-sensemaking-continuous-learning.md)
+recognizes **SCL as an intended first-class product capability**, with every
+observable engineering episode *eligible* for proportionate learning and only
+consequential experience retained. This does not turn the Loop C candidate
+into an autonomous implementation, overturn the runtime non-goals below,
+or establish comparative benefit. This document remains the evidence-gated
+research account of the three loops; the canonical product intent is in
+`docs/product-strategy.md` and ADR 0035.
+
 ## 1. Purpose
 
 Sensemaking already supports durable learning inside and across repository work:
