@@ -85,6 +85,23 @@ For a **substantive** divergent inquiry, establish only what matters to the curr
 
 Keep this mostly implicit for short, clear work. Do not require a printed checklist, fixed number of frames, novelty score or universal inquiry report.
 
+### Decision-frame and inquiry-method adequacy (when consequential)
+
+When a consequential choice might warrant broader inquiry, distinguish four purpose-relative judgments:
+
+| Judgment | Question | Does not establish |
+| --- | --- | --- |
+| **Solution adequacy** | Did the solution satisfy the selected bounded responsibility? | That selecting the responsibility was strategically best. |
+| **Decision adequacy** | Was that responsibility justified among credible alternatives under the evidence available at the time? | That the governing problem frame was exhaustive. |
+| **Problem-frame adequacy** | Were materially different ends, beneficiaries and options considered sufficiently for this decision? | That every valuable possible future was imagined. |
+| **Inquiry-method adequacy** | Were the sources, premises, perspectives and search methods sufficiently informative for this decision? | That another method would necessarily yield a better option. |
+
+Successful construction does not establish decision, frame or method adequacy. Conversely, unexamined possibility-space territory does not by itself make a bounded choice wrong. Many candidates may share one hidden premise; repeated similar candidates can reflect either adequate local convergence or a search-method limitation. Do not diagnose a reasoning failure from counts, hindsight or a persuasive retrospective account.
+
+If a *specified* different source, beneficiary, frame or method could materially change a consequential choice, compare its likely learning value with continuing authorized construction, verification or stopping. Use existing [Possibility Assessment](../../skills/strategic-repository-analysis/references/possibility-assessment-v1.md) for scoped coverage and marginal learning, and [Metareasoning](../../skills/using-sensemaking/references/metareasoning-policy-v0.md) / [Exploration Policy](../../skills/using-sensemaking/references/exploration-policy-v0.md) for proportional allocation of effort. Historical method lessons may inform that judgment only after checking their [context-qualified applicability](../research/capability-learning-loop-v0.md#context-qualified-methodological-learning-and-transfer).
+
+These are interpretive distinctions, not mandatory gates, new ontology or runtime states, a completeness score, or evidence of autonomous method-selection benefit.
+
 ## 7. Calibration and claim limits
 
 **Orientation fidelity** asks whether the agent did the *right kind* of task under correct scope, sources and authority. **Generative effectiveness** asks whether the *actual output* shows meaningful, source-grounded conceptual work. They are not interchangeable.
