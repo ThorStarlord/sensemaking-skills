@@ -244,6 +244,58 @@ jobs:
           assert all(claim["kind"] == "lesson" for claim in workspace["claims"])
           assert workspace["semantic_truth_established"] is False
           assert workspace["action_authorized"] is False
+          # Source-pinned product intent: candidate futures are separate from
+          # declared goal service and do not select engineering priorities.
+          outline_cmd = [
+              "sensemaking-skills", "semantic", "knowledge-query",
+              "--db", db, "--repository", "ThorStarlord/sensemaking-skills",
+              "--target-ref", revision, "--operation", "product-outline",
+              "--limit", "250", "--json",
+          ]
+          ordinary = search(outline_cmd)
+          future = search(outline_cmd + ["--include-candidates"])
+          goal = next(
+              item for item in future["product_outline"]["goals"]
+              if item["claim_id"] == "goal:compounding-product-knowledge"
+          )
+          possible = {
+              item["claim_id"]: item for item in goal["candidate_opportunities"]
+          }
+          item = possible["poss:cross-episode-possibility-synthesis"]
+          assert item["kind"] == "opportunity"
+          assert item["relation_epistemic_status"] == "hypothetical"
+          assert item["claim_epistemic_status"] in {"hypothetical", "declared"}
+          assert item["authority_ref"]
+          assert item["relation_id"] == "rel:poss-synthesis-candidate-for-goal"
+          assert goal["candidate_total"] >= len(goal["candidate_opportunities"])
+          assert "candidate_opportunities" not in ordinary["product_outline"]["goals"][0]
+          assert "candidate_opportunity_edges" not in ordinary["product_outline"]["total_counts"]
+          assert future["semantic_truth_established"] is False
+          assert future["action_authorized"] is False
+          assert future["target_ref"] == revision
+          workspace_future = search([
+              "sensemaking-skills", "semantic", "workspace-query",
+              "--operation", "product-outline", "--include-candidates",
+              "--ref", revision, "--repo", ".",
+              "--repository", "ThorStarlord/sensemaking-skills",
+              "--index-dir", os.path.join(os.environ["RUNNER_TEMP"], "future-outline-index"),
+              "--limit", "250", "--json",
+          ])
+          assert workspace_future["product_outline"]["goals"] == future["product_outline"]["goals"]
+          invalid_future = subprocess.run(
+              base_search + ["--include-candidates", *question],
+              check=False, capture_output=True, text=True,
+          )
+          assert invalid_future.returncode != 0
+          assert "supported only for product-outline" in invalid_future.stderr
+          print(json.dumps({
+              "consumer": "source-pinned prospective product outline",
+              "source_revision": revision,
+              "candidate_goal": goal["claim_id"],
+              "candidate_count": goal["candidate_total"],
+              "independent_agent_benefit_established": False,
+          }, sort_keys=True))
+
           print(json.dumps({
               "consumer": "source-pinned historical lesson discovery",
               "source_revision": revision,
