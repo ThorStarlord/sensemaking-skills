@@ -730,6 +730,7 @@ def product_outline(
                     **link(r, r["subject"]),
                     "claim_epistemic_status": claims[r["subject"]]["epistemic_status"],
                     "authority_kind": claims[r["subject"]]["authority_kind"],
+                    "authority_ref": claims[r["subject"]]["authority_ref"],
                     "source_ref": claims[r["subject"]]["source_ref"],
                 }
                 for r in future
