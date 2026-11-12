@@ -319,14 +319,33 @@ jobs:
             --base-ref "$REVIEW_BASE" --ref "$REVIEW_HEAD" --pr-merge-base \
             --index-dir "$RUNNER_TEMP/committed-review-index" \
             --max-paths 8 --limit 25 --json > "$RUNNER_TEMP/review-context.json"
-          REVIEW_PACKET="$RUNNER_TEMP/review-context.json" python - <<'PY'
+          # Same PR baseline for authored knowledge changes, not the moving base tip.
+          sensemaking-skills semantic workspace-changes \
+            --repo . --repository ThorStarlord/sensemaking-skills \
+            --base-ref "$REVIEW_BASE" --ref "$REVIEW_HEAD" --pr-merge-base \
+            --index-dir "$RUNNER_TEMP/committed-review-index" \
+            --limit 25 --json > "$RUNNER_TEMP/pr-semantic-changes.json"
+          REVIEW_PACKET="$RUNNER_TEMP/review-context.json" \
+          CHANGE_PACKET="$RUNNER_TEMP/pr-semantic-changes.json" python - <<'PY'
           import json
           import os
 
           with open(os.environ['REVIEW_PACKET'], encoding='utf-8') as stream:
               packet = json.load(stream)
+          with open(os.environ['CHANGE_PACKET'], encoding='utf-8') as stream:
+              changes = json.load(stream)
+          comparison = changes['workspace_comparison']
           scope = packet['review_scope']
           overlap = packet['committed_evidence_reinspection']
+          assert comparison['base_ref'] == packet['base_ref']
+          assert comparison['target_ref'] == packet['target_ref']
+          assert comparison['base_tip_ref'] == os.environ['REVIEW_BASE']
+          assert comparison['comparison_mode'] == 'pr_merge_base'
+          assert comparison['merge_base_calculated'] is True
+          assert comparison['git_ancestry_assessed'] is True
+          assert changes['workspace_base_index']['indexed_ref'] == packet['base_ref']
+          assert changes['semantic_truth_established'] is False
+          assert changes['action_authorized'] is False
           assert packet['base_ref'] == os.environ['REVIEW_START']
           assert packet['target_ref'] == os.environ['REVIEW_HEAD']
           assert scope['base_tip_ref'] == os.environ['REVIEW_BASE']
@@ -354,6 +373,7 @@ jobs:
               'affected_reviewed_records': overlap['affected_record_total'],
               'truncated': packet['truncated'],
               'review_packet_valid': True,
+              'semantic_delta_baseline_aligned': True,
               'agent_benefit_established': False,
           }, sort_keys=True))
           PY
