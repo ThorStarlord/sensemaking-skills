@@ -22,6 +22,7 @@ from .semantic_architecture.knowledge_sources import (
     build_knowledge_snapshot, temporary_commit_checkout, verified_tracked_sources,
 )
 from .semantic_architecture.knowledge_store import query_context_paths, query_knowledge, store_snapshot
+from .semantic_architecture.knowledge_architecture import is_repository_file_path
 from .semantic_architecture.repository_bootstrap import orient_repository
 from .semantic_architecture.worktree_context import changed_paths_since_indexed_ref, inspect_worktree_context
 
@@ -448,3 +449,120 @@ def run_workspace_changes(
         "build_source": base_source,
     }
     return payload
+
+
+def run_workspace_review_context(
+    *, repo: str | Path, base_ref: str, ref: str = "HEAD",
+    repository: str | None = None, index_dir: str | Path | None = None,
+    refresh: bool = False, limit: int = 25, depth: int = 2, max_paths: int = 8,
+) -> dict[str, Any]:
+    """Review committed changed paths against source-pinned BASE product knowledge.
+
+    This is evidence preparation, not architectural anomaly detection. The
+    baseline is intentional: a deletion still has its prior file context, and
+    code newly added at the target cannot silently create accepted intent.
+    """
+    if not 1 <= limit <= 100 or not 0 <= depth <= 4 or not 1 <= max_paths <= 32:
+        raise ValueError("review-context requires limit 1..100, depth 0..4 and max-paths 1..32")
+    _validate_ref_text(base_ref)
+    _validate_ref_text(ref)
+    repo_dir = Path(repo).expanduser().resolve()
+    if not repo_dir.is_dir():
+        raise ValueError(f"repository directory not found: {repo_dir}")
+    root = _checkout_root(repo_dir)
+    base_sha = _resolve_commit(root, base_ref)
+    sha = _resolve_commit(root, ref)
+    label, label_source = _repository_label(root, repository)
+
+    # Both operands are commit trees. Git does not read the worktree or execute
+    # external diff/text conversion; no rename or semantic inference is made.
+    diff = _git(
+        root, "diff", "--no-ext-diff", "--no-textconv", "--no-renames",
+        "--ignore-submodules=all", "--name-only", "-z", base_sha, sha, "--",
+    )
+    if diff.returncode:
+        raise ValueError("cannot list changed paths between the two committed revisions")
+    raw_paths = sorted({path for path in diff.stdout.split("\x00") if path})
+    paths = [
+        path for path in raw_paths
+        if "\ufffd" not in path and is_repository_file_path(path)
+    ]
+    unrepresentable_count = len(raw_paths) - len(paths)
+    selected = paths[:max_paths]
+
+    clone_dir, database = _cache_paths(root, index_dir, base_sha)
+    state, build_source = _ensure_snapshot(
+        root, base_sha, label, clone_dir, database, refresh,
+    )
+    try:
+        outline = query_knowledge(
+            database, repository=label, target_ref=base_sha,
+            operation="product-outline", limit=limit,
+        )
+        contexts = []
+        for path in selected:
+            result = query_knowledge(
+                database, repository=label, target_ref=base_sha,
+                operation="context-for", subject=path, limit=limit, depth=depth,
+            )
+            contexts.append({
+                "path": path, "context": result["context"],
+                "claims": result["claims"], "relations": result["relations"],
+                "truncated": result["truncated"],
+            })
+    except sqlite3.Error as exc:
+        raise ValueError(
+            f"cannot read cached baseline index; retry with --refresh: {exc}"
+        ) from exc
+
+    omitted = len(paths) - len(selected)
+    return {
+        "code": "SEMANTIC_COMMITTED_REVIEW_CONTEXT",
+        "operation": "review-context", "repository": label,
+        "base_ref": base_sha, "target_ref": sha,
+        "product_outline": outline["product_outline"],
+        "product_claims": outline["claims"],
+        "product_relations": outline["relations"],
+        "contexts": contexts,
+        "review_scope": {
+            "base_ref_requested": base_ref, "target_ref_requested": ref,
+            "changed_paths_total": len(raw_paths),
+            "changed_paths_with_valid_context": len(paths),
+            "selected_paths": selected, "omitted_path_count": omitted,
+            "unrepresentable_path_count": unrepresentable_count,
+            "omitted_path_sample": paths[max_paths:max_paths + 16],
+            "per_path_limit": limit, "max_paths": max_paths,
+            "source_intent_revision": base_sha,
+            "git_ancestry_assessed": False, "working_changes_indexed": False,
+            "source_diff_semantics_assessed": False,
+            "architectural_drift_established": False,
+            "note": (
+                "Only committed changed path names were compared. Product "
+                "intent and per-file contexts are from the BASE revision. "
+                "Files added at target may have no baseline context; missing "
+                "links are NOT ASSESSED. Open original sources and inspect "
+                "the actual diff before judging the change."
+            ),
+        },
+        "truncated": bool(
+            outline["truncated"] or omitted or unrepresentable_count
+            or any(entry["truncated"] for entry in contexts)
+        ),
+        "source_scope": outline["source_scope"],
+        "explicit_limits": [
+            *outline["explicit_limits"],
+            "Only the first max-paths Git changed paths receive BASE context.",
+            "Uncommitted changes, rename attribution, Git ancestry, runtime "
+            "behavior and architectural drift are not assessed.",
+        ],
+        "workspace_context": inspect_worktree_context(root, base_sha),
+        "workspace_index": {
+            "indexed_ref": base_sha, "ref_requested": base_ref,
+            "repository": label, "repository_identity_source": label_source,
+            "repository_label_verified": False,
+            "index_path": str(database), "index_state": state,
+            "build_source": build_source,
+            "equivalent_operations": ["product-outline", "context-for"],
+        },
+        "semantic_truth_established": False, "action_authorized": False,
+    }
