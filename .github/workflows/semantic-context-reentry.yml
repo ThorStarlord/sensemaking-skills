@@ -564,6 +564,7 @@ jobs:
           CANDIDATE_PACKET="$RUNNER_TEMP/candidate-review.json" python - <<'PY'
           import json
           import os
+          import subprocess
 
           with open(os.environ['REVIEW_PACKET'], encoding='utf-8') as stream:
               packet = json.load(stream)
@@ -626,8 +627,24 @@ jobs:
               if item['claim_id'] == 'poss:construction-time-possibility-reconciliation'
           )
           source_review = chosen['committed_change_reinspection']
-          assert 'docs/semantic-architecture/persistent-knowledge-cli.md' in source_review['changed_cited_paths']
-          assert 'docs/semantic-architecture/persistent-knowledge-cli.md' in source_review['changed_supporting_paths']
+          # PR #848 touched this candidate's supporting doc. Later PRs may not.
+          # Check the recorded overlap against THIS PR's exact committed diff.
+          changed = set(
+              subprocess.check_output([
+                  'git', 'diff', '--no-ext-diff', '--no-textconv',
+                  '--no-renames', '--ignore-submodules=all', '--name-only', '-z',
+                  packet['base_ref'], packet['target_ref'], '--',
+              ]).decode('utf-8', errors='replace').split('\0')
+          ) - {''}
+          cited = set(source_review['changed_cited_paths'])
+          containers = set(source_review['changed_record_containers'])
+          supporting = set(source_review['changed_supporting_paths'])
+          assert cited <= changed
+          assert cited == containers | supporting
+          assert not containers & supporting
+          assert source_review['reinspection_candidate'] == bool(cited)
+          supported_path = 'docs/semantic-architecture/persistent-knowledge-cli.md'
+          assert (supported_path in supporting) == (supported_path in changed)
           assert source_review['unfingerprinted_record_count'] == 0
           assert source_review['semantic_change_established'] is False
           print(json.dumps({
