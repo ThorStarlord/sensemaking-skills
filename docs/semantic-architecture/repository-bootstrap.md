@@ -98,7 +98,10 @@ placement only*, not runtime dependency or component responsibility.
 Indexed file records store exact source SHA256 fingerprints for later audit.
 Structural scope covers recognized entry documents, manifests and Python source
 under known source/test roots, with explicit truncation and no broad content
-extraction. The Python import probe remains independent and opt-in. The existing supported
+extraction. The Python import probe remains independent and opt-in. A separate opt-in `--include-js-module-imports --max-js-imports N` retains bounded
+literal static ES module references from JS/TS files, preserving original
+source lines but not resolving modules or proving architectural dependencies.
+The existing supported
 manifest parser can now optionally retain only declarative dependency strings
 as source-linked `domain_concept` claims and `references` edges. Both
 projections can be combined with structural containment without duplicate
