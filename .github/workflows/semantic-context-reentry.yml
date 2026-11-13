@@ -48,6 +48,38 @@ jobs:
             --repo . --repository ThorStarlord/sensemaking-skills \
             --target-ref "$REF" --db "$DB" \
             --include-repository-structure --json > "$RUNNER_TEMP/graph-build.json"
+          # Exercise the same exact-revision store_snapshot path that failed
+          # after PR #850: the second build must verify its rows and be idempotent.
+          sensemaking-skills semantic knowledge-build \
+            --repo . --repository ThorStarlord/sensemaking-skills \
+            --target-ref "$REF" --db "$DB" \
+            --include-repository-structure --json > "$RUNNER_TEMP/graph-build-repeat.json"
+          FIRST_BUILD="$RUNNER_TEMP/graph-build.json" \
+          REPEATED_BUILD="$RUNNER_TEMP/graph-build-repeat.json" \
+          GRAPH_REF="$REF" python - <<'PY'
+          import json
+          import os
+          with open(os.environ["FIRST_BUILD"], encoding="utf-8") as stream:
+              first = json.load(stream)
+          with open(os.environ["REPEATED_BUILD"], encoding="utf-8") as stream:
+              repeated = json.load(stream)
+          assert first["already_indexed"] is False, first
+          assert repeated["already_indexed"] is True, repeated
+          assert first["target_ref"] == repeated["target_ref"] == os.environ["GRAPH_REF"]
+          assert first["digest"] == repeated["digest"]
+          assert first["claim_count"] == repeated["claim_count"]
+          assert first["relation_count"] == repeated["relation_count"]
+          print(json.dumps({
+              "consumer": "same-commit-knowledge-build-idempotence",
+              "source_ref": repeated["target_ref"],
+              "first_index_created": True,
+              "repeat_index_accepted": True,
+              "digest_preserved": True,
+              "claims": repeated["claim_count"],
+              "relations": repeated["relation_count"],
+              "semantic_truth_established": False,
+          }, sort_keys=True))
+          PY
           GRAPH_DB="$DB" GRAPH_REF="$REF" python - <<'PY'
           import json
           import os
@@ -532,6 +564,7 @@ jobs:
           CANDIDATE_PACKET="$RUNNER_TEMP/candidate-review.json" python - <<'PY'
           import json
           import os
+          import subprocess
 
           with open(os.environ['REVIEW_PACKET'], encoding='utf-8') as stream:
               packet = json.load(stream)
@@ -594,8 +627,24 @@ jobs:
               if item['claim_id'] == 'poss:construction-time-possibility-reconciliation'
           )
           source_review = chosen['committed_change_reinspection']
-          assert 'docs/semantic-architecture/persistent-knowledge-cli.md' in source_review['changed_cited_paths']
-          assert 'docs/semantic-architecture/persistent-knowledge-cli.md' in source_review['changed_supporting_paths']
+          # PR #848 touched this candidate's supporting doc. Later PRs may not.
+          # Check the recorded overlap against THIS PR's exact committed diff.
+          changed = set(
+              subprocess.check_output([
+                  'git', 'diff', '--no-ext-diff', '--no-textconv',
+                  '--no-renames', '--ignore-submodules=all', '--name-only', '-z',
+                  packet['base_ref'], packet['target_ref'], '--',
+              ]).decode('utf-8', errors='replace').split('\0')
+          ) - {''}
+          cited = set(source_review['changed_cited_paths'])
+          containers = set(source_review['changed_record_containers'])
+          supporting = set(source_review['changed_supporting_paths'])
+          assert cited <= changed
+          assert cited == containers | supporting
+          assert not containers & supporting
+          assert source_review['reinspection_candidate'] == bool(cited)
+          supported_path = 'docs/semantic-architecture/persistent-knowledge-cli.md'
+          assert (supported_path in supporting) == (supported_path in changed)
           assert source_review['unfingerprinted_record_count'] == 0
           assert source_review['semantic_change_established'] is False
           print(json.dumps({
