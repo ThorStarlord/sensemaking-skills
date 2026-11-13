@@ -578,7 +578,8 @@ and separate goal-link citations, distinguishing those from its authored-pack
 `source_ref`. These are source-inspection aids, not verified novelty or value.
 The command retains authority/source references, declared relation identities,
 source uncertainty and bounded omission accounting. It is a useful
-repository-level complement to file-centred `context-for` and structural `orientation-summary`, not a new ontology, product goal
+repository-level complement to file-centred `context-for` and
+structural `orientation-summary`, not a new ontology, product goal
 completeness claim or priority selector. Source/diff review is construction
 evidence; local unit/synthetic tests NOT_RUN, live CLI agent uptake and
 decision benefit NOT ASSESSED until observed.
