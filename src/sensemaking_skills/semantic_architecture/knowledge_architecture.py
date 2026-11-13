@@ -657,6 +657,7 @@ def term(claims: Mapping[str, dict], relations: Iterable[dict], *, name: str, li
 def product_outline(
     claims: Mapping[str, dict], relations: Iterable[dict], *, limit: int,
     include_candidates: bool = False,
+    candidate_changed_paths: frozenset[str] | None = None,
 ) -> tuple[dict, list[str], list[str]]:
     """Project explicit reviewed product goals, non-goals and declared direct links.
 
@@ -672,6 +673,8 @@ def product_outline(
     goal_set = set(goal_ids)
     visible_goal_set = set(visible_goals)
 
+    if candidate_changed_paths is not None and not include_candidates:
+        raise ValueError("candidate changed paths require include_candidates")
     edges = tuple(relations)
     serving = sorted(
         (r for r in edges if r["predicate"] == "serves_goal"
@@ -709,6 +712,39 @@ def product_outline(
             "relation_epistemic_status": r["epistemic_status"],
         }
 
+    def candidate_link(r: dict) -> dict:
+        claim = claims[r["subject"]]
+        item = {
+            **link(r, r["subject"]),
+            "claim_epistemic_status": claim["epistemic_status"],
+            "authority_kind": claim["authority_kind"],
+            "authority_ref": claim["authority_ref"],
+            "source_ref": claim["source_ref"],
+        }
+        if candidate_changed_paths is not None:
+            fingerprint_paths: set[str] = set()
+            missing_fingerprints = 0
+            record_containers: set[str] = set()
+            for record in (claim, r):
+                hashes = record.get("attributes", {}).get("source_sha256")
+                if isinstance(hashes, dict) and hashes:
+                    fingerprint_paths.update(hashes)
+                else:
+                    missing_fingerprints += 1
+                source_ref = record.get("source_ref", "")
+                if isinstance(source_ref, str) and source_ref.startswith("file:"):
+                    record_containers.add(source_ref[5:].split(":line:", 1)[0])
+            matched = sorted(fingerprint_paths & candidate_changed_paths)
+            item["committed_change_reinspection"] = {
+                "changed_cited_paths": matched,
+                "changed_record_containers": sorted(set(matched) & record_containers),
+                "changed_supporting_paths": sorted(set(matched) - record_containers),
+                "unfingerprinted_record_count": missing_fingerprints,
+                "reinspection_candidate": bool(matched),
+                "semantic_change_established": False,
+            }
+        return item
+
     goals = []
     for cid in visible_goals:
         linked = [link(r, r["subject"]) for r in served_visible if r["object"] == cid]
@@ -725,16 +761,7 @@ def product_outline(
         }
         if include_candidates:
             future = [r for r in candidate_visible if r["object"] == cid]
-            goal["candidate_opportunities"] = [
-                {
-                    **link(r, r["subject"]),
-                    "claim_epistemic_status": claims[r["subject"]]["epistemic_status"],
-                    "authority_kind": claims[r["subject"]]["authority_kind"],
-                    "authority_ref": claims[r["subject"]]["authority_ref"],
-                    "source_ref": claims[r["subject"]]["source_ref"],
-                }
-                for r in future
-            ]
+            goal["candidate_opportunities"] = [candidate_link(r) for r in future]
             total_candidates = sum(r["object"] == cid for r in candidates)
             goal["candidate_total"] = total_candidates
             goal["candidate_omitted"] = total_candidates - len(future)
@@ -786,6 +813,34 @@ def product_outline(
             "Candidate links are recorded possible futures, not goal service, "
             "strategic selection, implementation priority or authorization."
         )
+    if candidate_changed_paths is not None:
+        visible = [
+            item for goal in goals for item in goal["candidate_opportunities"]
+        ]
+        affected = [
+            item for item in visible
+            if item["committed_change_reinspection"]["reinspection_candidate"]
+        ]
+        result["candidate_reinspection"] = {
+            "visible_candidate_edge_total": len(visible),
+            "candidate_edges_omitted": omitted["candidate_opportunity_edges"],
+            "changed_source_candidate_edge_total": len(affected),
+            "changed_source_candidate_claim_ids": sorted({
+                item["claim_id"] for item in affected
+            }),
+            "unfingerprinted_candidate_edge_total": sum(
+                bool(item["committed_change_reinspection"]["unfingerprinted_record_count"])
+                for item in visible
+            ),
+            "committed_changed_paths_assessed": len(candidate_changed_paths),
+            "semantic_change_established": False,
+            "note": (
+                "Indexed BASE fingerprints are matched to committed changed path names, "
+                "not compared source contents. Shared authored packs can flag many "
+                "unrelated candidates; omitted or unfingerprinted candidates remain "
+                "NOT ASSESSED. Re-inspect original sources before reconsideration."
+            ),
+        }
     return result, selected_claim_ids, selected_relation_ids
 
 
