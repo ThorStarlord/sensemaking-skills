@@ -94,8 +94,11 @@ explicit two-commit comparison. Missing or ambiguous merge bases fail closed.
 The review also exposes path-level overlaps with BASE cited evidence and
 uncited changed-path gaps, without inferring semantic staleness.
 This is review evidence, not a drift/violation verdict.
-For JavaScript/TypeScript source orientation, `semantic knowledge-build`
-accepts `--include-js-module-imports --max-js-imports N`. The opt-in probe
+For JavaScript/TypeScript source orientation, both `semantic knowledge-build`
+and zero-setup `semantic workspace-query` accept
+`--include-js-module-imports --max-js-imports N`. The latter keeps its default
+index untouched and stores opted-in source observations in a separate,
+limit-specific derived cache, including on repeat queries. The opt-in probe
 records literal static ESM import/re-export specifiers with source citations,
 not module resolution, architecture coupling or complete JS/TS coverage.
 See `docs/semantic-architecture/persistent-knowledge-cli.md` for exact scope,
