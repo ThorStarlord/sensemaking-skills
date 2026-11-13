@@ -1121,6 +1121,28 @@ This computes a Git comparison scope, **not** the identity of a GitHub PR or
 a check against its authoritative file set. A caller reviewing a PR should
 still reconcile the returned changed paths with the PR's actual files.
 
+For **prospective** review, opt in to the already reviewed goal-linked candidate
+opportunities without promoting them to existing capabilities or selected work:
+
+```bash
+sensemaking-skills semantic workspace-review-context \
+  --base-ref MAIN_TIP --ref PR_HEAD --pr-merge-base \
+  --include-candidates --json
+```
+
+Only in this opt-in mode, `product_outline.goals[].candidate_opportunities`
+contains `committed_change_reinspection` for each visible candidate edge,
+and `product_outline.candidate_reinspection` accounts for visible, omitted,
+matched and unfingerprinted candidates. The comparison matches indexed
+**BASE-revision** source fingerprint *paths* to the full committed changed-path
+set. `changed_record_containers` separates edited shared knowledge packs from
+`changed_supporting_paths`; a shared pack edit can flag many unrelated
+possibilities. Missing links, omitted candidate edges and missing fingerprints
+remain NOT ASSESSED. This does not interpret free-text `revisit_when`,
+establish changed meaning, feasibility, priority, strategy or permission to act.
+The default review output is unchanged. These are prompts to reopen original
+sources and reconsider **whether** a possibility still matters.
+
 This read-only convenience command resolves both exact local commits, uses Git
 diff to list committed changed **path names** (no rename inference), and
 retrieves the product outline plus bounded per-file `context-for` results
