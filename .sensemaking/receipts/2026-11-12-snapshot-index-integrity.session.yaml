@@ -1,13 +1,13 @@
 artifact_id: sensemaking_session_receipt
 schema_version: 1
 session_ref: 2026-11-12-snapshot-index-integrity
-state: in_progress
+state: final
 created_at: "2026-11-13T01:31:37Z"
-updated_at: "2026-11-13T01:31:37Z"
+updated_at: "2026-11-13T01:35:30Z"
 target_repository: ThorStarlord/sensemaking-skills
 source_identity:
   start_ref: fc5809854697d1448428d47f96877261a9b38698
-  end_ref: null
+  end_ref: 38d3a95239047237588ac42bb048e2bbe618b57b
   worktree_clean_at_end: null
 skill_identity:
   load_mode: manual_explicit_load
@@ -34,24 +34,37 @@ responsibilities:
   - id: R-2
     responsibility: Verify stored semantic snapshot integrity before serving source-pinned knowledge
     capability: ordinary_coding
-    status: in_progress
-    reason: "Accidental cache content drift should not masquerade as retained knowledge for an exact commit; reuse the existing digest and schema, keep compatibility."
-    artifact_refs: [src/sensemaking_skills/semantic_architecture/knowledge_store.py, docs/semantic-architecture/persistent-knowledge-cli.md]
-    validation: []
+    status: completed
+    reason: "Complete persisted snapshots are verified on read and an altered disposable copy was rejected through the existing public CLI in hosted consumer execution."
+    artifact_refs: [src/sensemaking_skills/semantic_architecture/knowledge_store.py, docs/semantic-architecture/persistent-knowledge-cli.md, .github/workflows/semantic-context-reentry.yml]
+    validation:
+      - command: Exact source/PR diff review for semantic index integrity
+        result: PASS
+      - command: Hosted Source-pinned context consumer at 38d3a95239047237588ac42bb048e2bbe618b57b
+        result: PASS
+      - command: Hosted public query rejects altered copy and accepts real exact-commit SQLite snapshot
+        result: PASS
+      - command: Local unit and synthetic tests under CONSTRUCTION exception
+        result: NOT_RUN
 findings:
   - id: F-1
     statement: "The existing snapshot.digest is written by store_snapshot but is not recomputed by _snapshot on query, audit, change comparison or cache reuse."
     epistemic_status: OBSERVED
     evidence_refs: [src/sensemaking_skills/semantic_architecture/knowledge_store.py, src/sensemaking_skills/workspace_knowledge.py]
-    disposition: open
+    disposition: resolved
+  - id: F-2
+    statement: "The initial hosted consumer inspected a real source-pinned graph containing 752 claims and rejected a disposable index with altered claim payload while keeping its original digest."
+    epistemic_status: OBSERVED
+    evidence_refs: [.github/workflows/semantic-context-reentry.yml, src/sensemaking_skills/semantic_architecture/knowledge_store.py]
+    disposition: resolved
 open_questions: []
 stop:
-  disposition: IN_PROGRESS
-  reason: "Selected a bounded data-integrity repair; implementation and hosted source-pinned verification have not happened yet."
+  disposition: GOAL_SATISFIED
+  reason: "Source/diff review and the hosted real-index/altered-copy consumer completed for this bounded repair; PR integration and final-head CI remain separately observable."
 next:
-  warranted_responsibility: "Implement read-time snapshot checksum validation and fail closed on derived-cache mismatch."
+  warranted_responsibility: "Integrate the reviewed source-integrity PR within existing policy and reconcile exact final-head hosted results."
   blocked_on: []
 persistence: committed
-claim_ceiling: "Pre-implementation source review only; no live corruption/repair behavior or independent-agent learning demonstrated."
+claim_ceiling: "Hosted checksum consistency and altered-cache rejection observed. No cryptographic authentication, semantic truth, original Git source validity, independent agent benefit or comparative decision improvement established."
 action_authorized_by_receipt: false
-immutable: false
+immutable: true
