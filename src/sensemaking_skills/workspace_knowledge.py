@@ -188,14 +188,23 @@ def _ensure_directory(path: Path) -> None:
     os.makedirs(path, mode=0o700, exist_ok=True)
 
 
-def _snapshot_for(root: Path, sha: str, label: str) -> tuple[KnowledgeSnapshot, str]:
+def _snapshot_for(
+    root: Path, sha: str, label: str, *,
+    include_js_module_imports: bool = False, max_js_imports: int = 1000,
+) -> tuple[KnowledgeSnapshot, str]:
     # Preserve the fast clean-HEAD path without running configured Git
     # clean/process filters during the dirtiness decision.
     context = inspect_worktree_context(root, sha)
     if context["head_matches_indexed_ref"] and context["worktree_clean"]:
-        return build_knowledge_snapshot(root, repository=label, target_ref=sha), "active_checkout"
+        return build_knowledge_snapshot(
+            root, repository=label, target_ref=sha,
+            include_js_module_imports=include_js_module_imports, max_js_imports=max_js_imports,
+        ), "active_checkout"
     with temporary_commit_checkout(root, sha) as checkout:
-        snapshot = build_knowledge_snapshot(checkout, repository=label, target_ref=sha)
+        snapshot = build_knowledge_snapshot(
+            checkout, repository=label, target_ref=sha,
+            include_js_module_imports=include_js_module_imports, max_js_imports=max_js_imports,
+        )
     return snapshot, "temporary_worktree"
 
 
@@ -225,6 +234,7 @@ def _prune(clone_dir: Path, keep: Path) -> None:
 
 def _ensure_snapshot(
     root: Path, sha: str, label: str, clone_dir: Path, database: Path, refresh: bool,
+    *, include_js_module_imports: bool = False, max_js_imports: int = 1000,
 ) -> tuple[str, str | None]:
     if refresh and database.exists():
         database.unlink()
@@ -242,7 +252,10 @@ def _ensure_snapshot(
             return "reused", None
     _ensure_directory(clone_dir.parent)
     _ensure_directory(clone_dir)
-    snapshot, source = _snapshot_for(root, sha, label)
+    snapshot, source = _snapshot_for(
+        root, sha, label,
+        include_js_module_imports=include_js_module_imports, max_js_imports=max_js_imports,
+    )
     try:
         store_snapshot(database, snapshot, source_root=root)
     except ValueError as exc:
@@ -315,6 +328,7 @@ def run_workspace_query(
     search_terms: tuple[str, ...] = (), expected_kinds: tuple[str, ...] = (),
     query_text: str | None = None, search_kinds: tuple[str, ...] = (),
     include_candidates: bool = False,
+    include_js_module_imports: bool = False, max_js_imports: int = 1000,
     limit: int = 50, depth: int = 2, repository: str | None = None,
     index_dir: str | Path | None = None, refresh: bool = False,
 ) -> dict[str, Any]:
@@ -329,6 +343,10 @@ def run_workspace_query(
         raise ValueError("--search-kind is supported only for search")
     if include_candidates and operation != "product-outline":
         raise ValueError("--include-candidates is supported only for product-outline")
+    if not 0 <= max_js_imports <= 10000:
+        raise ValueError("--max-js-imports must be between 0 and 10000")
+    if not include_js_module_imports and max_js_imports != 1000:
+        raise ValueError("--max-js-imports requires --include-js-module-imports")
     if operation == "context-for":
         if paths and subject is not None:
             raise ValueError("pass positional PATHS or --subject for context-for, not both")
@@ -350,8 +368,18 @@ def run_workspace_query(
     root = _checkout_root(repo_dir)
     sha = _resolve_commit(root, ref)
     label, label_source = _repository_label(root, repository)
-    clone_dir, database = _cache_paths(root, index_dir, sha)
-    state, build_source = _ensure_snapshot(root, sha, label, clone_dir, database, refresh)
+    # The existing exact-SHA default cache remains backward compatible. An
+    # opt-in source profile gets its own cache: a digest-valid default snapshot
+    # cannot be reused to answer a richer query, nor vice versa.
+    profile_index_dir = index_dir
+    if include_js_module_imports:
+        base_index_dir = Path(index_dir) if index_dir is not None else _default_index_dir()
+        profile_index_dir = base_index_dir / f"js-module-imports-v1-max-{max_js_imports}"
+    clone_dir, database = _cache_paths(root, profile_index_dir, sha)
+    state, build_source = _ensure_snapshot(
+        root, sha, label, clone_dir, database, refresh,
+        include_js_module_imports=include_js_module_imports, max_js_imports=max_js_imports,
+    )
 
     changed = changed_paths_since_indexed_ref(root, sha)["paths"] if operation in _WORKSPACE_OPERATIONS else None
     try:
@@ -383,6 +411,9 @@ def run_workspace_query(
         "build_source": build_source,
         "equivalent_operations": ["build", operation] if state == "built" else [operation],
     }
+    if include_js_module_imports:
+        payload["workspace_index"]["observation_profile"] = "js-module-imports-v1"
+        payload["workspace_index"]["max_js_imports"] = max_js_imports
     return payload
 
 def run_workspace_changes(

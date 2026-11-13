@@ -37,9 +37,30 @@ as partial coverage, never as no dependency. Records retain original file-line
 references and source SHA256; full parser equivalence is NOT claimed. This is
 an **additional source observation**, not a reviewed architectural decision.
 
-To use it on a clean committed revision, build an opt-in index outside the
-checkout (use a **fresh DB path** if the same Git revision was previously
-indexed with a different set of probe flags):
+For ordinary source exploration, the zero-setup `workspace-query` can now
+construct, reuse and query this opt-in projection without an explicit
+`knowledge-build`, database path or preexisting index:
+
+```bash
+sensemaking-skills semantic workspace-query --repo . --ref HEAD \
+  --operation search --subject "./views/AppView.js" \
+  --include-js-module-imports --max-js-imports 1000 --json
+```
+
+The opted-in workspace cache lives in a separate `js-module-imports-v1-max-N`
+profile underneath the configured `--index-dir` (or ordinary per-user cache).
+Its exact-revision files and retention are separate from the default cache,
+and distinct `--max-js-imports` limits never silently reuse another profile.
+Unflagged `workspace-query` calls retain their original snapshot, outputs
+and cost. `--refresh` only rebuilds the selected profile. The opted-in result
+identifies its profile and observation limit in `workspace_index`, and its
+`source_scope` / `explicit_limits` continue to disclose partial JS coverage.
+The source observations remain literal syntax, **not** resolved dependencies,
+system architecture or proof of utility for an independent coding agent.
+
+For explicit-index use or combined source-probe configuration, build an opt-in
+index outside the checkout (use a **fresh DB path** if the same Git revision was
+previously indexed with a different set of probe flags):
 
 ```bash
 sensemaking-skills semantic knowledge-build --repo . \

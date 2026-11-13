@@ -545,7 +545,11 @@ no unit or synthetic evidence tests were run.
 knowledge-build --include-js-module-imports` optionally captures bounded
 literal static ESM import/re-export specifiers from tracked JS/TS source as
 source-cited `references` edges in the existing rebuildable knowledge index.
-This supports direct source orientation in JavaScript-heavy repositories where
+The existing zero-setup `semantic workspace-query --include-js-module-imports`
+now exposes those observations without a manually prepared database, using
+a separate limit-specific cache profile so default SHA-only indexes are not
+mistaken for opt-in sources. The default query remains unchanged. This supports
+direct source orientation in JavaScript-heavy repositories where
 manifest declarations and file lists cannot show import syntax. It does not
 resolve modules, infer architecture, observe dynamic/CommonJS imports, or
 establish independent agent benefit. Real tracked fixture/source integration is

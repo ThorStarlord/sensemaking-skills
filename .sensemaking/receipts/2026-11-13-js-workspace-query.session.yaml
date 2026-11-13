@@ -1,0 +1,80 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-11-13-js-workspace-query
+state: final
+created_at: "2026-11-13T03:00:00Z"
+updated_at: "2026-11-13T03:05:41Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: fbc1c39c66464b2d4fda96c9abbdb1bf91c618a2
+  end_ref: 7ec2ba583250a0493da49d192e3a8cd865e93e3f
+  worktree_clean_at_end: null
+skill_identity:
+  load_mode: manual_explicit_load
+  sensemaking_source_ref: null
+goal:
+  statement: "Make opt-in JS/TS source observations available from ordinary zero-setup workspace queries while preserving default profile and cache identity."
+  source: owner_message
+  source_ref: null
+delegation:
+  granted: [read, local_write, commit, push, open_pr, merge]
+  withheld: [release, deploy, external_publication]
+continuity:
+  resumes: null
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: Select warranted product integration from current canonical source state
+    capability: using-sensemaking
+    status: completed
+    reason: "PR #852 adds optional static ESM observations only to explicit knowledge-build, while zero-setup workspace-query always builds default knowledge and cannot request those observations."
+    artifact_refs: [src/sensemaking_skills/workspace_knowledge.py, src/sensemaking_skills/semantic_cli.py, src/sensemaking_skills/semantic_architecture/knowledge_sources.py]
+    validation: []
+  - id: R-2
+    responsibility: Add source-pinned opt-in JS/TS retrieval to workspace-query with isolated cache profiles
+    capability: ordinary_coding
+    status: completed
+    reason: "Source- and profile-scoped zero-setup JS/TS retrieval works through the original workspace query CLI and preserves default cache identity."
+    artifact_refs: [src/sensemaking_skills/workspace_knowledge.py, src/sensemaking_skills/semantic_cli.py, .github/workflows/semantic-context-reentry.yml]
+    validation:
+      - command: Exact eight-file GitHub PR diff review
+        result: PASS
+      - command: Hosted Semantic Context Re-entry at 4ab8bc252c8726f5a66a7d40c938baff4325216b
+        result: PASS
+      - command: Hosted Full test suite at 4ab8bc252c8726f5a66a7d40c938baff4325216b
+        result: PASS
+      - command: Local unit and synthetic tests under CONSTRUCTION exception
+        result: NOT_RUN
+findings:
+  - id: F-1
+    statement: "The default workspace cache key depends on Git revision, not build flags; passing different ingestion options into that cache would silently reuse the wrong profile."
+    epistemic_status: OBSERVED
+    evidence_refs: [src/sensemaking_skills/workspace_knowledge.py, src/sensemaking_skills/semantic_architecture/knowledge_sources.py]
+    disposition: resolved
+  - id: F-2
+    statement: "The exact-head hosted consumer retrieved the literal tracked JS module specifier from workspace-query, verified its file-line evidence and SHA256, reused the selected profile and separated default and alternate-limit caches."
+    epistemic_status: OBSERVED
+    evidence_refs: [.github/workflows/semantic-context-reentry.yml, src/sensemaking_skills/workspace_knowledge.py]
+    disposition: resolved
+  - id: F-3
+    statement: "The hosted existing opt-in index retained 11 JS module claims and 6 source-linked JS import/re-export relations, with source fingerprints verified against committed bytes."
+    epistemic_status: OBSERVED
+    evidence_refs: [.github/workflows/semantic-context-reentry.yml, src/sensemaking_skills/semantic_architecture/knowledge_sources.py]
+    disposition: resolved
+  - id: F-4
+    statement: "Hosted Product Validation on the implementation head passed 3649 tests, with 25 skipped, five expected failures and no unexpected failures; final documentation-only and receipt commits remain separately qualified."
+    epistemic_status: OBSERVED
+    evidence_refs: [.github/workflows/semantic-context-reentry.yml, src/sensemaking_skills/workspace_knowledge.py]
+    disposition: resolved
+open_questions: []
+stop:
+  disposition: GOAL_SATISFIED
+  reason: "The opted-in source query integration passed the real source-pinned consumer and full suite on the implementation revision; final PR integration and exact closeout-head verification remain separately observable."
+next:
+  warranted_responsibility: null
+  blocked_on: []
+persistence: committed
+claim_ceiling: "Source-pinned JS syntax and cache-profile reuse are verified on the implementation head. No complete JS parser, module resolution, semantic truth, external host-agent adoption or comparative decision benefit established."
+action_authorized_by_receipt: false
+immutable: true

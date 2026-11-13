@@ -545,6 +545,95 @@ jobs:
           }, sort_keys=True))
           PY
 
+      - name: Read opted-in JS module evidence from the real zero-setup workspace cache
+        shell: bash
+        run: |
+          set -euo pipefail
+          REF="$(git rev-parse HEAD)"
+          PROFILE_DIR="$RUNNER_TEMP/js-workspace-profiles"
+          FIXTURE="experiments/post-hardening-adjudication-probe-v1/packets/strong-ui-fog/fixture/src/index.js"
+          sensemaking-skills semantic workspace-query \
+            --repo . --repository ThorStarlord/sensemaking-skills --ref "$REF" \
+            --operation search --subject "./views/AppView.js" --search-kind domain_concept \
+            --include-js-module-imports --max-js-imports 100 \
+            --index-dir "$PROFILE_DIR" --json > "$RUNNER_TEMP/js-workspace-first.json"
+          sensemaking-skills semantic workspace-query \
+            --repo . --repository ThorStarlord/sensemaking-skills --ref "$REF" \
+            --operation search --subject "./views/AppView.js" --search-kind domain_concept \
+            --include-js-module-imports --max-js-imports 100 \
+            --index-dir "$PROFILE_DIR" --json > "$RUNNER_TEMP/js-workspace-repeat.json"
+          sensemaking-skills semantic workspace-query \
+            --repo . --repository ThorStarlord/sensemaking-skills --ref "$REF" \
+            --operation search --subject "./views/AppView.js" --search-kind domain_concept \
+            --index-dir "$PROFILE_DIR" --json > "$RUNNER_TEMP/js-workspace-default.json"
+          sensemaking-skills semantic workspace-query \
+            --repo . --repository ThorStarlord/sensemaking-skills --ref "$REF" \
+            --operation search --subject "./views/AppView.js" --search-kind domain_concept \
+            --include-js-module-imports --max-js-imports 0 \
+            --index-dir "$PROFILE_DIR" --json > "$RUNNER_TEMP/js-workspace-limit-zero.json"
+          PROFILE_RESULTS="$RUNNER_TEMP" PROFILE_REF="$REF" PROFILE_FIXTURE="$FIXTURE" python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          root = Path(os.environ["PROFILE_RESULTS"])
+          def read(name):
+              return json.loads((root / name).read_text(encoding="utf-8"))
+
+          first = read("js-workspace-first.json")
+          repeated = read("js-workspace-repeat.json")
+          ordinary = read("js-workspace-default.json")
+          bounded = read("js-workspace-limit-zero.json")
+          revision = os.environ["PROFILE_REF"]
+          assert {x["workspace_index"]["indexed_ref"] for x in (first, repeated, ordinary, bounded)} == {revision}
+          assert first["workspace_index"]["index_state"] == "built"
+          assert repeated["workspace_index"]["index_state"] == "reused"
+          assert first["workspace_index"]["index_path"] == repeated["workspace_index"]["index_path"]
+          assert len({
+              first["workspace_index"]["index_path"],
+              ordinary["workspace_index"]["index_path"],
+              bounded["workspace_index"]["index_path"],
+          }) == 3
+          assert first["workspace_index"]["observation_profile"] == "js-module-imports-v1"
+          assert first["workspace_index"]["max_js_imports"] == 100
+          assert bounded["workspace_index"]["max_js_imports"] == 0
+          assert "observation_profile" not in ordinary["workspace_index"]
+          assert first["claims"] == repeated["claims"]
+          assert "opt-in static JS/TS ESM module specifiers" in first["source_scope"]
+          assert "opt-in static JS/TS ESM module specifiers" not in ordinary["source_scope"]
+          fixture = os.environ["PROFILE_FIXTURE"]
+          found = [
+              item for item in first["claims"]
+              if item["authority_ref"] == "probe:js-module-imports-v1"
+              and item["statement"] == "Static JS/TS module specifier: ./views/AppView.js"
+          ]
+          assert found, first["claims"]
+          assert found[0]["source_ref"] == f"file:{fixture}"
+          assert found[0]["evidence_refs"] == [f"file:{fixture}:line:1"]
+          assert found[0]["attributes"]["source_sha256"][fixture] == hashlib.sha256(
+              Path(fixture).read_bytes()
+          ).hexdigest()
+          for packet in (ordinary, bounded):
+              assert not any(
+                  claim.get("authority_ref") == "probe:js-module-imports-v1"
+                  for claim in packet["claims"]
+              )
+          assert first["semantic_truth_established"] is False
+          print(json.dumps({
+              "consumer": "zero-setup-js-module-source-search",
+              "source_ref": revision,
+              "tracked_fixture": fixture,
+              "opt_in_source_observed": True,
+              "source_digest_matched": True,
+              "same_profile_cache_reused": True,
+              "default_cache_unchanged": True,
+              "different_limit_cache_isolated": True,
+              "independent_agent_benefit_established": False,
+              "semantic_truth_established": False,
+          }, sort_keys=True))
+          PY
+
       - name: Read committed source-overlap review packet for the actual PR
         if: github.event_name == 'pull_request'
         shell: bash
