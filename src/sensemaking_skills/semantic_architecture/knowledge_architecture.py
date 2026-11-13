@@ -720,6 +720,9 @@ def product_outline(
             "authority_kind": claim["authority_kind"],
             "authority_ref": claim["authority_ref"],
             "source_ref": claim["source_ref"],
+            "statement": claim["statement"],
+            "claim_evidence_refs": list(claim["evidence_refs"]),
+            "relation_evidence_refs": list(r["evidence_refs"]),
         }
         if candidate_changed_paths is not None:
             fingerprint_paths: set[str] = set()

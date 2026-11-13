@@ -572,10 +572,13 @@ non-goals, direct `serves_goal` links to capabilities/opportunities and
 direct goal constraints. Opt-in `--include-candidates` additionally
 projects direct goal-linked `candidate_opportunity_for` opportunities in a
 separate, provenance- and status-labelled group; these are possible futures,
-not selected strategy, existing goal service or authorization. It retains
-authority/source references, declared relation identities, source uncertainty
-and bounded omission accounting. It is a useful repository-level complement
-to file-centred `context-for` and
+not selected strategy, existing goal service or authorization. The opt-in
+view also exposes each candidate's statement, original claim evidence citations
+and separate goal-link citations, distinguishing those from its authored-pack
+`source_ref`. These are source-inspection aids, not verified novelty or value.
+The command retains authority/source references, declared relation identities,
+source uncertainty and bounded omission accounting. It is a useful
+repository-level complement to file-centred `context-for` and
 structural `orientation-summary`, not a new ontology, product goal
 completeness claim or priority selector. Source/diff review is construction
 evidence; local unit/synthetic tests NOT_RUN, live CLI agent uptake and

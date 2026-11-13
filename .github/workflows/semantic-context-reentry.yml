@@ -267,6 +267,19 @@ jobs:
           assert item["claim_epistemic_status"] in {"hypothetical", "declared"}
           assert item["authority_ref"]
           assert item["relation_id"] == "rel:poss-synthesis-candidate-for-goal"
+          source_claim = next(
+              c for c in future["claims"] if c["id"] == item["claim_id"]
+          )
+          source_relation = next(
+              r for r in future["relations"] if r["id"] == item["relation_id"]
+          )
+          assert item["statement"] == source_claim["statement"]
+          assert item["source_ref"] == "file:.sensemaking/knowledge/possibilities.json"
+          assert item["source_ref"] == source_claim["source_ref"]
+          assert item["claim_evidence_refs"] == source_claim["evidence_refs"]
+          assert item["relation_evidence_refs"] == source_relation["evidence_refs"]
+          assert item["claim_evidence_refs"] and item["relation_evidence_refs"]
+          assert item["source_ref"] not in item["claim_evidence_refs"]
           assert goal["candidate_total"] >= len(goal["candidate_opportunities"])
           assert "candidate_opportunities" not in ordinary["product_outline"]["goals"][0]
           assert "candidate_opportunity_edges" not in ordinary["product_outline"]["total_counts"]
