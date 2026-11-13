@@ -15,12 +15,38 @@ The source builder ingests only:
 - Tracked docs/adr/NNNN-*.md title, declared status and bounded verbatim rationale/decision excerpts, plus NNN-*.md title/status and bounded literal excerpts (source authority remains unverified; inspect the source).
 - Git-reviewed, tracked .sensemaking/knowledge/*.json records (schema version 1).
 - Optionally bounded Python AST import **syntax** observations through the existing probe.
+- Optionally bounded literal static ES module imports/re-exports in tracked
+  `.js`, `.mjs`, `.jsx`, `.ts` and `.tsx` files through
+  `knowledge-build --include-js-module-imports --max-js-imports N`.
+  The projection stores source-linked `references` edges to *literal specifiers*,
+  not resolved files, installed packages or runtime dependencies.
 - Optionally bounded, source-pinned **manifest dependency declarations** from the existing
   `probe_manifest_dependencies` parser (`pyproject.toml`, `package.json`,
   `requirements.txt` supported fields). These are declarations only, not
   resolved/installed/imported runtime dependencies.
 
 It does not infer owner intent from code, infer semantic dependencies from word matches, inspect all TypeScript relationships, fetch external services, or treat absent relations as proof of absence. Empty/sparse output means NOT ASSESSED.
+
+**JS/TS source scope:** The opt-in bounded scanner retains syntactically clear
+ES module import and re-export string specifiers, including multiline static
+imports. It excludes CommonJS `require()`, dynamic `import()`, `.cjs` files,
+imports embedded in template literals, module-alias resolution and bundler or
+runtime semantics. Comments and template bodies are masked; source statements
+that cannot be conservatively recognized and files above 512 KiB are reported
+as partial coverage, never as no dependency. Records retain original file-line
+references and source SHA256; full parser equivalence is NOT claimed. This is
+an **additional source observation**, not a reviewed architectural decision.
+
+To use it on a clean committed revision, build an opt-in index outside the
+checkout (use a **fresh DB path** if the same Git revision was previously
+indexed with a different set of probe flags):
+
+```bash
+sensemaking-skills semantic knowledge-build --repo . \
+  --repository "owner/repository" --target-ref "$REF" \
+  --db /tmp/js-module-knowledge.sqlite \
+  --include-js-module-imports --max-js-imports 1000 --json
+```
 
 ## Build and query
 
