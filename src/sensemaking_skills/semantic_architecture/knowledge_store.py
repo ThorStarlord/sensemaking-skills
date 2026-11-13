@@ -94,6 +94,9 @@ def store_snapshot(db_path: str | Path, snapshot: KnowledgeSnapshot, *, source_r
     path.parent.mkdir(parents=True, exist_ok=True)
     try:
         conn = sqlite3.connect(path)
+        # The idempotent write path reuses _snapshot, which reads named fields.
+        # Match the read-only connection's row shape without changing SQL.
+        conn.row_factory = sqlite3.Row
         try:
             conn.execute("PRAGMA foreign_keys=ON")
             version = conn.execute("PRAGMA user_version").fetchone()[0]
