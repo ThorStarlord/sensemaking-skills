@@ -505,9 +505,17 @@ sensemaking-skills semantic workspace-query --operation product-outline --includ
 
 The optional `candidate_opportunities` group contains only direct
 `candidate_opportunity_for` links to reviewed `opportunity` claims. It is
-separate from `serving_records`, with each candidate's claim and relation
-epistemic status, source and bounded omission counts visible. It does not
-imply a selected strategy, implementation readiness, achieved goal or
+separate from `serving_records`, with each candidate's statement, claim
+and relation epistemic status, source and bounded omission counts visible.
+The grouped candidate also retains `claim_evidence_refs` and
+`relation_evidence_refs` separately: these are the authored claim's original
+supporting citations and the independent citations for its proposed goal
+relationship. Its `source_ref` identifies the authored knowledge-pack
+container, **not** necessarily one of those original supporting sources.
+These fields allow source inspection even when a top-level `claims` or
+`relations` envelope is truncated; they neither establish semantic truth
+nor prove that the candidate is novel, applicable or valuable. The view does
+not imply a selected strategy, implementation readiness, achieved goal or
 permission to act. A missing candidate edge remains `NOT_ASSESSED`. The
 flag works with both `workspace-query` and `knowledge-query`, is rejected
 for other operations, and leaves the default committed-review outline unchanged.
