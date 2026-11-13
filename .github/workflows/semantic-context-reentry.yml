@@ -437,6 +437,13 @@ jobs:
             --base-ref "$REVIEW_BASE" --ref "$REVIEW_HEAD" --pr-merge-base \
             --index-dir "$RUNNER_TEMP/committed-review-index" \
             --max-paths 8 --limit 25 --json > "$RUNNER_TEMP/review-context.json"
+          # Opt-in prospective review uses the identical committed Git scope;
+          # no candidate is automatically selected or semantically reclassified.
+          sensemaking-skills semantic workspace-review-context \
+            --repo . --repository ThorStarlord/sensemaking-skills \
+            --base-ref "$REVIEW_BASE" --ref "$REVIEW_HEAD" --pr-merge-base \
+            --include-candidates --index-dir "$RUNNER_TEMP/committed-review-index" \
+            --max-paths 8 --limit 25 --json > "$RUNNER_TEMP/candidate-review.json"
           # Same PR baseline for authored knowledge changes, not the moving base tip.
           sensemaking-skills semantic workspace-changes \
             --repo . --repository ThorStarlord/sensemaking-skills \
@@ -444,7 +451,8 @@ jobs:
             --index-dir "$RUNNER_TEMP/committed-review-index" \
             --limit 25 --json > "$RUNNER_TEMP/pr-semantic-changes.json"
           REVIEW_PACKET="$RUNNER_TEMP/review-context.json" \
-          CHANGE_PACKET="$RUNNER_TEMP/pr-semantic-changes.json" python - <<'PY'
+          CHANGE_PACKET="$RUNNER_TEMP/pr-semantic-changes.json" \
+          CANDIDATE_PACKET="$RUNNER_TEMP/candidate-review.json" python - <<'PY'
           import json
           import os
 
@@ -452,6 +460,8 @@ jobs:
               packet = json.load(stream)
           with open(os.environ['CHANGE_PACKET'], encoding='utf-8') as stream:
               changes = json.load(stream)
+          with open(os.environ['CANDIDATE_PACKET'], encoding='utf-8') as stream:
+              candidate_review = json.load(stream)
           comparison = changes['workspace_comparison']
           scope = packet['review_scope']
           overlap = packet['committed_evidence_reinspection']
@@ -481,6 +491,45 @@ jobs:
           assert all('committed_change_relevance' in item['context'] for item in packet['contexts'])
           assert packet['semantic_truth_established'] is False
           assert packet['action_authorized'] is False
+
+          assert 'candidate_reinspection' not in packet['product_outline']
+          assert 'candidate_opportunities' not in packet['product_outline']['goals'][0]
+          assert candidate_review['base_ref'] == packet['base_ref']
+          assert candidate_review['target_ref'] == packet['target_ref']
+          assert candidate_review['review_scope']['candidate_source_overlap_assessed'] is True
+          assert candidate_review['semantic_truth_established'] is False
+          assert candidate_review['action_authorized'] is False
+          prospect = candidate_review['product_outline']
+          summary = prospect['candidate_reinspection']
+          assert summary['candidate_edges_omitted'] == prospect['omitted_counts']['candidate_opportunity_edges']
+          visible = [
+              item for goal in prospect['goals']
+              for item in goal['candidate_opportunities']
+          ]
+          assert summary['visible_candidate_edge_total'] == len(visible)
+          assert summary['changed_source_candidate_edge_total'] == sum(
+              item['committed_change_reinspection']['reinspection_candidate']
+              for item in visible
+          )
+          assert summary['semantic_change_established'] is False
+          chosen = next(
+              item for item in visible
+              if item['claim_id'] == 'poss:construction-time-possibility-reconciliation'
+          )
+          source_review = chosen['committed_change_reinspection']
+          assert 'docs/semantic-architecture/persistent-knowledge-cli.md' in source_review['changed_cited_paths']
+          assert 'docs/semantic-architecture/persistent-knowledge-cli.md' in source_review['changed_supporting_paths']
+          assert source_review['unfingerprinted_record_count'] == 0
+          assert source_review['semantic_change_established'] is False
+          print(json.dumps({
+              'consumer': 'committed-prospective-reinspection',
+              'source_ref': candidate_review['base_ref'],
+              'target_ref': candidate_review['target_ref'],
+              'visible_candidate_edges': summary['visible_candidate_edge_total'],
+              'source_overlap_candidate_edges': summary['changed_source_candidate_edge_total'],
+              'candidate_omissions': summary['candidate_edges_omitted'],
+              'independent_agent_benefit_established': False,
+          }, sort_keys=True))
           print(json.dumps({
               'consumer': 'committed-source-evidence-review',
               'source_ref': packet['base_ref'],
