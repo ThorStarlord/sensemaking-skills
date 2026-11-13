@@ -545,6 +545,11 @@ no unit or synthetic evidence tests were run.
 knowledge-build --include-js-module-imports` optionally captures bounded
 literal static ESM import/re-export specifiers from tracked JS/TS source as
 source-cited `references` edges in the existing rebuildable knowledge index.
+Source-local module-specifier claims are identified by importing file plus
+literal text, so identical `./model.mjs` strings in different directories do
+not falsely become one provenance-bearing target. This fixes an observed
+identity-model defect without attempting module resolution (see
+`docs/normal-use/2026-11-13-js-module-identity-engineering.md`).
 The existing zero-setup `semantic workspace-query --include-js-module-imports`
 now exposes those observations without a manually prepared database, using
 a separate limit-specific cache profile so default SHA-only indexes are not

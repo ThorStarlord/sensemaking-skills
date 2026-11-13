@@ -20,6 +20,11 @@ The source builder ingests only:
   `knowledge-build --include-js-module-imports --max-js-imports N`.
   The projection stores source-linked `references` edges to *literal specifiers*,
   not resolved files, installed packages or runtime dependencies.
+  A JS/TS module-specifier claim is identified by its **importing source file and
+  literal string**, not by the string alone: two `./model.mjs` imports in
+  different directories are separate source-grounded claims. Their labels can
+  be identical because no relative path or package is resolved. This keeps
+  each claim's single source citation and fingerprint truthful.
 - Optionally bounded, source-pinned **manifest dependency declarations** from the existing
   `probe_manifest_dependencies` parser (`pyproject.toml`, `package.json`,
   `requirements.txt` supported fields). These are declarations only, not

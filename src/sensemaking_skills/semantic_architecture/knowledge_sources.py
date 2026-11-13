@@ -413,7 +413,9 @@ def _js_module_import_syntax(
             fingerprints[item.subject] = _source_hashes(root, tracked, (source,))
         hashes = fingerprints[item.subject]
         file_id = stable_id("file", item.subject)
-        specifier_id = stable_id("js-module-specifier", item.object)
+        # A relative literal only has source-local meaning; do not merge
+        # different importers into one provenance-bearing target claim.
+        specifier_id = stable_id("js-module-specifier", item.subject, item.object)
         if file_id not in claims:
             claims[file_id] = KnowledgeClaim(
                 id=file_id, kind="source", statement=item.subject,
