@@ -541,6 +541,18 @@ no unit or synthetic evidence tests were run.
 
 ## Current next step
 
+**2026-11-12 JS/TS static import source observations:** `semantic
+knowledge-build --include-js-module-imports` optionally captures bounded
+literal static ESM import/re-export specifiers from tracked JS/TS source as
+source-cited `references` edges in the existing rebuildable knowledge index.
+This supports direct source orientation in JavaScript-heavy repositories where
+manifest declarations and file lists cannot show import syntax. It does not
+resolve modules, infer architecture, observe dynamic/CommonJS imports, or
+establish independent agent benefit. Real tracked fixture/source integration is
+exercised by hosted Semantic Context Re-entry; local unit/synthetic tests
+NOT_RUN under the current construction policy. No new ontology, runtime
+controller, authority or Level-3 change.
+
 **2026-11-11 manifest dependency declarations in reviewed knowledge:**
 `semantic knowledge-build --include-manifest-dependencies` optionally projects
 supported `package.json`, `pyproject.toml` and `requirements.txt`
