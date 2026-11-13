@@ -419,6 +419,10 @@ def register_semantic_commands(root_cli: click.Group) -> None:
                   help="Repeat claim kinds to assess in the explicit one-hop explain/why neighborhood")
     @click.option("--include-candidates", is_flag=True,
                   help="Include goal-linked possible futures in product-outline only")
+    @click.option("--include-js-module-imports", is_flag=True,
+                  help="Index optional static JS/TS ESM specifiers in a separate zero-setup cache profile")
+    @click.option("--max-js-imports", type=click.IntRange(0, 10000), default=1000,
+                  help="Bound opt-in JS/TS source observations (requires --include-js-module-imports)")
     @click.option("--limit", type=click.IntRange(1, 250), default=50)
     @click.option("--depth", type=click.IntRange(0, 4), default=2)
     @click.option("--repo", "repo_dir", type=click.Path(exists=True, file_okay=False, path_type=Path),
@@ -433,7 +437,8 @@ def register_semantic_commands(root_cli: click.Group) -> None:
     def semantic_workspace_query(
         paths: tuple[str, ...], operation: str, subject: str | None, search_terms: tuple[str, ...],
         query_text: str | None, search_kinds: tuple[str, ...], expected_kinds: tuple[str, ...],
-        include_candidates: bool, limit: int, depth: int, repo_dir: Path, ref: str,
+        include_candidates: bool, include_js_module_imports: bool, max_js_imports: int,
+        limit: int, depth: int, repo_dir: Path, ref: str,
         repository_label: str | None, index_dir: Path | None, refresh: bool, output_json: bool,
     ) -> None:
         """Query committed reviewed knowledge with no prior build or identity arguments.
@@ -449,7 +454,9 @@ def register_semantic_commands(root_cli: click.Group) -> None:
                 repo=repo_dir, ref=ref, operation=operation, paths=paths, subject=subject,
                 search_terms=search_terms, expected_kinds=expected_kinds,
                 query_text=query_text, search_kinds=search_kinds,
-                include_candidates=include_candidates, limit=limit, depth=depth,
+                include_candidates=include_candidates,
+                include_js_module_imports=include_js_module_imports, max_js_imports=max_js_imports,
+                limit=limit, depth=depth,
                 repository=repository_label, index_dir=index_dir, refresh=refresh,
             )
         except (ValueError, OSError, UnicodeError) as exc:
