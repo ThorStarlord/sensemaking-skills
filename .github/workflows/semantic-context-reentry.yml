@@ -468,6 +468,7 @@ jobs:
             --repo . --repository ThorStarlord/sensemaking-skills \
             --target-ref "$REF" --db "$PROBE_DB" \
             --include-python-imports --max-imports 100 \
+            --include-js-module-imports --max-js-imports 100 \
             --include-manifest-dependencies --max-manifest-dependencies 100 \
             --json > "$RUNNER_TEMP/opt-in-probe-build.json"
           PROBE_DB="$PROBE_DB" PROBE_REF="$REF" python - <<'PY'
@@ -479,16 +480,20 @@ jobs:
 
           expected = {
               "probe:python-imports-v1": "python_import",
+              "probe:js-module-imports-v1": "js_module_import",
               "probe:manifest-dependencies-v1": "manifest_dependency",
           }
           edge_scopes = {
               "import syntax, not runtime or architecture": "python_import",
+              "static ES module syntax; not runtime or architecture": "js_module_import",
               "declared dependency only; installation/import not established": "manifest_dependency",
           }
           observed = {
               "python_import": {"claim": 0, "relation": 0},
+              "js_module_import": {"claim": 0, "relation": 0},
               "manifest_dependency": {"claim": 0, "relation": 0},
           }
+          original_js_edges = []
           with sqlite3.connect(os.environ["PROBE_DB"]) as connection:
               for table in ("claims", "relations"):
                   for (raw,) in connection.execute(
@@ -511,6 +516,22 @@ jobs:
                           ).hexdigest(), (record["id"], path)
                       kind = "claim" if table == "claims" else "relation"
                       observed[group][kind] += 1
+                      if group == "js_module_import" and kind == "relation":
+                          original_js_edges.append(record)
+
+          fixture = "experiments/post-hardening-adjudication-probe-v1/packets/strong-ui-fog/fixture/src/index.js"
+          matched = [edge for edge in original_js_edges if edge["source_ref"] == f"file:{fixture}"]
+          assert len(matched) == 1, matched
+          assert matched[0]["evidence_refs"] == [f"file:{fixture}:line:1"]
+          assert "import { mount } from" in Path(fixture).read_text(encoding="utf-8")
+          with sqlite3.connect(os.environ["PROBE_DB"]) as connection:
+              target = connection.execute(
+                  "SELECT payload FROM claims WHERE target_ref=? AND id=?",
+                  (os.environ["PROBE_REF"], matched[0]["object"]),
+              ).fetchone()
+          assert target and json.loads(target[0])["statement"] == (
+              "Static JS/TS module specifier: ./views/AppView.js"
+          )
 
           assert all(count > 0 for values in observed.values()
                      for count in values.values()), observed
