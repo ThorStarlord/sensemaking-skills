@@ -1,0 +1,57 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-11-13-js-workspace-query
+state: in_progress
+created_at: "2026-11-13T03:00:00Z"
+updated_at: "2026-11-13T03:00:00Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: fbc1c39c66464b2d4fda96c9abbdb1bf91c618a2
+  end_ref: null
+  worktree_clean_at_end: null
+skill_identity:
+  load_mode: manual_explicit_load
+  sensemaking_source_ref: null
+goal:
+  statement: "Make opt-in JS/TS source observations available from ordinary zero-setup workspace queries while preserving default profile and cache identity."
+  source: owner_message
+  source_ref: null
+delegation:
+  granted: [read, local_write, commit, push, open_pr, merge]
+  withheld: [release, deploy, external_publication]
+continuity:
+  resumes: null
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: Select warranted product integration from current canonical source state
+    capability: using-sensemaking
+    status: completed
+    reason: "PR #852 adds optional static ESM observations only to explicit knowledge-build, while zero-setup workspace-query always builds default knowledge and cannot request those observations."
+    artifact_refs: [src/sensemaking_skills/workspace_knowledge.py, src/sensemaking_skills/semantic_cli.py, src/sensemaking_skills/semantic_architecture/knowledge_sources.py]
+    validation: []
+  - id: R-2
+    responsibility: Add source-pinned opt-in JS/TS retrieval to workspace-query with isolated cache profiles
+    capability: ordinary_coding
+    status: in_progress
+    reason: "An agent should access the retained JS/TS source observations through the existing normal query entrypoint without manually building an incompatible same-SHA SQLite index."
+    artifact_refs: [src/sensemaking_skills/workspace_knowledge.py, src/sensemaking_skills/semantic_cli.py, .github/workflows/semantic-context-reentry.yml]
+    validation: []
+findings:
+  - id: F-1
+    statement: "The default workspace cache key depends on Git revision, not build flags; passing different ingestion options into that cache would silently reuse the wrong profile."
+    epistemic_status: OBSERVED
+    evidence_refs: [src/sensemaking_skills/workspace_knowledge.py, src/sensemaking_skills/semantic_architecture/knowledge_sources.py]
+    disposition: open
+open_questions: []
+stop:
+  disposition: IN_PROGRESS
+  reason: "Responsibility selected before implementation; existing default and opt-in cache correctness must be checked on real source."
+next:
+  warranted_responsibility: "Implement isolated opt-in workspace-query source profile, document scope, verify real hosted CLI repeat/retrieval behavior."
+  blocked_on: []
+persistence: committed
+claim_ceiling: "Source-level selection only; no hosted consumer execution or later agent benefit yet."
+action_authorized_by_receipt: false
+immutable: false
