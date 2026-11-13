@@ -525,7 +525,7 @@ jobs:
           assert matched[0]["evidence_refs"] == [f"file:{fixture}:line:1"]
           # A module specifier belongs to an importer, not a global module name.
           expected_target = "js-module-specifier:" + hashlib.sha256(
-              (fixture + "\\0" + "./views/AppView.js").encode("utf-8")
+              fixture.encode("utf-8") + bytes([0]) + b"./views/AppView.js"
           ).hexdigest()[:24]
           assert matched[0]["object"] == expected_target, matched[0]
           assert "import { mount } from" in Path(fixture).read_text(encoding="utf-8")
