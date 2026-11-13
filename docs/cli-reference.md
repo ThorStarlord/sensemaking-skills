@@ -94,6 +94,10 @@ explicit two-commit comparison. Missing or ambiguous merge bases fail closed.
 The review also exposes path-level overlaps with BASE cited evidence and
 uncited changed-path gaps, without inferring semantic staleness.
 This is review evidence, not a drift/violation verdict.
+For JavaScript/TypeScript source orientation, `semantic knowledge-build`
+accepts `--include-js-module-imports --max-js-imports N`. The opt-in probe
+records literal static ESM import/re-export specifiers with source citations,
+not module resolution, architecture coupling or complete JS/TS coverage.
 See `docs/semantic-architecture/persistent-knowledge-cli.md` for exact scope,
 cache, source-identity and evidence limits. Even in PR mode, it does not
 verify GitHub PR identity, complete ancestry, semantic truth or Skill quality.
