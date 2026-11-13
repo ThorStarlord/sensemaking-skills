@@ -26,9 +26,24 @@ It does not infer owner intent from code, infer semantic dependencies from word 
 
 From a CLEAN target Git checkout, store the SQLite index outside the checkout.
 The command verifies HEAD and refuses tracked or untracked changes itself;
-there is no need to run a separate raw `git status` precheck. Its shared
-worktree inspector disables configured external Git clean/smudge/process
-filters and the filesystem monitor while inspecting source state. It does
+there is no need to run a separate raw `git status` precheck.
+
+**Derived-index integrity:** Every source-pinned query, source audit and indexed
+historical comparison rechecks the stored complete-snapshot digest against
+actual persisted claim/relation payloads, snapshot scope and limits. Indexed
+history rows from other revisions are checked before use, and a repeated
+`knowledge-build` may not silently accept changed cached records at the same
+repository/revision. An inconsistent SQLite index fails closed: for zero-setup
+`workspace-query` or committed review, retry with `--refresh` to rebuild the
+derived cache; for an explicit `--db` index, rebuild the affected exact Git
+revision into a fresh index. This is a checksum consistency check, **not a
+signature or authentication** and not proof that an authored claim is true,
+that current Git sources remain unchanged, or that semantic applicability
+survives time. The existing SQLite schema and authored knowledge are unchanged.
+
+The source-state checker uses the shared worktree inspector, which disables
+configured external Git clean/smudge/process filters and the filesystem
+monitor while inspecting source state. It does
 not assess nested submodule worktrees (which are outside the indexed
 repository's tracked-file source scope).
 

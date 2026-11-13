@@ -362,6 +362,70 @@ jobs:
           }, sort_keys=True))
           PY
 
+      - name: Reject altered derived knowledge cache before source-pinned lookup
+        shell: bash
+        run: |
+          set -euo pipefail
+          INDEX="$RUNNER_TEMP/sensemaking-graph.sqlite" \
+          SOURCE_SHA="$(git rev-parse HEAD)" python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import shutil
+          import sqlite3
+          import subprocess
+
+          from sensemaking_skills.semantic_architecture.knowledge_store import query_knowledge
+
+          source = Path(os.environ["INDEX"])
+          revision = os.environ["SOURCE_SHA"]
+          args = {
+              "repository": "ThorStarlord/sensemaking-skills",
+              "target_ref": revision,
+              "operation": "snapshot",
+          }
+          valid = query_knowledge(source, **args)
+          assert valid["digest"] and valid["counts"]["claims"] > 0
+
+          # The original exact-commit index remains untouched. Alter only a
+          # disposable copy to confirm the public query fails closed.
+          corrupted = source.with_name("altered-derived-graph.sqlite")
+          shutil.copy2(source, corrupted)
+          with sqlite3.connect(corrupted) as conn:
+              row = conn.execute(
+                  "SELECT id,payload FROM claims WHERE repository=? AND target_ref=? "
+                  "ORDER BY id LIMIT 1",
+                  (args["repository"], revision),
+              ).fetchone()
+              assert row
+              record = json.loads(row[1])
+              record["statement"] += " [altered cached payload]"
+              conn.execute(
+                  "UPDATE claims SET statement=?,payload=? "
+                  "WHERE repository=? AND target_ref=? AND id=?",
+                  (record["statement"], json.dumps(record), args["repository"], revision, row[0]),
+              )
+          attempt = subprocess.run(
+              [
+                  "sensemaking-skills", "semantic", "knowledge-query",
+                  "--db", str(corrupted), "--repository", args["repository"],
+                  "--target-ref", revision, "--operation", "snapshot", "--json",
+              ],
+              text=True, capture_output=True, check=False,
+          )
+          assert attempt.returncode != 0
+          assert "indexed snapshot digest mismatch" in attempt.stderr
+          print(json.dumps({
+              "consumer": "derived-index-digest-integrity",
+              "source_ref": revision,
+              "original_claim_count": valid["counts"]["claims"],
+              "original_index_unchanged": True,
+              "altered_copy_query_rejected": True,
+              "git_source_authenticity_established": False,
+              "semantic_truth_established": False,
+          }, sort_keys=True))
+          PY
+
       - name: Check opt-in source fingerprint continuity on committed sources
         shell: bash
         run: |

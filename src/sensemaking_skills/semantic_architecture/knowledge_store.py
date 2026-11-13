@@ -73,6 +73,9 @@ def _read_only(db_path: str | Path) -> sqlite3.Connection:
         if conn.execute("PRAGMA user_version").fetchone()[0] != SCHEMA_VERSION:
             conn.close()
             raise ValueError("unsupported semantic knowledge index schema version")
+        # Keep checksum verification and subsequent query reads on one stable
+        # read transaction, even when another process accesses this SQLite file.
+        conn.execute("BEGIN")
         return conn
     except sqlite3.Error as exc:
         raise ValueError(f"cannot read semantic knowledge index: {exc}") from exc
@@ -107,6 +110,7 @@ def store_snapshot(db_path: str | Path, snapshot: KnowledgeSnapshot, *, source_r
                 if existing and existing[0] != digest:
                     raise ValueError("conflicting content for an already-indexed Git snapshot")
                 if existing:
+                    _snapshot(conn, *key)  # The stored digest alone does not verify its rows.
                     return {"repository": key[0], "target_ref": key[1], "digest": digest,
                             "claim_count": len(snapshot.claims), "relation_count": len(snapshot.relations),
                             "already_indexed": True, "semantic_truth_established": False}
@@ -137,6 +141,48 @@ def _snapshot(conn: sqlite3.Connection, repository: str, target_ref: str) -> sql
     ).fetchone()
     if snap is None:
         raise ValueError("requested repository/revision has not been indexed; NOT ASSESSED")
+
+    # The SQLite file is a rebuildable cache, not evidence authority. Recheck
+    # its stored complete-snapshot checksum before trusting indexed payloads.
+    # Preserve original INSERT order: KnowledgeSnapshot tuples can be unsorted.
+    key = (repository, target_ref)
+    try:
+        payloads = {}
+        for table, fields in (
+            ("claims", ("id", "kind", "statement", "epistemic_status")),
+            ("relations", ("id", "subject", "predicate", "object")),
+        ):
+            records = []
+            for row in conn.execute(
+                f"SELECT * FROM {table} WHERE repository=? AND target_ref=? ORDER BY rowid",
+                key,
+            ):
+                record = json.loads(row["payload"])
+                if not isinstance(record, dict) or any(
+                    record.get(field) != row[field] for field in fields
+                ):
+                    raise ValueError(f"{table} row does not match indexed payload")
+                records.append(record)
+            payloads[table] = records
+        stored = {
+            "repository": repository, "target_ref": target_ref,
+            "claims": payloads["claims"], "relations": payloads["relations"],
+            "source_scope": json.loads(snap["source_scope"]),
+            "limits": json.loads(snap["limits"]),
+            "schema_version": snap["schema_version"],
+            "semantic_truth_established": False, "action_authorized": False,
+        }
+        actual = hashlib.sha256(_dumps(stored).encode("utf-8")).hexdigest()
+    except (sqlite3.Error, TypeError, ValueError, KeyError) as exc:
+        raise ValueError(
+            "indexed snapshot integrity check failed; rebuild the exact Git "
+            "revision (workspace users can retry with --refresh)"
+        ) from exc
+    if actual != snap["digest"]:
+        raise ValueError(
+            "indexed snapshot digest mismatch; rebuild the exact Git revision "
+            "(workspace users can retry with --refresh)"
+        )
     return snap
 
 
@@ -276,6 +322,10 @@ def query_knowledge(
                 "FROM snapshots s JOIN claims c ON s.repository=c.repository AND s.target_ref=c.target_ref "
                 "WHERE s.repository=? AND c.id=? ORDER BY s.rowid", (repository, subject)
             ).fetchall()
+            # Historical rows can come from other indexed revisions.
+            # Verify each source snapshot before returning its retained claims.
+            for revision in {r["revision"] for r in rows} - {target_ref}:
+                _snapshot(conn, repository, revision)
             extra["claim_history"] = [
                 {"revision": r["revision"], "indexed_order": r["indexed_order"], "claim": json.loads(r["claim"])}
                 for r in rows[:limit]
