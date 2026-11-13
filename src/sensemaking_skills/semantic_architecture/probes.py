@@ -11,6 +11,7 @@ import ast
 import fnmatch
 import hashlib
 import json
+import re
 import tomllib
 from pathlib import Path
 from typing import Iterable
@@ -170,6 +171,136 @@ def probe_python_imports(repo_root: str | Path, *, target_ref: str) -> SemanticP
         observations=observations,
         diagnostics=diagnostics,
         completeness=completeness,
+    )
+
+
+
+_JS_START = re.compile(r"(?m)^[ \t]*(?:import\b(?![ \t]*[.(])|export[ \t]+(?:\*|\{))")
+_JS_FROM = re.compile(r"\bfrom[ \t\r\n]*(['\"])([^'\"\\\r\n]{1,512})\1")
+_JS_SIDE_EFFECT = re.compile(r"^import[ \t]+(['\"])([^'\"\\\r\n]{1,512})\1")
+_JS_SUFFIXES = frozenset({".js", ".jsx", ".mjs", ".ts", ".tsx"})
+
+
+def _mask_js_comments_and_templates(source: str) -> str:
+    """Keep source positions, while hiding comments and template contents."""
+    result = list(source)
+    state = "code"
+    i = 0
+    while i < len(source):
+        ch = source[i]
+        nxt = source[i + 1] if i + 1 < len(source) else ""
+        if state == "code":
+            if ch == "/" and nxt in {"/", "*"}:
+                result[i] = result[i + 1] = " "
+                state = "line" if nxt == "/" else "block"
+                i += 2
+                continue
+            if ch == chr(96):
+                result[i] = " "
+                state = "template"
+            elif ch in {"'", '"'}:
+                state = ch
+        elif state in {"'", '"'}:
+            if ch == "\\" and nxt:
+                i += 2
+                continue
+            if ch == state:
+                state = "code"
+        elif state == "line":
+            if ch == "\n":
+                state = "code"
+            else:
+                result[i] = " "
+        elif state == "block":
+            if ch == "*" and nxt == "/":
+                result[i] = result[i + 1] = " "
+                state = "code"
+                i += 2
+                continue
+            if ch != "\n":
+                result[i] = " "
+        else:  # Template literal text is not static ES import syntax.
+            if ch == "\\" and nxt:
+                result[i] = " "
+                result[i + 1] = "\n" if nxt == "\n" else " "
+                i += 2
+                continue
+            if ch == chr(96):
+                state = "code"
+            if ch != "\n":
+                result[i] = " "
+        i += 1
+    return "".join(result)
+
+
+def probe_js_module_imports(repo_root: str | Path, *, target_ref: str) -> SemanticProbeResult:
+    """Observe bounded, literal ES import/re-export specifiers in JS/TS files.
+
+    Relative specifiers remain literal. Aliases, package resolution, CommonJS
+    require(), dynamic import(), and architectural dependencies are NOT inferred.
+    """
+    root = Path(repo_root).resolve()
+    observations: list[SemanticObservation] = []
+    diagnostics: list[SemanticDiagnostic] = []
+    inspected = incomplete = 0
+    for path in _iter_regular_files(root):
+        if path.suffix not in _JS_SUFFIXES:
+            continue
+        rel = _relative(root, path)
+        inspected += 1
+        try:
+            if path.stat().st_size > 512 * 1024:
+                raise ValueError("file exceeds 512 KiB bounded source limit")
+            masked = _mask_js_comments_and_templates(path.read_text(encoding="utf-8"))
+        except (OSError, UnicodeError, ValueError) as exc:
+            incomplete += 1
+            diagnostics.append(SemanticDiagnostic(
+                "JS_MODULE_IMPORT_SOURCE_UNASSESSED", f"cannot inspect {rel}: {exc}", path=rel,
+            ))
+            continue
+        matches = list(_JS_START.finditer(masked))
+        for index, match in enumerate(matches):
+            # A second import/re-export begins a different candidate statement.
+            end = min(
+                matches[index + 1].start() if index + 1 < len(matches) else len(masked),
+                match.start() + 2048,
+            )
+            statement = masked[match.start():end].lstrip().split(";", 1)[0]
+            statement = "\n".join(statement.splitlines()[:16])
+            bare = _JS_SIDE_EFFECT.match(statement)
+            sourced = None if bare else _JS_FROM.search(statement)
+            module = bare.group(2) if bare else sourced.group(2) if sourced else None
+            if module is None:
+                if statement.startswith("export"):
+                    continue  # Local exports do not import a module.
+                incomplete += 1
+                diagnostics.append(SemanticDiagnostic(
+                    "JS_MODULE_IMPORT_SYNTAX_UNASSESSED",
+                    "unrecognized static import syntax; no dependency was inferred",
+                    path=rel,
+                ))
+                continue
+            line = masked.count("\n", 0, match.start()) + 1
+            observations.append(SemanticObservation(
+                id=_observation_id("js_module_import", rel, module, str(line)),
+                kind=ObservationKind.JS_MODULE_IMPORT,
+                subject=rel, predicate="contains_static_module_specifier", object=module,
+                evidence_refs=(f"file:{rel}:line:{line}",),
+                source="bounded_js_esm_syntax",
+                scope="literal static ES imports/re-exports; no module resolution",
+                completeness=Completeness.COMPLETE,
+                currentness=Currentness.OBSERVED_CURRENT, target_ref=target_ref,
+                metadata={"line": line, "language_suffix": path.suffix},
+            ))
+    diagnostics.append(SemanticDiagnostic(
+        "JS_MODULE_IMPORT_SCOPE",
+        f"inspected {inspected} JS/TS files; unassessed files/statements: {incomplete}",
+    ))
+    return _result(
+        probe_id="js-module-imports-v1", target_ref=target_ref,
+        scope="bounded static ESM import and re-export literals in JS/TS source files",
+        observations=observations, diagnostics=diagnostics,
+        completeness=Completeness.PARTIAL if incomplete else Completeness.COMPLETE,
     )
 
 

@@ -1,7 +1,7 @@
 """Build a deterministic, reviewable semantic snapshot from an exact Git revision.
 
 Scope: explicitly tracked Grounding Pack lines, ADR identity/status, optional
-Python import *syntax*, and authored .sensemaking/knowledge/*.json records.
+Python/JS import *syntax*, and authored .sensemaking/knowledge/*.json records.
 We never synthesize owner intent, semantic dependencies or test guarantees.
 """
 
@@ -22,7 +22,7 @@ from .knowledge import (
     read_authored_relation, stable_id, validate_snapshot,
 )
 from .models import ObservationKind
-from .probes import probe_manifest_dependencies, probe_python_imports
+from .probes import probe_js_module_imports, probe_manifest_dependencies, probe_python_imports
 from .worktree_context import _configured_external_filters, inspect_worktree_context
 
 _TAG = re.compile(r"(?:\[(policy|code|test|owner|delegated):\s*([^\]]+)\]|\[(hypothesis)\])\s*$")
@@ -392,6 +392,64 @@ def _import_syntax(root: Path, tracked: set[str], target_ref: str, limit: int) -
     return list(claims.values()), edges, truncated
 
 
+
+
+def _js_module_import_syntax(
+    root: Path, tracked: set[str], target_ref: str, limit: int,
+) -> tuple[list[KnowledgeClaim], list[KnowledgeRelation], bool]:
+    """Project opt-in literal ES module specifiers, never resolved dependencies."""
+    probe = probe_js_module_imports(root, target_ref=target_ref)
+    items = [
+        item for item in probe.observations
+        if item.kind is ObservationKind.JS_MODULE_IMPORT and item.subject in tracked
+    ]
+    partial = len(items) > limit or probe.completeness.value != "complete"
+    claims: dict[str, KnowledgeClaim] = {}
+    edges: list[KnowledgeRelation] = []
+    fingerprints: dict[str, dict[str, str]] = {}
+    for item in sorted(items, key=lambda ob: ob.id)[:limit]:
+        source = f"file:{item.subject}"
+        if item.subject not in fingerprints:
+            fingerprints[item.subject] = _source_hashes(root, tracked, (source,))
+        hashes = fingerprints[item.subject]
+        file_id = stable_id("file", item.subject)
+        specifier_id = stable_id("js-module-specifier", item.object)
+        if file_id not in claims:
+            claims[file_id] = KnowledgeClaim(
+                id=file_id, kind="source", statement=item.subject,
+                epistemic_status="observed", authority_kind="mechanical",
+                authority_ref="probe:js-module-imports-v1",
+                source_ref=source, evidence_refs=item.evidence_refs,
+                attributes={
+                    "scope": "Git-tracked JS/TS source with static ESM import syntax",
+                    "authority_verified": False, "source_sha256": hashes,
+                },
+            )
+        if specifier_id not in claims:
+            claims[specifier_id] = KnowledgeClaim(
+                id=specifier_id, kind="domain_concept",
+                statement="Static JS/TS module specifier: " + item.object,
+                epistemic_status="observed", authority_kind="mechanical",
+                authority_ref="probe:js-module-imports-v1",
+                source_ref=source, evidence_refs=item.evidence_refs,
+                attributes={
+                    "scope": "literal module specifier, never resolved or installed",
+                    "authority_verified": False, "source_sha256": hashes,
+                },
+            )
+        edges.append(KnowledgeRelation(
+            id=stable_id("js-module-reference", item.id),
+            subject=file_id, predicate="references", object=specifier_id,
+            epistemic_status="observed", derivation="mechanical",
+            source_ref=source, evidence_refs=item.evidence_refs,
+            attributes={
+                "scope": "static ES module syntax; not runtime or architecture",
+                "source_sha256": hashes,
+            },
+        ))
+    return list(claims.values()), edges, partial
+
+
 def _manifest_dependency_declarations(
     root: Path, tracked: set[str], target_ref: str, limit: int,
 ) -> tuple[list[KnowledgeClaim], list[KnowledgeRelation], bool]:
@@ -463,6 +521,8 @@ def build_knowledge_snapshot(
     repository: str, target_ref: str,
     include_python_imports: bool = False,
     max_imports: int = 1000,
+    include_js_module_imports: bool = False,
+    max_js_imports: int = 1000,
     include_manifest_dependencies: bool = False,
     max_manifest_dependencies: int = 1000,
     include_repository_structure: bool = False,
@@ -472,6 +532,8 @@ def build_knowledge_snapshot(
         raise ValueError("explicit repository identity is required")
     if not 0 <= max_imports <= 10000:
         raise ValueError("max_imports must be between 0 and 10000")
+    if not 0 <= max_js_imports <= 10000:
+        raise ValueError("max_js_imports must be between 0 and 10000")
     if not 0 <= max_manifest_dependencies <= 10000:
         raise ValueError("max_manifest_dependencies must be between 0 and 10000")
     if not 1 <= max_structural_files <= 2000:
@@ -507,6 +569,27 @@ def build_knowledge_snapshot(
         scope.append("opt-in Python AST import syntax")
         if partial:
             limits.append("Python import observations truncated or partially parsed; absence is NOT ASSESSED.")
+    if include_js_module_imports:
+        extra_claims, extra_edges, partial = _js_module_import_syntax(
+            root, tracked, target_ref, max_js_imports,
+        )
+        existing = {claim.id: claim for claim in claims}
+        for claim in extra_claims:
+            previous = existing.get(claim.id)
+            if previous is None:
+                claims.append(claim)
+                existing[claim.id] = claim
+            elif previous.kind != claim.kind or previous.statement != claim.statement:
+                raise ValueError(f"conflicting knowledge claim identity: {claim.id}")
+        edges.extend(extra_edges)
+        scope.append("opt-in static JS/TS ESM module specifiers")
+        limits.append(
+            "JS/TS source observes only bounded literal static import/re-export "
+            "specifiers; CommonJS, dynamic imports, aliases, runtime resolution "
+            "and architectural dependency are NOT ASSESSED."
+        )
+        if partial:
+            limits.append("Some JS/TS syntax, source files or observations are NOT ASSESSED.")
     if include_manifest_dependencies:
         extra_claims, extra_edges, partial = _manifest_dependency_declarations(
             root, tracked, target_ref, max_manifest_dependencies,
