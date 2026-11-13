@@ -56,6 +56,14 @@ The discussion observed a recurring pattern: a bounded, source-grounded PR is im
 
 **Potential local-optimization bias is a hypothesis, not an established selection failure.** Rival interpretations include legitimate dependency sequencing, unavailable independent-agent infrastructure, incomplete original predecision traces, deliberately bounded delegation, and differences between what is easy to verify and what is valuable over time. The [PR #825 responsibility-selection case](../normal-use/2026-11-12-pr825-responsibility-selection-case.md) already examined several of these explanations; its cautious disposition remains relevant. Repeated PR completion is neither proof of global success nor proof of drift.
 
+### E. Exploration warrant and novelty thresholds need separate treatment (hypothesis)
+
+The dialogue raised a possible side effect of repeated "do not manufacture novelty" and "build only when warranted" instructions: they may lead an agent to prefer easily verified local defects over more uncertain but consequential futures. This is an **unverified prompt-framing hypothesis**, not a demonstrated defect in AMS, the agent, or repository policy. The evidentiary threshold for *exploring* a plausible possibility need not equal the threshold for *selecting or implementing* it. Also, a materially new beneficiary experience or capability may advance an accepted product goal without constituting a new Level-4 product goal. Preserve novelty comparison and authority; do not treat an existing archive entry as automatically foreclosing an unrepresented outcome.
+
+### F. Authentic-use environment limits what the episodes can establish
+
+In the [PR #854 source-identity episode](../normal-use/2026-11-13-js-module-identity-engineering.md), the consequential finding arose from ordinary direct source inspection of Auteur. The agent lacked a usable local Sensemaking checkout/CLI and did not execute a predecision semantic-index query; no independent coding-agent session occurred. The engineering correction is real, but **index-driven decision influence remains NOT ASSESSED**, not disproved. Rewriting prompts cannot substitute for an executable, authorized context in which the product is actually used. Separate environment limitations, method limitations and product limitations before selecting another change.
+
 ## 4. Where the product remains unqualified
 
 | Intended result | What is currently supportable | What remains unknown |
@@ -75,6 +83,8 @@ The discussion observed a recurring pattern: a bounded, source-grounded PR is im
 3. **Question adequacy:** In what real situations should an agent notice that its current question or set of imagined futures is insufficient despite coherent documentation and passing CI?
 4. **Evidence:** What authentic, reasonably economical observation could distinguish beneficial knowledge use from ordinary competence, post-hoc rationale, noise or additional process overhead?
 5. **Construction choice:** If independently useful cognitive outcomes do not follow, should the next response be improved guidance, a narrower consumer, a different engineering responsibility, more observation, or strategic reconsideration? What evidence would discriminate these options?
+
+6. **Ultimate value criterion:** Should Sensemaking's success be judged by the quality of repository understanding and prospective judgment, by downstream improvements to products, or by a qualified combination? The current product strategy accepts warranted understanding and justified `NO_CHANGE` as complete outputs; this discussion does not revise that authority.
 
 These are invitations to inquiry, not a fixed work queue, acceptance test, mandatory experiment or permission to initiate a Level-3/Level-4 revision.
 
