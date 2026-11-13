@@ -482,7 +482,7 @@ def run_workspace_review_context(
     *, repo: str | Path, base_ref: str, ref: str = "HEAD",
     repository: str | None = None, index_dir: str | Path | None = None,
     refresh: bool = False, limit: int = 25, depth: int = 2, max_paths: int = 8,
-    pr_merge_base: bool = False,
+    pr_merge_base: bool = False, include_candidates: bool = False,
 ) -> dict[str, Any]:
     """Review committed changed paths against source-pinned BASE product knowledge.
 
@@ -532,6 +532,8 @@ def run_workspace_review_context(
         outline = query_knowledge(
             database, repository=label, target_ref=base_sha,
             operation="product-outline", limit=limit,
+            include_candidates=include_candidates,
+            candidate_changed_paths=committed_changed_paths if include_candidates else None,
         )
         # Reuse the same reviewed-source fingerprint overlap as workspace-impact.
         # Here its changed paths come from TWO COMMITS, not the working overlay.
@@ -580,7 +582,7 @@ def run_workspace_review_context(
         ) from exc
 
     omitted = len(paths) - len(selected)
-    return {
+    packet = {
         "code": "SEMANTIC_COMMITTED_REVIEW_CONTEXT",
         "operation": "review-context", "repository": label,
         "base_ref": base_sha, "target_ref": sha,
@@ -645,3 +647,12 @@ def run_workspace_review_context(
         },
         "semantic_truth_established": False, "action_authorized": False,
     }
+    if include_candidates:
+        packet["review_scope"]["candidate_source_overlap_assessed"] = True
+        packet["explicit_limits"].append(
+            "Goal-linked candidate/source overlaps are reinspection prompts only. "
+            "Shared authored packs may trigger broad matches; missing links and "
+            "unfingerprinted sources remain NOT ASSESSED. Revisit conditions, "
+            "feasibility, selection and authorization are not inferred."
+        )
+    return packet
