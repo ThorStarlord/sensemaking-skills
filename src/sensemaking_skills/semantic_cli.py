@@ -507,11 +507,14 @@ def register_semantic_commands(root_cli: click.Group) -> None:
                   help="Maximum changed paths to contextualize, sorted by path")
     @click.option("--pr-merge-base", is_flag=True,
                   help="For a PR, use the unique Git merge base of --base-ref and --ref")
+    @click.option("--include-candidates", is_flag=True,
+                  help="Show goal-linked futures and cited-source overlap in committed review")
     @click.option("--json", "output_json", is_flag=True)
     def semantic_workspace_review_context(
         base_ref: str, ref: str, repo_dir: Path, repository_label: str | None,
         index_dir: Path | None, refresh: bool, limit: int, depth: int,
-        max_paths: int, pr_merge_base: bool, output_json: bool,
+        max_paths: int, pr_merge_base: bool, include_candidates: bool,
+        output_json: bool,
     ) -> None:
         """Prepare BASE-revision product and architecture context for a committed diff."""
         from .workspace_knowledge import run_workspace_review_context
@@ -521,7 +524,7 @@ def register_semantic_commands(root_cli: click.Group) -> None:
                 repo=repo_dir, base_ref=base_ref, ref=ref,
                 repository=repository_label, index_dir=index_dir,
                 refresh=refresh, limit=limit, depth=depth, max_paths=max_paths,
-                pr_merge_base=pr_merge_base,
+                pr_merge_base=pr_merge_base, include_candidates=include_candidates,
             )
         except (ValueError, OSError, UnicodeError) as exc:
             raise click.ClickException(str(exc)) from exc
