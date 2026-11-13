@@ -17,7 +17,12 @@ RECALL is lightweight by default. It does not decide whether a task is warranted
    touched by the committed diff, and `context.committed_change_relevance`
    for each path's selected records and unanchored candidates. Neither a
    fingerprint match nor an uncited path establishes changed semantic meaning.
-   Use it only when historical intent can change the review.
+   Use it only when historical intent can change the review. When the change could
+   alter the product's possible futures, add `--include-candidates` to this
+   committed review to see goal-linked opportunities and which BASE evidence
+   sources overlap the committed diff. Inspect original possibilities and
+   any `revisit_when` conditions; an overlap is not a feasibility verdict,
+   and an omitted/unlinked possibility remains NOT ASSESSED.
 4. Open the cited original source and verify applicability at current SHA. Run `knowledge-audit` against historical index when drift may matter. History order is indexing order, not automatically Git ancestry.
 5. Distinguish validated contemporaneous evidence, historically correct but now superseded rationale, contested interpretation and unknown coverage. On `explain` or `why` use `--expect-kind alternative --expect-kind verification` when decision-relevant. Its `bounded_coverage` describes which kinds appear in the returned one-hop neighborhood, which are omitted by limit, and which were NOT ASSESSED **within that neighborhood**. It does not establish global decision completeness. Ask whether the retrieved sources cover the **specific engineering decision**, not merely whether their claims are correct within the modeled area. Name the smallest decision-relevant **NOT ASSESSED** area (for example, an alternative backend, an acceptance owner, or a dependency) and inspect its actual sources only when it could change the handoff.
 6. When evidence appears to establish **BLOCKED**, **NO EXECUTION PATH**, or **NO DEFECT**, distinguish a missing particular dependency from absence of *all* authorized alternatives. Check the smallest relevant original architectural decision and owning implementation before passing on such a conclusion. Example from Auteur: missing direct-provider credentials do not alone rule out its documented host-agent-first handoff; the handoff's source existence does not prove the active host runtime can execute it. The active agent or `using-sensemaking` decides whether to inquire, act, or stop; Steward does not select a provider, authorize a model call, or become a second planner.
