@@ -33,6 +33,7 @@ class Currentness(_TextEnum):
 class ObservationKind(_TextEnum):
     FILE_CONTAINMENT = "file_containment"
     PYTHON_IMPORT = "python_import"
+    JS_MODULE_IMPORT = "js_module_import"
     MANIFEST_DEPENDENCY = "manifest_dependency"
     EXACT_SEARCH_MATCH = "exact_search_match"
     EXACT_SEARCH_SUMMARY = "exact_search_summary"
