@@ -1,0 +1,182 @@
+"""Planner review probes for --temporary-checkout on orient, check-rules and audit.
+
+Runs the real CLI from a given source worktree. Read-only on every checkout it
+is pointed at; scratch output stays in this directory. No unit tests.
+Usage: python planner_review.py <code_worktree> <clean_reference_worktree> <main_checkout>
+"""
+from __future__ import annotations
+
+import json
+import os
+import subprocess
+import sys
+import tempfile
+from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+CODE = Path(sys.argv[1])
+CLEAN = Path(sys.argv[2])
+MAIN = Path(sys.argv[3])
+REF = "baaec6b92f87a00dbcefdbf865da04f86d5ce59f"
+OLD = "53b667c17c3e2e65ef2e344ccedfc60296f8d7cd"
+REPO_ID = "ThorStarlord/sensemaking-skills"
+OLD_DB = HERE / "old.sqlite"
+NEW_KEYS = ("source_checkout", "active_checkout")
+NOTE = "The active checkout was not read; its uncommitted and untracked changes are not part of this result."
+results: list[tuple[str, str, str]] = []
+
+
+def cli(*args: str, cwd: Path | None = None) -> subprocess.CompletedProcess:
+    env = {**os.environ, "PYTHONPATH": str(CODE / "src")}
+    return subprocess.run(
+        [sys.executable, "-m", "sensemaking_skills.cli", "semantic", *args],
+        cwd=cwd or CODE, env=env, capture_output=True, text=True, timeout=600,
+    )
+
+
+def git(root: Path, *args: str) -> str:
+    return subprocess.run(["git", "-C", str(root), *args], capture_output=True, text=True, timeout=120).stdout
+
+
+def record(name: str, ok: bool | None, detail: str) -> None:
+    results.append((name, "PASS" if ok else ("NOT RUN" if ok is None else "FAIL"), detail))
+
+
+def state(root: Path) -> tuple[str, str]:
+    return git(root, "status", "--porcelain", "--untracked-files=all"), git(root, "rev-parse", "HEAD")
+
+
+def leftovers() -> list[str]:
+    listed = [line for line in git(CODE, "worktree", "list").splitlines() if "sensemaking-index-" in line]
+    temp = [p.name for p in Path(tempfile.gettempdir()).glob("sensemaking-index-*")]
+    return listed + temp
+
+
+def strip(payload: dict) -> dict:
+    return {k: v for k, v in payload.items() if k not in NEW_KEYS}
+
+
+COMMANDS = {
+    "orient": ["knowledge-orient", "--repository", REPO_ID, "--target-ref", REF, "--json"],
+    "rules": ["knowledge-check-rules", "--target-ref", REF, "--json"],
+    "audit": ["knowledge-audit", "--db", str(OLD_DB), "--repository", REPO_ID,
+              "--indexed-ref", OLD, "--current-ref", REF, "--limit", "500", "--json"],
+}
+
+
+def main() -> None:
+    refs = {n: json.loads((HERE / f"ref_{n}.json").read_text(encoding="utf-8")) for n in COMMANDS}
+
+    # P1: default mode unchanged. New code, clean reference checkout, no flag == baseline-code output.
+    for name, args in COMMANDS.items():
+        proc = cli(*args, "--repo", str(CLEAN))
+        ok = proc.returncode == 0 and json.loads(proc.stdout) == refs[name]
+        record(f"P1 default-unchanged {name}", ok, f"rc={proc.returncode} equal_to_baseline={ok}")
+
+    # P2: flagged parity from the dirty code worktree.
+    before = state(CODE)
+    for name, args in COMMANDS.items():
+        proc = cli(*args, "--repo", str(CODE), "--temporary-checkout")
+        if proc.returncode:
+            record(f"P2 flagged-parity {name}", False, proc.stderr.strip()[:200])
+            continue
+        payload = json.loads(proc.stdout)
+        active = payload.get("active_checkout", {})
+        ok = (strip(payload) == refs[name] and payload.get("source_checkout") == "temporary_worktree"
+              and sorted(active) == ["head", "head_matches_source_ref", "modified_tracked_count", "note",
+                                     "untracked_count", "working_changes_read", "worktree_clean"]
+              and active["note"] == NOTE
+              and active["working_changes_read"] is False and active["worktree_clean"] is False)
+        record(f"P2 flagged-parity {name}", ok, f"equal_minus_new_keys={strip(payload) == refs[name]} active={active}")
+    record("P2 code worktree untouched", state(CODE) == before and not leftovers(), f"leftovers={leftovers()}")
+
+    # P3: flagged read of REF from the stale, heavily dirty main checkout (HEAD != REF).
+    before = state(MAIN)
+    wt_before = git(MAIN, "worktree", "list")
+    proc = cli(*COMMANDS["orient"], "--repo", str(MAIN), "--temporary-checkout")
+    if proc.returncode == 0:
+        payload = json.loads(proc.stdout)
+        active = payload["active_checkout"]
+        ok = (strip(payload) == refs["orient"] and active["head_matches_source_ref"] is False
+              and active["head"] == before[1].strip())
+        record("P3 other-commit from stale main", ok, f"active={active}")
+    else:
+        record("P3 other-commit from stale main", False, proc.stderr.strip()[:200])
+    record("P3 main checkout untouched", state(MAIN) == before and git(MAIN, "worktree", "list") == wt_before,
+           f"leftovers={leftovers()}")
+
+    # P4: unflagged refusals carry the hint; flagged failures do not.
+    head_code = git(CODE, "rev-parse", "HEAD").strip()
+    proc = cli("knowledge-audit", "--db", str(OLD_DB), "--repository", REPO_ID, "--indexed-ref", OLD,
+               "--current-ref", head_code, "--json", "--repo", str(CODE))
+    hint = "(pass --temporary-checkout to read the committed revision from a temporary worktree)"
+    record("P4 dirty refusal + hint (audit)", proc.returncode != 0 and proc.stderr.strip().endswith(hint)
+           and "dirty or untracked worktree: source bytes cannot be pinned" in proc.stderr, proc.stderr.strip()[:160])
+    proc = cli("knowledge-orient", "--repository", REPO_ID, "--target-ref", OLD, "--json", "--repo", str(CLEAN))
+    record("P4 HEAD-mismatch refusal + hint (orient)", proc.returncode != 0 and proc.stderr.strip().endswith(hint),
+           proc.stderr.strip()[:160])
+    proc = cli("knowledge-orient", "--repository", REPO_ID, "--target-ref", "0" * 40, "--json",
+               "--repo", str(CODE), "--temporary-checkout")
+    record("P4 flagged bad ref: one line, no hint", proc.returncode != 0 and hint not in proc.stderr
+           and "Traceback" not in proc.stderr and len(proc.stderr.strip().splitlines()) == 1, proc.stderr.strip()[:160])
+    record("P4 no leftovers after failure", not leftovers(), f"leftovers={leftovers()}")
+
+    # P5: two flagged commands at once.
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        futures = [pool.submit(cli, *COMMANDS[n], "--repo", str(CODE), "--temporary-checkout") for n in ("orient", "rules")]
+        procs = [f.result() for f in futures]
+    ok = all(p.returncode == 0 for p in procs) and all(
+        strip(json.loads(p.stdout)) == refs[n] for p, n in zip(procs, ("orient", "rules")))
+    record("P5 concurrent flagged runs", ok and not leftovers(), f"rcs={[p.returncode for p in procs]} leftovers={leftovers()}")
+
+    # P6: non-JSON output mode, relative --repo.
+    proc = cli("knowledge-check-rules", "--repo", ".", "--target-ref", REF, "--temporary-checkout", cwd=CODE)
+    try:
+        ok = proc.returncode == 0 and strip(json.loads(proc.stdout)) == refs["rules"]
+    except ValueError:
+        ok = False
+    record("P6 pretty output, relative --repo", ok, f"rc={proc.returncode} {proc.stderr.strip()[:120]}")
+
+    # P7: audit with a garbage database, both modes (pre-existing behaviour comparison).
+    garbage = HERE / "garbage.sqlite"
+    garbage.write_bytes(b"not a database")
+    outs = []
+    for extra in ([], ["--temporary-checkout"]):
+        proc = cli("knowledge-audit", "--db", str(garbage), "--repository", REPO_ID, "--indexed-ref", OLD,
+                   "--current-ref", REF, "--json", "--repo", str(CLEAN if not extra else CODE), *extra)
+        outs.append((proc.returncode, "Traceback" in proc.stderr, proc.stderr.strip().splitlines()[-1][:120] if proc.stderr.strip() else ""))
+    record("P7 garbage db (unflagged, flagged)", None if outs[0][1] else outs[0][0] != 0 and outs[1][0] != 0 and not outs[1][1],
+           f"{outs} leftovers={leftovers()}")
+
+    # P8 (after review): knowledge-build keeps its output and gains only the refusal hint.
+    base_src = Path(os.environ["BASE_SRC"])
+    outs = []
+    for label, src in (("new", CODE / "src"), ("base", base_src)):
+        db = HERE / f"build-{label}.sqlite"
+        db.unlink(missing_ok=True)
+        proc = subprocess.run(
+            [sys.executable, "-m", "sensemaking_skills.cli", "semantic", "knowledge-build", "--repo", str(CLEAN),
+             "--repository", REPO_ID, "--target-ref", REF, "--db", str(db), "--json"],
+            cwd=CODE, env={**os.environ, "PYTHONPATH": str(src)}, capture_output=True, text=True, timeout=600)
+        outs.append((proc.returncode, proc.stdout))
+    record("P8 build default output unchanged", outs[0][0] == 0 and outs[0] == outs[1], f"rcs={[o[0] for o in outs]}")
+    proc = cli("knowledge-build", "--repo", str(CODE), "--repository", REPO_ID, "--target-ref", head_code,
+               "--db", str(HERE / "build-dirty.sqlite"), "--json")
+    record("P8 build dirty refusal + hint", proc.returncode != 0 and proc.stderr.strip().endswith(hint)
+           and "dirty or untracked" in proc.stderr, proc.stderr.strip()[:150])
+
+    # P9 (after review): the malformed-ref error is unchanged now that disclosure runs first.
+    proc = cli("knowledge-orient", "--repository", REPO_ID, "--target-ref", "abc", "--json",
+               "--repo", str(CODE), "--temporary-checkout")
+    record("P9 flagged malformed ref message", proc.stderr.strip() == "Error: target_ref must be a full 40-character Git SHA",
+           proc.stderr.strip()[:120])
+
+    width = max(len(r[0]) for r in results)
+    for name, verdict, detail in results:
+        print(f"{name.ljust(width)} | {verdict:7} | {detail}")
+    print("SUMMARY", {v: sum(1 for r in results if r[1] == v) for v in ("PASS", "FAIL", "NOT RUN")})
+
+
+if __name__ == "__main__":
+    main()
