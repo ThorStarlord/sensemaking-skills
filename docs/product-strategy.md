@@ -279,7 +279,6 @@ These remain **current implementation non-goals**, not prohibitions against the 
 | Longitudinal semantic knowledge accumulation improves later architectural decisions beyond direct code/history inspection | Not established; requires later-episode evidence, not row counts |
 | A custom execution runtime is required | No evidence |
 | A deterministic strategic planner is required | No evidence |
-
 | Functional integration of continuity, metareasoning and learning improves later judgment beyond simpler compositions | New product-level hypothesis; NOT QUALIFIED |
 | Experience-based method adaptation improves decisions in independent later episodes | Intended benefit; NOT QUALIFIED |
 | Cognitive principles transfer across domains without erasing domain distinctions | Limited synthetic conceptual evidence only; practical transfer NOT QUALIFIED |
