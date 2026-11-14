@@ -1,7 +1,7 @@
 # Sensemaking Skills Product Strategy
 
-**Status:** current product hypothesis and strategic authority  
-**Updated:** 2026-11-12  
+**Status:** owner-ratified intended product thesis and strategic authority; empirical claims retain source evidence ceilings  
+**Updated:** 2026-11-13  
 **Control level:** Level 4 — Product Thesis / Strategy Revision  
 **Scope:** public repository strategy; empirical claims retain the ceilings of their source evidence
 
@@ -25,20 +25,15 @@ The 2026-09-11 Product Boundary Reconciliation v1 is an owner-ratified Level-4
 
 ## 1. Product purpose
 
-Sensemaking Skills exists to make a software repository **understandable and
-its possible evolution intelligently reasoned about**, across agents and time.
-It equips capable coding agents to build persistent, typed, queryable,
-evidence-grounded understanding of a product's purpose, domain, architecture,
-capabilities, constraints, decisions and history. It also helps them explore and
-compare what the product could become, select or recommend a warranted direction,
-and preserve that reasoning so the next session starts from it. Ordinary users
-need only one Skill, `using-sensemaking`, which composes the specialized Skills.
+Sensemaking's **owner-ratified fundamental purpose** is to serve as a **domain-general cognitive substrate for the continuous development of intelligent agents**. Its primary users are intelligent agents across software engineering, scientific research, creative practice, education and other domains, with equal conceptual standing even when current implementations differ.
 
-**Implementation is an optional downstream use of that understanding, not the
-product's primary output.** A warranted next responsibility, an architecture
-synthesis, a strategic disposition, retained knowledge, and a justified
-no-change conclusion are all complete outcomes. This is a selected product
-direction, not a claim that durable semantic memory already improves outcomes.
+Sensemaking intends to enable **persistent, reflective, increasingly capable and independent cognitive agency** through the functional integration of knowledge, prospective discovery, reflective value formation, adaptive metareasoning, learning and cognitive continuity. An active host agent, not a separate Sensemaking agent or automatic planner, owns semantic judgment. Independently forming a value judgment does not grant authority over external resources or protected commitments.
+
+**The intended differentiator is integrated cognitive development:** retained experience should improve later judgment and intellectual method selection. Co-located knowledge records or separate Skills alone do not establish this outcome. The selected destination does not protect any particular schema or runtime from revision.
+
+**Current implementation:** ontology-grounded software-repository understanding and prospective reasoning through the single public using-sensemaking Skill, with persistent semantic stewardship and optional separately authorized engineering construction. These are valuable specialized foundations, not a finished or qualified domain-general system.
+
+[ADR 0037](adr/0037-domain-general-cognitive-development.md) records the explicit 2026-11-13 Level-4 REVISE. General cognitive improvement, functional integration advantage and cross-domain transfer remain NOT QUALIFIED.
 
 ### Level-4 extension 2026-11-12: Adaptive Metareasoning System (ADR 0036)
 
@@ -161,205 +156,37 @@ This is the intended behavior, **not** established comparative effectiveness.
 
 ## 2. Problem
 
-Coding agents are increasingly good at executing known implementation tasks.
-They are less reliably grounded when repository work involves ambiguous goals,
-competing consequential boundaries, incomplete owner intent, contradictory
-documentation, long-running work across fresh contexts, or authority limits.
+Capable agents often execute local tasks without reliably retaining their cognitive development, noticing unasked questions, revising questionable purposes, selecting suitable reasoning methods or improving subsequent judgment from experience. External memory and separate Skills may help without demonstrating generalizable learning. Domain evidence, values and authority also differ; indiscriminate transfer can be harmful. Repository-specific missing-question, stale-evidence and continuity failures remain important applications of this broader problem.
 
-The failure mode is often not poor implementation. It is choosing or continuing
-the wrong responsibility: implementing prematurely, solving a local symptom,
-following stale architecture, inventing work, making claims beyond evidence,
-or continuing when the right outcome is to stop or ask the owner.
+## 3. Primary users and anti-persona
 
-Across months or many agents, a second failure emerges: the organization loses
-the *why* behind architectural choices, repeats abandoned alternatives,
-misapplies superseded evidence, and fails to reuse earlier lessons. Code and
-tests describe particular implementation and verification states but do not
-reliably preserve product intent, rejected alternatives or historical rationale.
+**Primary operational users:** intelligent agents across all domains, with equal standing in the shared cognitive capabilities. Coding agents are the best-developed current specialization, not a privileged universal user. **Secondary users:** the people and organizations deploying, authorizing and evaluating these agents. Owner intent is context and legitimate authority, not a prohibition on critically examining objectives.
 
-For the primary user, another failure mode is **missing-question risk**: the user
-may not know, remember, or want to enumerate every engineering consideration the
-coding agent should resolve before acting. Sensemaking should therefore supply
-opinionated engineering judgment about the process without inventing owner
-intent or exceeding authority.
+**Anti-persona:** a narrow, mechanically obvious task whose correct execution needs no consequential uncertainty assessment, cognitive adaptation or continuity. Do not force expensive process or generic-agent machinery onto such tasks.
 
-## 3. Primary user and anti-persona
+## 4. Job to be done
 
-### Primary user: high-delegation agent-assisted builder / repository owner
+> When an intelligent agent encounters a consequential question, help it recover relevant evidence and its own cognitive history, discover and evaluate alternative purposes, determine suitable intellectual methods, reach a defensible provisional judgment, and learn from consequences so its future reasoning becomes more capable.
 
-This person uses coding agents for significant engineering work, can define a
-desired product or repository outcome, and wants to delegate substantial
-repository-level engineering judgment without manually selecting every
-intermediate question, responsibility, or implementation step.
-
-The product is **beginner-first, expert-capable**:
-
-- a beginner may value Sensemaking because they cannot reliably detect every
-  missing engineering consideration or supervise every repository decision;
-- an experienced engineer may value the same control layer because they can
-  supervise those decisions but prefer to delegate them, especially for
-  unfamiliar, consequential, or long-horizon repository work.
-
-The common design pressure is therefore **high desired delegation**, not a
-permanent lack of expertise. Expertise is contextual: the same person may be
-expert in one technology, unfamiliar with another, authoritative about product
-intent, and unfamiliar with the current repository.
-
-The desired outcome is:
-
-> I can give a capable coding agent a repository-level goal and bounded
-> authority, and it can surface considerations I may not know or want to
-> specify, establish what responsibility is warranted, execute bounded work,
-> validate it, preserve durable state when needed, and stop when human judgment
-> or reserved authority is required.
-
-### Secondary users
-
-- Experienced software engineers using coding agents for complex or
-  long-running repository work.
-- Technical decision owner or reviewer.
-- Sensemaking Skill author or contributor.
-- A possible future engineering-team lead.
-
-These users matter, but the product remains designed around high-delegation
-repository work rather than around a fixed expertise label.
-
-### Anti-persona
-
-Sensemaking is not for a small deterministic task whose correct solution path is
-already obvious: changing a button label, fixing a typo, renaming a method, or
-adding a known test. It should not add ceremony where no consequential
-uncertainty exists.
-
-Nor should it force a knowledgeable user to consume beginner-oriented
-explanation when concise evidence and control surfaces are sufficient. More
-scaffolding and more visible machinery are not the same thing.
-
-## 4. Job to Be Done
-
-> When I point my coding agent at a repository, help it understand what the
-> product is and how it is built, explore what it could become, compare
-> alternatives and their consequences, and select or recommend a warranted
-> direction, all within the judgment and authority I delegated. Preserve that
-> understanding and reasoning in a structured, revisable form so later agents can
-> reuse, challenge and improve it across many sessions. Realize a selected
-> direction only when I separately authorize implementation, and stop or
-> escalate when the relevant authority or evidence boundary is reached.
-
-Triggering situations include an unfamiliar repository, ambiguous architecture
-problem, large refactor, modernization effort, uncertain roadmap,
-contradictory documentation, technical-debt prioritization, repeated local
-fixes, or long-running multi-context development.
-
-The user should not need to know in advance that a repository brief, Campaign,
-reconciliation pass, or other Sensemaking surface is the appropriate mechanism.
-The active coding agent remains responsible for judging which level of support
-is warranted; automatic routing is not implied.
+Sufficient understanding and relevant possibility coverage are required **before consequential strategic commitments**, but are not mandatory fixed procedures for every local task. Explicit and agent-adaptive intellectual approaches coexist. A persistent agent may work across domains, while distinct agents may selectively exchange qualified methods without assuming identical identity or transferred permissions.
 
 ## 5. Value proposition
 
-Sensemaking adds **persistent, queryable product and engineering knowledge**
-plus Skill-mediated reasoning around a capable coding agent:
+Sensemaking combines **portable cognitive continuity**, source- and authority-aware knowledge, possibility discovery, reflective value formation, metareasoning, and experience-grounded method adaptation. The same agent may combine Architect, Free-Thinker, Critic, Tutor and other cognitive modes without spawning competing controllers.
 
-```text
-typed product/domain/architecture knowledge
-+ evidence-bound provenance and temporal history
-+ specialized Skills for exploration, synthesis, challenge and learning
-+ explored and compared possible futures, with their consequences
-+ authority boundaries and uncertainty
-+ optional, separately authorized construction
-+ code/test/runtime verification
-+ long-term knowledge reconciliation
-```
+**Agent-level cognitive state** (attributed learned methods, history and evaluative commitments) remains distinct from **domain knowledge** (local facts, evidence, assumptions, preferences and authority). Persistent state may migrate across compatible hosts without assuming identical models or proving agent identity. Agent-owned, reversible method adaptations require independent evaluation; changes to shared guidance require separate qualification, review and authority.
 
-It does not replace agent intelligence. It aims to make repository-level agent
-judgment more grounded, durable, bounded, reconstructible, and easier to
-delegate.
+A minimal shared cognitive ontology admits domain-specific extensions. Cognitive packages may add knowledge and methods, while executable software packages, including possible game-genre components, are separate interoperable tools rather than required cognitive-core implementations.
 
-Marginal value does not require a different final patch on every task. It may
-also come from surfacing a consideration the user did not know to request,
-reducing an avoidable wrong turn, preserving decision context, respecting an
-authority boundary, or reaching justified closure with less user routing.
-Comparative superiority over a capable direct agent remains unestablished.
-A short task-completion comparison cannot alone measure multi-session
-knowledge retention; long-horizon utility must also be observed directly.
-
-### Evidence ceilings
-
-| Claim | Current status |
-| --- | --- |
-| Repository diagnosis value | Supported, bounded by repository and experiment evidence |
-| Artifact-mediated fresh-context continuation | Supported, with demonstrated ceilings |
-| Comparative superiority over a capable direct agent | Mixed / not established |
-| Adaptive multi-step campaign autonomy | Hypothesis; not a current construction prerequisite |
-| General autonomous software development | Not established |
-| Persistent typed semantic stewardship knowledge platform | Owner-selected direction, not yet implemented or qualified |
-| Accumulated knowledge improves later agents' architectural judgment | Long-horizon hypothesis; not established |
-
-Goal A/A1 remains a canonical **historical/narrower brief-diagnosis**
-external validation lane with its own admissibility rules and independent
-evaluator semantics. It is **not** the sole validation criterion or the
-current product-level priority for ADR 0031's long-term knowledge thesis.
-Superseding ADR 0014 did not retroactively broaden earlier evidence.
-
-Current repository construction may continue under the ratified build-first
-policy when architecture/integrity remains mechanically informative. New
-product-value or comparative experiments are not prerequisites for the current
-outer-loop foundation and require explicit owner direction when resumed.
+**Evidence ceiling:** no independent proof currently establishes a domain-general improvement, longitudinal transfer, causal benefit of integration, cross-host identity continuity, automatic self-improvement or superiority to capable direct agents using ordinary memory and specialist Skills.
 
 ## 6. Positioning and boundary
 
-### Selected long-term destination (ADR 0031)
+**Long-term identity:** domain-general cognitive substrate, not a separate agent, foundation model, universal runtime or execution platform. **Present implemented scope:** source-grounded repository knowledge, prospective reasoning, specialized Skills and bounded engineering/Campaign support. ADR 0029 remains the controlling **current external product boundary**, while ADR 0037 governs intended purpose.
 
-- A persistent, typed, queryable knowledge system for software product intent,
-  capabilities, architecture, constraints, evidence, decisions and history,
-  operated by coding agents through specialized Skills.
-- A cumulative reasoning loop (understand, explore, synthesize, evaluate,
-  reconcile) that improves that knowledge; implementation, verification and
-  experience feed it when they happen (ADR 0034).
-- Reconstructible semantic understanding that remains contestable and
-  source-grounded across independent agent sessions.
+Functional integration must change the agent's future behavior through interactions among continuity, cognitive regulation and learning, not merely share a data store. The developmental objective persists, but particular mechanisms are revisable under contrary evidence.
 
-**Architecture selected does not mean implemented.** Current product-facing
-surfaces below form a partial foundation, not a finished semantic platform.
-
-### Probably is
-
-- Ontology-grounded repository understanding and prospective reasoning,
-  entered through `using-sensemaking`.
-- Repository decision support.
-- Repository sensemaking.
-- Opinionated engineering guidance for high-delegation agent-assisted work.
-- Artifact-mediated agent continuation.
-- Bounded adaptive work around selected responsibilities.
-- Optional durable Campaign support when continuation complexity warrants it.
-- Bounded multi-repository target/relationship support without automatic orchestration.
-- Durable strategic-state reconstruction for repository evolution, while the
-  active agent retains semantic control.
-
-### Is not currently
-
-- A coding model or general coding agent.
-- A custom agent runtime.
-- A workflow-orchestration engine that owns the product control loop.
-- A deterministic semantic planner or central semantic router.
-- An autonomous software factory.
-- A replacement for GitHub or CI.
-- Automatic architecture authority.
-- Automatic product-strategy revision authority.
-- Autonomous merge, release, deployment, or publication authority.
-- General-purpose cross-repository transaction coordination.
-- A user-competence scoring or grading system.
-
-The current external product boundary is ratified by
-[`adr/0029-current-product-boundary.md`](adr/0029-current-product-boundary.md).
-ADR 0031 selects a knowledge-and-Skills product destination **within** that
-boundary. It does not grant a deterministic planner, autonomous factory,
-merging, deployment, or new external product authority.
-ADR 0014 remains historical evidence for the narrower July 2026 boundary and
-for experiments/protocols that were explicitly conducted against that earlier
-scope. The broader current boundary does not expand empirical claim ceilings or
-turn every available product surface into mandatory ceremony.
+The current Engineering and Product Management Domain Packs describe implemented Skill contracts, not a cognitive package marketplace. Future game-genre cognitive and executable packages remain separate conceptual types with no automatic build commitment. The expanded purpose does **not** authorize new runtimes, model training, shared-policy self-modification, semantic truth or authority engines, third-party mutation, release or deployment.
 
 ## 7. Strategic principles
 
@@ -404,6 +231,11 @@ turn every available product surface into mandatory ceremony.
     supersession and historical scope queryable; more records are not
     automatically more knowledge.
 
+21. Cognitive development is assessed through better later judgment, not more recorded knowledge or reasoning procedures.
+22. Domain-general user standing does not imply current equal implementation or evidence.
+23. Personal learning does not silently promote shared policy or third-party permissions.
+24. Preserve the developmental objective while allowing evidence to replace its technical realization.
+
 ## 8. Strategic non-goals
 
 The following are not current build commitments: a custom coding-agent runtime,
@@ -426,6 +258,8 @@ oracle does **not** prohibit a substantial, persistent semantic knowledge
 store. Grounding Pack word budgets are local presentation constraints,
 not limits on the selected future typed ontology (ADR 0031).
 
+These remain **current implementation non-goals**, not prohibitions against the new long-term cognitive-development purpose. Any generic runtime or package machinery still needs a demonstrated consumer and separately authorized design.
+
 ## 9. Hypotheses and bets
 
 | Hypothesis | Current status |
@@ -446,99 +280,34 @@ not limits on the selected future typed ontology (ADR 0031).
 | A custom execution runtime is required | No evidence |
 | A deterministic strategic planner is required | No evidence |
 
+| Functional integration of continuity, metareasoning and learning improves later judgment beyond simpler compositions | New product-level hypothesis; NOT QUALIFIED |
+| Experience-based method adaptation improves decisions in independent later episodes | Intended benefit; NOT QUALIFIED |
+| Cognitive principles transfer across domains without erasing domain distinctions | Limited synthetic conceptual evidence only; practical transfer NOT QUALIFIED |
+| Portability of cognitive state preserves appropriate continuity across hosts | Intended capability; NOT QUALIFIED |
+
 ## 10. Success measures
 
-Measure decision quality and delegation quality rather than inventory:
+The ultimate success measure is **independently established longitudinal, transferable improvement in an agent's consequential reasoning and intellectual methods**, including any incremental benefit of functional integration over strong simpler-tool baselines.
 
-- grounded central diagnosis;
-- appropriate next responsibility;
-- useful surfacing of decision-relevant considerations the user did not need to
-  enumerate explicitly;
-- honest uncertainty handling;
-- correct evidence-dependent transitions before owner intervention;
-- reduced manual routing of ordinary next steps where evidence eventually
-  supports that claim;
-- proportional use of scaffolding, process rigor, and durable machinery rather
-  than mandatory ceremony;
-- correct escalation, deferment, no-change, and thesis-review decisions;
-- correct reconstruction by a fresh agent;
-- correct distinction between Level-4 thesis state, Level-3 strategic state,
-  Level-2 Campaign state, and Level-1 execution state;
-- decision-bearing claims supported by appropriate evidence;
-- correct separation of desired delegation from granted authority;
-- owner preference for the Sensemaking-assisted result over asking a strong
-  coding agent directly, when/if comparative validation is explicitly resumed.
+Use graduated qualification with distinct ceilings:
 
-For the grounding revision, also measure the quality of **which product
-improvement was selected** and its actual user-facing outcome. Reducing
-questions by simply avoiding consultation or doing the wrong work is failure.
-In addition, measure:
+1. **Conceptual coherence:** well-defined cognitive relationships without collapsing domain meanings.
+2. **Operational availability:** real host agents can access and apply the capabilities.
+3. **Authentic use:** consequential experience, method choice or prior evidence affects a later agent decision, including justified rejection.
+4. **Matched comparative benefit:** comparable baselines control model, tools, task and cost; isolate retrieval, metareasoning and learning effects.
+5. **Longitudinal transfer:** learning persists across independent episodes and unfamiliar situations or domains with independent evaluation.
 
-- owner questions asked per task, and whether a recorded answer was asked again
-  (ratchet misses);
-- rework after the first "done" claim (follow-up commits and CI failures);
-- invariant violations found in review.
+For the **current engineering specialization**, retain narrower measures: grounded diagnosis, appropriate engineering responsibility and stopping, verified reuse of architectural decisions, source currentness, reduced rediscovery, and cost. They are not interchangeable with general intelligence improvement.
 
-For the persistent semantic stewardship direction, measure additionally:
-
-- whether a **later fresh-context agent** correctly retrieves and applies a
-  previously accepted decision or lessons from a different development episode;
-- whether it identifies stale, superseded, conflicting or unsupported knowledge
-  **before consequential action**;
-- whether preserved architectural rationale changes a later selection or
-  reduces repeated rediscovery/rework relative to available alternatives;
-- longitudinal correctness of source-revision/provenance links and the
-  cost of incremental maintenance, rebuilding and targeted retrieval;
-- user-relevant software outcomes across several linked development episodes,
-  not ontology size, test quantity or instantaneous completion speed alone.
-
-Comparative preference remains a product question, not an assumption.
+The first practical *research direction*, not an automatic experiment order, is a bounded matched multi-episode comparison of experience-informed method selection/adaptation versus fixed methods. Wider component ablations and cross-domain assessment follow only when warranted.
 
 ## 11. Product-level strategic frontier
 
-This section records product-thesis questions and strategic bets. The current
-repository-development frontier belongs to Level 3 and is projected in
-`STATUS.md`.
+> Can functional integration of persistent cognitive continuity, reflective value formation, adaptive metareasoning and experience-grounded learning yield **demonstrably better later judgment across episodes and domains**, beyond capable direct agents and conventional memory-plus-Skills approaches?
 
-The newly selected long-term strategic question is:
+Key open hypotheses concern methodological improvement beyond retrieval, independent agent identity continuity, justified cross-domain transfer and the incremental cost-adjusted benefit of integration. No empirical benefit is currently established by the decision to adopt the thesis.
 
-> Can persistent, typed and evidence-grounded product knowledge **compound**
-> across many real engineering episodes so that later coding agents make
-> demonstrably better architectural and product-development decisions,
-> without accumulating stale authority or disproportionate maintenance cost?
-
-The prior unresolved question also remains relevant as an operational
-subproblem: does adaptive agent-controlled repository/campaign execution
-improve delegation without manual task-by-task routing?
-
-Path 3 (persistent semantic stewardship) is the architectural destination;
-Path 2 (continuous product-grounded construction) is its learning/action loop;
-Path 1 (lean decision assistance) remains a proportional default for simple
-work. The construction sequence is in
-[`persistent-semantic-stewardship-plan.md`](persistent-semantic-stewardship-plan.md).
-
-The Persona & Adaptive Guidance Model v0 sharpens that question rather than
-answering it empirically. The primary user is now explicitly interpreted as a
-high-delegation agent-assisted builder, while the amount of scaffolding, process
-rigor, and durable Campaign machinery is expected to vary with contextual
-supervision capability and the problem's decision, consequentiality, and
-continuation characteristics. These are agent-reasoned factors, not a routing
-schema.
-
-That unresolved product question is **not** a prerequisite for
-repository-grounded construction. The Strategic Outer Loop foundation remains
-integrated and frozen as a control baseline. Any subsequent runtime package must
-still be selected afresh by Level 3 from concrete pressure, an explicit owner
-direction, or a mechanically decidable reconstruction/integrity need.
-
-Any candidate product commitment should still answer:
-
-1. Which user/problem does it serve?
-2. What consequential decision improves?
-3. What evidence or existing contract warrants considering it?
-4. What is the smallest warranted intervention before architecture commitment?
-5. Does deciding it require Level-4 owner ratification, or can Level 3 proceed
-   within existing strategy?
+The old **PATH-1** direction—growing reviewed repository knowledge through genuine engineering responsibilities—remains a valuable **domain-specific construction path**, not Sensemaking's ultimate purpose. See the [mandatory Level-3 reconciliation](../artifacts/history/2026-11-13-domain-general-cognitive-thesis-reconciliation.md). No new runtime, universal ontology, benchmark, or game package becomes an automatic task.
 
 ## 12. Level-4 revision semantics
 
@@ -579,6 +348,8 @@ and applies ADR 0030 only to the compact Grounding Pack presentation.
 
 After a ratified Level-4 change, Level 3 must reassess the Strategic Frontier
 rather than blindly continue the previous repository responsibility.
+
+**2026-11-13 — ADR 0037:** owner-selected REVISE of product purpose, primary users and ultimate evidence criteria; existing ADRs 0029/0031/0034/0035/0036 remain authoritative within their qualified current-scope meanings. The broader intended purpose and its evidence ceilings are separated from present operational/release permissions. Level 3 is separately reconciled before dependent work.
 
 ## 13. Public/private boundary
 
