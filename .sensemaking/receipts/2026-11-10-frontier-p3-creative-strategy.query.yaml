@@ -1,0 +1,83 @@
+artifact_id: semantic_query_receipt
+schema_version: 1
+session_ref: 2026-11-10-frontier-p3-creative-strategy
+state: final
+created_at: "2026-11-10T10:02:13Z"
+updated_at: "2026-11-10T10:25:00Z"
+target_repository: ThorStarlord/sensemaking-skills
+modes: [RECALL, RECONCILE]
+decision: "Whether existing operations already deliver the record delta and touched records of a pending change."
+cli_identity:
+  sensemaking_source_ref: baaec6b92f87a00dbcefdbf865da04f86d5ce59f
+  invocation_prefix: PYTHONPATH=src python -m sensemaking_skills.cli (source checkout); the probe called query_knowledge directly
+  version_output: null
+index:
+  indexed_ref: baaec6b92f87a00dbcefdbf865da04f86d5ce59f
+  current_head: baaec6b92f87a00dbcefdbf865da04f86d5ce59f
+  worktree_clean: false
+  uncommitted_changes_not_indexed: true
+queries:
+  - id: QY-1
+    operation: workspace-impact
+    terms: []
+    subject: null
+    expect_kinds: []
+    target_ref: baaec6b92f87a00dbcefdbf865da04f86d5ce59f
+    result:
+      hit_count: 85
+      claim_ids: ['decision:index-from-temporary-worktree', 'decision:workspace-impact-path-overlap', 'inv:index-snapshot-vs-working-overlay']
+      truncated: false
+      not_assessed_kinds: []
+    outcome: HIT
+    decision_relevant: true
+  - id: QY-2
+    operation: build
+    terms: []
+    subject: null
+    expect_kinds: []
+    target_ref: 53b667c17c3e2e65ef2e344ccedfc60296f8d7cd
+    result:
+      hit_count: 0
+      claim_ids: []
+      truncated: false
+      not_assessed_kinds: []
+    outcome: NOT_APPLICABLE
+    decision_relevant: false
+  - id: QY-3
+    operation: build
+    terms: []
+    subject: null
+    expect_kinds: []
+    target_ref: de0f64e09198c7297cada7a36b0153833a470154
+    result:
+      hit_count: 0
+      claim_ids: []
+      truncated: false
+      not_assessed_kinds: []
+    outcome: NOT_APPLICABLE
+    decision_relevant: false
+  - id: QY-4
+    operation: changes
+    terms: []
+    subject: null
+    expect_kinds: []
+    target_ref: de0f64e09198c7297cada7a36b0153833a470154
+    result:
+      hit_count: 4
+      claim_ids: ['alternative:authored-anchoring-only', 'alternative:capability-hop-into-context-categories', 'decision:relevance-candidates-separate-from-context', 'observation:ownership-edit-stranded-store-verification']
+      truncated: false
+      not_assessed_kinds: []
+    outcome: HIT
+    decision_relevant: true
+source_checks: []
+misses: []
+reconcile:
+  - claim_id: null
+    disposition: NO_MODEL_CHANGE
+    applied: false
+    proposal_ref: null
+    proposal_check: NOT_RUN
+persistence: committed
+action_authorized: false
+semantic_truth_established: false
+immutable: true
