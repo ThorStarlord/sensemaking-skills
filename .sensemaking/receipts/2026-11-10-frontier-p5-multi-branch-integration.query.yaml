@@ -1,0 +1,144 @@
+artifact_id: semantic_query_receipt
+schema_version: 1
+session_ref: 2026-11-10-frontier-p5-multi-branch-integration
+state: final
+created_at: '2026-11-10T20:00:00Z'
+updated_at: '2026-11-10T20:17:39Z'
+target_repository: ThorStarlord/sensemaking-skills
+modes: [RECALL, AUDIT, RECONCILE]
+decision: Whether the records of four merged changes stay consistent, and how the two context-for extensions behave
+  together on owned and unowned files.
+cli_identity: {sensemaking_source_ref: e395fdd255880cfe1dc38d2c6d9cedec43e39ad1, invocation_prefix: PYTHONPATH=src
+    python -m sensemaking_skills.cli semantic, version_output: 'python -m sensemaking_skills.cli, version 1.0.0rc5.dev0'}
+index: {indexed_ref: e395fdd255880cfe1dc38d2c6d9cedec43e39ad1, current_head: e395fdd255880cfe1dc38d2c6d9cedec43e39ad1,
+  worktree_clean: true, uncommitted_changes_not_indexed: false}
+queries:
+- id: QY-1
+  operation: build
+  terms: []
+  subject: null
+  expect_kinds: []
+  target_ref: e395fdd255880cfe1dc38d2c6d9cedec43e39ad1
+  result:
+    hit_count: 0
+    claim_ids: []
+    truncated: false
+    not_assessed_kinds: []
+  outcome: NOT_APPLICABLE
+  decision_relevant: false
+- id: QY-2
+  operation: context-for
+  terms: []
+  subject: src/sensemaking_skills/semantic_cli.py
+  expect_kinds: []
+  target_ref: e395fdd255880cfe1dc38d2c6d9cedec43e39ad1
+  result:
+    hit_count: 8
+    claim_ids: ['alternative:automatic-temporary-checkout-fallback', 'alternative:dirty-tree-byte-audit', 'alternative:ephemeral-index-per-query',
+      'alternative:implicit-index-in-knowledge-query', 'alternative:read-committed-bytes-from-git-objects', 'alternative:shared-clone-checkout',
+      'decision:index-from-temporary-worktree', 'decision:workspace-query-derived-commit-index']
+    truncated: false
+    not_assessed_kinds: [contracts]
+  outcome: PARTIAL
+  decision_relevant: true
+- id: QY-3
+  operation: context-for
+  terms: []
+  subject: tests/test_semantic_knowledge.py
+  expect_kinds: []
+  target_ref: e395fdd255880cfe1dc38d2c6d9cedec43e39ad1
+  result:
+    hit_count: 10
+    claim_ids: ['component:knowledge-store', 'component:semantic-knowledge-plane', 'decision:index-from-temporary-worktree',
+      'decision:relevance-candidates-separate-from-context', 'decision:verification-relevance-for-unowned-files',
+      'inv:bounded-query-disclosure', 'inv:index-snapshot-vs-working-overlay', 'inv:source-boundary', 'verification:knowledge-tests',
+      'verification:semantic-knowledge-tests']
+    truncated: false
+    not_assessed_kinds: [architecture_rules, contracts]
+  outcome: PARTIAL
+  decision_relevant: true
+- id: QY-4
+  operation: context-for
+  terms: []
+  subject: src/sensemaking_skills/semantic_architecture/knowledge_store.py
+  expect_kinds: []
+  target_ref: e395fdd255880cfe1dc38d2c6d9cedec43e39ad1
+  result:
+    hit_count: 17
+    claim_ids: ['adr:0031', 'decision:granular-indexed-delta-classification', 'decision:relevance-candidates-separate-from-context',
+      'decision:workspace-impact-path-overlap', 'incident:shared-authored-pack-fingerprint-fanout', 'inv:index-snapshot-vs-working-overlay',
+      'lesson:console-guard-literal-print-arguments-only', 'lesson:distinguish-provenance-content-and-meaning',
+      'lesson:query-completeness-is-evidence', 'lesson:separate-clone-changes-audited-bytes', 'lesson:uncited-change-is-coverage-gap',
+      'observation:knowledge-query-closed-operations', 'observation:ownership-edit-stranded-store-verification',
+      'verification:console-output-ascii-guard', 'verification:granular-delta-classification-tests', 'verification:knowledge-tests',
+      'verification:public-api-contract-test']
+    truncated: false
+    not_assessed_kinds: [contracts]
+  outcome: PARTIAL
+  decision_relevant: true
+- id: QY-5
+  operation: build
+  terms: []
+  subject: null
+  expect_kinds: []
+  target_ref: baaec6b92f87a00dbcefdbf865da04f86d5ce59f
+  result:
+    hit_count: 0
+    claim_ids: []
+    truncated: false
+    not_assessed_kinds: []
+  outcome: NOT_APPLICABLE
+  decision_relevant: false
+- id: QY-6
+  operation: audit
+  terms: []
+  subject: null
+  expect_kinds: []
+  target_ref: e395fdd255880cfe1dc38d2c6d9cedec43e39ad1
+  result:
+    hit_count: 235
+    claim_ids: []
+    truncated: false
+    not_assessed_kinds: []
+  outcome: HIT
+  decision_relevant: true
+- id: QY-7
+  operation: proposal-check
+  terms: []
+  subject: .sensemaking/knowledge/stewardship.json
+  expect_kinds: []
+  target_ref: null
+  result:
+    hit_count: 0
+    claim_ids: []
+    truncated: false
+    not_assessed_kinds: []
+  outcome: NOT_APPLICABLE
+  decision_relevant: false
+source_checks:
+- claim_id: alternative:read-committed-bytes-from-git-objects
+  sources: ['src/sensemaking_skills/semantic_architecture/knowledge_sources.py:52-65', 'src/sensemaking_skills/workspace_knowledge.py:173-182']
+  result: SUPPORTED
+- claim_id: alternative:automatic-temporary-checkout-fallback
+  sources: ['src/sensemaking_skills/workspace_knowledge.py:173-182', 'tests/test_architecture_rule_checker.py:137-147']
+  result: SUPPORTED
+- claim_id: decision:relevance-candidates-separate-from-context
+  sources: ['src/sensemaking_skills/semantic_architecture/knowledge_architecture.py:208-331']
+  result: SUPPORTED
+misses: []
+reconcile:
+- {claim_id: 'alternative:read-committed-bytes-from-git-objects', disposition: REVISE, applied: false, proposal_ref: .sensemaking/knowledge/stewardship.json,
+  proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+- {claim_id: 'alternative:snapshot-from-git-objects', disposition: SUPERSEDE, applied: false, proposal_ref: .sensemaking/knowledge/architecture.json,
+  proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+- {claim_id: 'alternative:automatic-temporary-checkout-fallback', disposition: REVISE, applied: false, proposal_ref: .sensemaking/knowledge/stewardship.json,
+  proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+- {claim_id: 'decision:verification-relevance-for-unowned-files', disposition: ADD, applied: false, proposal_ref: .sensemaking/knowledge/stewardship.json,
+  proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+- {claim_id: 'decision:relevance-candidates-separate-from-context', disposition: REVISE, applied: false, proposal_ref: .sensemaking/knowledge/stewardship.json,
+  proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID}
+- {claim_id: null, disposition: NO_MODEL_CHANGE, applied: false, proposal_ref: null, proposal_check: NOT_RUN}
+persistence: committed
+action_authorized: false
+semantic_truth_established: false
+immutable: true
