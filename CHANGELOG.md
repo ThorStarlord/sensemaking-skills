@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0-rc.4] - UNRELEASED
 
 ### Changed
+- **Divergent Skill report names the differing files** — `setup-skills` refusals for an installed copy that has no install record now list which files are `modified`, `missing` or `extra` against the packaged tree, so an operator can inspect them before using `--force`. The read-only listing also appears under `--dry-run`; overwrite and `--update` behavior is unchanged.
 - **Subtractive architecture pass** — reopens Version 1.0 development after the RC3 line so compatibility sediment can be removed without mutating a frozen candidate identity. Legacy workflow execution is explicit-only, workflow selection defaults to compatibility-only except the evidenced `docs-contract-reconciliation` subgraph, Campaign inspection remains available when strict recovery/target checks block continuation, and routine Campaign decision identifiers can be derived mechanically.
 
 ## [1.0.0-rc.3] - UNRELEASED

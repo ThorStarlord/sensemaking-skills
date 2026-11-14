@@ -107,6 +107,8 @@ When an installed copy differs from the packaged version, the record says why:
 | `no install record, but identical to skills/<name> in commit <sha>` | no record, but the copy is a version committed in this checkout (only when setup-skills runs from a Git checkout; see below) | `--update` or `--force` |
 | `installed copy diverged` | no record for this copy (installed before records existed, or by another mechanism) and, from a checkout, no committed version matches it | `--force` only |
 
+For an `installed copy diverged` report, the next line lists the differing files, grouped as `modified` (both copies, different bytes), `missing` (packaged but not in the installed copy) or `extra` (in the installed copy but not packaged). `--dry-run` prints the same report and writes nothing, so inspect those files before deciding on `--force`.
+
 After upgrading the package:
 
 ```bash
