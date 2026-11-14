@@ -5,6 +5,7 @@
 **Current product-boundary authority:** `docs/adr/0029-current-product-boundary.md`  
 **Authority:** human owner for product mission, strategic intent, major product decisions, product-boundary expansion, and claim-ceiling expansion  
 **Runtime status:** documentation contract only; no autonomous strategy-revision machinery is authorized
+**Current intended purpose:** [ADR 0037](adr/0037-domain-general-cognitive-development.md) (domain-general cognitive development); ADR 0029 still governs present implemented external scope
 
 ## 1. Purpose
 

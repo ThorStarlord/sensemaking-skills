@@ -69,10 +69,12 @@ disagree, the ADR file is authoritative.
 | [0034](0034-ontology-first-adaptive-sensemaking.md) | Ontology-First Adaptive Sensemaking: Product Identity and Single Entrypoint | Accepted (owner-selected product identity, not yet implemented) |
 | [0035](0035-sensemaking-continuous-learning.md) | Sensemaking Continuous Learning as a First-Class Product Capability | Accepted (owner-selected; independent benefit not qualified) |
 | [0036](0036-adaptive-metareasoning-system.md) | Adaptive Metareasoning System as a First-Class Cognitive Capability | Accepted (owner-selected; behavioral benefit not qualified) |
+| [0037](0037-domain-general-cognitive-development.md) | Domain-General Cognitive Development as Sensemaking's Product Purpose | Accepted (owner-ratified; cognitive benefit unqualified) |
 
+For the current **intended product purpose** read ADR 0037. This new owner-ratified Level-4 direction does not automatically expand implementation or empirical claims.
 For the current **external product boundary** read ADR 0029, not 0014.
-For the **owner-selected product destination**, read ADR 0031; for the
-current **product identity and public entrypoint**, read ADR 0034.
+For the currently implemented **persistent semantic knowledge foundation**, read ADR 0031; for the
+current **engineering specialization and public entrypoint**, read ADR 0034.
 For the optional **compact target-repository Grounding Pack**, read ADR 0030.
 For **continuous learning** read ADR 0035; for the **adaptive metareasoning
 capability** read ADR 0036. Both preserve the single-controller authority.

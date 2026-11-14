@@ -26,6 +26,10 @@
    private keys or private content into tracked artifacts, receipts, knowledge
    records or PR text. See [SECURITY.md](SECURITY.md#sensitive-data).
 
+## Current product authority
+
+[ADR 0037](docs/adr/0037-domain-general-cognitive-development.md) ratifies domain-general cognitive development as the long-term intended product purpose. Engineering implementation and external permissions remain bounded by ADRs 0029 and 0034; the broader product goal does not establish a new runtime, automatic authority or empirically demonstrated cognitive transfer. Do not confuse documentation/knowledge volume with improved cognition.
+
 ## Current construction orientation
 
 For engineering work, the bundled

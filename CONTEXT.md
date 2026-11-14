@@ -2,20 +2,9 @@
 
 ## Current product definition
 
-Sensemaking Skills is an **ontology-grounded repository understanding and
-prospective reasoning system for software-development agents** (owner-selected
-2026-10-28, [ADR 0034](docs/adr/0034-ontology-first-adaptive-sensemaking.md)).
-Its primary outcome is durable, source-grounded understanding of a repository
-and informed reasoning about what it could become; implementation is an
-optional, separately authorized downstream use. `using-sensemaking` is the
-single public entrypoint and composes the specialized Skills adaptively. The
-owner-selected 2026-10-15 long-term destination is a **persistent, typed, queryable,
-evidence-grounded model of the product and its development history**, used and
-improved through specialized Skills across many engineering episodes.
-Existing repository decision support and Campaign/authority machinery remain
-important *operational capabilities*, not the whole product thesis. This is
-the selected architectural direction, not a claim that the platform is
-already implemented.
+The **owner-ratified long-term product purpose** is a **domain-general cognitive substrate for developing persistent, reflective and increasingly capable intelligent agents** ([ADR 0037](docs/adr/0037-domain-general-cognitive-development.md)). The cognitive core gives equal conceptual standing to agents across disciplines. Cognitive continuity, understanding, possibility discovery, reflective judgment, metareasoning and learning are intended to interact so experience improves later decisions. The active host agent remains the semantic controller; independent value judgment does not create external authority.
+
+**Current operational specialization:** repository understanding and prospective reasoning (ADR 0034), persistent source-grounded semantic knowledge (ADR 0031), continuous learning (ADR 0035), adaptive metareasoning (ADR 0036) and agent-native engineering support bounded by ADR 0029. Domain-general utility, cross-host identity, integration advantage and longitudinal transfer are **NOT QUALIFIED**. The broader purpose does not authorize a new runtime, shared policy self-editing, publication or external action.
 
 The repository now distinguishes four control scopes:
 
@@ -58,18 +47,7 @@ New evidence may warrant a responsibility conventionally considered earlier, lat
 
 The Strategic Repository Evolution loop operates above bounded Campaign work. It evaluates product/repository capability state against current strategy, maintains the Strategic Frontier, states the **Strategic Decision to Support**, qualitatively compares credible boundaries, selects or declines one boundary/responsibility, delegates bounded work downward, and reassesses after qualified results. It is not a roadmap processor and does not automatically rank work.
 
-The current external product boundary remains ADR 0029: Sensemaking is an
-agent-native repository decision-support/knowledge layer with optional
-Campaign and continuation/reconstruction surfaces while semantic judgment
-remains agent-owned. **ADR 0031** is the new Level-4 architectural destination:
-cumulative software knowledge (intent, capabilities, constraints,
-architecture, evidence, decisions and lessons) with provenance, time,
-uncertainty and source-grounded relationships. **ADR 0030** remains operative
-for the *compact Grounding Pack* only; its word limits do not constrain the
-future typed knowledge system. The knowledge system is neither a semantic
-truth oracle nor an execution/merge/deploy authority. ADR 0014 remains
-historical evidence for the July 2026 brief-focused product boundary; old
-Goal A evidence retains its original claim scope.
+The current **implemented engineering boundary** remains ADR 0029: agent-native software-repository reasoning with optional Campaign/continuation machinery while the active agent owns semantic judgment. **ADR 0037** defines the new intended product purpose; it does not silently change that implemented boundary. ADR 0031 remains a knowledge foundation, ADR 0034 an engineering specialization, and ADRs 0035/0036 intended learning and metareasoning capabilities. Their current evidence and authority limits remain intact.
 
 The knowledge plane preserves **prescriptive** authority, **descriptive**
 source/runtime observations and **epistemic** inferences separately.
@@ -81,6 +59,7 @@ See [ADR 0031](docs/adr/0031-persistent-semantic-stewardship.md) and
 [the development plan](docs/persistent-semantic-stewardship-plan.md).
 
 See:
+- [docs/adr/0037-domain-general-cognitive-development.md](docs/adr/0037-domain-general-cognitive-development.md) — ratified product-purpose revision
 - [docs/product-strategy.md](docs/product-strategy.md) — Level-4 product thesis and strategic authority
 - [docs/adr/0031-persistent-semantic-stewardship.md](docs/adr/0031-persistent-semantic-stewardship.md) — owner-selected persistent knowledge platform direction
 - [docs/persistent-semantic-stewardship-plan.md](docs/persistent-semantic-stewardship-plan.md) — detailed staged knowledge-model and long-term learning construction
@@ -466,8 +445,8 @@ The legacy CLI path may still expose planning/execution modes and registered wor
 
 ## Domain language
 
-- **Sensemaking**: the broader decision/evidence/authority layer that moves engineering uncertainty toward warranted action.
-- **Sensemaking Skills**: this repository/distribution and its bounded responsibility implementations/support machinery.
+- **Sensemaking**: the intended domain-general cognitive substrate for persistent, reflective and increasingly capable agency; repository reasoning is its current specialization.
+- **Sensemaking Skills**: the existing repository/distribution of agent-native Skills, knowledge infrastructure and bounded engineering/product-management capabilities, not the full general cognitive destination.
 - **Product Thesis**: the Level-4 slower-changing commitments about product purpose, user, problem/JTBD, value, product boundary, strategic principles, major non-goals, success measures, strategic bets, and evidence ceilings.
 - **Strategic Repository Evolution**: Level-3 reasoning over current product/repository capability state to determine what repository-level responsibility, if any, is warranted next under the current product thesis.
 - **Strategic Frontier**: the currently material set of decision-relevant product/repository gaps, contradictions, opportunities, and unresolved boundaries. It is not a backlog and does not authorize work by itself.
@@ -498,9 +477,19 @@ The legacy CLI path may still expose planning/execution modes and registered wor
 - **Authority boundary**: point where knowing/understanding is possible but deciding, acting, publishing, or merging is not authorized.
 - **Harden Only Where Pressured**: formalize machinery after a stable, mechanically expressible failure/reconstruction/integrity boundary is justified; do not create runtime machinery merely to mirror a conceptual diagram.
 
+- **Host agent**: the active intelligent agent using Sensemaking and retaining responsibility for semantic judgment; not a separate Sensemaking controller.
+- **Persistent cognitive state**: attributable agent-level learning history, intellectual methods, evaluative commitments and continuity, separate from local domain facts and permissions.
+- **Domain knowledge**: context-specific facts, ontology, evidence, commitments and limits of authority, not a universal agent belief automatically transferable elsewhere.
+- **Cognitive mode**: an optional intellectual approach such as Architect, Free-Thinker, Critic or Tutor; multiple modes may be composed by one agent.
+- **Cognitive development**: experience-grounded improvement in later reasoning or method selection, distinct from knowledge inventory growth.
+- **Collective cognitive learning**: selectively qualified and reviewed promotion of agent-local improvements to shared methods.
+- **Cognitive domain package**: a possible domain-specific extension of cognitive knowledge/methods; not identical to the present descriptive Domain Pack manifest.
+- **Executable package**: an independent interoperable software component, including possible future game-genre libraries, outside the cognitive core.
+
 ## Current product boundaries and open edges
 
 Current, ratified/operationally grounded:
+- ADR 0037 owner-ratified **intended product purpose**: domain-general cognitive development; comparative/transfer benefit is NOT QUALIFIED;
 - ADR 0029 current product boundary: agent-native repository decision support/control with agent-owned semantic selection;
 - agent-native semantic control by the active coding agent;
 - canonical four-level control architecture as repository documentation/authority model;

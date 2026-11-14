@@ -84,9 +84,7 @@ The active coding agent owns the top-level control loop (ADR 0013). Use
 - **Finding is not authorization.** Diagnosis, recommendation, implementation,
   validation, owner decision, publication, and canonical closure are distinct
   lifecycle states.
-- **Research hypotheses are not architecture.** Domain-general Sensemaking,
-  domain-specific packs, and formalized decision-theory machinery remain
-  research questions unless separately ratified.
+- **Research hypotheses are not architecture.** Domain-general cognitive development is a ratified product **purpose** (ADR 0037). Generic runtimes, domain-specific package frameworks and formalized decision-theory implementations remain separate unqualified architectural questions.
 
 See `docs/decision-orchestration-boundary.md` for the control-ownership boundary
 and `docs/research/control-model-research-agenda.md` for explicitly non-ratified
@@ -94,8 +92,7 @@ research paths.
 
 ## Choosing and building an increment
 
-The product is ontology-grounded repository understanding and prospective
-reasoning ([ADR 0034](docs/adr/0034-ontology-first-adaptive-sensemaking.md));
+The intended product purpose is domain-general cognitive development ([ADR 0037](docs/adr/0037-domain-general-cognitive-development.md)); its current engineering specialization remains ontology-grounded repository understanding and prospective reasoning ([ADR 0034](docs/adr/0034-ontology-first-adaptive-sensemaking.md));
 the [portable `using-sensemaking` Skill](skills/using-sensemaking/SKILL.md) is
 its single public entrypoint. Its **Architect -> Builder -> Reconcile
 construction capability** is an optional downstream use, and this repository's
