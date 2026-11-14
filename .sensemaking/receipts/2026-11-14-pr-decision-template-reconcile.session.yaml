@@ -1,0 +1,89 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-11-14-pr-decision-template-reconcile
+state: final
+created_at: "2026-11-14T20:00:00Z"
+updated_at: "2026-11-14T20:14:03Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: 3bf2177ff4e1a26dc3f8eeea805a81a74360a4a8
+  end_ref: 6f548e91a0a73ed24ea401f7ed682431ba4bed4c
+  worktree_clean_at_end: true
+skill_identity:
+  load_mode: harness_discovered
+  sensemaking_source_ref: null
+goal:
+  statement: "Confirm hosted CI at 3bf2177, assess issue 867, make one warranted change, reconcile methodological learning, and retire the 861 evaluation worktree."
+  source: owner_message
+  source_ref: "https://github.com/ThorStarlord/sensemaking-skills/issues/867"
+delegation:
+  granted: [read, local_write, run_local_commands, commit, push, open_pr, merge]
+  withheld: [release, deploy, external_publication]
+continuity:
+  resumes: null
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: "Confirm the hosted repair at merge commit 3bf2177"
+    capability: ordinary_coding
+    status: completed
+    reason: "Product Validation and Release Candidate Distribution succeeded. Full test suite: 3649 passed, 25 skipped, 5 xfailed."
+    artifact_refs: []
+    validation:
+      - command: "gh run view on jobs of 43573083832 and 43573083863 at 3bf2177"
+        result: PASS
+  - id: R-2
+    responsibility: "Assess issue 867 against PR 868 and PR 866"
+    capability: using-sensemaking
+    status: completed
+    reason: "PR 868 shows the decision-note practice once. PR 866 has no consultation statement. Knowledge retention: NO_MODEL_CHANGE, since a lesson would repeat Skill guidance without a new consumer."
+    artifact_refs: []
+    validation: []
+  - id: R-3
+    responsibility: "Retire the issue 861 evaluation worktree"
+    capability: ordinary_coding
+    status: completed
+    reason: "Pre-registration and finalized receipt kept as local commits f527214b and e01b5c03 on claude/independent-reentry-evaluation, not pushed. The empty directory was then removed."
+    artifact_refs: []
+    validation: []
+  - id: R-4
+    responsibility: "Add a PR template that prompts the decision note"
+    capability: ordinary_coding
+    status: completed
+    reason: "CLAUDE.md requires a decision note and no template existed. The template is a prompt, not a gate. No workflow reads it."
+    artifact_refs: [.github/pull_request_template.md]
+    validation:
+      - command: "non-ASCII line count of the template"
+        result: PASS
+      - command: "python scripts/validate-receipt.py on this receipt"
+        result: PASS
+      - command: "local unit and synthetic evidence tests (CLAUDE.md construction rule)"
+        result: NOT_RUN
+findings:
+  - id: F-1
+    statement: "Hosted Product Validation and Release Candidate Distribution succeeded at 3bf2177, including all seven Product Validation jobs."
+    epistemic_status: OBSERVED
+    evidence_refs: ["file:tests/fixtures/brief-valid.md:16-18"]
+    disposition: resolved
+  - id: F-2
+    statement: "Issue 867 criteria 1 to 3 are shown once, by PR 868, not consistently. PR 866 has no consultation statement."
+    epistemic_status: OBSERVED
+    evidence_refs: ["file:.sensemaking/receipts/2026-11-14-fixture-readme-snapshot.session.yaml"]
+    disposition: handed_off
+  - id: F-3
+    statement: "Channels: the repeated-workaround rule and the PR 866 comparison were in this session's context. No reviewed knowledge record was retrieved for this change."
+    epistemic_status: OBSERVED
+    evidence_refs: ["file:skills/using-sensemaking/SKILL.md"]
+    disposition: no_action
+open_questions: []
+stop:
+  disposition: NO_FURTHER_WARRANT
+  reason: "No further product construction is warranted by current evidence. Issue 867 needs the practice observed across consequential PRs before it can close."
+next:
+  warranted_responsibility: "Use the template on the next consequential PR and record whether the consultation statement reflects an actual lookup. Keep 867 open until then."
+  blocked_on: []
+persistence: committed
+claim_ceiling: "Establishes a passing hosted gate at 3bf2177 and one decision-note prompt. Does not establish consistent practice, independent reuse or cognitive benefit."
+action_authorized_by_receipt: false
+immutable: true
