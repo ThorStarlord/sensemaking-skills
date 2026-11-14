@@ -330,6 +330,41 @@ def install_state(
     return "changed"
 
 
+def _printable_path(rel: str) -> str:
+    """Escape a relative path so console output stays ASCII (and single-line)."""
+    return ascii(rel)[1:-1]
+
+
+def _describe_differing_files(src_skill: Path, dest_skill: Path, limit: int = 10) -> str:
+    """Name the files in an installed copy that differ from the packaged tree.
+
+    Read-only. It uses the same per-file digests as :func:`install_state`, so a
+    copy that is not ``current`` always has at least one entry. Files are grouped
+    as ``modified`` (in both, different bytes), ``missing`` (packaged but not
+    installed) or ``extra`` (installed but not packaged); each group names at
+    most ``limit`` files.
+    """
+    packaged = _skill_tree_fingerprint(src_skill)
+    installed = _skill_tree_fingerprint(dest_skill)
+    modified = sorted(
+        rel for rel in packaged.keys() & installed.keys() if packaged[rel] != installed[rel]
+    )
+    groups = (
+        ("modified", modified),
+        ("missing", sorted(packaged.keys() - installed.keys())),
+        ("extra", sorted(installed.keys() - packaged.keys())),
+    )
+    parts = []
+    for label, paths in groups:
+        if not paths:
+            continue
+        shown = ", ".join(_printable_path(rel) for rel in paths[:limit])
+        more = len(paths) - limit
+        suffix = f", and {more} more" if more > 0 else ""
+        parts.append(f"{label} {len(paths)} ({shown}{suffix})")
+    return "; ".join(parts) or "no file-level difference found"
+
+
 _GIT_TIMEOUT_SECONDS = 120
 
 
@@ -575,18 +610,20 @@ def _copy_skill_tree(
             "--force overwrites those changes)",
         )
     if state == "unrecorded" and not force:
+        differing = _describe_differing_files(src_skill, dest_skill)
         if history_checked and not _is_link_like(dest_skill):
             return (
                 False,
                 f"Different from packaged version: {skill_name} "
                 "(installed copy diverged; no install record, and no version "
                 "committed in this checkout matches it; inspect it, then use "
-                "--force to overwrite)",
+                f"--force to overwrite)\n      Differing files: {differing}",
             )
         return (
             False,
             f"Different from packaged version: {skill_name} "
-            "(installed copy diverged; use --force to overwrite)",
+            "(installed copy diverged; use --force to overwrite)"
+            f"\n      Differing files: {differing}",
         )
 
     replace_allowed = force or (update and state in _REPLACEABLE_BY_UPDATE)
