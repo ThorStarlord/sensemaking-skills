@@ -543,6 +543,8 @@ no unit or synthetic evidence tests were run.
 
 ## Current next step
 
+**2026-11-13 strategic qualification:** ADR 0037 and its Level-3 reconciliation change the *purpose* under which the engineering work below is assessed. The older source-retrieval increments remain historically valid and potentially useful as software-domain work; they are not proof of transferable cognitive development and do not automatically require another import scanner. Next independent qualification is an **open direction**, not an already authorized or executed benchmark. Continue only concrete source-grounded work selected against the revised product thesis.
+
 **2026-11-12 JS/TS static import source observations:** `semantic
 knowledge-build --include-js-module-imports` optionally captures bounded
 literal static ESM import/re-export specifiers from tracked JS/TS source as
