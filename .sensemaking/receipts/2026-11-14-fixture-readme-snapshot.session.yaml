@@ -1,0 +1,73 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-11-14-fixture-readme-snapshot
+state: final
+created_at: "2026-11-14T07:51:15Z"
+updated_at: "2026-11-14T07:51:15Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: 832d85c66c0d7b647e955bea3df72b180bc843c6
+  end_ref: 16f961bfd00b75fb08c0783498f469d9c0b825e1
+  worktree_clean_at_end: true
+skill_identity:
+  load_mode: harness_discovered
+  sensemaking_source_ref: null
+goal:
+  statement: "Owner-directed local construction: restore hosted Product Validation on main with a minimal durable fix, and retain bounded methodological learning."
+  source: owner_message
+  source_ref: "https://github.com/ThorStarlord/sensemaking-skills/issues/867"
+delegation:
+  granted: [read, local_write, run_local_commands, commit, push, open_pr, merge, tracker_write]
+  withheld: [release, deploy, external_publication]
+continuity:
+  resumes: null
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: "Repair brief fixtures that quote live README prose"
+    capability: ordinary_coding
+    status: completed
+    reason: "Hosted Product Validation red on main since 9ae5338b. The same coupling was re-quoted in #642, so the fixtures now cite a frozen snapshot."
+    artifact_refs: [tests/fixtures/evidence-source/project-overview-snapshot.md]
+    validation:
+      - command: "git diff --check; verbatim quote check against the snapshot"
+        result: PASS
+      - command: "python scripts/validate-receipt.py on this receipt"
+        result: PASS
+      - command: "local unit and synthetic evidence tests (CLAUDE.md construction rule)"
+        result: NOT_RUN
+  - id: R-2
+    responsibility: "Create a local methodological-learning enhancement issue"
+    capability: using-sensemaking
+    status: completed
+    reason: "Owner-directed issue 867 for ordinary-engineering learning. Independent of 861, with its own acceptance criteria."
+    artifact_refs: []
+    validation: []
+findings:
+  - id: F-1
+    statement: "Hosted Product Validation failed on main from 9ae5338b with six tests. Three brief fixtures quoted a sentence that 858 removed from README lines 6-8."
+    epistemic_status: OBSERVED
+    evidence_refs: ["file:tests/fixtures/brief-valid.md:16-18", "file:README.md:6-8"]
+    disposition: resolved
+  - id: F-2
+    statement: "Decoupling to a frozen snapshot was chosen over a second re-quote, because 642 and 858 show the same coupling recurring."
+    epistemic_status: INFERRED
+    evidence_refs: ["file:tests/fixtures/brief-valid.md:16-18"]
+    disposition: resolved
+  - id: F-3
+    statement: "Channels: the repeated-workaround principle came from using-sensemaking text already in this conversation. A grep of knowledge JSON found no reviewed record on fixture coupling, so no lesson was retained."
+    epistemic_status: OBSERVED
+    evidence_refs: ["file:.sensemaking/knowledge/stewardship.json", "file:skills/using-sensemaking/SKILL.md"]
+    disposition: no_action
+open_questions: []
+stop:
+  disposition: GOAL_SATISFIED
+  reason: "Fixture repair committed and PR opened. The hosted result on the merged head is not observed at receipt time."
+next:
+  warranted_responsibility: "Confirm hosted Product Validation is green on main after merge. Then assess the 867 practice on the next consequential PR."
+  blocked_on: []
+persistence: committed
+claim_ceiling: "Establishes that the fixture coupling is removed in source. It does not establish the hosted result, and no learning or independent-agent benefit is claimed."
+action_authorized_by_receipt: false
+immutable: true
