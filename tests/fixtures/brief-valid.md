@@ -13,7 +13,7 @@
 
 ```yaml
 evidence_excerpts:
-  - file: "README.md"
+  - file: "tests/fixtures/evidence-source/project-overview-snapshot.md"
     lines: "L6-L8"
     quote: "An ontology-grounded repository understanding and prospective reasoning system for software-engineering agents."
     supports_claim: "product_fog: feature scope is undefined"
