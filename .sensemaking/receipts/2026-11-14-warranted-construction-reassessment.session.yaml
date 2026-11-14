@@ -1,0 +1,93 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-11-14-warranted-construction-reassessment
+state: final
+created_at: "2026-11-14T23:30:57Z"
+updated_at: "2026-11-14T23:30:57Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: 7fdb3c27ee4ee349d980f4ecfe018c4af6284d71
+  end_ref: 7fdb3c27ee4ee349d980f4ecfe018c4af6284d71
+  worktree_clean_at_end: true
+skill_identity:
+  load_mode: harness_discovered
+  sensemaking_source_ref: null
+goal:
+  statement: "Reassess warranted construction after PR 869 and observe issue 867, without manufacturing implementation work."
+  source: owner_message
+  source_ref: "https://github.com/ThorStarlord/sensemaking-skills/issues/867"
+delegation:
+  granted: [read, local_write, run_local_commands, commit]
+  withheld: [push, open_pr, merge, tracker_write, release, deploy, external_publication]
+continuity:
+  resumes: null
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: "Verify canonical main and the hosted results at 7fdb3c2"
+    capability: ordinary_coding
+    status: completed
+    reason: "Product Validation succeeded with seven of seven jobs. Full test suite: 3649 passed, 25 skipped, 5 xfailed. Release Candidate Distribution succeeded."
+    artifact_refs: []
+    validation:
+      - command: "gh run view of Product Validation jobs and the Full test suite log at 7fdb3c2"
+        result: PASS
+  - id: R-2
+    responsibility: "Reassess candidate responsibilities against goals, STATUS, ADRs, code and open work"
+    capability: using-sensemaking
+    status: completed
+    reason: "Candidates: the changed-copy refusal file list needs a persistent-schema decision. PRs 797 and 802-807 are owner-pending or stale record PRs. Issue 384 needs owner-authority security settings. 552, 554, 515 and 859-864 are independent, external or blocked."
+    artifact_refs: []
+    validation:
+      - command: "source line inspection of setup_skills.py 214-222, 651-652 and 1028-1029"
+        result: PASS
+  - id: R-3
+    responsibility: "Reconcile the outcome against issue 867"
+    capability: using-sensemaking
+    status: completed
+    reason: "No consequential engineering PR was made, so the decision-note practice was not exercised and 867 stays open. NO_MODEL_CHANGE: the analysis is kept here and no lesson changed a decision."
+    artifact_refs: []
+    validation: []
+findings:
+  - id: F-1
+    statement: "The install record stores one tree_sha256 per skill and the package version, not per-file digests. A file list for changed copies needs a new record field or a history search."
+    epistemic_status: OBSERVED
+    evidence_refs: ["file:src/sensemaking_skills/setup_skills.py:214-222", "file:src/sensemaking_skills/setup_skills.py:651-652"]
+    disposition: handed_off
+  - id: F-2
+    statement: "The changed-copy report gives counts only and says to inspect the copies. The only recorded friction I found is in the frontier-04 Phase A readout, which is about the dry-run report."
+    epistemic_status: OBSERVED
+    evidence_refs: ["file:src/sensemaking_skills/setup_skills.py:1028-1029", "file:docs/normal-use/2026-11-10-frontier-04-semantic-continuity.md"]
+    disposition: handed_off
+  - id: F-3
+    statement: "The SCL plan says to revisit a capability only after actual consumer friction, hosted failures, material false transfer or higher-grade benefit evidence."
+    epistemic_status: OBSERVED
+    evidence_refs: ["file:docs/superpowers/plans/2026-11-12-sensemaking-continuous-learning.md:302"]
+    disposition: no_action
+  - id: F-4
+    statement: "Channels: install-record facts were read from source in this session, and the SCL revisit rule and STATUS.md were read here. No reviewed knowledge record or index query was used."
+    epistemic_status: OBSERVED
+    evidence_refs: ["file:STATUS.md"]
+    disposition: no_action
+open_questions:
+  - id: Q-1
+    question: "Should install records gain per-file digests so changed-copy refusals can list the differing files?"
+    source: owner_intent
+    blocking: false
+    options:
+      - option: "Add per-file digests to new records"
+        consequence: "A backward-compatible persistent schema change. Older records keep the count-only report."
+      - option: "Keep the count-only report"
+        consequence: "No schema change. Operators inspect changed copies by hand."
+    durable_ref: null
+stop:
+  disposition: NO_FURTHER_WARRANT
+  reason: "No warranted implementation. The one candidate needs a persistent-schema decision that the owner should make. Main is green. Other open items are blocked, external, excluded or owner-reserved."
+next:
+  warranted_responsibility: "Owner decision on Q-1. Issue 867 needs a consequential engineering PR before it can close."
+  blocked_on: ["Q-1"]
+persistence: committed
+claim_ceiling: "Establishes the hosted state at 7fdb3c2 and that the inspected candidates warrant no implementation now. Establishes nothing about practice consistency for issue 867 or about cognitive benefit."
+action_authorized_by_receipt: false
+immutable: true
