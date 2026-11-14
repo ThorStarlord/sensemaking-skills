@@ -362,6 +362,8 @@ underlying record.
 
 ## 14. Authority and related documents
 
+- Current owner-ratified intended product purpose: [ADR 0037](adr/0037-domain-general-cognitive-development.md)
+- Mandatory post-revision Level-3 reconciliation: [2026-11-13 cognitive thesis reconciliation](../artifacts/history/2026-11-13-domain-general-cognitive-thesis-reconciliation.md)
 - Current product-boundary authority: [ADR 0029](adr/0029-current-product-boundary.md)
 - Owner-selected persistent semantic stewardship: [ADR 0031](adr/0031-persistent-semantic-stewardship.md)
 - Detailed development trajectory: [persistent-semantic-stewardship-plan.md](persistent-semantic-stewardship-plan.md)
