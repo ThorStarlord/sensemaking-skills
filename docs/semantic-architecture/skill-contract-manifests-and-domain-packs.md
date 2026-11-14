@@ -109,6 +109,10 @@ Domain Pack membership != portability qualified
 Domain Pack membership != promoted
 ```
 
+## Relationship to the owner-selected cognitive product purpose
+
+[ADR 0037](../adr/0037-domain-general-cognitive-development.md) selects domain-general cognitive development as the intended product purpose. The present Domain Pack v1 remains a **descriptive grouping of already implemented Skill contracts**, not a general cognitive ontology, agent identity store, executable software package or plugin runtime. Future cognitive domain packages and executable game-genre components are distinct possible specializations, not automatically implemented or empirically qualified. Equal core-user standing does not imply equal available domain packages.
+
 ## Why extract Domain Packs now?
 
 The repository now has two materially different implemented domains with stable responsibility/capability/artifact boundaries: engineering repository reasoning and Product Management. That is enough to extract a minimal **reference shape** without yet building a generic runtime plugin platform.
