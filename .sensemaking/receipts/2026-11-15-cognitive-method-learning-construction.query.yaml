@@ -70,6 +70,14 @@ queries:
         - verification:console-output-ascii-guard
         - verification:knowledge-tests
         - verification:public-api-contract-test
+        - inv:index-snapshot-vs-working-overlay
+        - adr:0031
+        - decision:granular-indexed-delta-classification
+        - decision:ranked-lexical-question-search
+        - decision:workspace-impact-path-overlap
+        - observation:knowledge-query-closed-operations
+        - verification:granular-delta-classification-tests
+        - cap:semantic-queries
       truncated: false
       not_assessed_kinds: [contracts]
     outcome: PARTIAL

@@ -653,12 +653,13 @@
       ],
       "attributes": {
         "scope": "One calibration in one harness; not an evidence-bearing study cell"
-      }
+      },
+      "epistemic_status": "observed"
     },
     {
       "id": "lesson:subagent-inherits-ambient-context",
       "kind": "lesson",
-      "statement": "A fresh subagent spawned in this harness inherits the repository CLAUDE.md, the user's persistent memory index and the user-level Skill list, so it is not an isolated comparison arm. A fixed-method baseline needs per-arm configuration isolation and an oracle-blind evaluator before any matched comparison is admissible.",
+      "statement": "A fresh subagent spawned in this harness inherits the repository CLAUDE.md, the user's persistent memory index and the user-level Skill list, so it is not an isolated comparison arm. A fixed-method baseline would need per-arm configuration isolation and an oracle-blind evaluator before a matched comparison could be admissible; that remedy is untested.",
       "authority_kind": "document",
       "authority_ref": "docs/normal-use/2026-11-15-cognitive-method-learning-construction.md",
       "evidence_refs": [
@@ -666,7 +667,8 @@
       ],
       "attributes": {
         "scope": "Single harness observed once (calibration C1); makes no claim about other harnesses, cognitive benefit or the remedy's effectiveness"
-      }
+      },
+      "epistemic_status": "declared"
     }
   ],
   "relations": [

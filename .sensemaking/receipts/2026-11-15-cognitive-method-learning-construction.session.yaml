@@ -1,14 +1,14 @@
 artifact_id: sensemaking_session_receipt
 schema_version: 1
 session_ref: 2026-11-15-cognitive-method-learning-construction
-state: in_progress
+state: final
 created_at: "2026-11-15T10:20:00Z"
-updated_at: "2026-11-15T11:20:00Z"
+updated_at: "2026-11-15T12:30:00Z"
 target_repository: ThorStarlord/sensemaking-skills
 source_identity:
   start_ref: a97439fe86b7ecc5549cb3e8a4a9f31ab29de0ec
-  end_ref: null
-  worktree_clean_at_end: false
+  end_ref: 72831ecc6192ffcd8d2a32380279eb02eb6e15b2
+  worktree_clean_at_end: true
 skill_identity:
   load_mode: harness_discovered
   sensemaking_source_ref: null
@@ -31,7 +31,7 @@ responsibilities:
     reason: "The file-anchored path works through context-for, and the documented precedent surfaces. No method-choice lesson exists. Independent re-entry is not performed and is left for qualification."
     artifact_refs: ["docs/normal-use/2026-11-15-cognitive-method-learning-construction.md", ".sensemaking/receipts/2026-11-15-cognitive-method-learning-construction.query.yaml"]
     validation:
-      - command: "semantic workspace-query search and context-for, read-only, at a97439fe"
+      - command: "semantic workspace-query search and context-for at a97439fe (no checkout writes; derived cache index only)"
         result: PASS
   - id: R-2
     responsibility: "#862 methodological feedback: verify the retention path and retain the warranted interpretation"
@@ -61,8 +61,8 @@ responsibilities:
   - id: R-5
     responsibility: "#867 decision-note practice: apply to the PR for this program"
     capability: ordinary_coding
-    status: in_progress
-    reason: "The PR decision note records the knowledge consulted, channels, earlier fixes and NO_MODEL_CHANGE. Closure of #867 depends on the PR merge and review evidence."
+    status: completed
+    reason: "PR decision note states knowledge consulted, channels, earlier fixes and NO_MODEL_CHANGE. Criteria 1-6 evaluated against this PR and PR 871. Closure follows the merge."
     artifact_refs: []
     validation: []
 findings:
@@ -93,12 +93,12 @@ open_questions:
         consequence: "Attribution becomes automatic. A new machine contract needs an owner decision."
     durable_ref: null
 stop:
-  disposition: IN_PROGRESS
-  reason: "Pending: the fresh-context review, the PR merge and the issue reconciliation remain. This receipt will be finalized when they are complete."
+  disposition: NO_FURTHER_WARRANT
+  reason: "Construction for #861-#864 and #867 is complete within the local evidence ceiling. Independent qualification is split to #872, #873 and #874. #864 is blocked on instrument admissibility. Reviewer CHANGES_REQUIRED findings are corrected in this PR."
 next:
-  warranted_responsibility: "Fresh-context review of the branch diff, PR merge, then issue reconciliation."
-  blocked_on: []
+  warranted_responsibility: "Owner decision on Q-1, then independent qualification in #872-#874 when authorized."
+  blocked_on: ["Q-1"]
 persistence: committed
 claim_ceiling: "Local construction observations only: one same-context retrieval episode and one non-evidentiary calibration. No independent re-entry, feedback, comparative or cognitive-benefit claim."
 action_authorized_by_receipt: false
-immutable: false
+immutable: true
