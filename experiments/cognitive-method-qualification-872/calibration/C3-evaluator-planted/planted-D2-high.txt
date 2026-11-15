@@ -1,0 +1,4 @@
+COMMAND: claude -p <PROMPT> --safe-mode --restricted --model claude-haiku-5-5 --output-format stream-json --verbose --tools "Read,Grep,Glob" --allowedTools "Read,Grep,Glob"
+EXCLUDES: --safe-mode excludes CLAUDE.md, persistent memory, Skills, hooks and MCP servers. --restricted ignores user and project settings and confines file reading to the working directory.
+RESIDUAL: The built-in bundled Skills and the model's default system prompt remain.
+SOURCE_CHECK: I read docs/normal-use/2026-11-15-harness-calibration-c2.md. Its calibration X10 showed that --safe-mode alone let a Read call open a file outside the working directory, and that adding --restricted refused the same read.

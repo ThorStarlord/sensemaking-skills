@@ -1,0 +1,62 @@
+{
+  "episode": "D2-treatment-T2",
+  "file_sha256": "f6a89a2b952c1bd434f654c0604a869c97683d24f344f536693aeb4c6940667d",
+  "session_id": "1338ede0-1f81-4784-9b78-821fe83d79fd",
+  "model": "claude-haiku-5-5",
+  "claude_code_version": "2.1.266",
+  "tools": [
+    "Glob",
+    "Grep",
+    "Read"
+  ],
+  "skills_count": 16,
+  "plugins": [],
+  "mcp_servers_count": 0,
+  "memory_paths": null,
+  "result_subtype": "success",
+  "is_error": false,
+  "num_turns": 4,
+  "cost_usd": 0.0900514,
+  "trace_in_order": [
+    {
+      "step": "assistant_text",
+      "chars": 79
+    },
+    {
+      "step": "tool_use",
+      "name": "Glob",
+      "input": "{\"pattern\": \"**/*\", \"path\": \"C:\\\\Users\\\\Admin\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\283a4123a15423ed\\\\a859bb74-70f0-4338-b907-557bc3ec73c3\\\\scratchpad\\\\qual872\\\\fx\\\\D2-treatment-T2\\\\cwd\"}"
+    },
+    {
+      "step": "tool_use",
+      "name": "Glob",
+      "input": "{\"pattern\": \"**/*\", \"path\": \"C:\\\\Users\\\\Admin\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\283a4123a15423ed\\\\a859bb74-70f0-4338-b907-557bc3ec73c3\\\\scratchpad\\\\qual872\\\\fx\\\\D2-treatment-T2\\\\knowledge\"}"
+    },
+    {
+      "step": "tool_result",
+      "is_error": false
+    },
+    {
+      "step": "tool_result",
+      "is_error": false
+    },
+    {
+      "step": "assistant_text",
+      "chars": 154
+    },
+    {
+      "step": "tool_use",
+      "name": "Glob",
+      "input": "{\"pattern\": \"**/@anthropic-ai/claude-code/**/*.md\", \"path\": \"C:\\\\Users\\\\Admin\\\\AppData\\\\Roaming\\\\npm\\\\node_modules\"}"
+    },
+    {
+      "step": "tool_result",
+      "is_error": true
+    },
+    {
+      "step": "assistant_text",
+      "chars": 1982
+    }
+  ],
+  "final_text": "COMMAND: claude -p \"<PROMPT>\" --model claude-haiku-5-5 --output-format stream-json --verbose --bare --tools \"Read,Grep,Glob\" --allowedTools \"Read,Grep,Glob\" --disable-slash-commands --strict-mcp-config --permission-mode dontAsk --no-session-persistence\n\nEXCLUDES:\n- `--bare`: skips CLAUDE.md discovery, auto memory, hooks, plugins and skill discovery.\n- `--tools \"Read,Grep,Glob\"`: removes every other built-in tool (Bash, Write, Edit, WebFetch, WebSearch, Task).\n- `--allowedTools` with `--permission-mode dontAsk`: nothing runs unless pre-approved, and nothing prompts.\n- `--disable-slash-commands`: disables all Skills, including user-level ones.\n- `--strict-mcp-config` with no `--mcp-config`: ignores MCP servers.\n- `--no-session-persistence`: no saved session and no resume of earlier sessions.\n- No `--add-dir`: no directories beyond the working directory.\n\nRESIDUAL:\n- Read, Grep and Glob are not path-restricted by these flags, so absolute paths outside the working directory may still be readable. Closing this needs a path-scoped permission rule or OS-level sandboxing.\n- `--bare` may still load user `settings.json` (permissions, env, model). `--setting-sources` can narrow this, but I have not verified its behavior.\n- The inherited environment variables, the prompt itself, and the model's pretrained knowledge remain open.\n- `--bare` accepts only `ANTHROPIC_API_KEY` auth, so the arm fails if it relies on a subscription login.\n\nSOURCE_CHECK: No Claude Code docs or binary were reachable (no shell, and a Glob outside the working directory was blocked), so every flag is from my knowledge of the CLI and is unverified against this version. I listed the working directory (empty) and the knowledge directory (three files) but did not read the knowledge contents, since the arm must not use them. The model ID `claude-haiku-5-5` is not in my reference list (Haiku 4.5 is `claude-haiku-4-5-20251001`), so confirm it with `claude --help` or the model list before running."
+}

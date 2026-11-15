@@ -1,0 +1,27 @@
+{
+  "episode": "D1-treatment-T2",
+  "file_sha256": "c96b841c7a54119ccb2589c4ef6a4c88267b7b5c092d5f56614035cfc3f3e6c4",
+  "session_id": "dc0c13d5-a3fb-47ec-9dbe-9f7942eeb63e",
+  "model": "claude-haiku-5-5",
+  "claude_code_version": "2.1.266",
+  "tools": [
+    "Glob",
+    "Grep",
+    "Read"
+  ],
+  "skills_count": 16,
+  "plugins": [],
+  "mcp_servers_count": 0,
+  "memory_paths": null,
+  "result_subtype": "success",
+  "is_error": false,
+  "num_turns": 1,
+  "cost_usd": 0.0554902,
+  "trace_in_order": [
+    {
+      "step": "assistant_text",
+      "chars": 2496
+    }
+  ],
+  "final_text": "CHOICE: B\n\nISOLATION: Separate processes give each arm its own context window and no shared conversation history, which removes the main leak in A and C. They do not isolate files or configuration by themselves. Both processes run as the same OS user, read the same user config, and load CLAUDE.md files from the working directory and its ancestors. Option A also shares the parent's working directory, project memory and Skills. Option C shares everything.\n\nCONTROLS (identical per arm except for the treatment):\n- Separate empty working directories (e.g. `arms\\X`, `arms\\Y`) with no CLAUDE.md in any ancestor.\n- A distinct `CLAUDE_CONFIG_DIR` per arm, so user settings, auto-memory and Skills come from an empty directory.\n- `--disable-slash-commands` (no Skills), `--strict-mcp-config` with an empty `--mcp-config`, and `--setting-sources project,local` to drop user-level settings.\n- `--system-prompt-file` containing only that arm's instructions. Arm X's prompt refers to the knowledge store; Arm Y's does not.\n- `--tools` limited to Read, Glob, Grep, Edit, Write. Bash is excluded.\n- Arm X: `--add-dir` pointing at the knowledge directory, with a `permissions.deny` rule blocking Write/Edit there. Arm Y: knowledge path not passed, and Read denied on it in its project `.claude/settings.json`. Both arms get deny rules for paths outside their own directory.\n- A fresh `claude -p` process per trial with `--no-session-persistence`, so no resume.\n\nCONTAMINATION:\n- Bash, if enabled, can read anything the OS user can read, which is why it is excluded. Any remaining shell or Read access that reaches outside the arm's directory is a leak.\n- Model weights and priors are shared and cannot be controlled.\n- Managed or enterprise settings and machine-wide plugins still apply.\n- The harness, file names, or prompts may reveal the arm label or the knowledge store's content.\n- The knowledge store may itself encode the hypothesis or the arm assignment.\n- If both arms write to a shared results folder, each can read the other's outputs unless Read is restricted.\n- Auth credentials may be shared through the OS keychain.\n\nFALSIFIER: In Arm Y's saved stream-json log for any trial, the `system/init` line lists a slash command, tool or MCP server outside the configured set, or any `tool_use` entry references the knowledge directory or Arm X's working directory. Those entries would be recorded in that trial's per-arm transcript file, and would show the controls failed and B was not sufficient."
+}

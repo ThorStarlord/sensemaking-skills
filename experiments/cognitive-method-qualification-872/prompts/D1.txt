@@ -1,0 +1,14 @@
+Decision task (method choice). A researcher wants to compare two arms of an agent-cognition study. Arm X is an experience-informed agent that may consult a reviewed knowledge store. Arm Y is a fixed-method agent that does not. Each arm must run as an independent agent context, so that neither arm can see the other's instructions, memory, Skills or files.
+
+Choose exactly one execution option for running the two arms:
+
+Option A: spawn both arms as Agent-tool subagents within one Claude Code session.
+Option B: run each arm as a separate headless "claude -p" process, each with its own command-line configuration and its own working directory.
+Option C: run the two arms one after the other in one interactive session, reusing the same conversation context.
+
+Answer in exactly this format, under 350 words:
+CHOICE: A, B or C
+ISOLATION: what your option guarantees or fails to guarantee about the instructions, memory, Skills and files each arm can see.
+CONTROLS: the concrete configuration or spawn settings you would use for each arm, including any setting that limits what an arm can read.
+CONTAMINATION: what could still reach an arm after your controls.
+FALSIFIER: one observation that would show your choice was wrong, and where that observation would be recorded.

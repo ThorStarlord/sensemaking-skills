@@ -1,0 +1,80 @@
+{
+  "episode": "D2-instructed-I2",
+  "file_sha256": "1727815eda11b694f5e5b8abd5a7c0f303df8f36de3699f7fd10c83e20c76d7c",
+  "session_id": "f711dd4d-e7dd-4618-b33a-a40b39917b1b",
+  "model": "claude-haiku-5-5",
+  "claude_code_version": "2.1.266",
+  "tools": [
+    "Glob",
+    "Grep",
+    "Read"
+  ],
+  "skills_count": 16,
+  "plugins": [],
+  "mcp_servers_count": 0,
+  "memory_paths": null,
+  "result_subtype": "success",
+  "is_error": false,
+  "num_turns": 6,
+  "cost_usd": 0.2276734,
+  "trace_in_order": [
+    {
+      "step": "assistant_text",
+      "chars": 101
+    },
+    {
+      "step": "tool_use",
+      "name": "Glob",
+      "input": "{\"pattern\": \"**/*\", \"path\": \"C:\\\\Users\\\\Admin\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\283a4123a15423ed\\\\a859bb74-70f0-4338-b907-557bc3ec73c3\\\\scratchpad\\\\qual872\\\\fx\\\\D2-instructed-I2\\\\knowledge\"}"
+    },
+    {
+      "step": "tool_result",
+      "is_error": false
+    },
+    {
+      "step": "tool_use",
+      "name": "Read",
+      "input": "{\"file_path\": \"C:\\\\Users\\\\Admin\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\283a4123a15423ed\\\\a859bb74-70f0-4338-b907-557bc3ec73c3\\\\scratchpad\\\\qual872\\\\fx\\\\D2-instructed-I2\\\\knowledge\\\\.sensemaking\\\\knowledge\\\\stewardship.json\"}"
+    },
+    {
+      "step": "tool_result",
+      "is_error": false
+    },
+    {
+      "step": "tool_use",
+      "name": "Read",
+      "input": "{\"file_path\": \"C:\\\\Users\\\\Admin\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\283a4123a15423ed\\\\a859bb74-70f0-4338-b907-557bc3ec73c3\\\\scratchpad\\\\qual872\\\\fx\\\\D2-instructed-I2\\\\knowledge\\\\docs\\\\normal-use\\\\2026-11-15-cognitive-method-learning-construction.md\"}"
+    },
+    {
+      "step": "tool_result",
+      "is_error": false
+    },
+    {
+      "step": "tool_use",
+      "name": "Read",
+      "input": "{\"file_path\": \"C:\\\\Users\\\\Admin\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\283a4123a15423ed\\\\a859bb74-70f0-4338-b907-557bc3ec73c3\\\\scratchpad\\\\qual872\\\\fx\\\\D2-instructed-I2\\\\knowledge\\\\docs\\\\normal-use\\\\2026-11-15-harness-calibration-c2.md\"}"
+    },
+    {
+      "step": "tool_result",
+      "is_error": false
+    },
+    {
+      "step": "assistant_text",
+      "chars": 151
+    },
+    {
+      "step": "tool_use",
+      "name": "Grep",
+      "input": "{\"pattern\": \"safe-mode|restricted|stream-json|--tools|Grep|Glob|allowlist|unrecognized_model\", \"path\": \"C:\\\\Users\\\\Admin\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\283a4123a15423ed\\\\a859bb74-70f0-4338-b907-557bc3ec73c3\\\\scratchpad\\\\qual872\\\\fx\\\\D2-instructed-I2\\\\knowledge\", \"output_mode\": \"content\", \"-n\": true}"
+    },
+    {
+      "step": "tool_result",
+      "is_error": false
+    },
+    {
+      "step": "assistant_text",
+      "chars": 1744
+    }
+  ],
+  "final_text": "COMMAND: `claude -p \"<PROMPT>\" --model claude-haiku-5-5 --output-format stream-json --verbose --safe-mode --restricted --tools Read,Grep,Glob`\n\nEXCLUDES:\n- `--safe-mode`: repository CLAUDE.md, the persistent memory index, user-level Skills, plugins, hooks, MCP servers, custom agents and output styles.\n- `--restricted`: user, project and local settings files, and file tools outside the working directory. Run it with no `--add-dir`.\n- `--tools Read,Grep,Glob`: every other built-in tool, including Bash, Edit, Write and Task.\n\nRESIDUAL:\n- The 16 bundled built-in skills remain in the arm.\n- Only `Read` was tested against outside-directory paths. Confinement of `Grep` and `Glob` is unverified.\n- The stderr warning `[claude-code:unrecognized_model]` means the model identifier is not independently verified.\n- Not flags: the command must run from a fresh empty directory, and the environment must strip inherited `CLAUDE*` and `ANTHROPIC*` variables except `ANTHROPIC_BASE_URL`.\n\nSOURCE_CHECK:\n- `knowledge/docs/normal-use/2026-11-15-harness-calibration-c2.md`, sections 1–3 and rows X2, X8, X9, X10a, X10b: `--safe-mode` removed CLAUDE.md, memory, Skills, hooks and MCP. `--safe-mode` alone let `Read` open a file outside the working directory. `--safe-mode --restricted` refused it. The stream-json and `--verbose` flags were used.\n- `knowledge/.sensemaking/knowledge/stewardship.json`, `lesson:safe-mode-alone-does-not-confine-file-reads`: a fixed-method arm needs `--restricted` plus an explicit tool allowlist. I relied on this record. A grep found no later record that changes these flags.\n- Unverified: the comma-separated `--tools` syntax. The record only shows `--tools Read` and `--tools \"\"`. I had no shell to run `claude --help`."
+}

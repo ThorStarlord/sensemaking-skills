@@ -1,0 +1,58 @@
+{
+  "episode": "D2-baseline-B2",
+  "file_sha256": "f454f3a8e70875eee4b711e4ff3abe5ae713898c850ce7109d79bfac09b52ecf",
+  "session_id": "3a60eac1-099e-4041-ad8a-63f99cde1b9f",
+  "model": "claude-haiku-5-5",
+  "claude_code_version": "2.1.266",
+  "tools": [
+    "Glob",
+    "Grep",
+    "Read"
+  ],
+  "skills_count": 16,
+  "plugins": [],
+  "mcp_servers_count": 0,
+  "memory_paths": null,
+  "result_subtype": "success",
+  "is_error": false,
+  "num_turns": 4,
+  "cost_usd": 0.0636968,
+  "trace_in_order": [
+    {
+      "step": "assistant_text",
+      "chars": 162
+    },
+    {
+      "step": "tool_use",
+      "name": "Glob",
+      "input": "{\"pattern\": \"*\", \"path\": \"C:\\\\Users\\\\Admin\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\283a4123a15423ed\\\\a859bb74-70f0-4338-b907-557bc3ec73c3\\\\scratchpad\\\\qual872\\\\fx\\\\D2-baseline-B2\\\\cwd\"}"
+    },
+    {
+      "step": "tool_result",
+      "is_error": false
+    },
+    {
+      "step": "tool_use",
+      "name": "Glob",
+      "input": "{\"pattern\": \"**/*\", \"path\": \"C:\\\\Users\\\\Admin\\\\.claude\"}"
+    },
+    {
+      "step": "tool_result",
+      "is_error": true
+    },
+    {
+      "step": "tool_use",
+      "name": "Glob",
+      "input": "{\"pattern\": \"**/cli.js\", \"path\": \"C:\\\\Users\\\\Admin\\\\AppData\\\\Roaming\\\\npm\\\\node_modules\"}"
+    },
+    {
+      "step": "tool_result",
+      "is_error": true
+    },
+    {
+      "step": "assistant_text",
+      "chars": 1705
+    }
+  ],
+  "final_text": "COMMAND: claude -p \"<PROMPT>\" --model claude-haiku-5-5 --output-format stream-json --verbose --bare --tools \"Read,Grep,Glob\" --disable-slash-commands --strict-mcp-config --no-session-persistence --permission-mode dontAsk\n\nEXCLUDES:\n- --bare: skips CLAUDE.md discovery, auto memory, skills, hooks, plugins, and MCP auto-discovery.\n- --tools \"Read,Grep,Glob\": removes every other built-in tool, including Bash, Write, Edit, and WebFetch.\n- --disable-slash-commands: blocks skill invocation (redundant with --bare, kept explicit).\n- --strict-mcp-config with no --mcp-config: ignores all configured MCP servers.\n- --no-session-persistence: prevents saving a transcript that a later run could resume.\n- --permission-mode dontAsk: no interactive approval, so unapproved tool calls are denied.\n\nRESIDUAL:\n- Out-of-directory paths: these flags do not hard-confine Read, Grep, or Glob to the working directory. Absolute paths elsewhere may still resolve unless an OS sandbox or path-scoped deny rule is added.\n- The working directory contents: must be an empty or fixed fixture.\n- Model knowledge and the API key/environment variables are not file channels, but they remain open.\n- \"claude-haiku-5-5\" is not in my environment's model list (Haiku 4.5 is claude-haiku-4-5-20251001). Verify it resolves.\n\nSOURCE_CHECK: The working directory is empty (Glob returned no files). File tools refused ~/.claude and the npm install with \"--restricted confines the file tools to the working directory,\" so I could not read the CLI help or docs. The flags come from my knowledge of the Claude Code CLI, not a local source. The tool error mentions `--restricted`, but I did not verify it as a claude CLI flag, so I left it out."
+}

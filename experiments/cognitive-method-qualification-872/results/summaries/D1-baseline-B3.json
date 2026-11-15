@@ -1,0 +1,27 @@
+{
+  "episode": "D1-baseline-B3",
+  "file_sha256": "b1fd8676f08dd48abfa966956eaf15d097bb47893f61059dd2bb8ad11cea6b7a",
+  "session_id": "0a132872-e609-4730-822d-b2d3f3126e5e",
+  "model": "claude-haiku-5-5",
+  "claude_code_version": "2.1.266",
+  "tools": [
+    "Glob",
+    "Grep",
+    "Read"
+  ],
+  "skills_count": 16,
+  "plugins": [],
+  "mcp_servers_count": 0,
+  "memory_paths": null,
+  "result_subtype": "success",
+  "is_error": false,
+  "num_turns": 1,
+  "cost_usd": 0.0365838,
+  "trace_in_order": [
+    {
+      "step": "assistant_text",
+      "chars": 2110
+    }
+  ],
+  "final_text": "CHOICE: B\n\nISOLATION: Each `claude -p` process has its own context window, message history, and tool state, so neither arm sees the other's conversation. Subagents (A) inherit the parent session's CLAUDE.md, auto-memory, and Skills, and C shares one context outright. B can separate instructions, memory, and Skills, but only if each process is pointed at its own config. Otherwise every process reads the same user-level `~/.claude` config.\n\nCONTROLS:\n- Arm X: `CLAUDE_CONFIG_DIR=<X-config>` holding only X's settings, CLAUDE.md, and Skills. Working directory `<X-cwd>`, with `--add-dir <knowledge-store>` as the only extra path. Pass X's prompt with `--append-system-prompt-file`. Use `--setting-sources project` to skip user-level settings, and `--output-format stream-json --verbose` to log the full transcript.\n- Arm Y: same pattern with its own `CLAUDE_CONFIG_DIR` and cwd. No `--add-dir`. Deny `Read`, `Glob`, and `Grep` on the knowledge-store path in Y's settings, and deny `Bash` if Y's method doesn't need it.\n- Both: `--strict-mcp-config` with an empty `--mcp-config` file. If your CLI version supports `--bare`, use it to skip CLAUDE.md, memory, Skills, and hooks discovery, then verify with a probe.\n- Neither cwd may sit under a directory containing a CLAUDE.md or `.claude/` folder.\n\nCONTAMINATION:\n- Shared OS state: the same user profile, environment variables, git config, and temp directories.\n- Ancestor-directory discovery: if a parent of either cwd contains CLAUDE.md or `.claude/`, it loads anyway.\n- Writes: if X writes notes into a path Y can read, Y receives them.\n- Model side: the same model and any account-level memory feature, which the config dirs don't control.\n- Run order: shared API rate limits or cached state can make runs non-independent, so randomize and log the order.\n\nFALSIFIER: Any Y transcript event, in the stream-json log or the session JSONL under Y's `CLAUDE_CONFIG_DIR/projects/`, that references the knowledge-store path or X's cwd, or any text from X's CLAUDE.md or Skills appearing in Y's init message. Record these in the per-arm logs in the run directory."
+}

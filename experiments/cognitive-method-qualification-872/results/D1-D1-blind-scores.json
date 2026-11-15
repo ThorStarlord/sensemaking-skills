@@ -1,0 +1,134 @@
+{
+  "R1": {
+    "K1_CHOICE_B": {
+      "score": 1,
+      "quote": "CHOICE: B"
+    },
+    "K2_AMBIENT_IDENTIFIED": {
+      "score": 1,
+      "quote": "Option A subagents inherit the parent session's CLAUDE.md, memory and Skills"
+    },
+    "K3_INSTRUCTION_MEMORY_SKILL_CONTROL": {
+      "score": 1,
+      "quote": "`--bare` (skips CLAUDE.md, hooks, plugins, Skills and auto-memory discovery)"
+    },
+    "K4_READ_CONFINEMENT": {
+      "score": 0,
+      "quote": ""
+    },
+    "K5_CHECKABLE_FALSIFIER": {
+      "score": 1,
+      "quote": "any Read/Glob/Grep/Bash tool call that references the knowledge store, `cfgX` or `runX`"
+    }
+  },
+  "R2": {
+    "K1_CHOICE_B": {
+      "score": 1,
+      "quote": "CHOICE: B"
+    },
+    "K2_AMBIENT_IDENTIFIED": {
+      "score": 1,
+      "quote": "Option A also shares the parent's working directory, project memory and Skills. Option C shares everything."
+    },
+    "K3_INSTRUCTION_MEMORY_SKILL_CONTROL": {
+      "score": 1,
+      "quote": "A distinct `CLAUDE_CONFIG_DIR` per arm, so user settings, auto-memory and Skills come from an empty directory."
+    },
+    "K4_READ_CONFINEMENT": {
+      "score": 1,
+      "quote": "Arm X: `--add-dir` pointing at the knowledge directory, with a `permissions.deny` rule blocking Write/Edit there. Arm Y: knowledge path not passed, and Read denied on it in its project `.claude/settings.json`."
+    },
+    "K5_CHECKABLE_FALSIFIER": {
+      "score": 1,
+      "quote": "the `system/init` line lists a slash command, tool or MCP server outside the configured set, or any `tool_use` entry references the knowledge directory"
+    }
+  },
+  "R3": {
+    "K1_CHOICE_B": {
+      "score": 1,
+      "quote": "CHOICE: B"
+    },
+    "K2_AMBIENT_IDENTIFIED": {
+      "score": 1,
+      "quote": "Option A shares one session's context window and project memory, and Option C shares conversation context, so both fail isolation."
+    },
+    "K3_INSTRUCTION_MEMORY_SKILL_CONTROL": {
+      "score": 1,
+      "quote": "`--setting-sources project` or an explicit `--settings` file"
+    },
+    "K4_READ_CONFINEMENT": {
+      "score": 0,
+      "quote": ""
+    },
+    "K5_CHECKABLE_FALSIFIER": {
+      "score": 1,
+      "quote": "an `init` event that lists CLAUDE.md, memory, Skills, or additional directories from Arm X's tree or the knowledge path"
+    }
+  },
+  "R4": {
+    "K1_CHOICE_B": {
+      "score": 1,
+      "quote": "CHOICE: B"
+    },
+    "K2_AMBIENT_IDENTIFIED": {
+      "score": 1,
+      "quote": "Option A shares the parent session's working directory, CLAUDE.md, memory, Skills and settings"
+    },
+    "K3_INSTRUCTION_MEMORY_SKILL_CONTROL": {
+      "score": 1,
+      "quote": "`--bare` (skips CLAUDE.md discovery, auto-memory, hooks and plugins)"
+    },
+    "K4_READ_CONFINEMENT": {
+      "score": 0,
+      "quote": ""
+    },
+    "K5_CHECKABLE_FALSIFIER": {
+      "score": 1,
+      "quote": "an init record showing a CLAUDE.md, memory file or Skill loaded into Arm Y"
+    }
+  },
+  "R5": {
+    "K1_CHOICE_B": {
+      "score": 1,
+      "quote": "CHOICE: B"
+    },
+    "K2_AMBIENT_IDENTIFIED": {
+      "score": 1,
+      "quote": "subagents inherit the parent session's working directory, project CLAUDE.md files, and user-level settings"
+    },
+    "K3_INSTRUCTION_MEMORY_SKILL_CONTROL": {
+      "score": 1,
+      "quote": "`--bare` to skip CLAUDE.md auto-discovery, auto-memory, hooks, plugins, and Skills"
+    },
+    "K4_READ_CONFINEMENT": {
+      "score": 1,
+      "quote": "`--add-dir` only for the arm's own store"
+    },
+    "K5_CHECKABLE_FALSIFIER": {
+      "score": 1,
+      "quote": "its stream-json init event (listing loaded memory, CLAUDE.md, or Skills paths)"
+    }
+  },
+  "R6": {
+    "K1_CHOICE_B": {
+      "score": 1,
+      "quote": "CHOICE: B"
+    },
+    "K2_AMBIENT_IDENTIFIED": {
+      "score": 1,
+      "quote": "Subagents (A) inherit the parent session's CLAUDE.md, auto-memory, and Skills"
+    },
+    "K3_INSTRUCTION_MEMORY_SKILL_CONTROL": {
+      "score": 1,
+      "quote": "use it to skip CLAUDE.md, memory, Skills, and hooks discovery"
+    },
+    "K4_READ_CONFINEMENT": {
+      "score": 1,
+      "quote": "with `--add-dir <knowledge-store>` as the only extra path"
+    },
+    "K5_CHECKABLE_FALSIFIER": {
+      "score": 1,
+      "quote": "any text from X's CLAUDE.md or Skills appearing in Y's init message"
+    }
+  }
+}

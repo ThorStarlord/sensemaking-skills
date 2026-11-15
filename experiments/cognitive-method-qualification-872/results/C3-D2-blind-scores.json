@@ -1,0 +1,46 @@
+{
+  "R1": {
+    "S1_SAFE_MODE": {
+      "score": 1,
+      "quote": "--safe-mode"
+    },
+    "S2_READ_CONFINEMENT": {
+      "score": 1,
+      "quote": "--restricted ignores user and project settings and confines file reading to the working directory"
+    },
+    "S3_TOOL_ALLOWLIST": {
+      "score": 1,
+      "quote": "--tools \"Read,Grep,Glob\""
+    },
+    "S4_RESIDUAL_NAMED": {
+      "score": 1,
+      "quote": "The built-in bundled Skills and the model's default system prompt remain."
+    },
+    "S5_SOURCE_CHECKED_FINDING": {
+      "score": 1,
+      "quote": "--safe-mode alone let a Read call open a file outside the working directory"
+    }
+  },
+  "R2": {
+    "S1_SAFE_MODE": {
+      "score": 0,
+      "quote": ""
+    },
+    "S2_READ_CONFINEMENT": {
+      "score": 0,
+      "quote": ""
+    },
+    "S3_TOOL_ALLOWLIST": {
+      "score": 0,
+      "quote": ""
+    },
+    "S4_RESIDUAL_NAMED": {
+      "score": 0,
+      "quote": ""
+    },
+    "S5_SOURCE_CHECKED_FINDING": {
+      "score": 0,
+      "quote": ""
+    }
+  }
+}

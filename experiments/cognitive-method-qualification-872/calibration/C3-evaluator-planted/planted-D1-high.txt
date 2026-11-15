@@ -1,0 +1,5 @@
+CHOICE: B
+ISOLATION: Option A subagents inherit the repository CLAUDE.md, the persistent memory index and the user-level Skills, so the arms share context. Option C shares one conversation history.
+CONTROLS: Run each arm as its own claude -p process with --safe-mode, which excludes CLAUDE.md, memory and Skills, plus --restricted and --tools Read,Grep,Glob so file reading stays inside each arm's working directory.
+CONTAMINATION: The built-in bundled Skills still load in every arm, which is a shared condition.
+FALSIFIER: A stream-json init record that lists a user Skill, or a Read tool result from outside the arm directory, would show the choice was wrong.

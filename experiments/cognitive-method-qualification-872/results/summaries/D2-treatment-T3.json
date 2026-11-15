@@ -1,0 +1,49 @@
+{
+  "episode": "D2-treatment-T3",
+  "file_sha256": "42a9f04d3409356a0b7c6e9312655d7316de679d7eabd83d149752ad1ffff41b",
+  "session_id": "82e04b53-caa5-4ee4-8ef2-609e569179e3",
+  "model": "claude-haiku-5-5",
+  "claude_code_version": "2.1.266",
+  "tools": [
+    "Glob",
+    "Grep",
+    "Read"
+  ],
+  "skills_count": 16,
+  "plugins": [],
+  "mcp_servers_count": 0,
+  "memory_paths": null,
+  "result_subtype": "success",
+  "is_error": false,
+  "num_turns": 3,
+  "cost_usd": 0.0717102,
+  "trace_in_order": [
+    {
+      "step": "assistant_text",
+      "chars": 103
+    },
+    {
+      "step": "tool_use",
+      "name": "Glob",
+      "input": "{\"pattern\": \"**/{CLAUDE.md,CLAUDE.local.md,.claude/**,.mcp.json,AGENTS.md}\", \"path\": \"C:\\\\Users\\\\Admin\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\283a4123a15423ed\\\\a859bb74-70f0-4338-b907-557bc3ec73c3\\\\scratchpad\\\\qual872\\\\fx\\\\D2-treatment-T3\\\\cwd\"}"
+    },
+    {
+      "step": "tool_result",
+      "is_error": false
+    },
+    {
+      "step": "tool_use",
+      "name": "Glob",
+      "input": "{\"pattern\": \"**/*\", \"path\": \"C:\\\\Users\\\\Admin\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\283a4123a15423ed\\\\a859bb74-70f0-4338-b907-557bc3ec73c3\\\\scratchpad\\\\qual872\\\\fx\\\\D2-treatment-T3\\\\cwd\"}"
+    },
+    {
+      "step": "tool_result",
+      "is_error": false
+    },
+    {
+      "step": "assistant_text",
+      "chars": 1699
+    }
+  ],
+  "final_text": "COMMAND: claude -p \"<PROMPT>\" --model claude-haiku-5-5 --output-format stream-json --verbose --bare --disable-slash-commands --strict-mcp-config --tools \"Read,Grep,Glob\" --allowedTools \"Read,Grep,Glob\" --permission-mode dontAsk --no-session-persistence\n\nEXCLUDES:\n- `-p`: non-interactive, so no prompts or interactive session.\n- `--bare`: skips CLAUDE.md discovery (project and user), auto-memory, hooks, plugins, and keychain reads.\n- `--disable-slash-commands`: disables all Skills, including user-level ones.\n- `--strict-mcp-config` (no `--mcp-config`): ignores MCP servers from `.mcp.json` and user config.\n- `--tools` and `--allowedTools`: leave only Read, Grep, and Glob; no Bash, Write, Edit, web, or agent tools.\n- `--permission-mode dontAsk`: anything not pre-approved is denied instead of prompted.\n- `--no-session-persistence`: no saved transcript to resume.\n\nRESIDUAL:\n- Reads outside the working directory: Read, Grep, and Glob accept absolute paths. `dontAsk` should deny out-of-directory access, but I have not verified this. The arm could still read the knowledge directory if it does not. Test with a canary file outside the cwd before use.\n- The model's pretrained knowledge and the prompt text itself.\n\nSOURCE_CHECK:\n- The cwd (`...\\D2-treatment-T3\\cwd`) was globbed for CLAUDE.md, .claude/, .mcp.json, and AGENTS.md. Nothing was found, so no repository instructions need excluding there.\n- I did not consult the knowledge store, since it is what the arm must not reach and does not bear on the flags.\n- I have no shell tool, so I could not run `claude --help`. The flag names and `dontAsk` mode come from my knowledge of the CLI and are unverified against this installed version."
+}

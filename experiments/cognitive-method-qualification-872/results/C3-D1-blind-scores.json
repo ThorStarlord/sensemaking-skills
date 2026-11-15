@@ -1,0 +1,68 @@
+{
+  "R1": {
+    "K1_CHOICE_B": {
+      "score": 1,
+      "quote": "CHOICE: B"
+    },
+    "K2_AMBIENT_IDENTIFIED": {
+      "score": 1,
+      "quote": "Option A subagents inherit the repository CLAUDE.md, the persistent memory index and the user-level Skills"
+    },
+    "K3_INSTRUCTION_MEMORY_SKILL_CONTROL": {
+      "score": 1,
+      "quote": "--safe-mode, which excludes CLAUDE.md, memory and Skills"
+    },
+    "K4_READ_CONFINEMENT": {
+      "score": 1,
+      "quote": "--restricted and --tools Read,Grep,Glob so file reading stays inside each arm's working directory"
+    },
+    "K5_CHECKABLE_FALSIFIER": {
+      "score": 1,
+      "quote": "A stream-json init record that lists a user Skill, or a Read tool result from outside the arm directory"
+    }
+  },
+  "R2": {
+    "K1_CHOICE_B": {
+      "score": 0,
+      "quote": ""
+    },
+    "K2_AMBIENT_IDENTIFIED": {
+      "score": 0,
+      "quote": ""
+    },
+    "K3_INSTRUCTION_MEMORY_SKILL_CONTROL": {
+      "score": 0,
+      "quote": ""
+    },
+    "K4_READ_CONFINEMENT": {
+      "score": 0,
+      "quote": ""
+    },
+    "K5_CHECKABLE_FALSIFIER": {
+      "score": 0,
+      "quote": ""
+    }
+  },
+  "R3": {
+    "K1_CHOICE_B": {
+      "score": 1,
+      "quote": "CHOICE: B"
+    },
+    "K2_AMBIENT_IDENTIFIED": {
+      "score": 0,
+      "quote": ""
+    },
+    "K3_INSTRUCTION_MEMORY_SKILL_CONTROL": {
+      "score": 0,
+      "quote": ""
+    },
+    "K4_READ_CONFINEMENT": {
+      "score": 0,
+      "quote": ""
+    },
+    "K5_CHECKABLE_FALSIFIER": {
+      "score": 0,
+      "quote": ""
+    }
+  }
+}

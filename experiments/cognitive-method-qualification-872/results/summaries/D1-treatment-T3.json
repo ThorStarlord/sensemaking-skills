@@ -1,0 +1,27 @@
+{
+  "episode": "D1-treatment-T3",
+  "file_sha256": "abd309f80447dc641f179dd9b04891a5ce41b6f4ed7c67f9f1a0d63ce425d108",
+  "session_id": "1a6ad9f0-6e6a-4216-aeea-caca2307c8f5",
+  "model": "claude-haiku-5-5",
+  "claude_code_version": "2.1.266",
+  "tools": [
+    "Glob",
+    "Grep",
+    "Read"
+  ],
+  "skills_count": 16,
+  "plugins": [],
+  "mcp_servers_count": 0,
+  "memory_paths": null,
+  "result_subtype": "success",
+  "is_error": false,
+  "num_turns": 1,
+  "cost_usd": 0.042535199999999995,
+  "trace_in_order": [
+    {
+      "step": "assistant_text",
+      "chars": 2219
+    }
+  ],
+  "final_text": "CHOICE: B\n\nISOLATION: Separate `claude -p` processes with separate config homes and working directories keep each arm's CLAUDE.md, auto-memory, settings, and Skills out of the other arm's context. Both processes still run as the same OS user, so isolation is not absolute: any path a tool can reach is readable. Option A shares one session's context window and project memory, and Option C shares conversation context, so both fail isolation.\n\nCONTROLS (verify flag names against your installed version):\n- Arm X: `CLAUDE_CONFIG_DIR=<runs>/X/config`, cwd `<runs>/X/work`, `--add-dir <knowledge>` for read access, a permission deny on Write/Edit to the knowledge directory, `--setting-sources project` or an explicit `--settings` file, `--append-system-prompt-file` with the consult-the-store instruction, and `--strict-mcp-config` with an empty MCP config.\n- Arm Y: `CLAUDE_CONFIG_DIR=<runs>/Y/config`, cwd `<runs>/Y/work`, no `--add-dir`, a `--disallowedTools` rule denying Read and Bash on the knowledge path, a restricted `--tools` list, `--disable-slash-commands`, and the fixed-method system prompt.\n- Both: `-p`, `--no-session-persistence`, `--output-format stream-json --verbose`, the same model ID, identical task inputs copied into each work directory, and randomized run order.\n\nCONTAMINATION:\n- The knowledge store sits under the same parent folder as both working directories, so Arm Y can reach it through `..` or an absolute path unless denied.\n- Upward CLAUDE.md discovery from each cwd and its parents can load files from the shared tree.\n- Shared OS temp and scratch files, and any API-side state, are not controlled by these settings.\n- The model's own prior knowledge is common to both arms and cannot be removed by configuration.\n- If Arm X writes notes into a shared location, Arm Y could read them, so each arm writes only to its own directory.\n\nFALSIFIER: In Arm Y's stream-json log at `<runs>/Y/logs/*.jsonl`, either an `init` event that lists CLAUDE.md, memory, Skills, or additional directories from Arm X's tree or the knowledge path, or a `tool_use` event that reads or lists a path under the knowledge directory. Arm Y's output quoting knowledge-store content would also falsify the design."
+}

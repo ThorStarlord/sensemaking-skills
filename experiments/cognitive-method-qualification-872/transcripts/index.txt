@@ -1,0 +1,38 @@
+eval C3 D1 R1 sid=e655ab55-6ce2-4a15-8425-7d5f82e1f5a1
+eval C3 D1 R2 sid=334cef9a-8f60-471c-a8c2-03b7f6db0c19
+eval C3 D1 R3 sid=cc1e8809-af31-49f4-955a-0239ee875fa9
+eval C3 D2 R1 sid=94e85742-b2c9-49d2-be33-3d84d0776a86
+eval C3 D2 R2 sid=eecb3548-3d42-42fd-ba91-9f69cabbf77d
+eval C3 D1 R1 sid=f2799282-00e8-4710-be62-0ca751a2f1e5
+eval C3 D1 R2 sid=71cb0cea-0dae-4ec6-92b3-af55a6eddff6
+eval C3 D1 R3 sid=430f4db1-c11f-43e9-a126-7b6db0e0c355
+D1 treatment T1 snapshot=d68b8513 sid=deb55094-52f8-4d89-83c1-dc4052f4fa71 exit=0 prompt_sha=0a1ee8106e49
+D1 baseline B1 snapshot=d68b8513 sid=512581da-7d73-434d-9db9-54c2b98516c7 exit=0 prompt_sha=0a1ee8106e49
+D1 treatment T2 snapshot=d68b8513 sid=dc0c13d5-a3fb-47ec-9dbe-9f7942eeb63e exit=0 prompt_sha=0a1ee8106e49
+D1 baseline B2 snapshot=d68b8513 sid=a2dc9157-90c5-4599-b491-4a38962a3b71 exit=0 prompt_sha=0a1ee8106e49
+D1 treatment T3 snapshot=d68b8513 sid=1a6ad9f0-6e6a-4216-aeea-caca2307c8f5 exit=0 prompt_sha=0a1ee8106e49
+D1 baseline B3 snapshot=d68b8513 sid=0a132872-e609-4730-822d-b2d3f3126e5e exit=0 prompt_sha=0a1ee8106e49
+eval D1 D1 R1 sid=d79ec493-1bb2-4921-abe4-1d8b38472cf9
+eval D1 D1 R2 sid=59e45e88-4c9c-4a03-89e1-7e10af33cb51
+eval D1 D1 R3 sid=feb30207-257b-4beb-83f2-28cc89b3e216
+eval D1 D1 R4 sid=07a7f2e7-d082-4694-b4c1-49a651a0c5cd
+eval D1 D1 R5 sid=9879e434-79f9-4e0f-ab2a-7702e48b92a5
+eval D1 D1 R6 sid=3bd5fc83-0eab-4ad6-9bdd-b8b1ea8ea5e0
+D2 treatment T1 snapshot=15676632 sid=ac4a7ab9-7c84-464d-a52d-74b567f5684b exit=0 prompt_sha=a05bc8c58985
+D2 instructed I1 snapshot=15676632 sid=28e424ff-7e3b-4c62-983c-5cd446d10800 exit=0 prompt_sha=a05bc8c58985
+D2 baseline B1 snapshot=15676632 sid=985547aa-43f8-4d94-a01e-7a960cb5ef30 exit=0 prompt_sha=a05bc8c58985
+D2 treatment T2 snapshot=15676632 sid=1338ede0-1f81-4784-9b78-821fe83d79fd exit=0 prompt_sha=a05bc8c58985
+D2 instructed I2 snapshot=15676632 sid=f711dd4d-e7dd-4618-b33a-a40b39917b1b exit=0 prompt_sha=a05bc8c58985
+D2 baseline B2 snapshot=15676632 sid=3a60eac1-099e-4041-ad8a-63f99cde1b9f exit=0 prompt_sha=a05bc8c58985
+D2 treatment T3 snapshot=15676632 sid=82e04b53-caa5-4ee4-8ef2-609e569179e3 exit=0 prompt_sha=a05bc8c58985
+D2 instructed I3 snapshot=15676632 sid=980a243f-d937-4ed9-939b-be708a8b42ae exit=0 prompt_sha=a05bc8c58985
+D2 baseline B3 snapshot=15676632 sid=1f3be70f-063a-4994-ae15-c0a2b7c7afef exit=0 prompt_sha=a05bc8c58985
+eval D2 D2 R1 sid=e98e8284-b37b-4166-9933-6cebc53930f3
+eval D2 D2 R2 sid=9d44041e-e11b-4753-81bc-22b1e2e50f60
+eval D2 D2 R3 sid=20a8693c-91b8-4871-90aa-9aaba86937e7
+eval D2 D2 R4 sid=c05195df-83b7-4aa9-a725-6dd3a0ba0be4
+eval D2 D2 R5 sid=49561939-011b-45fb-a4cb-076d32c02970
+eval D2 D2 R6 sid=d5c99176-abaa-4d62-8af0-e517b1c5eec7
+eval D2 D2 R7 sid=62229bb8-746d-4827-864b-a5fdeb9ebba8
+eval D2 D2 R8 sid=f732d956-cb39-4baa-8a14-6a26b856f89d
+eval D2 D2 R9 sid=ddcdba5c-ac15-4064-b677-95736faac364

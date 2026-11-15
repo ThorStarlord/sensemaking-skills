@@ -1,0 +1,2 @@
+.sensemaking/knowledge/stewardship.json
+docs/normal-use/2026-11-15-cognitive-method-learning-construction.md

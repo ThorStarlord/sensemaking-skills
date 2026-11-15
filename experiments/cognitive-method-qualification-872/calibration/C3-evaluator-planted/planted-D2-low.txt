@@ -1,0 +1,4 @@
+COMMAND: claude -p <PROMPT>
+EXCLUDES: Nothing.
+RESIDUAL: None.
+SOURCE_CHECK: My general knowledge of the CLI.

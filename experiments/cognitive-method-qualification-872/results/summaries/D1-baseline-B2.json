@@ -1,0 +1,27 @@
+{
+  "episode": "D1-baseline-B2",
+  "file_sha256": "2d3527e91ab9b04cde00a183bba0d0d2769163b0db2d88f877d803a55dc282c2",
+  "session_id": "a2dc9157-90c5-4599-b491-4a38962a3b71",
+  "model": "claude-haiku-5-5",
+  "claude_code_version": "2.1.266",
+  "tools": [
+    "Glob",
+    "Grep",
+    "Read"
+  ],
+  "skills_count": 16,
+  "plugins": [],
+  "mcp_servers_count": 0,
+  "memory_paths": null,
+  "result_subtype": "success",
+  "is_error": false,
+  "num_turns": 1,
+  "cost_usd": 0.0368288,
+  "trace_in_order": [
+    {
+      "step": "assistant_text",
+      "chars": 2519
+    }
+  ],
+  "final_text": "CHOICE: B\n\nISOLATION: Separate processes share no conversation context, subagent prompt, or in-memory state, so one arm's instructions cannot enter the other's context window. Files, memory and Skills are not isolated by default. Each process still loads user-level config, auto-memory and Skills, plus project CLAUDE.md files from its working directory and its ancestors. Option A subagents inherit the parent session's CLAUDE.md, memory and Skills, and Option C shares everything, so both fail the requirement.\n\nCONTROLS:\n- Each arm gets its own config root: `CLAUDE_CONFIG_DIR` set to `cfgX` or `cfgY`, so user settings, auto-memory and Skills are separate.\n- Each arm gets its own cwd outside any repo or CLAUDE.md tree, such as `runX` or `runY`.\n- Launch with `--bare` (skips CLAUDE.md, hooks, plugins, Skills and auto-memory discovery), `--setting-sources` limited to what is needed, `--strict-mcp-config` with an empty MCP config, and `--no-session-persistence` or a per-arm session directory.\n- Arm X only: `--add-dir` pointing to a read-only, frozen copy of the reviewed knowledge store. Its prompt names the store path.\n- Arm Y: no `--add-dir` for the store, a deny rule on Read/Glob/Grep for the store and for `cfgX` and `runX`, and no store path in its prompt.\n- Both arms: same model ID and CLI version, same task text, same tool allowlist, `--output-format stream-json` saved to each run folder.\n\nCONTAMINATION:\n- Absolute paths: Read, Glob, Grep or Bash can reach any path the user can read, including the parent scratchpad and the other arm's folders, unless denied.\n- Ancestor files: if `--bare` is not used or a setting source is enabled, CLAUDE.md files above the cwd may still load.\n- Ambient environment: inherited variables such as `CLAUDE_*`, `ANTHROPIC_*` or shell profiles can change behavior.\n- Store writeback: if consulting the store modifies it, run order matters. Freeze it read-only.\n- Model prior knowledge: if store content is public, the model may already know it. This is a confound, not a path.\n- Shared API account: rate limits or cache timing can differ by run order. Not content leakage, but it can affect timing measures.\n\nFALSIFIER: In arm Y's stream-json output or its session transcript under `cfgY`, an init event listing a Skill, memory file or CLAUDE.md from arm X, or any Read/Glob/Grep/Bash tool call that references the knowledge store, `cfgX` or `runX`. Each such event would show isolation failed. The evidence is in each run's saved stream-json log in its run folder."
+}
