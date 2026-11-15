@@ -12,12 +12,13 @@ It reports, mechanically and without judging meaning:
     latest final session by update time (not a relevance or authority decision);
   - knowledge misses recorded as ADD_PROPOSED or DEFERRED at the time;
   - misses whose subject or terms recur across two or more sessions;
-  - receipts whose declared persistence is non-durable and that HEAD does not
-    contain (the declared value is historical: session-receipt-v1 section 3);
-  - declared non-durable receipts that HEAD does contain (reported separately);
-  - where each receipt's content is recorded in Git: a remote-tracking ref (as
-    of the last fetch), local refs only, or no commit at all (declared
-    persistence is not changed by this);
+  - receipts whose declared persistence is non-durable and whose current content
+    HEAD does not hold (the declared value is historical: session-receipt-v1 section 3);
+  - declared non-durable receipts whose current content HEAD does hold (reported
+    separately);
+  - where each receipt's current content is recorded in Git: a remote-tracking ref
+    (as of the last fetch), local refs only, or no ref holding that exact content
+    (declared persistence is not changed by this);
   - receipts that fail validation.
 
 Exit codes: 0 = every receipt valid (or no receipts), 1 = at least one invalid receipt,
@@ -79,72 +80,137 @@ def _miss_keys(query: dict | None) -> list[str]:
 _NON_DURABLE = ("pending", "working_tree_only")
 
 
-def _committed_receipt_names(repo_root: Path | None, receipt_dir: Path) -> set[str] | None:
-    """File names of the receipts that HEAD contains, or None when Git cannot say."""
+def _relative_receipt_dir(repo_root: Path | None, receipt_dir: Path) -> str | None:
+    """The receipt directory relative to the repository root, or None when Git cannot say."""
     if repo_root is None:
         return None
     try:
-        relative = receipt_dir.resolve().relative_to(repo_root.resolve()).as_posix()
+        return receipt_dir.resolve().relative_to(repo_root.resolve()).as_posix()
+    except (ValueError, OSError):
+        return None
+
+
+def _is_receipt_child(path: str, prefix: str) -> bool:
+    """True when a repository path is a direct child of the receipt directory."""
+    return path.startswith(prefix) and "/" not in path[len(prefix):]
+
+
+def _head_receipt_blobs(repo_root: Path | None, receipt_dir: Path) -> dict[str, str] | None:
+    """Receipt file name -> blob id that HEAD holds for it, or None when Git cannot say."""
+    relative = _relative_receipt_dir(repo_root, receipt_dir)
+    if relative is None:
+        return None
+    prefix = "" if relative == "." else f"{relative}/"
+    try:
         result = subprocess.run(
-            ["git", "-C", str(repo_root), "ls-tree", "-r", "--name-only", "HEAD", "--", relative],
+            ["git", "-C", str(repo_root), "ls-tree", "-r", "--full-tree", "HEAD", "--", relative],
             capture_output=True, text=True, timeout=30, check=False,
         )
-    except (ValueError, OSError, subprocess.SubprocessError):
+    except (OSError, subprocess.SubprocessError):
         return None
     if result.returncode != 0:
         return None
-    prefix = "" if relative == "." else f"{relative}/"
-    return {line[len(prefix):] for line in result.stdout.splitlines() if line.startswith(prefix)}
+    blobs: dict[str, str] = {}
+    for line in result.stdout.splitlines():
+        meta, _, path = line.partition("\t")
+        fields = meta.split()
+        if len(fields) == 3 and fields[1] == "blob" and _is_receipt_child(path, prefix):
+            blobs[path[len(prefix):]] = fields[2]
+    return blobs
 
 
-def _git_receipt_names(repo_root: Path | None, receipt_dir: Path, scope: str) -> set[str] | None:
-    """File names of receipts that some commit on the given refs touched, or None when Git cannot say.
+def _history_receipt_blobs(repo_root: Path | None, receipt_dir: Path,
+                           scope: str) -> set[tuple[str, str]] | None:
+    """(file name, blob id) for each receipt version that a commit on the given refs adds, or None.
 
-    ``scope`` is ``--remotes`` (remote-tracking refs as of the last fetch) or ``--all``.
+    ``scope`` is ``--remotes`` (remote-tracking refs as of the last fetch) or ``--all``. A version
+    counts only with its exact content: a commit that merely touched the file name is not enough.
+    ``-m`` diffs a merge against every parent, so content that a merge introduces is included.
+    Deletions are skipped.
     """
-    if repo_root is None:
+    relative = _relative_receipt_dir(repo_root, receipt_dir)
+    if relative is None:
         return None
+    prefix = "" if relative == "." else f"{relative}/"
     try:
-        relative = receipt_dir.resolve().relative_to(repo_root.resolve()).as_posix()
         result = subprocess.run(
-            ["git", "-C", str(repo_root), "log", scope, "--format=", "--name-only", "--", relative],
+            ["git", "-C", str(repo_root), "log", scope, "-m", "--root", "--no-renames",
+             "--raw", "--no-abbrev", "--format=", "--", relative],
             capture_output=True, text=True, timeout=60, check=False,
         )
-    except (ValueError, OSError, subprocess.SubprocessError):
+    except (OSError, subprocess.SubprocessError):
         return None
     if result.returncode != 0:
         return None
-    prefix = "" if relative == "." else f"{relative}/"
-    return {
-        line[len(prefix):] for line in result.stdout.splitlines()
-        if line.startswith(prefix) and "/" not in line[len(prefix):]
-    }
+    versions: set[tuple[str, str]] = set()
+    for line in result.stdout.splitlines():
+        if not line.startswith(":"):
+            continue
+        meta, _, path = line.partition("\t")
+        fields = meta.split()
+        if len(fields) != 5 or set(fields[3]) == {"0"} or not _is_receipt_child(path, prefix):
+            continue
+        versions.add((path[len(prefix):], fields[3]))
+    return versions
 
 
-def _remote_durability(records: list[dict], remote_names: set[str] | None,
-                       any_ref_names: set[str] | None, checked_out_names: set[str]) -> dict[str, Any]:
-    """Where each receipt is recorded in Git, separately from its declared persistence.
+def _working_receipt_blobs(repo_root: Path | None, receipt_dir: Path,
+                           names: list[str]) -> dict[str, str] | None:
+    """Receipt file name -> blob id of its current working-tree content, or None when Git cannot say.
 
-    ``on_remote_ref``: a commit touching the receipt is reachable from a remote-tracking
-    ref in this clone. ``local_git_only``: only local refs hold such a commit, so the
-    receipt is lost with this clone. ``uncommitted``: no ref records it. Counts only.
-    ``local_only_not_checked_out``: receipt names that local refs hold but this checkout
-    does not contain; their content is not read or validated here.
+    ``git hash-object`` applies the same clean filters as ``git add``, so each id is the id a
+    commit of the current content would store.
     """
-    if remote_names is None or any_ref_names is None:
+    if not names:
+        return {}
+    relative = _relative_receipt_dir(repo_root, receipt_dir)
+    if relative is None:
+        return None
+    prefix = "" if relative == "." else f"{relative}/"
+    try:
+        # Bytes input avoids newline translation of paths on Windows.
+        result = subprocess.run(
+            ["git", "-C", str(repo_root), "hash-object", "--stdin-paths"],
+            input="".join(f"{prefix}{name}\n" for name in names).encode("utf-8"),
+            capture_output=True, timeout=60, check=False,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return None
+    hashes = result.stdout.decode("ascii", "replace").split()
+    if result.returncode != 0 or len(hashes) != len(names):
+        return None
+    return dict(zip(names, hashes))
+
+
+def _remote_durability(records: list[dict], current_blobs: dict[str, str] | None,
+                       remote_versions: set[tuple[str, str]] | None,
+                       any_ref_versions: set[tuple[str, str]] | None,
+                       checked_out_names: set[str]) -> dict[str, Any]:
+    """Where each receipt's current content is recorded in Git, separately from its declared persistence.
+
+    ``on_remote_ref``: a commit reachable from a remote-tracking ref in this clone (as of the
+    last fetch) holds the receipt's exact current content. ``local_git_only``: only local refs
+    hold that content, so it is lost with this clone. ``uncommitted``: no ref holds it, which
+    includes a receipt edited after its last commit. Counts only. ``local_only_not_checked_out``:
+    receipt names that local refs hold but this checkout does not contain; their content is not
+    read or validated here.
+    """
+    if current_blobs is None or remote_versions is None or any_ref_versions is None:
         return {"available": False, "on_remote_ref": [], "local_git_only": [], "uncommitted": [],
                 "local_only_not_checked_out": []}
+    remote_names = {name for name, _ in remote_versions}
     buckets: dict[str, list[dict[str, str]]] = {"on_remote_ref": [], "local_git_only": [], "uncommitted": []}
     for record in records:
+        version = (record["file"], current_blobs[record["file"]])
         entry = {"receipt": record["file"], "persistence": record["data"]["persistence"]}
-        if record["file"] in remote_names:
+        if version in remote_versions:
             buckets["on_remote_ref"].append(entry)
-        elif record["file"] in any_ref_names:
+        elif version in any_ref_versions:
             buckets["local_git_only"].append(entry)
         else:
             buckets["uncommitted"].append(entry)
     not_checked_out = sorted(
-        name for name in any_ref_names
+        name for name in {name for name, _ in any_ref_versions}
         if name not in remote_names and name not in checked_out_names
         and name.endswith((".session.yaml", ".query.yaml"))
     )
@@ -157,9 +223,10 @@ def summarize(receipt_dir: Path, repo_root: Path | None = None) -> dict[str, Any
         p for p in receipt_dir.glob("*.yaml")
         if p.name.endswith(".session.yaml") or p.name.endswith(".query.yaml")
     ) if receipt_dir.is_dir() else []
-    committed = _committed_receipt_names(repo_root, receipt_dir)
-    remote_names = _git_receipt_names(repo_root, receipt_dir, "--remotes")
-    any_ref_names = _git_receipt_names(repo_root, receipt_dir, "--all")
+    head_blobs = _head_receipt_blobs(repo_root, receipt_dir)
+    current_blobs = _working_receipt_blobs(repo_root, receipt_dir, [p.name for p in files])
+    remote_versions = _history_receipt_blobs(repo_root, receipt_dir, "--remotes")
+    any_ref_versions = _history_receipt_blobs(repo_root, receipt_dir, "--all")
 
     sessions: list[dict] = []
     queries: list[dict] = []
@@ -176,7 +243,9 @@ def summarize(receipt_dir: Path, repo_root: Path | None = None) -> dict[str, Any
         record = {
             "file": path.name,
             "data": data,
-            "committed_in_head": None if committed is None else path.name in committed,
+            # HEAD must hold this receipt's current content, not merely a file of this name.
+            "committed_in_head": None if head_blobs is None or current_blobs is None
+            else head_blobs.get(path.name) == current_blobs[path.name],
         }
         (sessions if artifact_id == _validator.SESSION_RECEIPT_ID else queries).append(record)
 
@@ -227,7 +296,8 @@ def summarize(receipt_dir: Path, repo_root: Path | None = None) -> dict[str, Any
     ]
     # The declared persistence is written once and never edited (receipts are
     # immutable), so it can lag a later commit. Current durability is whether
-    # HEAD contains the file; when Git cannot answer, the declaration stands.
+    # HEAD holds the file's current content; when Git cannot answer, the
+    # declaration stands.
     not_durable = [
         {"receipt": r["file"], "persistence": r["data"]["persistence"],
          "committed_in_head": r["committed_in_head"]}
@@ -285,7 +355,7 @@ def summarize(receipt_dir: Path, repo_root: Path | None = None) -> dict[str, Any
         "not_durable": not_durable,
         "declared_but_committed": declared_but_committed,
         "remote_durability": _remote_durability(
-            sessions + queries, remote_names, any_ref_names, {p.name for p in files}),
+            sessions + queries, current_blobs, remote_versions, any_ref_versions, {p.name for p in files}),
         "invalid": invalid,
     }
 
@@ -351,8 +421,8 @@ def _print_text(summary: dict[str, Any]) -> None:
     durability = summary["remote_durability"]
     if durability["available"]:
         lines.append(
-            "REMOTE DURABILITY (Git state in this clone; remote-tracking refs as of the last fetch; "
-            "declared persistence unchanged):"
+            "REMOTE DURABILITY (current file content matched against Git history in this clone; "
+            "remote-tracking refs as of the last fetch; declared persistence unchanged):"
         )
         lines.append(f"  on a remote-tracking ref: {len(durability['on_remote_ref'])}")
         lines.append(
@@ -360,7 +430,10 @@ def _print_text(summary: dict[str, Any]) -> None:
             f"{len(durability['local_git_only'])}"
         )
         lines.extend(_entry_lines(durability["local_git_only"]))
-        lines.append(f"  not committed on any ref: {len(durability['uncommitted'])}")
+        lines.append(
+            "  no ref holds this content (uncommitted, or edited since its last commit): "
+            f"{len(durability['uncommitted'])}"
+        )
         lines.extend(_entry_lines(durability["uncommitted"]))
         lines.append(
             "  on local refs but not in this checkout (names only, not read or validated): "

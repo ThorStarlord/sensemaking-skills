@@ -107,15 +107,17 @@ checkout can be as ephemeral as `/tmp`. Therefore:
 `persistence` is a write-time declaration. An immutable receipt is never edited
 to match later Git history, so the declared value can lag: a receipt written as
 `working_tree_only` may later be committed with another change. Current
-durability is a separate fact, whether HEAD contains the receipt. Readers report
-the two separately, and `scripts/summarize-receipts.py` counts a declared
-non-durable receipt as at risk only when HEAD does not contain it. The same
-reader also reports where each receipt is recorded in Git: a remote-tracking ref
-(as of the last fetch), local refs only (lost with that clone), or no commit.
-Local-only receipts that the checkout does not contain are listed by name, not
-read. A receipt on local refs alone is not durable against loss of the clone,
-and the session's final report should say so. A correction is recorded in a new
-receipt, not by editing the old one.
+durability is a separate fact, whether HEAD holds the receipt's current content.
+Readers report the two separately, and `scripts/summarize-receipts.py` counts a
+declared non-durable receipt as at risk only when HEAD does not hold its current
+content. The same reader also reports where each receipt's current content is
+recorded in Git: a commit reachable from a remote-tracking ref (as of the last
+fetch), local refs only (lost with that clone), or no ref holding that content.
+Matching is by content, not file name, so a receipt edited after its last commit
+is not reported as committed. Local-only receipts that the checkout does not
+contain are listed by name, not read. A receipt on local refs alone is not
+durable against loss of the clone, and the session's final report should say so.
+A correction is recorded in a new receipt, not by editing the old one.
 
 Never push to a protected branch, open a PR, or widen authority merely to
 persist a receipt. Persisting follows the session's existing Git authority.
