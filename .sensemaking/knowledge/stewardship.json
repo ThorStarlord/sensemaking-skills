@@ -669,6 +669,48 @@
         "scope": "Single harness observed once (calibration C1); makes no claim about other harnesses, cognitive benefit or the remedy's effectiveness"
       },
       "epistemic_status": "declared"
+    },
+    {
+      "id": "observation:calibration-c2-file-read-confinement-2026-11-15",
+      "kind": "observation",
+      "statement": "Non-evidentiary calibration C2 (2026-11-15), one CLI version and one host: with --safe-mode alone, a Read tool call opened a file outside the working directory and returned its content. Adding --restricted refused the same read as outside the working directory. In the same runs, safe mode excluded CLAUDE.md, persistent memory, user Skills, hooks and MCP servers.",
+      "authority_kind": "document",
+      "authority_ref": "docs/normal-use/2026-11-15-harness-calibration-c2.md",
+      "evidence_refs": [
+        "file:docs/normal-use/2026-11-15-harness-calibration-c2.md"
+      ],
+      "attributes": {
+        "scope": "One calibration in one harness and CLI version; not an evidence-bearing study cell"
+      },
+      "epistemic_status": "observed"
+    },
+    {
+      "id": "lesson:safe-mode-alone-does-not-confine-file-reads",
+      "kind": "lesson",
+      "statement": "Excluding instructions, memory and Skills with a safe mode does not confine file reading. A fixed-method arm that has any read tool also needs an explicit read restriction, such as --restricted with an explicit tool allowlist, before its reads can be limited to its working directory. This narrows the remedy named in lesson:subagent-inherits-ambient-context; it does not replace that lesson.",
+      "authority_kind": "document",
+      "authority_ref": "docs/normal-use/2026-11-15-harness-calibration-c2.md",
+      "evidence_refs": [
+        "file:docs/normal-use/2026-11-15-harness-calibration-c2.md"
+      ],
+      "attributes": {
+        "scope": "One calibration in one harness and CLI version; makes no claim about other tool sets, other hosts or cognitive benefit"
+      },
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "observation:d1-exposure-without-retrieval-2026-11-15",
+      "kind": "observation",
+      "statement": "Preregistered D1 method-choice episodes (N = 3 per arm, 2026-11-15): when a reviewed knowledge directory was available with a consult-if-useful sentence, none of three treatment subjects opened it. All six arms reached the same choice, so the task did not discriminate between the arms.",
+      "authority_kind": "document",
+      "authority_ref": "experiments/cognitive-method-qualification-872/results/D1-summary.md",
+      "evidence_refs": [
+        "file:experiments/cognitive-method-qualification-872/results/D1-summary.md"
+      ],
+      "attributes": {
+        "scope": "Three episodes per arm in one harness and one task; not a claim about the lesson's effect"
+      },
+      "epistemic_status": "observed"
     }
   ],
   "relations": [
@@ -1361,6 +1403,26 @@
       "attributes": {
         "scope": "Calibration observation, not causal proof of a comparison outcome"
       }
+    },
+    {
+      "id": "rel:lesson-safe-mode-confinement-origin",
+      "subject": "lesson:safe-mode-alone-does-not-confine-file-reads",
+      "predicate": "learned_from",
+      "object": "observation:calibration-c2-file-read-confinement-2026-11-15",
+      "evidence_refs": [
+        "file:docs/normal-use/2026-11-15-harness-calibration-c2.md"
+      ],
+      "attributes": {}
+    },
+    {
+      "id": "rel:lesson-safe-mode-narrows-ambient-lesson",
+      "subject": "lesson:safe-mode-alone-does-not-confine-file-reads",
+      "predicate": "references",
+      "object": "lesson:subagent-inherits-ambient-context",
+      "evidence_refs": [
+        "file:docs/normal-use/2026-11-15-harness-calibration-c2.md"
+      ],
+      "attributes": {}
     }
   ]
 }
