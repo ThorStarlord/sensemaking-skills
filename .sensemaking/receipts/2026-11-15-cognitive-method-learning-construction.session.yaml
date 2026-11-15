@@ -1,0 +1,104 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-11-15-cognitive-method-learning-construction
+state: final
+created_at: "2026-11-15T10:20:00Z"
+updated_at: "2026-11-15T12:30:00Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: a97439fe86b7ecc5549cb3e8a4a9f31ab29de0ec
+  end_ref: 72831ecc6192ffcd8d2a32380279eb02eb6e15b2
+  worktree_clean_at_end: true
+skill_identity:
+  load_mode: harness_discovered
+  sensemaking_source_ref: null
+goal:
+  statement: "Implement the owner-authorized construction track for issues #861-#864 and #867 under the 2026-11-15 implementation-first strategy: verify or build the functional path, record honest local observations, separate construction from independent qualification, and reconcile the issue contracts."
+  source: owner_message
+  source_ref: null
+delegation:
+  granted: [read, local_write, run_local_commands, commit, push, open_pr, merge, tracker_write, knowledge_edit]
+  withheld: [release, deploy, external_publication]
+continuity:
+  resumes: 2026-11-15-strategic-continuation-cognitive-frontier
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: "#861 decision-time methodological re-entry: verify the functional path and observe local behavior"
+    capability: using-sensemaking
+    status: completed
+    reason: "The file-anchored path works through context-for, and the documented precedent surfaces. No method-choice lesson exists. Independent re-entry is not performed and is left for qualification."
+    artifact_refs: ["docs/normal-use/2026-11-15-cognitive-method-learning-construction.md", ".sensemaking/receipts/2026-11-15-cognitive-method-learning-construction.query.yaml"]
+    validation:
+      - command: "semantic workspace-query search and context-for at a97439fe (no checkout writes; derived cache index only)"
+        result: PASS
+  - id: R-2
+    responsibility: "#862 methodological feedback: verify the retention path and retain the warranted interpretation"
+    capability: repository-semantic-steward
+    status: completed
+    reason: "The incident -> lesson -> RECALL chain exists and was observed. One calibration-derived lesson was retained through RECONCILE. The outcome-driven revision cycle is not exercised and is left for qualification."
+    artifact_refs: [".sensemaking/knowledge/stewardship.json"]
+    validation:
+      - command: "semantic knowledge-proposal-check --proposal .sensemaking/knowledge/stewardship.json"
+        result: PASS
+  - id: R-3
+    responsibility: "#863 harness admissibility: non-evidentiary calibration and disposition"
+    capability: ordinary_coding
+    status: completed
+    reason: "Calibration C1 persisted telemetry but found ambient CLAUDE.md, MEMORY.md and user Skills in the subagent and no evaluator separation. Disposition NOT_ADMISSIBLE for a matched comparison."
+    artifact_refs: ["docs/normal-use/2026-11-15-cognitive-method-learning-construction.md"]
+    validation:
+      - command: "transcript JSONL and meta.json inspected on disk for the calibration subagent"
+        result: PASS
+  - id: R-4
+    responsibility: "#864 experience-informed comparison: determine whether a pathway can be built"
+    capability: ordinary_coding
+    status: blocked
+    reason: "Blocked on instrument admissibility (R-3). A comparator that cannot be enforced would fabricate a matched comparison, so no trial or pathway was built."
+    artifact_refs: []
+    validation: []
+  - id: R-5
+    responsibility: "#867 decision-note practice: apply to the PR for this program"
+    capability: ordinary_coding
+    status: completed
+    reason: "PR decision note states knowledge consulted, channels, earlier fixes and NO_MODEL_CHANGE. Criteria 1-6 evaluated against this PR and PR 871. Closure follows the merge."
+    artifact_refs: []
+    validation: []
+findings:
+  - id: F-1
+    statement: "The functional decision-time path for file-anchored engineering decisions exists and works. The methodological decision-time path has no reviewed method-choice precedent."
+    epistemic_status: OBSERVED
+    evidence_refs: ["docs/normal-use/2026-11-15-cognitive-method-learning-construction.md"]
+    disposition: handed_off
+  - id: F-2
+    statement: "Harness calibration C1 found ambient CLAUDE.md, MEMORY.md and user Skills in a fresh subagent, so no fixed-method arm can be isolated in this harness."
+    epistemic_status: OBSERVED
+    evidence_refs: ["docs/normal-use/2026-11-15-cognitive-method-learning-construction.md"]
+    disposition: handed_off
+  - id: F-3
+    statement: "Query-receipt recording is manual. No producer exists, and the recording design is owner-pending in draft PR #797."
+    epistemic_status: OBSERVED
+    evidence_refs: ["skills/repository-semantic-steward/references/query-receipt.md"]
+    disposition: handed_off
+open_questions:
+  - id: Q-1
+    question: "How should query receipts be produced: manual contract (current), or a producer command (PR #797 direction)?"
+    source: owner_intent
+    blocking: false
+    options:
+      - option: "Keep the manual contract"
+        consequence: "Retrieval attribution depends on agent discipline. No new machine contract."
+      - option: "Add a producer"
+        consequence: "Attribution becomes automatic. A new machine contract needs an owner decision."
+    durable_ref: null
+stop:
+  disposition: NO_FURTHER_WARRANT
+  reason: "Construction for #861-#864 and #867 is complete within the local evidence ceiling. Independent qualification is split to #872, #873 and #874. #864 is blocked on instrument admissibility. Reviewer CHANGES_REQUIRED findings are corrected in this PR."
+next:
+  warranted_responsibility: "Owner decision on Q-1, then independent qualification in #872-#874 when authorized."
+  blocked_on: ["Q-1"]
+persistence: committed
+claim_ceiling: "Local construction observations only: one same-context retrieval episode and one non-evidentiary calibration. No independent re-entry, feedback, comparative or cognitive-benefit claim."
+action_authorized_by_receipt: false
+immutable: true
