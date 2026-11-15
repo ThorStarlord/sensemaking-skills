@@ -19,15 +19,21 @@ done
 
 PROMPT="$(cat "$EXP/prompts/$TASK.txt")"
 ADD=()
-if [ "$ARM" = treatment ]; then
+if [ "$ARM" = treatment ] || [ "$ARM" = instructed ]; then
   mkdir -p "$FX/knowledge"
   mapfile -t PATHS < "$EXP/manifests/$TASK.txt"
   (cd "$REPO" && git archive "$REV" "${PATHS[@]}") | tar -x -C "$FX/knowledge"
   KNOW_WIN="$(cygpath -w "$FX/knowledge")"
   ADD=(--add-dir "$KNOW_WIN")
-  PROMPT="$PROMPT
+  if [ "$ARM" = instructed ]; then
+    PROMPT="$PROMPT
+
+A reviewed knowledge store for this study is available as a read-only directory at $KNOW_WIN . Before you answer, read it and state which record, if any, you relied on."
+  else
+    PROMPT="$PROMPT
 
 A reviewed knowledge store for this study is available as a read-only directory at $KNOW_WIN . Consult it if you judge it useful."
+  fi
 fi
 
 SID="$(python -c 'import uuid;print(uuid.uuid4())')"

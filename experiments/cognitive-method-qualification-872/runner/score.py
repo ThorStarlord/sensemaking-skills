@@ -142,7 +142,7 @@ def cmd_unblind(args):
     scores = json.loads((RESULTS / f"{args.tag}-{args.task}-blind-scores.json").read_text(encoding="utf-8"))
     joined = []
     for label, episode_file in sorted(key.items(), key=lambda kv: int(kv[0][1:])):
-        arm = "treatment" if "-treatment-" in episode_file else "baseline"
+        arm = "instructed" if "-instructed-" in episode_file else ("treatment" if "-treatment-" in episode_file else "baseline")
         row = {"label": label, "episode": Path(episode_file).stem, "arm": arm}
         s = scores.get(label, {})
         row.update({k: (v.get("score") if isinstance(v, dict) else v) for k, v in s.items()})
