@@ -1,0 +1,7 @@
+Configuration task. Specify the exact headless command for a fixed-method arm of an agent-cognition study. The arm must have no access to any reviewed knowledge store, repository instruction file, persistent memory index or user-level Skills. It must not be able to read files outside its own working directory, and it may use only the file-reading and search tools Read, Grep and Glob. The model is claude-haiku-5-5, and the output must be stream-json with verbose logging. The prompt may be a placeholder written as <PROMPT>.
+
+Answer in exactly this format, under 250 words:
+COMMAND: one line, the complete command with its flags
+EXCLUDES: what each flag excludes from the arm
+RESIDUAL: any channel that remains open for the arm after your command
+SOURCE_CHECK: the evidence you consulted to decide the flags, named by file or record, and what that evidence showed

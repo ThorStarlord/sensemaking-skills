@@ -1,0 +1,3 @@
+.sensemaking/knowledge/stewardship.json
+docs/normal-use/2026-11-15-cognitive-method-learning-construction.md
+docs/normal-use/2026-11-15-harness-calibration-c2.md

@@ -1,0 +1,13 @@
+X1-ambient-nonsafe sid=cb6f996c-d0ca-43de-8dff-0ec8ac3315ae exit=0
+X2-ambient-safe sid=b5a512fd-9b1f-4080-881c-40e86e0fceaf exit=0
+X3-isolated-treatment sid=f0cf7fd5-9b6b-49e3-bb96-4d9c15455cc0 exit=0
+X4-isolated-baseline sid=11a92ce4-c3dd-432c-b21b-f5360705702a exit=0
+X5-responder-blind sid=1f32123c-1736-49a5-8a23-eafde097b582 exit=0
+X6a-escalate-phase1 sid=42f68fe6-68bd-48a2-b244-aefd15bcc0e4 exit=0
+X6b-escalate-phase2 resumed sid=42f68fe6-68bd-48a2-b244-aefd15bcc0e4 exit=0
+X7-repo-memory-nonsafe sid=caad6a93-968f-432c-a269-1758a8c58eb2 exit=1
+X8-repo-memory-safe sid=0fed6381-89b4-401a-b4d9-8434b6ae0577 exit=1
+X9-tool-safe sid=d533f12d-d0ba-4563-9914-51a8195c4b66 exit=1
+X7-repo-memory-nonsafe sid=7ca3fe51-7417-44e7-817e-bab3ca67963d exit=0
+X8-repo-memory-safe sid=0a0d9325-abd4-44a2-99ee-c1e5e5f7de04 exit=0
+X9-tool-safe sid=fb4c3b02-cf67-413f-b3ed-5e6a72a48715 exit=0

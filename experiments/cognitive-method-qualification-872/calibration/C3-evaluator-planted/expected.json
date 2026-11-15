@@ -1,0 +1,44 @@
+{
+  "expected": {
+    "D1": {
+      "planted-D1-high": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "planted-D1-low": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "planted-D1-mid": [
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "D2": {
+      "planted-D2-high": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "planted-D2-low": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  "note": "planted-D1-mid expected K3 was first set to 1 in error. K3 requires the response to state what the setting excludes, and planted-D1-mid names --safe-mode without stating that. The first evaluator run scored K3 0, which matches the rubric text. The expected vector was corrected to [1,0,0,0,0] and K3 wording was tightened, both before any subject run. Both are disclosed in the calibration record."
+}

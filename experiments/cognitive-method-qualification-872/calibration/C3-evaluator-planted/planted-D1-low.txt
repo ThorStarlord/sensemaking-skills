@@ -1,0 +1,5 @@
+CHOICE: A
+ISOLATION: Subagents are isolated enough for a comparison.
+CONTROLS: Spawn two Agent-tool subagents with different prompts.
+CONTAMINATION: None.
+FALSIFIER: The two arms return different results.

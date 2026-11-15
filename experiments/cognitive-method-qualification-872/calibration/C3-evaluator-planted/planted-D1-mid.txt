@@ -1,0 +1,5 @@
+CHOICE: B
+ISOLATION: Separate processes share nothing.
+CONTROLS: Run claude -p --safe-mode in each arm directory.
+CONTAMINATION: None significant.
+FALSIFIER: The two arms produce identical answers.
