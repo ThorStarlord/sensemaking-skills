@@ -1,0 +1,131 @@
+artifact_id: semantic_query_receipt
+schema_version: 1
+session_ref: 2026-11-15-cognitive-method-learning-construction
+state: final
+created_at: "2026-11-15T10:40:00Z"
+updated_at: "2026-11-15T11:20:00Z"
+target_repository: ThorStarlord/sensemaking-skills
+modes: [RECALL, RECONCILE]
+decision: "Whether the cognitive method-learning construction tickets (#861-#864, #867) require any code change, and whether a method-choice precedent exists to retain or apply. Also whether to retain the harness calibration as a reviewed lesson."
+cli_identity:
+  sensemaking_source_ref: a97439fe86b7ecc5549cb3e8a4a9f31ab29de0ec
+  invocation_prefix: "sensemaking-skills (run from worktree src with PYTHONPATH=src)"
+  version_output: null
+index:
+  indexed_ref: a97439fe86b7ecc5549cb3e8a4a9f31ab29de0ec
+  current_head: a97439fe86b7ecc5549cb3e8a4a9f31ab29de0ec
+  worktree_clean: true
+  uncommitted_changes_not_indexed: false
+queries:
+  - id: QY-1
+    operation: search
+    terms: []
+    subject: null
+    query_text: "methodological lesson before method choice decision re-entry"
+    expect_kinds: []
+    target_ref: a97439fe86b7ecc5549cb3e8a4a9f31ab29de0ec
+    result:
+      hit_count: 9
+      claim_ids:
+        - lesson:source-anchored-context-reentry
+        - lesson:distinguish-provenance-content-and-meaning
+        - lesson:pr-review-merge-base-is-scope-evidence
+        - lesson:query-completeness-is-evidence
+        - lesson:console-guard-literal-print-arguments-only
+        - lesson:installed-skill-currency-includes-references
+        - lesson:grounding-waiver
+        - lesson:separate-clone-changes-audited-bytes
+        - lesson:uncited-change-is-coverage-gap
+      truncated: false
+      not_assessed_kinds: []
+    outcome: PARTIAL
+    decision_relevant: true
+  - id: QY-2
+    operation: context-for
+    terms: []
+    subject: src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py
+    query_text: null
+    expect_kinds: []
+    target_ref: a97439fe86b7ecc5549cb3e8a4a9f31ab29de0ec
+    result:
+      hit_count: 28
+      claim_ids:
+        - component:knowledge-store
+        - rule:console-output-ascii
+        - rule:frozen-public-python-api
+        - rule:stable-core-no-lab-imports
+        - layer:knowledge-plane
+        - bounded_context:knowledge-stewardship
+        - inv:bounded-query-disclosure
+        - inv:source-boundary
+        - decision:relevance-candidates-separate-from-context
+        - alternative:authored-anchoring-only
+        - alternative:capability-hop-into-context-categories
+        - lesson:console-guard-literal-print-arguments-only
+        - lesson:distinguish-provenance-content-and-meaning
+        - lesson:query-completeness-is-evidence
+        - lesson:separate-clone-changes-audited-bytes
+        - lesson:uncited-change-is-coverage-gap
+        - observation:ownership-edit-stranded-store-verification
+        - verification:console-output-ascii-guard
+        - verification:knowledge-tests
+        - verification:public-api-contract-test
+      truncated: false
+      not_assessed_kinds: [contracts]
+    outcome: PARTIAL
+    decision_relevant: true
+  - id: QY-3
+    operation: context-for
+    terms: []
+    subject: skills/using-sensemaking/SKILL.md
+    query_text: null
+    expect_kinds: []
+    target_ref: a97439fe86b7ecc5549cb3e8a4a9f31ab29de0ec
+    result:
+      hit_count: 11
+      claim_ids:
+        - component:using-sensemaking-skill
+        - rule:runtime-owns-artifact-paths
+        - con:agent-owns-semantic-control
+        - decision:ontology-first-adaptive-sensemaking
+        - observation:discovery-memory-as-built
+        - observation:installation-availability-not-graph-use
+        - observation:legacy-brief-producer-bypasses-runtime-paths
+        - observation:legacy-plan-producer-overwrites-tracked-plan
+        - verification:executor-path-handoff-tests
+        - lesson:installed-skill-currency-includes-references
+        - observation:discovery-read-only-by-default
+      truncated: false
+      not_assessed_kinds: [contracts, alternatives, owner_verification]
+    outcome: PARTIAL
+    decision_relevant: false
+source_checks:
+  - claim_id: lesson:pr-review-merge-base-is-scope-evidence
+    sources: ["docs/normal-use/2026-11-12-scl-pr-review-baseline-feedback.md:38-40"]
+    result: SUPPORTED
+  - claim_id: lesson:query-completeness-is-evidence
+    sources: ["docs/normal-use/semantic-stewardship-episode-a-2026-10-15.md"]
+    result: NOT_CHECKED
+misses:
+  - id: M-1
+    query_ref: QY-1
+    needed_for: "A reviewed methodological precedent (when a method choice fits a consequential decision) that could be retained or applied to the construction-scope decision."
+    kind: NOT_ASSESSED
+    resolved_by: "Source inspection of the 2026-11-12 SCL and AMS normal-use records and docs/experimental-phase-gates.md. No method-choice lesson exists in the reviewed knowledge base."
+    follow_up: DEFERRED
+    proposal_ref: null
+reconcile:
+  - claim_id: lesson:subagent-inherits-ambient-context
+    disposition: ADD
+    applied: true
+    proposal_ref: .sensemaking/knowledge/stewardship.json
+    proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID
+  - claim_id: null
+    disposition: NO_MODEL_CHANGE
+    applied: false
+    proposal_ref: null
+    proposal_check: NOT_RUN
+persistence: committed
+action_authorized: false
+semantic_truth_established: false
+immutable: true
