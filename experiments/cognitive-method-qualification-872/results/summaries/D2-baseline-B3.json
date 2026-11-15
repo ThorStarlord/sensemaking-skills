@@ -1,0 +1,58 @@
+{
+  "episode": "D2-baseline-B3",
+  "file_sha256": "e965b5ae106e2adcfbe4a989c36de5433f84c09aa4b932c85120d1d09598bdb4",
+  "session_id": "1f3be70f-063a-4994-ae15-c0a2b7c7afef",
+  "model": "claude-haiku-5-5",
+  "claude_code_version": "2.1.266",
+  "tools": [
+    "Glob",
+    "Grep",
+    "Read"
+  ],
+  "skills_count": 16,
+  "plugins": [],
+  "mcp_servers_count": 0,
+  "memory_paths": null,
+  "result_subtype": "success",
+  "is_error": false,
+  "num_turns": 4,
+  "cost_usd": 0.08122979999999999,
+  "trace_in_order": [
+    {
+      "step": "assistant_text",
+      "chars": 113
+    },
+    {
+      "step": "tool_use",
+      "name": "Glob",
+      "input": "{\"pattern\": \"**/{CLAUDE.md,CLAUDE.local.md,.mcp.json,.claude/**}\", \"path\": \"C:/Users/Admin/AppData/Local/Temp/claude/283a4123a15423ed/a859bb74-70f0-4338-b907-557bc3ec73c3\"}"
+    },
+    {
+      "step": "tool_result",
+      "is_error": true
+    },
+    {
+      "step": "tool_use",
+      "name": "Glob",
+      "input": "{\"pattern\": \"{CLAUDE.md,CLAUDE.local.md,.mcp.json,.claude/**}\", \"path\": \"C:/Users/Admin/AppData/Local/Temp/claude/283a4123a15423ed/a859bb74-70f0-4338-b907-557bc3ec73c3/scratchpad/qual872/fx/D2-baseline-B3/cwd\"}"
+    },
+    {
+      "step": "tool_result",
+      "is_error": false
+    },
+    {
+      "step": "tool_use",
+      "name": "Glob",
+      "input": "{\"pattern\": \"{CLAUDE.md,settings.json,settings.local.json,skills/**,projects/**/memory/**}\", \"path\": \"C:/Users/Admin/.claude\"}"
+    },
+    {
+      "step": "tool_result",
+      "is_error": true
+    },
+    {
+      "step": "assistant_text",
+      "chars": 1820
+    }
+  ],
+  "final_text": "COMMAND: claude -p \"<PROMPT>\" --model claude-haiku-5-5 --output-format stream-json --verbose --bare --tools \"Read,Grep,Glob\" --allowedTools \"Read(./**),Grep,Glob\" --permission-mode dontAsk --disable-slash-commands --strict-mcp-config --no-session-persistence\n\nEXCLUDES:\n- `-p`: headless print mode, no interactive session.\n- `--bare`: skips CLAUDE.md discovery, auto-memory, hooks, plugin sync and keychain reads.\n- `--disable-slash-commands`: stops Skills from loading, including user-level Skills.\n- `--strict-mcp-config` (no `--mcp-config`): ignores MCP servers from other config sources.\n- `--tools`: leaves only Read, Grep and Glob as built-in tools.\n- `--allowedTools \"Read(./**)\"` with `--permission-mode dontAsk`: Read is scoped to the working directory, and anything unlisted is denied rather than prompted.\n- `--no-session-persistence`: no saved session to reuse later.\n\nRESIDUAL:\n- Grep and Glob are not path-scoped, so they can reach outside the working directory if given absolute paths.\n- The `Read(./**)` pattern matches the documented syntax, but I could not test it here.\n- Settings files in user or project scope are not explicitly excluded (no `--setting-sources`), and `--bare` may not cover them.\n- `claude-haiku-5-5` is not in the model list I was given, which names only Haiku 4.5, so it is unverified.\n\nSOURCE_CHECK:\n- Glob of the working directory for CLAUDE.md, CLAUDE.local.md, .mcp.json and .claude/** returned no files, so no project instructions or MCP config sit in the arm's directory.\n- Globs of the parent directory and `C:\\Users\\Admin\\.claude` were refused by the tool, so user-level Skills, memory and settings could not be inspected.\n- No shell was available, so `claude --help` could not confirm the flag names. They come from my knowledge of Claude Code, not the installed version."
+}

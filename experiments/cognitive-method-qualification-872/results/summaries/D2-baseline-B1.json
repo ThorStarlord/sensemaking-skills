@@ -1,0 +1,71 @@
+{
+  "episode": "D2-baseline-B1",
+  "file_sha256": "95fbd2a2cb5998759ce06e41f9cf3af8041eec4271a7411005a9c8a600babc21",
+  "session_id": "985547aa-43f8-4d94-a01e-7a960cb5ef30",
+  "model": "claude-haiku-5-5",
+  "claude_code_version": "2.1.266",
+  "tools": [
+    "Glob",
+    "Grep",
+    "Read"
+  ],
+  "skills_count": 16,
+  "plugins": [],
+  "mcp_servers_count": 0,
+  "memory_paths": null,
+  "result_subtype": "success",
+  "is_error": false,
+  "num_turns": 5,
+  "cost_usd": 0.06474360000000001,
+  "trace_in_order": [
+    {
+      "step": "assistant_text",
+      "chars": 111
+    },
+    {
+      "step": "tool_use",
+      "name": "Glob",
+      "input": "{\"pattern\": \"**/*\", \"path\": \"C:\\\\Users\\\\Admin\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\283a4123a15423ed\\\\a859bb74-70f0-4338-b907-557bc3ec73c3\\\\scratchpad\\\\qual872\\\\fx\\\\D2-baseline-B1\\\\cwd\"}"
+    },
+    {
+      "step": "tool_result",
+      "is_error": false
+    },
+    {
+      "step": "tool_use",
+      "name": "Glob",
+      "input": "{\"pattern\": \"**/*\", \"path\": \"C:\\\\Users\\\\Admin\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\283a4123a15423ed\\\\a859bb74-70f0-4338-b907-557bc3ec73c3\\\\scratchpad\\\\qual872\"}"
+    },
+    {
+      "step": "tool_result",
+      "is_error": true
+    },
+    {
+      "step": "assistant_text",
+      "chars": 178
+    },
+    {
+      "step": "tool_use",
+      "name": "Glob",
+      "input": "{\"pattern\": \"**/claude-code/**/cli.js\", \"path\": \"C:\\\\Users\\\\Admin\\\\AppData\\\\Roaming\\\\npm\\\\node_modules\"}"
+    },
+    {
+      "step": "tool_result",
+      "is_error": true
+    },
+    {
+      "step": "tool_use",
+      "name": "Glob",
+      "input": "{\"pattern\": \"**/claude*\", \"path\": \"C:\\\\Users\\\\Admin\\\\.local\\\\bin\"}"
+    },
+    {
+      "step": "tool_result",
+      "is_error": true
+    },
+    {
+      "step": "assistant_text",
+      "chars": 1460
+    }
+  ],
+  "final_text": "COMMAND: claude -p \"<PROMPT>\" --model claude-haiku-5-5 --output-format stream-json --verbose --bare --tools \"Read,Grep,Glob\" --disable-slash-commands --strict-mcp-config\n\nEXCLUDES: `-p` runs headless. `--output-format stream-json --verbose` gives the required logging. `--bare` skips hooks, auto-memory, CLAUDE.md discovery and keychain reads. `--tools` removes every built-in tool except Read, Grep and Glob. `--disable-slash-commands` stops Skills from loading. `--strict-mcp-config` with no `--mcp-config` drops MCP servers from user or project config.\n\nRESIDUAL: The model's trained knowledge is untouched. Read is not confined to the working directory by these flags. Reads outside it should be blocked by the permission prompt that headless mode cannot answer, but I did not verify that. Any file placed in the working directory is readable. Session transcripts are written to disk but are only re-read with `--resume` or `--continue`, which this command does not use.\n\nSOURCE_CHECK: The working directory is empty and has no protocol or settings files. The file tools cannot reach the npm global folder or `.local/bin`, so I could not read the installed CLI's help text to confirm the flag names. The flags come from my knowledge of Claude Code and are unverified against the installed version. The environment lists Haiku 4.5 (`claude-haiku-4-5-20251001`) as the newest Haiku, so `claude-haiku-5-5` is unconfirmed; the command uses it as you specified."
+}

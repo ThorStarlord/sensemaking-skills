@@ -1,0 +1,200 @@
+{
+  "R1": {
+    "S1_SAFE_MODE": {
+      "score": 1,
+      "quote": "--bare"
+    },
+    "S2_READ_CONFINEMENT": {
+      "score": 0,
+      "quote": ""
+    },
+    "S3_TOOL_ALLOWLIST": {
+      "score": 1,
+      "quote": "--tools \"Read,Grep,Glob\""
+    },
+    "S4_RESIDUAL_NAMED": {
+      "score": 1,
+      "quote": "Out-of-directory paths"
+    },
+    "S5_SOURCE_CHECKED_FINDING": {
+      "score": 0,
+      "quote": ""
+    }
+  },
+  "R2": {
+    "S1_SAFE_MODE": {
+      "score": 1,
+      "quote": "--bare skips hooks, auto-memory, CLAUDE.md discovery and keychain reads"
+    },
+    "S2_READ_CONFINEMENT": {
+      "score": 0,
+      "quote": ""
+    },
+    "S3_TOOL_ALLOWLIST": {
+      "score": 1,
+      "quote": "--tools \"Read,Grep,Glob\""
+    },
+    "S4_RESIDUAL_NAMED": {
+      "score": 1,
+      "quote": "The model's trained knowledge is untouched."
+    },
+    "S5_SOURCE_CHECKED_FINDING": {
+      "score": 0,
+      "quote": ""
+    }
+  },
+  "R3": {
+    "S1_SAFE_MODE": {
+      "score": 1,
+      "quote": "--safe-mode"
+    },
+    "S2_READ_CONFINEMENT": {
+      "score": 1,
+      "quote": "--restricted"
+    },
+    "S3_TOOL_ALLOWLIST": {
+      "score": 1,
+      "quote": "--tools \"Read,Grep,Glob\""
+    },
+    "S4_RESIDUAL_NAMED": {
+      "score": 1,
+      "quote": "The 16 bundled built-in Skills"
+    },
+    "S5_SOURCE_CHECKED_FINDING": {
+      "score": 1,
+      "quote": "`--safe-mode` alone let Read return an outside file"
+    }
+  },
+  "R4": {
+    "S1_SAFE_MODE": {
+      "score": 1,
+      "quote": "--safe-mode"
+    },
+    "S2_READ_CONFINEMENT": {
+      "score": 1,
+      "quote": "--restricted"
+    },
+    "S3_TOOL_ALLOWLIST": {
+      "score": 1,
+      "quote": "--tools Read,Grep,Glob"
+    },
+    "S4_RESIDUAL_NAMED": {
+      "score": 1,
+      "quote": "The 16 bundled built-in skills remain in the arm."
+    },
+    "S5_SOURCE_CHECKED_FINDING": {
+      "score": 1,
+      "quote": "`--safe-mode` alone let `Read` open a file outside the working directory."
+    }
+  },
+  "R5": {
+    "S1_SAFE_MODE": {
+      "score": 1,
+      "quote": "--bare: skips CLAUDE.md discovery, auto-memory"
+    },
+    "S2_READ_CONFINEMENT": {
+      "score": 1,
+      "quote": "Read is scoped to the working directory"
+    },
+    "S3_TOOL_ALLOWLIST": {
+      "score": 1,
+      "quote": "--tools \"Read,Grep,Glob\""
+    },
+    "S4_RESIDUAL_NAMED": {
+      "score": 1,
+      "quote": "Grep and Glob are not path-scoped, so they can reach outside the working directory"
+    },
+    "S5_SOURCE_CHECKED_FINDING": {
+      "score": 0,
+      "quote": ""
+    }
+  },
+  "R6": {
+    "S1_SAFE_MODE": {
+      "score": 1,
+      "quote": "--bare"
+    },
+    "S2_READ_CONFINEMENT": {
+      "score": 0,
+      "quote": ""
+    },
+    "S3_TOOL_ALLOWLIST": {
+      "score": 1,
+      "quote": "--tools \"Read,Grep,Glob\""
+    },
+    "S4_RESIDUAL_NAMED": {
+      "score": 1,
+      "quote": "the prompt itself"
+    },
+    "S5_SOURCE_CHECKED_FINDING": {
+      "score": 0,
+      "quote": ""
+    }
+  },
+  "R7": {
+    "S1_SAFE_MODE": {
+      "score": 1,
+      "quote": "--safe-mode"
+    },
+    "S2_READ_CONFINEMENT": {
+      "score": 1,
+      "quote": "--restricted"
+    },
+    "S3_TOOL_ALLOWLIST": {
+      "score": 1,
+      "quote": "--tools \"Read,Grep,Glob\""
+    },
+    "S4_RESIDUAL_NAMED": {
+      "score": 1,
+      "quote": "The 16 bundled built-in Skills remain in every arm"
+    },
+    "S5_SOURCE_CHECKED_FINDING": {
+      "score": 1,
+      "quote": "safe mode alone let a Read reach a file outside the working directory"
+    }
+  },
+  "R8": {
+    "S1_SAFE_MODE": {
+      "score": 1,
+      "quote": "`--bare`: skips CLAUDE.md discovery (project and user), auto-memory"
+    },
+    "S2_READ_CONFINEMENT": {
+      "score": 0,
+      "quote": ""
+    },
+    "S3_TOOL_ALLOWLIST": {
+      "score": 1,
+      "quote": "--tools \"Read,Grep,Glob\""
+    },
+    "S4_RESIDUAL_NAMED": {
+      "score": 1,
+      "quote": "The model's pretrained knowledge and the prompt text itself."
+    },
+    "S5_SOURCE_CHECKED_FINDING": {
+      "score": 0,
+      "quote": ""
+    }
+  },
+  "R9": {
+    "S1_SAFE_MODE": {
+      "score": 1,
+      "quote": "--safe-mode"
+    },
+    "S2_READ_CONFINEMENT": {
+      "score": 1,
+      "quote": "file tools are confined to the working directory"
+    },
+    "S3_TOOL_ALLOWLIST": {
+      "score": 1,
+      "quote": "--tools \"Read,Grep,Glob\""
+    },
+    "S4_RESIDUAL_NAMED": {
+      "score": 1,
+      "quote": "The 16 bundled built-in skills remain in every arm."
+    },
+    "S5_SOURCE_CHECKED_FINDING": {
+      "score": 1,
+      "quote": "X10a showed `--safe-mode` alone read a file outside cwd."
+    }
+  }
+}

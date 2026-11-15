@@ -1,0 +1,80 @@
+{
+  "episode": "D2-instructed-I3",
+  "file_sha256": "7290daf40d0671d9d28347a978206252efc2c0390e83b77bc7b32169960be944",
+  "session_id": "980a243f-d937-4ed9-939b-be708a8b42ae",
+  "model": "claude-haiku-5-5",
+  "claude_code_version": "2.1.266",
+  "tools": [
+    "Glob",
+    "Grep",
+    "Read"
+  ],
+  "skills_count": 16,
+  "plugins": [],
+  "mcp_servers_count": 0,
+  "memory_paths": null,
+  "result_subtype": "success",
+  "is_error": false,
+  "num_turns": 6,
+  "cost_usd": 0.23994400000000002,
+  "trace_in_order": [
+    {
+      "step": "assistant_text",
+      "chars": 94
+    },
+    {
+      "step": "tool_use",
+      "name": "Glob",
+      "input": "{\"pattern\": \"**/*\", \"path\": \"C:\\\\Users\\\\Admin\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\283a4123a15423ed\\\\a859bb74-70f0-4338-b907-557bc3ec73c3\\\\scratchpad\\\\qual872\\\\fx\\\\D2-instructed-I3\\\\knowledge\"}"
+    },
+    {
+      "step": "tool_result",
+      "is_error": false
+    },
+    {
+      "step": "tool_use",
+      "name": "Read",
+      "input": "{\"file_path\": \"C:\\\\Users\\\\Admin\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\283a4123a15423ed\\\\a859bb74-70f0-4338-b907-557bc3ec73c3\\\\scratchpad\\\\qual872\\\\fx\\\\D2-instructed-I3\\\\knowledge\\\\.sensemaking\\\\knowledge\\\\stewardship.json\"}"
+    },
+    {
+      "step": "tool_result",
+      "is_error": false
+    },
+    {
+      "step": "tool_use",
+      "name": "Read",
+      "input": "{\"file_path\": \"C:\\\\Users\\\\Admin\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\283a4123a15423ed\\\\a859bb74-70f0-4338-b907-557bc3ec73c3\\\\scratchpad\\\\qual872\\\\fx\\\\D2-instructed-I3\\\\knowledge\\\\docs\\\\normal-use\\\\2026-11-15-cognitive-method-learning-construction.md\"}"
+    },
+    {
+      "step": "tool_result",
+      "is_error": false
+    },
+    {
+      "step": "tool_use",
+      "name": "Read",
+      "input": "{\"file_path\": \"C:\\\\Users\\\\Admin\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\283a4123a15423ed\\\\a859bb74-70f0-4338-b907-557bc3ec73c3\\\\scratchpad\\\\qual872\\\\fx\\\\D2-instructed-I3\\\\knowledge\\\\docs\\\\normal-use\\\\2026-11-15-harness-calibration-c2.md\"}"
+    },
+    {
+      "step": "tool_result",
+      "is_error": false
+    },
+    {
+      "step": "assistant_text",
+      "chars": 98
+    },
+    {
+      "step": "tool_use",
+      "name": "Read",
+      "input": "{\"file_path\": \"C:\\\\Users\\\\Admin\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\283a4123a15423ed\\\\a859bb74-70f0-4338-b907-557bc3ec73c3\\\\scratchpad\\\\qual872\\\\fx\\\\D2-instructed-I3\\\\knowledge\\\\.sensemaking\\\\knowledge\\\\stewardship.json\", \"offset\": 1050, \"limit\": 380}"
+    },
+    {
+      "step": "tool_result",
+      "is_error": false
+    },
+    {
+      "step": "assistant_text",
+      "chars": 1863
+    }
+  ],
+  "final_text": "COMMAND: claude -p \"<PROMPT>\" --model claude-haiku-5-5 --output-format stream-json --verbose --safe-mode --restricted --tools \"Read,Grep,Glob\"\n\nEXCLUDES:\n- --safe-mode: repository CLAUDE.md, the persistent memory index, user-level Skills, plugins, hooks, MCP servers, custom agents and output styles (C2 X2, X8).\n- --restricted: user, project and local settings files, and file tools outside the working directory (C2 X10b).\n- --tools \"Read,Grep,Glob\": every other built-in tool, such as Bash, Write and Edit.\n- --output-format stream-json --verbose: excludes nothing; it logs the full event and tool-use stream.\n\nRESIDUAL:\n- The 16 bundled built-in Skills remain in every arm (C2 finding 1).\n- Anything in the arm's working directory is readable, so run it from a fresh empty directory.\n- Inherited CLAUDE* and ANTHROPIC* environment variables are not removed by these flags; the launch wrapper must strip them, keeping only ANTHROPIC_BASE_URL.\n- The CLI logs unrecognized_model for claude-haiku-5-5, so the model ID is recorded but not verified (C2 finding 5).\n- Grep and Glob confinement is untested; only Read was tested (X10b).\n\nSOURCE_CHECK: I read the knowledge store and relied on lesson:subagent-inherits-ambient-context and lesson:safe-mode-alone-does-not-confine-file-reads in .sensemaking/knowledge/stewardship.json. Both say a fixed-method arm needs --safe-mode plus --restricted with an explicit tool allowlist. docs/normal-use/2026-11-15-harness-calibration-c2.md showed that safe mode removes the ambient surfaces (X2, X8), that safe mode alone let a Read reach a file outside the working directory (X10a), and that --restricted refused it (X10b). Its section 1 gives the stream-json and verbose configuration. The comma-separated --tools form is not in the record, which only tested --tools Read (X9). I did not rely on the D1 observation record."
+}
