@@ -15,6 +15,9 @@ It reports, mechanically and without judging meaning:
   - receipts whose declared persistence is non-durable and that HEAD does not
     contain (the declared value is historical: session-receipt-v1 section 3);
   - declared non-durable receipts that HEAD does contain (reported separately);
+  - where each receipt's content is recorded in Git: a remote-tracking ref (as
+    of the last fetch), local refs only, or no commit at all (declared
+    persistence is not changed by this);
   - receipts that fail validation.
 
 Exit codes: 0 = every receipt valid (or no receipts), 1 = at least one invalid receipt,
@@ -94,12 +97,69 @@ def _committed_receipt_names(repo_root: Path | None, receipt_dir: Path) -> set[s
     return {line[len(prefix):] for line in result.stdout.splitlines() if line.startswith(prefix)}
 
 
+def _git_receipt_names(repo_root: Path | None, receipt_dir: Path, scope: str) -> set[str] | None:
+    """File names of receipts that some commit on the given refs touched, or None when Git cannot say.
+
+    ``scope`` is ``--remotes`` (remote-tracking refs as of the last fetch) or ``--all``.
+    """
+    if repo_root is None:
+        return None
+    try:
+        relative = receipt_dir.resolve().relative_to(repo_root.resolve()).as_posix()
+        result = subprocess.run(
+            ["git", "-C", str(repo_root), "log", scope, "--format=", "--name-only", "--", relative],
+            capture_output=True, text=True, timeout=60, check=False,
+        )
+    except (ValueError, OSError, subprocess.SubprocessError):
+        return None
+    if result.returncode != 0:
+        return None
+    prefix = "" if relative == "." else f"{relative}/"
+    return {
+        line[len(prefix):] for line in result.stdout.splitlines()
+        if line.startswith(prefix) and "/" not in line[len(prefix):]
+    }
+
+
+def _remote_durability(records: list[dict], remote_names: set[str] | None,
+                       any_ref_names: set[str] | None, checked_out_names: set[str]) -> dict[str, Any]:
+    """Where each receipt is recorded in Git, separately from its declared persistence.
+
+    ``on_remote_ref``: a commit touching the receipt is reachable from a remote-tracking
+    ref in this clone. ``local_git_only``: only local refs hold such a commit, so the
+    receipt is lost with this clone. ``uncommitted``: no ref records it. Counts only.
+    ``local_only_not_checked_out``: receipt names that local refs hold but this checkout
+    does not contain; their content is not read or validated here.
+    """
+    if remote_names is None or any_ref_names is None:
+        return {"available": False, "on_remote_ref": [], "local_git_only": [], "uncommitted": [],
+                "local_only_not_checked_out": []}
+    buckets: dict[str, list[dict[str, str]]] = {"on_remote_ref": [], "local_git_only": [], "uncommitted": []}
+    for record in records:
+        entry = {"receipt": record["file"], "persistence": record["data"]["persistence"]}
+        if record["file"] in remote_names:
+            buckets["on_remote_ref"].append(entry)
+        elif record["file"] in any_ref_names:
+            buckets["local_git_only"].append(entry)
+        else:
+            buckets["uncommitted"].append(entry)
+    not_checked_out = sorted(
+        name for name in any_ref_names
+        if name not in remote_names and name not in checked_out_names
+        and name.endswith((".session.yaml", ".query.yaml"))
+    )
+    return {"available": True, **buckets,
+            "local_only_not_checked_out": [{"receipt": name} for name in not_checked_out]}
+
+
 def summarize(receipt_dir: Path, repo_root: Path | None = None) -> dict[str, Any]:
     files = sorted(
         p for p in receipt_dir.glob("*.yaml")
         if p.name.endswith(".session.yaml") or p.name.endswith(".query.yaml")
     ) if receipt_dir.is_dir() else []
     committed = _committed_receipt_names(repo_root, receipt_dir)
+    remote_names = _git_receipt_names(repo_root, receipt_dir, "--remotes")
+    any_ref_names = _git_receipt_names(repo_root, receipt_dir, "--all")
 
     sessions: list[dict] = []
     queries: list[dict] = []
@@ -224,8 +284,20 @@ def summarize(receipt_dir: Path, repo_root: Path | None = None) -> dict[str, Any
         "repeated_misses": repeated_misses,
         "not_durable": not_durable,
         "declared_but_committed": declared_but_committed,
+        "remote_durability": _remote_durability(
+            sessions + queries, remote_names, any_ref_names, {p.name for p in files}),
         "invalid": invalid,
     }
+
+
+_ENTRY_LIST_LIMIT = 25
+
+
+def _entry_lines(entries: list[dict[str, str]]) -> list[str]:
+    lines = [f"    {n['receipt']} persistence={n['persistence']}" for n in entries[:_ENTRY_LIST_LIMIT]]
+    if len(entries) > _ENTRY_LIST_LIMIT:
+        lines.append(f"    ... and {len(entries) - _ENTRY_LIST_LIMIT} more")
+    return lines
 
 
 def _print_text(summary: dict[str, Any]) -> None:
@@ -276,6 +348,29 @@ def _print_text(summary: dict[str, Any]) -> None:
         f"receipts are immutable): {len(summary['declared_but_committed'])}"
     )
     lines.extend(f"  {n['receipt']} persistence={n['persistence']}" for n in summary["declared_but_committed"])
+    durability = summary["remote_durability"]
+    if durability["available"]:
+        lines.append(
+            "REMOTE DURABILITY (Git state in this clone; remote-tracking refs as of the last fetch; "
+            "declared persistence unchanged):"
+        )
+        lines.append(f"  on a remote-tracking ref: {len(durability['on_remote_ref'])}")
+        lines.append(
+            "  committed on local refs only (lost with this clone): "
+            f"{len(durability['local_git_only'])}"
+        )
+        lines.extend(_entry_lines(durability["local_git_only"]))
+        lines.append(f"  not committed on any ref: {len(durability['uncommitted'])}")
+        lines.extend(_entry_lines(durability["uncommitted"]))
+        lines.append(
+            "  on local refs but not in this checkout (names only, not read or validated): "
+            f"{len(durability['local_only_not_checked_out'])}"
+        )
+        lines.extend(f"    {n['receipt']}" for n in durability["local_only_not_checked_out"][:_ENTRY_LIST_LIMIT])
+        if len(durability["local_only_not_checked_out"]) > _ENTRY_LIST_LIMIT:
+            lines.append(f"    ... and {len(durability['local_only_not_checked_out']) - _ENTRY_LIST_LIMIT} more")
+    else:
+        lines.append("REMOTE DURABILITY: Git could not answer (no repository or no readable history)")
     if summary["invalid"]:
         lines.append("INVALID RECEIPTS (run scripts/validate-receipt.py for detail):")
         lines.extend(f"  {i['file']}: {'; '.join(i['errors'])}" for i in summary["invalid"])
