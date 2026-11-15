@@ -1,0 +1,27 @@
+{
+  "episode": "D1-treatment-T1",
+  "file_sha256": "f6ccaf6f8f4fffae2b9e800bf1d0602a0450ddb0a8e5c6925fb47bf1272a65a4",
+  "session_id": "deb55094-52f8-4d89-83c1-dc4052f4fa71",
+  "model": "claude-haiku-5-5",
+  "claude_code_version": "2.1.266",
+  "tools": [
+    "Glob",
+    "Grep",
+    "Read"
+  ],
+  "skills_count": 16,
+  "plugins": [],
+  "mcp_servers_count": 0,
+  "memory_paths": null,
+  "result_subtype": "success",
+  "is_error": false,
+  "num_turns": 1,
+  "cost_usd": 0.082337,
+  "trace_in_order": [
+    {
+      "step": "assistant_text",
+      "chars": 2432
+    }
+  ],
+  "final_text": "CHOICE: B\n\nISOLATION: Separate `claude -p` processes share no conversation context and can have separate working directories. They do not isolate configuration by default: each still loads the user-level `~/.claude` settings, memory and Skills, plus any CLAUDE.md in its working directory or ancestors, and both share one filesystem. Option A shares the parent session's working directory, CLAUDE.md, memory, Skills and settings, so it guarantees no isolation. Option C shares one conversation context, so it guarantees none.\n\nCONTROLS (identical for both arms except where marked):\n- Fresh, empty `CLAUDE_CONFIG_DIR` per arm, so no user settings, memory or Skills carry over.\n- Separate working directories (`runs/armX/cwd`, `runs/armY/cwd`) in a tree with no CLAUDE.md in any ancestor and outside the knowledge store.\n- `--bare` (skips CLAUDE.md discovery, auto-memory, hooks and plugins), `--disable-slash-commands` (no Skills), `--strict-mcp-config` with an empty `--mcp-config`.\n- `--setting-sources` restricted to project or none, plus an explicit `--settings` file.\n- `--system-prompt-file` holding the arm's instructions; `--tools` limited to Read, Glob and Grep (no Bash); `--no-session-persistence`; same `--model` and task prompt.\n- Arm X only: `--add-dir <knowledge>` (read-only).\n- Arm Y only: no `--add-dir`, plus `permissions.deny` for Read, Glob and Grep on the knowledge path in its settings file.\n- `--output-format stream-json` written to each arm's own output directory.\n- Verify these flag names against the installed CLI version before running.\n\nCONTAMINATION:\n- Deny rules are not an OS boundary. Arm Y can still reach the knowledge store by absolute path if the OS user can read it, so the store's ACL should also deny that user.\n- Managed or enterprise settings may load regardless of `CLAUDE_CONFIG_DIR`.\n- Shared scratch locations (scratchpad, `%TEMP%`, a common results folder) can expose one arm's files to the other.\n- The researcher can carry findings between arms by hand.\n- Both arms share the same model priors, so any experience effect is measured against a common baseline rather than contaminated by it.\n\nFALSIFIER: Any tool call or tool result in `runs/armY/*.jsonl` that references the knowledge store path or text from its entries, or an init record showing a CLAUDE.md, memory file or Skill loaded into Arm Y. Finding one in that stream-json log would show that B failed to isolate the arms."
+}

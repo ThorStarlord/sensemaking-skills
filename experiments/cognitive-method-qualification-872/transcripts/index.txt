@@ -6,3 +6,15 @@ eval C3 D2 R2 sid=eecb3548-3d42-42fd-ba91-9f69cabbf77d
 eval C3 D1 R1 sid=f2799282-00e8-4710-be62-0ca751a2f1e5
 eval C3 D1 R2 sid=71cb0cea-0dae-4ec6-92b3-af55a6eddff6
 eval C3 D1 R3 sid=430f4db1-c11f-43e9-a126-7b6db0e0c355
+D1 treatment T1 snapshot=d68b8513 sid=deb55094-52f8-4d89-83c1-dc4052f4fa71 exit=0 prompt_sha=0a1ee8106e49
+D1 baseline B1 snapshot=d68b8513 sid=512581da-7d73-434d-9db9-54c2b98516c7 exit=0 prompt_sha=0a1ee8106e49
+D1 treatment T2 snapshot=d68b8513 sid=dc0c13d5-a3fb-47ec-9dbe-9f7942eeb63e exit=0 prompt_sha=0a1ee8106e49
+D1 baseline B2 snapshot=d68b8513 sid=a2dc9157-90c5-4599-b491-4a38962a3b71 exit=0 prompt_sha=0a1ee8106e49
+D1 treatment T3 snapshot=d68b8513 sid=1a6ad9f0-6e6a-4216-aeea-caca2307c8f5 exit=0 prompt_sha=0a1ee8106e49
+D1 baseline B3 snapshot=d68b8513 sid=0a132872-e609-4730-822d-b2d3f3126e5e exit=0 prompt_sha=0a1ee8106e49
+eval D1 D1 R1 sid=d79ec493-1bb2-4921-abe4-1d8b38472cf9
+eval D1 D1 R2 sid=59e45e88-4c9c-4a03-89e1-7e10af33cb51
+eval D1 D1 R3 sid=feb30207-257b-4beb-83f2-28cc89b3e216
+eval D1 D1 R4 sid=07a7f2e7-d082-4694-b4c1-49a651a0c5cd
+eval D1 D1 R5 sid=9879e434-79f9-4e0f-ab2a-7702e48b92a5
+eval D1 D1 R6 sid=3bd5fc83-0eab-4ad6-9bdd-b8b1ea8ea5e0
