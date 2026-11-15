@@ -1,0 +1,88 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-11-15-owner-decision-q1-install-digests
+state: final
+created_at: "2026-11-15T06:59:43Z"
+updated_at: "2026-11-15T06:59:43Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: 38c51aba0ce2c5e6372790befde7c327e06111bd
+  end_ref: 38c51aba0ce2c5e6372790befde7c327e06111bd
+  worktree_clean_at_end: true
+skill_identity:
+  load_mode: harness_discovered
+  sensemaking_source_ref: null
+goal:
+  statement: "Record the owner decision on Q-1 so later agents do not reopen it without the stated evidence, keep the record local, and disclose its durability limits."
+  source: owner_message
+  source_ref: null
+delegation:
+  granted: [read, local_write, run_local_commands, commit]
+  withheld: [push, open_pr, merge, tracker_write, release, deploy, external_publication]
+continuity:
+  resumes: 2026-11-14-warranted-construction-reassessment
+  campaign_ref: null
+  resolves_questions: ["2026-11-14-warranted-construction-reassessment#Q-1"]
+responsibilities:
+  - id: R-1
+    responsibility: "Record the owner decision on Q-1 as a receipt"
+    capability: using-sensemaking
+    status: completed
+    reason: "The owner chose not to add per-file digests to persistent installation records at this time. The choice answers the current question and is not a permanent prohibition. No documentation PR was made, and the receipt was committed on the existing local branch."
+    artifact_refs: [".sensemaking/receipts/2026-11-14-warranted-construction-reassessment.session.yaml"]
+    validation:
+      - command: "source grep of setup_skills.py for tree_sha256 at lines 217, 328, 683 and 689 confirms the record stores one whole-tree digest and no per-file digests"
+        result: PASS
+      - command: "validate-receipt.py on this file with --target-repo at the worktree root"
+        result: PASS
+  - id: R-2
+    responsibility: "Verify the decision's preconditions still hold on the canonical remote and in source"
+    capability: ordinary_coding
+    status: completed
+    reason: "git ls-remote shows origin/main at 7fdb3c27, the commit whose hosted results the prior receipt recorded. The install record still stores tree_sha256 and the package version only."
+    artifact_refs: []
+    validation:
+      - command: "git ls-remote origin refs/heads/main"
+        result: PASS
+findings:
+  - id: F-1
+    statement: "Owner decided not to add per-file digests to install records now. The whole-tree digest suffices to detect change and keep updates safe. Per-file fingerprints add format and maintenance cost without shown recurring friction."
+    epistemic_status: OBSERVED
+    evidence_refs: ["owner_message:2026-11-15 Q-1 decision", "file:src/sensemaking_skills/setup_skills.py:217-689"]
+    disposition: resolved
+  - id: F-2
+    statement: "Reopen only on authentic evidence: operators repeatedly cannot tell local edits from package updates, missing detail causes mistakes or unsafe workarounds, or read-only comparison against the current package cannot resolve the problem."
+    epistemic_status: OBSERVED
+    evidence_refs: ["owner_message:2026-11-15 Q-1 decision"]
+    disposition: no_action
+  - id: F-3
+    statement: "If reopened, compare a persistent per-file baseline with a simpler read-only diagnostic first. Say differs from the current package, never modified since install. Keep no-overwrite and the --update and --force authorities distinct."
+    epistemic_status: OBSERVED
+    evidence_refs: ["owner_message:2026-11-15 Q-1 decision"]
+    disposition: no_action
+  - id: F-4
+    statement: "Diagnostics proportionate to demonstrated need; complexity only when its value is justified; a justified NO_CHANGE is success. Issue 867 stays open until a consequential PR exercises the decision-note practice."
+    epistemic_status: OBSERVED
+    evidence_refs: ["owner_message:2026-11-15 Q-1 decision"]
+    disposition: no_action
+open_questions:
+  - id: Q-1
+    question: "Should the local branch claude/reassess-2026-11-14 (with its receipts) be pushed to origin as a branch without a PR?"
+    source: owner_intent
+    blocking: false
+    options:
+      - option: "Push the branch to origin without a PR"
+        consequence: "The receipts become visible to other clones and cloud sessions and survive loss of this checkout. Nothing on main changes."
+      - option: "Keep the branch local only"
+        consequence: "The receipts stay in this clone and survive only while it exists. Fresh clones and cloud sessions cannot read them. A project memory note points local sessions to them."
+    durable_ref: null
+stop:
+  disposition: NO_FURTHER_WARRANT
+  reason: "The owner decision closes the one candidate that needed a schema change. No further warranted implementation exists. The remaining open items are owner-pending, stale, external, excluded or owner-reserved."
+next:
+  warranted_responsibility: null
+  blocked_on: []
+persistence: committed
+claim_ceiling: "Records the owner's Q-1 decision and its reopen conditions. Establishes nothing about whether operators face that friction, and nothing about issue 867. The receipt is committed on a local branch and is not pushed. It is not on origin."
+action_authorized_by_receipt: false
+immutable: true
