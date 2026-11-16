@@ -1,0 +1,14 @@
+{
+  "pinned": "b7ce9e699d63d637c9798da6b15db325a02f7ce8",
+  "clone_head": "b7ce9e699d63d637c9798da6b15db325a02f7ce8",
+  "clone_status": "clean",
+  "remotes": "none",
+  "prompts": [
+    "cal00_smoke.txt",
+    "cal01_capability.txt",
+    "cal02_outside.txt",
+    "cal03_credentials.txt",
+    "cal04_network.txt",
+    "diag00_context.txt"
+  ]
+}

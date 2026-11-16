@@ -11,7 +11,7 @@
     "calls": {
       "git_log": {
         "exit_code": 0,
-        "stdout_head": "7290ceced84174d9ca711d402c60f8a0550428a4\t2026-11-16\tsecond\nc1d9681837aa6654bfab248494f677f7819a3d88\t2026-11-16\tfirst\n"
+        "stdout_head": "56248046498e175fe16199f7d96ac713e83d5b93\t2026-11-16\tsecond\n269fb5d0c7815fb01b8abe5970456d1fde7681f7\t2026-11-16\tfirst\n"
       },
       "git_show_file": {
         "exit_code": 0,
@@ -23,7 +23,7 @@
       },
       "git_merge_base": {
         "exit_code": 0,
-        "stdout_head": "c1d9681837aa6654bfab248494f677f7819a3d88\n"
+        "stdout_head": "269fb5d0c7815fb01b8abe5970456d1fde7681f7\n"
       },
       "git_ls_tree": {
         "exit_code": 0,

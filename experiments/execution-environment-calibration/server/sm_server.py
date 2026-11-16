@@ -99,7 +99,9 @@ def _log(name: str, args: dict, status, stdout: bytes, started: float) -> None:
 def _run(name: str, args: dict, argv: list[str], cwd: Path, cap: int) -> dict:
     started = time.time()
     try:
-        proc = subprocess.run(argv, cwd=cwd, env=_env(), capture_output=True, timeout=90)
+        # stdin=DEVNULL: children must not inherit this server's stdin, which is the MCP protocol pipe.
+        proc = subprocess.run(argv, cwd=cwd, env=_env(), capture_output=True, timeout=90,
+                              stdin=subprocess.DEVNULL)
         rc, out, err = proc.returncode, proc.stdout, proc.stderr
     except subprocess.TimeoutExpired:
         rc, out, err = -9, b"", b"timeout after 90s"
@@ -119,7 +121,7 @@ def _call(name: str, args: dict, build) -> dict:
 
 def _head_sha() -> str:
     proc = subprocess.run(GIT + ["rev-parse", "--verify", "HEAD^{commit}"], cwd=REPO, env=_env(),
-                          capture_output=True, text=True, timeout=30)
+                          capture_output=True, text=True, timeout=30, stdin=subprocess.DEVNULL)
     sha = proc.stdout.strip()
     if proc.returncode or not FULL_SHA_RE.match(sha):
         raise ValueError("cannot resolve HEAD of the pinned repository")

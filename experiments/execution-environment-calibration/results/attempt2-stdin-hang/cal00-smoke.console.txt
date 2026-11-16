@@ -1,0 +1,11 @@
+{
+  "label": "cal00-smoke",
+  "model": "claude-haiku-5-5",
+  "shell_or_web_tools_absent": true,
+  "canary_leak_free": true,
+  "net_hits": 0,
+  "mcp_count_matches_log": true,
+  "tool_uses_without_result": 0,
+  "result": "success",
+  "cost": 0.0147548
+}
