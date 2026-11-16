@@ -56,7 +56,10 @@ def _configured_external_filters(root: Path) -> tuple[str, ...]:
 
 
 def guarded_git_text(root: Path, *args: str) -> str:
-    """Return read-only Git output with fsmonitor and configured external filters disabled.
+    """Return Git output with fsmonitor, configured external filters and repository hooks disabled.
+
+    Read-only in intent, with one exception: a diff against the worktree may still refresh the
+    index file. That is not suppressed, and no hook runs as a result.
 
     Use for any command that reads the index or the worktree (status, ls-files, diff against
     the worktree, rev-parse of a checkout). Git may run core.fsmonitor, or clean, smudge and
