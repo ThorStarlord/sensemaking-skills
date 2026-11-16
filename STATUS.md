@@ -543,6 +543,8 @@ no unit or synthetic evidence tests were run.
 
 ## Current next step
 
+**2026-11-16 Q-2 disposition (owner Option B; session receipt `2026-11-16-q2-disposition-handoff`):** Independent-learning qualification (#552, #872, #874) remains open. No full matched comparison is launched merely to produce evidence. Independent observation activates when a worthwhile engineering responsibility presents a consequential method choice with a checkable outcome. A fresh agent that inherits ordinary repository guidance can still provide independent use, but that is not a controlled causal comparison. Implemented functionality (zero-setup lesson search, applicability fields on retrieved items, stem-tolerant query matching; PRs #882-#885) is not evidence of independent use or comparative benefit. Advance to a matched comparison only when task, comparator, treatment, outcome measures and refuting conditions are defined. Autonomous construction resumes when an authentic episode exposes a concrete missing product capability.
+
 **2026-11-13 strategic qualification:** ADR 0037 and its Level-3 reconciliation change the *purpose* under which the engineering work below is assessed. The older source-retrieval increments remain historically valid and potentially useful as software-domain work; they are not proof of transferable cognitive development and do not automatically require another import scanner. Next independent qualification is an **open direction**, not an already authorized or executed benchmark. Continue only concrete source-grounded work selected against the revised product thesis.
 
 **2026-11-12 JS/TS static import source observations:** `semantic
