@@ -54,7 +54,13 @@ This repository also maintains reviewed architectural memory under
 constraints, or alternatives could materially change a coding decision, read
 `skills/repository-semantic-steward/SKILL.md` and use its lightweight RECALL
 path (or inspect the Git-authored records directly if no exact-commit SQLite
-index is available). Inspect decisive original sources; a knowledge claim
+index is available). When an earlier incident or methodological lesson could
+materially affect a consequential method choice, repeated failure or important
+engineering decision, consider a narrow, source-grounded RECALL before committing
+to an approach. Check the lesson's recorded conditions (scope, claim ceiling,
+revisit condition), provenance, limitations and counterevidence, then apply,
+adapt or reject it as warranted. Routine work does not require a lesson lookup.
+Inspect decisive original sources; a knowledge claim
 is not permission or semantic truth. Do not bootstrap a complete index or
 restart strategic analysis before an otherwise warranted local build.
 This is a pointer for **this repository**, not proof of native discovery by

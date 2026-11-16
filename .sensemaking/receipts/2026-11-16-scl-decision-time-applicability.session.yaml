@@ -1,13 +1,13 @@
 artifact_id: sensemaking_session_receipt
 schema_version: 1
 session_ref: 2026-11-16-scl-decision-time-applicability
-state: in_progress
+state: final
 created_at: "2026-11-16T09:19:38Z"
-updated_at: "2026-11-16T09:19:38Z"
+updated_at: "2026-11-16T09:20:15Z"
 target_repository: ThorStarlord/sensemaking-skills
 source_identity:
   start_ref: 382dd6e903bdc2c74a11b31d92e9d9689319c57c
-  end_ref: ccbb93edb85024fc7d9bee278bad64fd4f2184ac
+  end_ref: e94bbcb98727085714f8bd7f1a0664395cd8e1ab
   worktree_clean_at_end: true
 skill_identity:
   load_mode: harness_discovered
@@ -54,8 +54,8 @@ responsibilities:
   - id: R-4
     responsibility: "Open the PR, review it and merge under repository policy"
     capability: ordinary_coding
-    status: in_progress
-    reason: "Written before the PR was opened. The PR and merge outcome are recorded in the PR, not in this immutable receipt."
+    status: completed
+    reason: "PR #882 opened and merged as e94bbcb9 (head dcd183dc). The post-merge Full test suite then failed on this receipt's durable_ref; repaired in the successor session."
     artifact_refs: []
     validation: []
 findings: []
@@ -64,19 +64,19 @@ open_questions:
     question: "Should CLAUDE.md's Steward pointer name lessons as a trigger for consulting retained knowledge, not only decisions, ownership, constraints and alternatives?"
     source: owner_intent
     blocking: false
-    durable_ref: "CLAUDE.md (Source-linked semantic knowledge pointer)"
+    durable_ref: "CLAUDE.md"
     options:
       - option: "Name lessons in the CLAUDE.md pointer"
         consequence: "Agents are prompted to consult lesson-linked context before consequential edits. Adds one policy-file sentence."
       - option: "Leave CLAUDE.md unchanged"
         consequence: "Lesson recall depends on the agent choosing context-for for other reasons. Relevance recognition stays unobserved."
 stop:
-  disposition: IN_PROGRESS
-  reason: "Construction increment in progress; the PR and merge follow this receipt."
+  disposition: GOAL_SATISFIED
+  reason: "Capability implemented and merged in PR #882. Q-1 was non-blocking and was still open at stop."
 next:
   warranted_responsibility: "Observe whether a fresh independent agent reads recorded_conditions before applying a lesson (SCL M1)"
   blocked_on: ["Q-1"]
 persistence: committed
 claim_ceiling: "Establishes that context-for now returns each history record's stated conditions, verified by real CLI runs at 382dd6e9. Does not establish that agents read or apply them, that decisions improve, or any cognitive benefit. Local unit tests NOT_RUN under the CLAUDE.md construction policy."
 action_authorized_by_receipt: false
-immutable: false
+immutable: true
