@@ -20,6 +20,21 @@ def _query_tokens(text: str) -> tuple[str, ...]:
     ))
 
 
+_INFLECTIONS = ("ing", "ed", "es", "s")
+
+
+def _stem(word: str) -> str:
+    """Drop one common inflection so plural and tense forms of a query word can match.
+
+    Lexical discovery only: "subagents" and "subagent" share a stem, while "already" does
+    not reduce to "read". Short words keep their spelling so that little ones are not mangled.
+    """
+    for suffix in _INFLECTIONS:
+        if word.endswith(suffix) and len(word) - len(suffix) >= 4:
+            return word[: -len(suffix)]
+    return word
+
+
 def validate_retrieval_options(
     *, operation: str, subject: str | None,
     search_terms: tuple[str, ...], expected_kinds: tuple[str, ...],
@@ -77,7 +92,11 @@ def search_matches(
         for claim in candidates:
             id_text = claim["id"].casefold()
             statement = claim["statement"].casefold()
-            matched = tuple(word for word in tokens if word in id_text or word in statement)
+            stems = {_stem(word) for word in _QUESTION_WORD.findall(f"{id_text} {statement}")}
+            matched = tuple(
+                word for word in tokens
+                if word in id_text or word in statement or _stem(word) in stems
+            )
             if matched:
                 ranked.append((
                     -len(matched), -sum(len(word) for word in matched),
@@ -97,7 +116,8 @@ def search_matches(
             "match_details_truncated": len(ranked) > limit,
             "ranking_limit": (
                 "Ranked by number and total length of matching distinct literal "
-                "word substrings, then claim ID; matches are discovery candidates, "
+                "word substrings or word stems (plural and tense forms), then claim ID; "
+                "matches are discovery candidates, "
                 "not semantic similarity, verified applicability or authority."
             ),
         }
