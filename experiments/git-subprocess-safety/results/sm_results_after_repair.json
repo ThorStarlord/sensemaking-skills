@@ -26,17 +26,23 @@
   },
   "impact_preview": {
     "exit": 0,
-    "canaries_fired": [],
+    "canaries_fired": [
+      "clean"
+    ],
     "last_stderr": ""
   },
   "proposal_check": {
     "exit": 1,
-    "canaries_fired": [],
+    "canaries_fired": [
+      "clean"
+    ],
     "last_stderr": "Error: proposal must contain exactly schema_version, claims and relations"
   },
   "release_audit": {
     "exit": 3,
-    "canaries_fired": [],
+    "canaries_fired": [
+      "clean"
+    ],
     "last_stderr": ""
   }
 }

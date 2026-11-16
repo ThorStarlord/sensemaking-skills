@@ -1,6 +1,7 @@
 {
   "stored_blob_is_filtered_form": true,
-  "raw_status_with_filter_running": "",
-  "unguarded_status_origin_main_style": "",
-  "guarded_status_filters_disabled": "' M big.txt\\n'"
+  "raw_status": "",
+  "guarded_status_filters_disabled_rejected_option": "' M big.txt\\n'",
+  "guarded_status_filters_enabled_callers_now_use": "''",
+  "callers_output_equals_raw": true
 }

@@ -28,7 +28,7 @@ def _git(repo_root: Path, *arguments: str) -> str:
     # Guarded like worktree_context: status and diff read the worktree, which may run fsmonitor
     # or configured filters.
     try:
-        return guarded_git_text(repo_root, *arguments).strip()
+        return guarded_git_text(repo_root, *arguments, disable_filters=False).strip()
     except ValueError as exc:
         raise ValueError(f"Git source inspection failed: {exc}") from exc
 

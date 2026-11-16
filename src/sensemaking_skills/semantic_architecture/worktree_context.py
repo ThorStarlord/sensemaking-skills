@@ -55,7 +55,7 @@ def _configured_external_filters(root: Path) -> tuple[str, ...]:
     return keys
 
 
-def guarded_git_text(root: Path, *args: str) -> str:
+def guarded_git_text(root: Path, *args: str, disable_filters: bool = True) -> str:
     """Return Git output with fsmonitor, configured external filters and repository hooks disabled.
 
     Read-only in intent, with one exception: a diff against the worktree may still refresh the
@@ -70,7 +70,9 @@ def guarded_git_text(root: Path, *args: str) -> str:
     (git-lfs pattern), the raw comparison reports it modified. A driver marked required makes
     status fail, and Git's reason is included in the error. Callers fail closed on both.
     """
-    disabled = _configured_external_filters(root)
+    # disable_filters=False keeps the repository's configured clean and smudge filters running, as
+    # those callers did before. It still disables fsmonitor and repository hooks, which change no output.
+    disabled = _configured_external_filters(root) if disable_filters else ()
     return _git(root, *args, disable_filters=disabled).decode("utf-8", "surrogateescape")
 
 

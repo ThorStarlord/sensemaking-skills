@@ -57,7 +57,7 @@ class ReleaseAuthorityAudit:
 def _git(repo_root: Path, *args: str) -> str | None:
     # Guarded like worktree_context: status reads the worktree, which may run fsmonitor or filters.
     try:
-        return guarded_git_text(repo_root, *args).strip()
+        return guarded_git_text(repo_root, *args, disable_filters=False).strip()
     except ValueError:
         return None
 

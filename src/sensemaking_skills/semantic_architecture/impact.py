@@ -70,7 +70,7 @@ class ImpactPreview:
 def _git(root: Path, *args: str) -> str:
     # Guarded like worktree_context: status and ls-files may run fsmonitor or configured filters.
     try:
-        return guarded_git_text(root, *args).strip()
+        return guarded_git_text(root, *args, disable_filters=False).strip()
     except ValueError as exc:
         raise ValueError(f"cannot verify Git snapshot: {exc}") from exc
 
