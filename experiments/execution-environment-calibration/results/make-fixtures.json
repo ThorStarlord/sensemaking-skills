@@ -1,7 +1,9 @@
 {
   "pinned": "b7ce9e699d63d637c9798da6b15db325a02f7ce8",
-  "clone_head": "b7ce9e699d63d637c9798da6b15db325a02f7ce8",
-  "clone_status": "clean",
+  "sandbox_head": "b7ce9e699d63d637c9798da6b15db325a02f7ce8",
+  "sandbox_status": "clean",
+  "refs": "none",
+  "commits_in_store": "3327",
   "remotes": "none",
   "prompts": [
     "cal00_smoke.txt",

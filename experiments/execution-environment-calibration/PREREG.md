@@ -66,3 +66,7 @@ claude -p "<prompt>" --safe-mode --restricted --model claude-haiku-5-5
 ## 7. Claim ceiling
 
 Calibration establishes only that, on this machine and at this Claude Code version, the stated configuration performed the stated operations, and that the listed escape routes were tested with the listed controls. It does not establish a cognitive effect, method learning, outcome support, or the isolation of any other configuration. Any episode run on this scope is a separate step with its own preregistration, committed before it runs.
+
+## 8. Trust model (added by PREREG-AMENDMENT-5)
+
+The boundary of this scope is the tool surface and argument validation. It is not operating-system isolation. The server runs `git` and the Sensemaking CLI with the operator's OS privileges, and the CLI imports Python code from the pinned repository's `src/`. The pinned repository is the object of study and is treated as trusted content. Sections 2 and 3 above use the word "sandbox" for the pinned repository, and that word is not a containment claim. Claims about exclusion of repository or user instructions, and about network from server processes, are scoped in `CALIBRATION-RESULT.md` (Limits).

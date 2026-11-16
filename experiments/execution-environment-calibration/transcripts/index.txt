@@ -1,0 +1,5 @@
+cal00-smoke sid=e0ba32de-a014-4a6d-bc6e-6c901e6ba9e7 exit=0 start=2026-11-16T05:41:07Z end=2026-11-16T05:41:20Z clone_dirty_lines=0 prompt_sha=971ea34c65c7
+cal01-capability sid=aa7ad4f5-d461-49a5-b75a-50d266fe8c89 exit=0 start=2026-11-16T05:41:24Z end=2026-11-16T05:42:07Z clone_dirty_lines=0 prompt_sha=87d84e8c6183
+cal02-outside sid=b1a8add3-c56f-4a15-9169-424877c8c3e4 exit=0 start=2026-11-16T05:42:16Z end=2026-11-16T05:42:39Z clone_dirty_lines=0 prompt_sha=982081956574
+cal03-credentials sid=bd904ec2-950e-4562-be28-c1f66c73d7de exit=0 start=2026-11-16T05:42:40Z end=2026-11-16T05:42:57Z clone_dirty_lines=0 prompt_sha=6afb56b61910
+cal04-network sid=ddb32e94-f396-429b-91d3-ba79b924d4f7 exit=0 start=2026-11-16T05:42:59Z end=2026-11-16T05:43:09Z clone_dirty_lines=0 prompt_sha=7b64c0ee50ca
