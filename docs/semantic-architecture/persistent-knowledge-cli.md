@@ -478,7 +478,10 @@ This mode tokenizes Unicode letters/numbers (splitting punctuation and
 underscores), folds case, removes duplicate tokens and ignores one-character
 tokens. Input is bounded to 300 characters and 1..24 distinct words of length
 at least two. A claim is a candidate when at least one query token is a literal
-substring of its ID or statement. Results are ordered by number of distinct
+substring of its ID or statement, or when the token and one of the claim's words
+share a simple stem after one common inflection is removed. For example, the query
+`subagents` finds a statement that says `subagent`, and `reading` finds `read`.
+Results are ordered by number of distinct
 matching tokens, then their combined length, then claim ID. No embedding,
 language-model call, inferred graph edge or semantic authority is used.
 
