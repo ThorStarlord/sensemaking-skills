@@ -1,7 +1,7 @@
 """Narrow read-only Git and Sensemaking interface (execution-calibration scope, mechanism A).
 
 No shell is exposed to the subject. Each tool builds a fixed argv from validated arguments
-and runs it against one pinned repository, with a neutralised Git environment. Every call,
+and runs it against one pinned repository. The server's own git calls run with a neutralised Git environment. The Sensemaking CLI's internal git calls do not (PREREG.md section 8). Every call,
 including refusals and errors, is appended to a server-side log outside the subject's file scope.
 
 Trust model (PREREG-AMENDMENT-5): the boundary is the tool surface and argument validation.
