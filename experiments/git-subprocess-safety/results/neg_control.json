@@ -1,0 +1,71 @@
+{
+  "status_porcelain": {
+    "exit": 0,
+    "canaries_fired": [
+      "clean",
+      "fsmonitor",
+      "post-index-change"
+    ]
+  },
+  "ls_files_cached": {
+    "exit": 0,
+    "canaries_fired": [
+      "fsmonitor"
+    ]
+  },
+  "ls_files_others": {
+    "exit": 0,
+    "canaries_fired": [
+      "fsmonitor"
+    ]
+  },
+  "diff_name_only_worktree": {
+    "exit": 0,
+    "canaries_fired": [
+      "clean",
+      "fsmonitor",
+      "post-index-change"
+    ]
+  },
+  "diff_patch_commits": {
+    "exit": 0,
+    "canaries_fired": [
+      "extdiff",
+      "smudge"
+    ]
+  },
+  "log_patch": {
+    "exit": 0,
+    "canaries_fired": [
+      "smudge",
+      "textconv"
+    ]
+  },
+  "show_blob": {
+    "exit": 0,
+    "canaries_fired": []
+  },
+  "cat_file_blob": {
+    "exit": 0,
+    "canaries_fired": []
+  },
+  "check_attr": {
+    "exit": 0,
+    "canaries_fired": [
+      "fsmonitor"
+    ]
+  },
+  "rev_parse": {
+    "exit": 0,
+    "canaries_fired": []
+  },
+  "worktree_add": {
+    "exit": 0,
+    "canaries_fired": [
+      "fsmonitor",
+      "post-checkout",
+      "post-index-change",
+      "smudge"
+    ]
+  }
+}

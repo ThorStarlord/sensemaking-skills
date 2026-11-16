@@ -1,0 +1,58 @@
+{
+  "required_failing": {
+    "origin_main": {
+      "impact": {
+        "exc": "ValueError",
+        "msg": "cannot verify Git snapshot: error: external filter 'python -c \"raise SystemExit(1)\"' failed 1\nerror: external filter 'python -c \"raise SystemExit(1)\"' failed\nfatal: notes.txt: clean filter 'req' failed"
+      },
+      "stewardship": {
+        "exc": "ValueError",
+        "msg": "Git source inspection failed: error: external filter 'python -c \"raise SystemExit(1)\"' failed 1\nerror: external filter 'python -c \"raise SystemExit(1)\"' failed\nfatal: notes.txt: clean filter 'req' failed"
+      },
+      "release": {
+        "ok": null
+      }
+    },
+    "final": {
+      "impact": {
+        "exc": "ValueError",
+        "msg": "cannot verify Git snapshot: error: external filter 'python -c \"raise SystemExit(1)\"' failed 1\nerror: external filter 'python -c \"raise SystemExit(1)\"' failed\nfatal: notes.txt: clean filter 'req' failed"
+      },
+      "stewardship": {
+        "exc": "ValueError",
+        "msg": "Git source inspection failed: error: external filter 'python -c \"raise SystemExit(1)\"' failed 1\nerror: external filter 'python -c \"raise SystemExit(1)\"' failed\nfatal: notes.txt: clean filter 'req' failed"
+      },
+      "release": {
+        "ok": null
+      }
+    }
+  },
+  "filtered_success": {
+    "origin_main": {
+      "impact": {
+        "ok": ""
+      },
+      "stewardship": {
+        "ok": ""
+      },
+      "release": {
+        "ok": ""
+      }
+    },
+    "final": {
+      "impact": {
+        "ok": ""
+      },
+      "stewardship": {
+        "ok": ""
+      },
+      "release": {
+        "ok": ""
+      }
+    }
+  },
+  "identical": {
+    "required_failing": true,
+    "filtered_success": true
+  }
+}

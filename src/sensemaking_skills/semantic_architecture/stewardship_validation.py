@@ -9,6 +9,7 @@ continues to require a separate CLEAN exact Git checkout.
 from __future__ import annotations
 
 import json
+import locale
 import re
 import subprocess
 from pathlib import Path
@@ -18,19 +19,22 @@ from .knowledge import (
     read_authored_relation, stable_id, validate_snapshot,
 )
 from .knowledge_sources import _local_evidence_path, _source, _validate_authored_contract_flows
+from .worktree_context import GitReadError, guarded_git_text
+
+_LOCALE = locale.getpreferredencoding(False)  # the codec text=True used before
 
 _ADR_PATH = re.compile(r"docs/adr/(\d{3,4})-[^/]+\.md\Z")
 _MAX_PROPOSAL_BYTES = 524288
 
 
 def _git(repo_root: Path, *arguments: str) -> str:
-    result = subprocess.run(
-        ["git", *arguments], cwd=repo_root, capture_output=True, text=True,
-        check=False, timeout=30,
-    )
-    if result.returncode:
-        raise ValueError(f"Git source inspection failed: {result.stderr.strip()}")
-    return result.stdout.strip()
+    # Guarded: fsmonitor and repository hooks are disabled. Configured filters keep running, as before.
+    # Messages, codec and wording are the original ones.
+    try:
+        return guarded_git_text(repo_root, *arguments, disable_filters=False,
+                                encoding=_LOCALE, errors="strict").strip()
+    except GitReadError as exc:
+        raise ValueError(f"Git source inspection failed: {exc.detail}") from exc
 
 
 def _head_pack(root: Path, relative: str) -> dict:

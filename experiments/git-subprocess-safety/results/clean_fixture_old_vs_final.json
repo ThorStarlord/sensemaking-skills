@@ -1,0 +1,29 @@
+{
+  "origin_main": {
+    "build_exit": 0,
+    "build_digest": "ba9cd628dce276e3fd78c67ced07e36ca34370f2a34d58deb0dd5a7a8160e1c1",
+    "build_claims": 0,
+    "impact_exit": 0,
+    "impact_payload_sha256": "70fd293b1bb3c9993f7a60994a76dd2777af6ab52b38498e03e803ecdc28c313",
+    "release_exit": 3,
+    "release_payload_sha256": "bdbd2c81739955f26994666428f6b19c22d76855cb606c0734e1a0e613ba00ed"
+  },
+  "final": {
+    "build_exit": 0,
+    "build_digest": "ba9cd628dce276e3fd78c67ced07e36ca34370f2a34d58deb0dd5a7a8160e1c1",
+    "build_claims": 0,
+    "impact_exit": 0,
+    "impact_payload_sha256": "70fd293b1bb3c9993f7a60994a76dd2777af6ab52b38498e03e803ecdc28c313",
+    "release_exit": 3,
+    "release_payload_sha256": "bdbd2c81739955f26994666428f6b19c22d76855cb606c0734e1a0e613ba00ed"
+  },
+  "identical": {
+    "build_exit": true,
+    "build_digest": true,
+    "build_claims": true,
+    "impact_exit": true,
+    "impact_payload_sha256": true,
+    "release_exit": true,
+    "release_payload_sha256": true
+  }
+}

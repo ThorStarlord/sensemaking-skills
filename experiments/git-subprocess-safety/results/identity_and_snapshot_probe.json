@@ -1,0 +1,30 @@
+{
+  "snapshot_filtered_repo": {
+    "origin_main": [
+      "clean",
+      "fsmonitor",
+      "post-index-change"
+    ],
+    "final": [
+      "clean"
+    ]
+  },
+  "identity_plain_repo": {
+    "fields_compared": [
+      "dirty",
+      "head_sha",
+      "identity_source",
+      "repository_id",
+      "repository_root",
+      "tree_sha",
+      "vcs",
+      "worktree_sha256"
+    ],
+    "differing_fields": [],
+    "worktree_sha256_identical": true,
+    "dirty": [
+      true,
+      true
+    ]
+  }
+}

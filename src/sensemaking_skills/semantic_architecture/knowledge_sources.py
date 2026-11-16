@@ -39,7 +39,7 @@ _LIMITS = (
 def _git(root: Path, *args: str, timeout: int = 30) -> str:
     try:
         proc = subprocess.run(
-            ["git", *args], cwd=root, text=True, capture_output=True,
+            ["git", "-c", "core.fsmonitor=false", *args], cwd=root, text=True, capture_output=True,
             timeout=timeout, check=False,
         )
     except (OSError, subprocess.TimeoutExpired) as exc:
@@ -72,10 +72,10 @@ def verified_tracked_sources(repo_root: str | Path, target_ref: str) -> tuple[Pa
 def _filtered_paths(checkout: Path) -> list[str]:
     """Tracked paths whose committed attributes name a filter; check-attr runs no filter."""
     try:
-        listed = subprocess.run(["git", "ls-files", "-z"], cwd=checkout, text=True,
+        listed = subprocess.run(["git", "-c", "core.fsmonitor=false", "ls-files", "-z"], cwd=checkout, text=True,
                                 capture_output=True, timeout=60, check=False)
         proc = subprocess.run(
-            ["git", "check-attr", "-z", "--stdin", "filter"], cwd=checkout, input=listed.stdout,
+            ["git", "-c", "core.fsmonitor=false", "check-attr", "-z", "--stdin", "filter"], cwd=checkout, input=listed.stdout,
             text=True, capture_output=True, timeout=60, check=False,
         )
     except (OSError, subprocess.TimeoutExpired) as exc:

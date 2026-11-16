@@ -10,6 +10,18 @@ import subprocess
 from pathlib import Path
 
 
+class GitReadError(ValueError):
+    """A guarded Git read failed. str(error) is the existing caller-visible text, unchanged.
+
+    `detail` carries Git's own stderr (or the OS error), so a caller that already reported it can
+    keep its own wording without losing the reason.
+    """
+
+    def __init__(self, message: str, detail: str = "") -> None:
+        super().__init__(message)
+        self.detail = detail
+
+
 def _git(
     root: Path, *args: str, disable_filters: tuple[str, ...] = (),
     no_match_ok: bool = False,
@@ -17,18 +29,22 @@ def _git(
     overrides = [part for name in disable_filters for part in ("-c", f"{name}=")]
     try:
         result = subprocess.run(
-            ["git", "-c", "core.fsmonitor=false", *overrides, "-C", str(root), *args],
+            # core.hooksPath: a diff against the worktree writes the index, which runs the
+            # repository's post-index-change hook even with GIT_OPTIONAL_LOCKS=0.
+            ["git", "-c", "core.fsmonitor=false", "-c", f"core.hooksPath={os.devnull}",
+             *overrides, "-C", str(root), *args],
             env={**os.environ, "GIT_OPTIONAL_LOCKS": "0", "GIT_TERMINAL_PROMPT": "0"},
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            timeout=20,
+            timeout=30,
             check=False,
         )
         if result.returncode and not (no_match_ok and result.returncode == 1):
-            raise ValueError("cannot inspect local Git repository worktree")
+            detail = result.stderr.decode("utf-8", "replace").strip()
+            raise GitReadError("cannot inspect local Git repository worktree", detail=detail)
         return result.stdout
     except (OSError, subprocess.TimeoutExpired) as exc:
-        raise ValueError("cannot inspect local Git repository worktree") from exc
+        raise GitReadError("cannot inspect local Git repository worktree", detail=str(exc)) from exc
 
 
 def _configured_external_filters(root: Path) -> tuple[str, ...]:
@@ -41,9 +57,36 @@ def _configured_external_filters(root: Path) -> tuple[str, ...]:
         item.decode("utf-8", "surrogateescape")
         for item in names.split(b"\x00") if item
     )))
+    # `-c name=` is split at its first '=', so a name containing '=' or a line break would
+    # disable the wrong key. Refuse such configuration instead of inspecting it unguarded.
+    if any("=" in key or "\n" in key or "\r" in key for key in keys):
+        raise ValueError("repository configuration names a Git filter containing '=' or a line break; "
+                         "the guard cannot disable it safely")
     if len(keys) > 128:
         raise ValueError("too many configured Git external filters for safe inspection")
     return keys
+
+
+def guarded_git_text(root: Path, *args: str, disable_filters: bool = True,
+                     encoding: str = "utf-8", errors: str = "surrogateescape") -> str:
+    """Return Git output with fsmonitor, configured external filters and repository hooks disabled.
+
+    Read-only in intent, with one exception: a diff against the worktree may still refresh the
+    index file. That is not suppressed, and no hook runs as a result.
+
+    Use for any command that reads the index or the worktree (status, ls-files, diff against
+    the worktree, rev-parse of a checkout). Git may run core.fsmonitor, or clean, smudge and
+    process filters named by the repository's own configuration, while it reads those. Diff-like
+    callers must still pass --no-textconv and --no-ext-diff.
+
+    Known behaviour, not a bypass: for a file whose stored form comes from a transforming filter
+    (git-lfs pattern), the raw comparison reports it modified. A driver marked required makes
+    status fail, and Git's reason is included in the error. Callers fail closed on both.
+    """
+    # disable_filters=False keeps the repository's configured clean and smudge filters running, as
+    # those callers did before. It still disables fsmonitor and repository hooks, which change no output.
+    disabled = _configured_external_filters(root) if disable_filters else ()
+    return _git(root, *args, disable_filters=disabled).decode(encoding, errors)
 
 
 def inspect_worktree_context(repo_root: Path, indexed_ref: str) -> dict[str, object]:

@@ -6,14 +6,17 @@ Claims stay distinct from code observations and never authorize a change.
 
 from __future__ import annotations
 
+import locale
 import re
-import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable
 
 from .models import ObservationKind
+from .worktree_context import GitReadError, guarded_git_text
 from .probes import probe_exact_search
+
+_LOCALE = locale.getpreferredencoding(False)  # the codec text=True used before
 
 _TAG = re.compile(r"\[(policy|code|test|owner|delegated|hypothesis):\s*([^\]]+)\]\s*$")
 _PACK_FILES = (".sensemaking/intent.md", ".sensemaking/context.md", ".sensemaking/invariants.md")
@@ -67,16 +70,13 @@ class ImpactPreview:
 
 
 def _git(root: Path, *args: str) -> str:
+    # Guarded: fsmonitor and repository hooks are disabled. Configured filters keep running, as before.
+    # Messages, codec and wording are the original ones.
     try:
-        result = subprocess.run(
-            ["git", *args], cwd=root, capture_output=True, text=True,
-            check=False, timeout=15,
-        )
-    except (OSError, subprocess.TimeoutExpired) as exc:
-        raise ValueError(f"cannot verify Git snapshot: {exc}") from exc
-    if result.returncode:
-        raise ValueError(f"cannot verify Git snapshot: {result.stderr.strip()}")
-    return result.stdout.strip()
+        return guarded_git_text(root, *args, disable_filters=False,
+                                encoding=_LOCALE, errors="strict").strip()
+    except GitReadError as exc:
+        raise ValueError(f"cannot verify Git snapshot: {exc.detail}") from exc
 
 
 def _verified_tracked_paths(root: Path, target_ref: str) -> set[str]:

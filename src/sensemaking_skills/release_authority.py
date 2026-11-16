@@ -8,13 +8,17 @@ authorization.
 
 from __future__ import annotations
 
+import locale
 from dataclasses import dataclass
 from pathlib import Path
-import subprocess
 import tomllib
 from typing import Any
 
 import yaml
+
+from .semantic_architecture.worktree_context import guarded_git_text
+
+_LOCALE = locale.getpreferredencoding(False)  # the codec text=True used before
 
 
 CURRENT_IDENTITY_DOCS = (
@@ -53,19 +57,13 @@ class ReleaseAuthorityAudit:
 
 
 def _git(repo_root: Path, *args: str) -> str | None:
+    # Guarded: fsmonitor and repository hooks are disabled. Configured filters keep running, as before.
+    # Any failure reads as None, as before.
     try:
-        result = subprocess.run(
-            ["git", *args],
-            cwd=repo_root,
-            capture_output=True,
-            text=True,
-            check=False,
-        )
-    except OSError:
+        return guarded_git_text(repo_root, *args, disable_filters=False,
+                                encoding=_LOCALE, errors="strict").strip()
+    except ValueError:
         return None
-    if result.returncode != 0:
-        return None
-    return result.stdout.strip()
 
 
 def _release_metadata(repo_root: Path) -> tuple[str, str, str]:
