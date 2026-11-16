@@ -29,6 +29,14 @@ Sensemaking reads repositories and writes durable records: briefs, session recei
 
 Sensemaking does not control the coding-agent host's network access, tool permissions, or what a model provider retains. This section states what Sensemaking expects; it does not enforce it, and Sensemaking provides no redaction tool. GitHub secret scanning and push protection are enabled on this repository at the time of writing. Those platform checks are a safeguard, not a substitute for the rules above.
 
+## Trust boundary for Git operations
+
+Sensemaking runs Git against the checkout it is asked to read. Git can run programs that the checkout's own configuration names: a `core.fsmonitor` program, and clean or smudge filters. Sensemaking disables fsmonitor and repository hooks on every checkout-reading path. It also disables configured filters where that does not change results, as in knowledge build, knowledge inspection and the temporary checkout.
+
+Four operations keep a repository's configured clean and smudge filters running, because disabling them would change their output for legitimate repositories (for example git-lfs repositories would appear modified): `impact-preview`, `knowledge-proposal-check`, `release audit`, and campaign target snapshot generation.
+
+The accepted operating model assumes that the checkout's `.git/config` and `.git/hooks` are trusted, and that global and system Git configuration is trusted. Do not run these four operations against a checkout of unknown origin, such as an archive or shared folder you have not reviewed, unless you have separately isolated it. This is a bounded residual risk. It is not elimination of repository-configured program execution.
+
 ## Public disclosure
 
 After a report, do not publish exploit details or secrets until the maintainer has had a reasonable opportunity to respond.
