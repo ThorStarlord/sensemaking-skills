@@ -1,0 +1,59 @@
+{
+  "knowledge_build_active": {
+    "exit": 0,
+    "canaries_fired": [
+      "fsmonitor"
+    ],
+    "last_stderr": ""
+  },
+  "knowledge_build_temp_filter": {
+    "exit": 1,
+    "canaries_fired": [
+      "fsmonitor"
+    ],
+    "last_stderr": "Error: temporary checkout refused: target_ref assigns Git filters to tracked paths"
+  },
+  "knowledge_build_temp_nofilter": {
+    "exit": 0,
+    "canaries_fired": [
+      "fsmonitor"
+    ],
+    "last_stderr": ""
+  },
+  "knowledge_audit_temp": {
+    "exit": 0,
+    "canaries_fired": [
+      "fsmonitor"
+    ],
+    "last_stderr": ""
+  },
+  "knowledge_query_repo": {
+    "exit": 0,
+    "canaries_fired": [],
+    "last_stderr": ""
+  },
+  "impact_preview": {
+    "exit": 0,
+    "canaries_fired": [
+      "clean",
+      "fsmonitor"
+    ],
+    "last_stderr": ""
+  },
+  "proposal_check": {
+    "exit": 1,
+    "canaries_fired": [
+      "clean",
+      "fsmonitor"
+    ],
+    "last_stderr": "Error: proposal must contain exactly schema_version, claims and relations"
+  },
+  "release_audit": {
+    "exit": 3,
+    "canaries_fired": [
+      "clean",
+      "fsmonitor"
+    ],
+    "last_stderr": ""
+  }
+}

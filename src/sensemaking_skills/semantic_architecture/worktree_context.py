@@ -46,6 +46,18 @@ def _configured_external_filters(root: Path) -> tuple[str, ...]:
     return keys
 
 
+def guarded_git_text(root: Path, *args: str) -> str:
+    """Return read-only Git output with fsmonitor and configured external filters disabled.
+
+    Use for any command that reads the index or the worktree (status, ls-files, diff against
+    the worktree, rev-parse of a checkout). Git may run core.fsmonitor, or clean, smudge and
+    process filters named by the repository's own configuration, while it reads those. Diff-like
+    callers must still pass --no-textconv and --no-ext-diff.
+    """
+    disabled = _configured_external_filters(root)
+    return _git(root, *args, disable_filters=disabled).decode("utf-8", "surrogateescape")
+
+
 def inspect_worktree_context(repo_root: Path, indexed_ref: str) -> dict[str, object]:
     """Inspect HEAD and dirtiness without indexing or running source filters."""
     if not re.fullmatch(r"[0-9a-f]{40}", indexed_ref):

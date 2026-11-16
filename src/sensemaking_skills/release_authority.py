@@ -16,6 +16,8 @@ from typing import Any
 
 import yaml
 
+from .semantic_architecture.worktree_context import guarded_git_text
+
 
 CURRENT_IDENTITY_DOCS = (
     "README.md",
@@ -53,19 +55,11 @@ class ReleaseAuthorityAudit:
 
 
 def _git(repo_root: Path, *args: str) -> str | None:
+    # Guarded like worktree_context: status reads the worktree, which may run fsmonitor or filters.
     try:
-        result = subprocess.run(
-            ["git", *args],
-            cwd=repo_root,
-            capture_output=True,
-            text=True,
-            check=False,
-        )
-    except OSError:
+        return guarded_git_text(repo_root, *args).strip()
+    except ValueError:
         return None
-    if result.returncode != 0:
-        return None
-    return result.stdout.strip()
 
 
 def _release_metadata(repo_root: Path) -> tuple[str, str, str]:

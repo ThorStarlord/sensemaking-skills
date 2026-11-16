@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import Iterable
 
 from .models import ObservationKind
+from .worktree_context import guarded_git_text
 from .probes import probe_exact_search
 
 _TAG = re.compile(r"\[(policy|code|test|owner|delegated|hypothesis):\s*([^\]]+)\]\s*$")
@@ -67,16 +68,11 @@ class ImpactPreview:
 
 
 def _git(root: Path, *args: str) -> str:
+    # Guarded like worktree_context: status and ls-files may run fsmonitor or configured filters.
     try:
-        result = subprocess.run(
-            ["git", *args], cwd=root, capture_output=True, text=True,
-            check=False, timeout=15,
-        )
-    except (OSError, subprocess.TimeoutExpired) as exc:
+        return guarded_git_text(root, *args).strip()
+    except ValueError as exc:
         raise ValueError(f"cannot verify Git snapshot: {exc}") from exc
-    if result.returncode:
-        raise ValueError(f"cannot verify Git snapshot: {result.stderr.strip()}")
-    return result.stdout.strip()
 
 
 def _verified_tracked_paths(root: Path, target_ref: str) -> set[str]:
