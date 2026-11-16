@@ -18,10 +18,12 @@ OUT="$EXP/transcripts/$LABEL.jsonl"
 START="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 ALLOWED="Read,Grep,Glob,mcp__sm__git_log,mcp__sm__git_merge_base,mcp__sm__git_diff_names,mcp__sm__git_show_file,mcp__sm__git_ls_tree,mcp__sm__knowledge_build,mcp__sm__knowledge_query,mcp__sm__knowledge_audit"
 rm -f "$SB/log/mcp-calls.jsonl"
-( cd "$SB/repo" && timeout "$TMO" env $UNSET claude -p "$PROMPT" --session-id "$SID" --safe-mode --restricted \
+# Amendment 1 (PREREG-AMENDMENT-1.md): --safe-mode replaced by explicit, verified exclusions.
+( cd "$SB/repo" && timeout "$TMO" env $UNSET claude -p "$PROMPT" --session-id "$SID" --restricted \
+    --strict-mcp-config --disable-slash-commands --setting-sources "" \
     --model "$MODEL" --output-format stream-json --verbose --max-budget-usd "$BUDGET" \
     --tools "Read,Grep,Glob" --allowedTools "$ALLOWED" \
-    --mcp-config "$SB/mcp-config.json" --strict-mcp-config ) > "$OUT" 2> "$OUT.err"
+    --mcp-config "$SB/mcp-config.json" ) > "$OUT" 2> "$OUT.err"
 RC=$?
 END="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 [ -f "$SB/log/mcp-calls.jsonl" ] && cp "$SB/log/mcp-calls.jsonl" "$EXP/results/server-logs/$LABEL.jsonl"

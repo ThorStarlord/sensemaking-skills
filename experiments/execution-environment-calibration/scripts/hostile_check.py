@@ -11,13 +11,22 @@ Usage: python hostile_check.py <scratch> <server_dir> <result_json>
 import json
 import os
 import shutil
+import stat
 import subprocess
 import sys
 from pathlib import Path
 
 scratch, server_dir, result_path = Path(sys.argv[1]), Path(sys.argv[2]), Path(sys.argv[3])
 H = scratch / "hostile"
-shutil.rmtree(H, ignore_errors=True)
+
+
+def _clear_readonly(func, path, _exc):
+    os.chmod(path, stat.S_IWRITE)
+    func(path)
+
+
+if H.exists():
+    shutil.rmtree(H, onexc=_clear_readonly)  # git object files are read-only on Windows
 repo, markers = H / "repo", H / "markers"
 repo.mkdir(parents=True)
 markers.mkdir(parents=True)
@@ -32,8 +41,9 @@ def git(*args, env=None):
 
 
 def marker_cmd(name: str) -> str:
+    # Git's config parser strips unescaped double quotes from values, so they are written as \" .
     target = (markers / name).as_posix()
-    return f"python -c \"open('{target}','w').write('x')\""
+    return f"python -c \\\"open('{target}','w').write('x')\\\""
 
 
 git("init", "-q")

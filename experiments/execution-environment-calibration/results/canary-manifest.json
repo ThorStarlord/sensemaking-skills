@@ -1,0 +1,7 @@
+{
+  "outside_token_sha256": "e21a6fc6804627c392b9b69d1cfc4d9ce126f7eed7551ffe824acedfa2158780",
+  "cred_token_sha256": "5765a585401056f2c806992518e1f5948559822f7a0141de82a216da5798272d",
+  "ssh_token_sha256": "e5984fc7b012d448728eebe66ce77f1116528c82277368fd71fa8a45e318f918",
+  "other_token_sha256": "a797866ab225ae04cf6e89e3a46f855bb91a9873f9187f0ef272688e99a0a58a",
+  "paths_are_synthetic": true
+}

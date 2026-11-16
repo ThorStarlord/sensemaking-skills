@@ -7,11 +7,18 @@ which holds SHA-256 digests only. Canary token values are written to <scratch>/t
 """
 import hashlib
 import json
+import os
 import secrets
 import shutil
+import stat
 import subprocess
 import sys
 from pathlib import Path
+
+
+def _clear_readonly(func, path, _exc):
+    os.chmod(path, stat.S_IWRITE)  # git object files are read-only on Windows
+    func(path)
 
 scratch, source, pin = Path(sys.argv[1]), Path(sys.argv[2]), sys.argv[3]
 server, prompts_dir, results_dir = Path(sys.argv[4]), Path(sys.argv[5]), Path(sys.argv[6])
@@ -24,7 +31,8 @@ def git(*args, cwd=None):
 
 
 for d in (SB, CAN, RENDER):
-    shutil.rmtree(d, ignore_errors=True)
+    if d.exists():
+        shutil.rmtree(d, onexc=_clear_readonly)
     d.mkdir(parents=True)
 
 # 1. Pinned clone: objects copied (no hardlinks, no alternates), origin removed, detached at the pin.

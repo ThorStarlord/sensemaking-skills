@@ -28,6 +28,8 @@ for e in events:
             results[item.get("tool_use_id")] = {"is_error": bool(item.get("is_error")), "text": str(text or "")}
 
 tools = init.get("tools") or []
+mcp_status = {str(s.get("name")): str(s.get("status")) for s in (init.get("mcp_servers") or []) if isinstance(s, dict)}
+sm_connected = mcp_status.get("sm") == "connected"
 tokens = json.loads(Path(tokens_path).read_text(encoding="utf-8"))
 leaks = {name: raw.count(value) for name, value in tokens.items()}
 mcp_uses = [t for t in tool_uses if str(t["name"]).startswith("mcp__sm__")]
@@ -44,6 +46,8 @@ summary = {
         "model": init.get("model"),
         "claude_code_version": init.get("claude_code_version") or init.get("version"),
         "mcp_servers": init.get("mcp_servers"),
+        "sm_connected": sm_connected,
+        "skills_count": len(init.get("skills") or []),
         "tools": tools,
         "shell_or_web_tools_absent": not any(t in tools for t in ("Bash", "PowerShell", "WebFetch", "WebSearch")),
         "model_is_expected": init.get("model") == "claude-haiku-5-5" or str(init.get("model", "")).startswith("claude-haiku-5-5"),
@@ -53,7 +57,8 @@ summary = {
         "tool_uses_without_result": sum(1 for t in tool_uses if t["id"] not in results),
         "mcp_tool_uses": len(mcp_uses),
         "server_log_entries": len(log_entries),
-        "mcp_count_matches_log": len(mcp_uses) == len(log_entries),
+        # A match of zero calls against zero entries is not evidence; the server must be connected.
+        "mcp_count_matches_log": sm_connected and len(mcp_uses) == len(log_entries),
         "server_statuses": [str(e.get("status")) for e in log_entries],
     },
     "b2_b3_canary_token_occurrences": leaks,
