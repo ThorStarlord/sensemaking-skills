@@ -1,0 +1,79 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-11-16-lesson-search-precision
+state: final
+created_at: "2026-11-16T11:00:00Z"
+updated_at: "2026-11-16T12:00:00Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: cbfa817e49749a9ba8aea9efbc01b0f12eed4987
+  end_ref: 7d8ffc7078715c6f439e05160b82fe6fd0fe894a
+  worktree_clean_at_end: true
+skill_identity:
+  load_mode: harness_discovered
+  sensemaking_source_ref: null
+goal:
+  statement: "Continue ADR 0037 cognitive-development work under issue 860: select the most valuable warranted bounded responsibility, implement it through existing interfaces, review, integrate under repository policy and record evidence."
+  source: owner_message
+  source_ref: "Issue 860 continuation request of 2026-11-16"
+delegation:
+  granted: [read, local_write, run_local_commands, commit, push, open_pr, merge, tracker_write]
+  withheld: [release, deploy, external_publication]
+continuity:
+  resumes: 2026-11-16-q2-disposition-handoff
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: "Reconstruct issue 860 delivery and remaining gaps from issues and records"
+    capability: using-sensemaking
+    status: completed
+    reason: "Construction track is delivered locally. Qualification (issues 872, 874) needs independent episodes; Q-2 Option B keeps it open until real use."
+    artifact_refs: [docs/normal-use/2026-11-15-cognitive-method-learning-construction.md, .sensemaking/receipts/2026-11-16-q2-disposition-handoff.session.yaml]
+    validation: []
+  - id: R-2
+    responsibility: "Measure lesson query-text precision on the committed index before choosing a build"
+    capability: repository-semantic-steward
+    status: completed
+    reason: "Function words and the lesson: ID prefix led the top hits. Compared with #860 alternatives: issue 880 has no CLI path, so it ranks lower."
+    artifact_refs: [src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py]
+    validation:
+      - command: "semantic workspace-query --operation search --query-text (9 questions) --search-kind lesson at cbfa817e"
+        result: PASS
+  - id: R-3
+    responsibility: "Ignore function words, kind prefixes and short substring matches in lexical lesson ranking"
+    capability: ordinary_coding
+    status: completed
+    reason: "One matcher changed. Flags, validation and hosted re-entry assertions are unchanged. Unit tests NOT_RUN under the construction-phase policy."
+    artifact_refs: [src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py, docs/semantic-architecture/persistent-knowledge-cli.md, skills/repository-semantic-steward/references/recall.md]
+    validation:
+      - command: "ruff check --select E4,E7,E9,F on knowledge_retrieval.py"
+        result: PASS
+      - command: "semantic workspace-query before and after on the same index (9 questions)"
+        result: PASS
+      - command: "hosted re-entry lesson assertions run by CLI (2 questions)"
+        result: PASS
+  - id: R-4
+    responsibility: "Open, review and merge the change under repository policy; close its tracking issue"
+    capability: ordinary_coding
+    status: completed
+    reason: "PR 890 merged as 07a074d7 with hosted checks still pending, per CLAUDE.md. Issue 889 closed by the merge. Hosted results not observed at write time."
+    artifact_refs: []
+    validation: []
+findings:
+  - id: F-1
+    statement: "Lesson query-text ranking let function words and the lesson: ID prefix lead the top hits. Fixed in PR 890."
+    epistemic_status: OBSERVED
+    evidence_refs: ["src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py"]
+    disposition: resolved
+open_questions: []
+stop:
+  disposition: GOAL_SATISFIED
+  reason: "Ranking defect fixed and merged. Issues 872 and 874 stay open. No further warranted build found; issue 880 has no CLI path and is deferred."
+next:
+  warranted_responsibility: null
+  blocked_on: []
+persistence: committed
+claim_ceiling: "Establishes a retrieval-precision change on nine questions judged by the author, and that the two asserted lesson IDs still return. Does not establish agent use of lessons, relevance recognition or cognitive benefit. Unit tests NOT_RUN; hosted CI not observed at write time."
+action_authorized_by_receipt: false
+immutable: true
