@@ -8,15 +8,17 @@ authorization.
 
 from __future__ import annotations
 
+import locale
 from dataclasses import dataclass
 from pathlib import Path
-import subprocess
 import tomllib
 from typing import Any
 
 import yaml
 
 from .semantic_architecture.worktree_context import guarded_git_text
+
+_LOCALE = locale.getpreferredencoding(False)  # the codec text=True used before
 
 
 CURRENT_IDENTITY_DOCS = (
@@ -55,9 +57,11 @@ class ReleaseAuthorityAudit:
 
 
 def _git(repo_root: Path, *args: str) -> str | None:
-    # Guarded like worktree_context: status reads the worktree, which may run fsmonitor or filters.
+    # Guarded: fsmonitor and repository hooks are disabled. Configured filters keep running, as before.
+    # Any failure reads as None, as before.
     try:
-        return guarded_git_text(repo_root, *args, disable_filters=False).strip()
+        return guarded_git_text(repo_root, *args, disable_filters=False,
+                                encoding=_LOCALE, errors="strict").strip()
     except ValueError:
         return None
 

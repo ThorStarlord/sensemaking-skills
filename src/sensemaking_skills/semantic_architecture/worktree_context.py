@@ -10,6 +10,18 @@ import subprocess
 from pathlib import Path
 
 
+class GitReadError(ValueError):
+    """A guarded Git read failed. str(error) is the existing caller-visible text, unchanged.
+
+    `detail` carries Git's own stderr (or the OS error), so a caller that already reported it can
+    keep its own wording without losing the reason.
+    """
+
+    def __init__(self, message: str, detail: str = "") -> None:
+        super().__init__(message)
+        self.detail = detail
+
+
 def _git(
     root: Path, *args: str, disable_filters: tuple[str, ...] = (),
     no_match_ok: bool = False,
@@ -28,11 +40,11 @@ def _git(
             check=False,
         )
         if result.returncode and not (no_match_ok and result.returncode == 1):
-            detail = result.stderr.decode("utf-8", "replace").strip()[:400]
-            raise ValueError(f"cannot inspect local Git repository worktree: {detail}")
+            detail = result.stderr.decode("utf-8", "replace").strip()
+            raise GitReadError("cannot inspect local Git repository worktree", detail=detail)
         return result.stdout
     except (OSError, subprocess.TimeoutExpired) as exc:
-        raise ValueError("cannot inspect local Git repository worktree") from exc
+        raise GitReadError("cannot inspect local Git repository worktree", detail=str(exc)) from exc
 
 
 def _configured_external_filters(root: Path) -> tuple[str, ...]:
@@ -55,7 +67,8 @@ def _configured_external_filters(root: Path) -> tuple[str, ...]:
     return keys
 
 
-def guarded_git_text(root: Path, *args: str, disable_filters: bool = True) -> str:
+def guarded_git_text(root: Path, *args: str, disable_filters: bool = True,
+                     encoding: str = "utf-8", errors: str = "surrogateescape") -> str:
     """Return Git output with fsmonitor, configured external filters and repository hooks disabled.
 
     Read-only in intent, with one exception: a diff against the worktree may still refresh the
@@ -73,7 +86,7 @@ def guarded_git_text(root: Path, *args: str, disable_filters: bool = True) -> st
     # disable_filters=False keeps the repository's configured clean and smudge filters running, as
     # those callers did before. It still disables fsmonitor and repository hooks, which change no output.
     disabled = _configured_external_filters(root) if disable_filters else ()
-    return _git(root, *args, disable_filters=disabled).decode("utf-8", "surrogateescape")
+    return _git(root, *args, disable_filters=disabled).decode(encoding, errors)
 
 
 def inspect_worktree_context(repo_root: Path, indexed_ref: str) -> dict[str, object]:
