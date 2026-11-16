@@ -1,13 +1,13 @@
 artifact_id: sensemaking_session_receipt
 schema_version: 1
 session_ref: 2026-11-16-cognitive-development-mission
-state: in_progress
+state: final
 created_at: "2026-11-16T09:49:58Z"
-updated_at: "2026-11-16T09:49:58Z"
+updated_at: "2026-11-16T10:20:00Z"
 target_repository: ThorStarlord/sensemaking-skills
 source_identity:
   start_ref: e94bbcb98727085714f8bd7f1a0664395cd8e1ab
-  end_ref: e94bbcb98727085714f8bd7f1a0664395cd8e1ab
+  end_ref: 684088c6a4938a3fe401901f9c310f31ef54d819
   worktree_clean_at_end: true
 skill_identity:
   load_mode: harness_discovered
@@ -28,41 +28,84 @@ responsibilities:
     responsibility: "Reproduce the post-merge Full test suite failure on e94bbcb9"
     capability: ordinary_coding
     status: completed
-    reason: "The failing check was receipt validation with the repository root. The predecessor durable_ref was free text, not a path. My earlier local check omitted --target-repo, so it passed."
+    reason: "The failing check was receipt validation against the repository root. The predecessor durable_ref was free text. Earlier local validation omitted --target-repo, so it passed."
     artifact_refs: [.sensemaking/receipts/2026-11-16-scl-decision-time-applicability.session.yaml]
     validation:
-      - command: "scripts/validate-receipt.py <predecessor receipt> --target-repo . on e94bbcb9"
+      - command: "scripts/validate-receipt.py <predecessor receipt> --target-repo . at e94bbcb9"
         result: FAIL
   - id: R-2
     responsibility: "Repair the predecessor durable_ref and finalize its lifecycle"
     capability: ordinary_coding
-    status: in_progress
-    reason: "durable_ref set to CLAUDE.md. State set to final with stop GOAL_SATISFIED, since the PR was merged. Q-1 was non-blocking."
+    status: completed
+    reason: "Merged in PR #883 (61e257d8). Predecessor is final with stop GOAL_SATISFIED. Hosted Product Validation on 61e257d8 succeeded."
     artifact_refs: [.sensemaking/receipts/2026-11-16-scl-decision-time-applicability.session.yaml]
-    validation: []
+    validation:
+      - command: "validate-receipt.py --target-repo . on every receipt"
+        result: PASS
+      - command: "hosted Product Validation on 61e257d8 (run 43843610695)"
+        result: PASS
   - id: R-3
     responsibility: "Add owner-approved Q-1 conditional lesson guidance to the CLAUDE.md semantic-knowledge pointer"
     capability: ordinary_coding
-    status: in_progress
-    reason: "Owner approved Q-1 in the mission message. Wording is integrated into the existing pointer and keeps retrieval optional."
+    status: completed
+    reason: "Merged in PR #883. The guidance is conditional, routine work is exempt, and retrieval stays optional. It does not show that agents recognise relevance unprompted."
     artifact_refs: [CLAUDE.md]
     validation: []
   - id: R-4
     responsibility: "Investigate remaining lesson-retrieval gaps against source and consumers"
     capability: repository-semantic-steward
-    status: not_started
-    reason: "Begins after R-2 and R-3 are integrated."
+    status: completed
+    reason: "Lexical search missed inflected query words. Conditions were missing from decisions and alternatives. Zero-setup workspace-query already returns lessons without an index."
+    artifact_refs: []
+    validation:
+      - command: "knowledge-query search and workspace-query search on the same index"
+        result: PASS
+  - id: R-5
+    responsibility: "Match plural and tense forms in --query-text lexical search"
+    capability: ordinary_coding
+    status: completed
+    reason: "Merged in PR #884 (498e1353). 'subagents' went from 0 to 3 hits on the same index, and existing hits are kept. Broad common words now match more claims."
+    artifact_refs: [src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py]
+    validation:
+      - command: "before and after search on the same index"
+        result: PASS
+      - command: "hosted Product Validation on 498e1353"
+        result: PASS
+  - id: R-6
+    responsibility: "Return recorded_conditions on every context item"
+    capability: ordinary_coding
+    status: completed
+    reason: "Merged in PR #885 (684088c6). 87 items in six real files gained the key. No other item field changed. Decisions and alternatives now carry their stated limits."
+    artifact_refs: [src/sensemaking_skills/semantic_architecture/knowledge_architecture.py]
+    validation:
+      - command: "context-for before and after across six real files"
+        result: PASS
+  - id: R-7
+    responsibility: "Reassess the remaining cognitive-development gap for a terminal decision"
+    capability: using-sensemaking
+    status: completed
+    reason: "Remaining gaps are relevance recognition, feedback and method-level reachability. Each needs independent observation or an owner decision, so no further build is warranted now."
     artifact_refs: []
     validation: []
 findings: []
-open_questions: []
+open_questions:
+  - id: Q-2
+    question: "Should the independent-learning qualification (#552, #872, #874) run now as a matched protocol, or stay open until a real engineering episode reuses a lesson?"
+    source: owner_intent
+    blocking: false
+    durable_ref: "STATUS.md"
+    options:
+      - option: "Run a matched independent protocol now"
+        consequence: "Produces comparative evidence sooner, but needs an isolated baseline, which current subagents do not provide."
+      - option: "Keep the qualification open until real use"
+        consequence: "Evidence accrues from ordinary work. Benefit stays unqualified in the meantime."
 stop:
-  disposition: IN_PROGRESS
-  reason: "Mission in progress: baseline repair and Q-1 guidance are being integrated."
+  disposition: NO_FURTHER_WARRANT
+  reason: "No further sufficiently warranted build without independent observation or an owner decision. Hosted run for 684088c6 was still in progress when this receipt was written."
 next:
-  warranted_responsibility: "Investigate the remaining decision-time gap for retrieved lessons against source and consumers"
-  blocked_on: []
+  warranted_responsibility: null
+  blocked_on: ["Q-2"]
 persistence: committed
-claim_ceiling: "Establishes only the repair and approved guidance under review. Does not establish CI success, changed agent behaviour or cognitive benefit."
+claim_ceiling: "Establishes four integrated changes and a baseline repair, with hosted success for 61e257d8 and 498e1353. Does not establish hosted success for 684088c6 at write time, agent use of lessons, relevance recognition or cognitive benefit. Local unit tests NOT_RUN."
 action_authorized_by_receipt: false
-immutable: false
+immutable: true
