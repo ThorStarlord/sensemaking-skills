@@ -41,11 +41,17 @@ from .service import (
 
 
 def _git(root: Path, *args: str, allow_failure: bool = False) -> bytes | None:
+    # fsmonitor and optional index locks are disabled: a target's own fsmonitor hook or
+    # post-index-change hook must not run while a snapshot is captured, and neither changes the
+    # output bytes. Clean and smudge filters are deliberately NOT disabled here, because their
+    # output is part of the commit-pinned identity; that remaining decision is recorded in
+    # experiments/git-subprocess-safety/README.md.
     try:
         completed = subprocess.run(
-            ["git", "-C", str(root), *args],
+            ["git", "-c", "core.fsmonitor=false", "-C", str(root), *args],
             capture_output=True,
             check=False,
+            env={**os.environ, "GIT_OPTIONAL_LOCKS": "0"},
         )
     except OSError as exc:
         raise CampaignWorkspaceError(f"could not execute git for target repository: {exc}") from exc

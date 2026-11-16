@@ -59,9 +59,23 @@ For a file whose stored form is produced by a transforming filter (the git-lfs p
 
 Affected callers: `impact-preview`, `knowledge-proposal-check` and `release audit`. They now fail closed on such repositories. This matches the existing behaviour of `knowledge-build`. The Sensemaking repository itself defines no `filter=` attributes, so its own release audit is unaffected.
 
-## Confirmed, deferred: campaign target snapshot
+## Campaign target snapshot: partly closed, one decision remains
 
-`campaigns/target_snapshot.py` runs `git status` on target repositories. It fires the clean filter and fsmonitor on a filtered target (confirmed through `capture_target_snapshot`). It is **not repaired here**. Its status output is part of a commit-pinned identity digest (`_worktree_digest`), so guarding it would change identities for targets with transforming filters. That is an identity-semantics decision for the owner.
+`campaigns/target_snapshot.py` runs `git status` on target repositories. Before the repair it fired the target's fsmonitor, its `post-index-change` hook and its clean filter (`results/`, round-two probe). The repair disables fsmonitor and optional index locks for its calls (`GIT_OPTIONAL_LOCKS=0` also stops the index write that runs `post-index-change`). After the repair only the clean filter fires.
+
+Disabling clean and smudge filters here is **not** done, because the snapshot's status output is part of a commit-pinned identity digest (`_worktree_digest`). Disabling them would change identities for targets with transforming filters. That is an identity-semantics decision for the owner.
+
+Identity preservation, measured: the same repository, snapshotted by the old and the new code, gives identical values for every field, including `worktree_sha256`, on a dirty repository (no filter attributes).
+
+## Round two: review findings and their repair
+
+An independent review of the first repair found two blockers and one undisclosed behaviour change:
+
+1. **Filter names containing `=`.** `-c name=` is split at its first `=`, so a driver named `a=b` disabled the wrong key. Measured before the fix: the guard let `clean` run through status and through the temporary build. The fix refuses such configuration in `_configured_external_filters`. After the fix a canary repository with a driver named `a=b` produces no canary firing, and both the guarded status and the temporary build refuse with an explicit error.
+2. **Campaign target snapshot.** Addressed as described above.
+3. **Required filters and transforming filters.** Documented in `guarded_git_text`. The guarded error now includes Git's own reason (for example `clean filter 'r' failed`), which was dropped before.
+
+**Harness defect found and fixed during round two.** `sm_tests.py` in the repository had computed its source path one directory too high. Its import silently fell back to an installed package, so a run appeared to succeed on the wrong code. The path is corrected, and the harness now asserts that the source tree exists. The results in `results/sm_results_after_repair.json` were produced by this corrected harness against the worktree's `src`.
 
 ## Not exercised
 
@@ -82,4 +96,4 @@ GITSAFETY_SCRATCH=/path/to/scratch python experiments/git-subprocess-safety/harn
 GITSAFETY_SCRATCH=/path/to/scratch python experiments/git-subprocess-safety/harness/sm_tests.py
 ```
 
-`sm_tests.py` runs the worktree's `src` (two levels above the harness). To reproduce the "before" column, check out the parent commit's `src` into a separate tree and point `SRC` at it.
+`sm_tests.py` runs the worktree's `src` (three levels above the harness, at the worktree root) and asserts that it exists. To reproduce the "before" column, export `origin/main`'s `src` into a separate tree (for example with `git archive`) and point `SRC` at it.

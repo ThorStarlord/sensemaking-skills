@@ -25,7 +25,8 @@ def _git(
             check=False,
         )
         if result.returncode and not (no_match_ok and result.returncode == 1):
-            raise ValueError("cannot inspect local Git repository worktree")
+            detail = result.stderr.decode("utf-8", "replace").strip()[:400]
+            raise ValueError(f"cannot inspect local Git repository worktree: {detail}")
         return result.stdout
     except (OSError, subprocess.TimeoutExpired) as exc:
         raise ValueError("cannot inspect local Git repository worktree") from exc
@@ -41,6 +42,11 @@ def _configured_external_filters(root: Path) -> tuple[str, ...]:
         item.decode("utf-8", "surrogateescape")
         for item in names.split(b"\x00") if item
     )))
+    # `-c name=` is split at its first '=', so a name containing '=' or a line break would
+    # disable the wrong key. Refuse such configuration instead of inspecting it unguarded.
+    if any("=" in key or "\n" in key or "\r" in key for key in keys):
+        raise ValueError("repository configuration names a Git filter containing '=' or a line break; "
+                         "the guard cannot disable it safely")
     if len(keys) > 128:
         raise ValueError("too many configured Git external filters for safe inspection")
     return keys
@@ -53,6 +59,10 @@ def guarded_git_text(root: Path, *args: str) -> str:
     the worktree, rev-parse of a checkout). Git may run core.fsmonitor, or clean, smudge and
     process filters named by the repository's own configuration, while it reads those. Diff-like
     callers must still pass --no-textconv and --no-ext-diff.
+
+    Known behaviour, not a bypass: for a file whose stored form comes from a transforming filter
+    (git-lfs pattern), the raw comparison reports it modified. A driver marked required makes
+    status fail, and Git's reason is included in the error. Callers fail closed on both.
     """
     disabled = _configured_external_filters(root)
     return _git(root, *args, disable_filters=disabled).decode("utf-8", "surrogateescape")
