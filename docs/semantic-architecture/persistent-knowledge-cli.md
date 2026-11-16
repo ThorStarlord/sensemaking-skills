@@ -793,7 +793,11 @@ sensemaking-skills semantic knowledge-query --db "$db" --repository "$repository
 - `context.history`: incidents, lessons and observations linked by `references`,
   `contradicts` or `learned_from`. One second hop follows `derived_from` from a
   linked decision to a recorded incident, lesson or observation, and is labelled as
-  such.
+  such. A history item whose record states its own limits returns them under
+  `recorded_conditions` (any of `scope`, `claim_ceiling`, `revisit_when`,
+  `staleness_condition`, `decision_changed`, `operationalized_by`, `revised`), as
+  written. These are the record's stated conditions, not a determination that they
+  apply to the file under review.
 - `context.verification_refs`: verification records linked by `tested_by` from
   an owner or a matched rule. For a file that **no component owns**, a
   verification record whose `authority_ref` is that file, or whose `evidence_refs`

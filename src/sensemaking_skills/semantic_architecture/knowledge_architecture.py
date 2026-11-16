@@ -146,6 +146,23 @@ def _context_item(cid: str, claim: Mapping[str, Any], matched_by: set[str]) -> d
     }
 
 
+# Limits a history record (lesson, incident, observation) states about itself. Returned as written so
+# a reader can judge applicability at retrieval time; the system does not establish that they apply.
+HISTORY_CONDITION_KEYS = (
+    "scope", "claim_ceiling", "revisit_when", "staleness_condition",
+    "decision_changed", "operationalized_by", "revised",
+)
+
+
+def _history_item(cid: str, claim: Mapping[str, Any], matched_by: set[str]) -> dict:
+    item = _context_item(cid, claim, matched_by)
+    attributes = claim.get("attributes") or {}
+    conditions = {key: attributes[key] for key in HISTORY_CONDITION_KEYS if key in attributes}
+    if conditions:
+        item["recorded_conditions"] = conditions
+    return item
+
+
 def _test_evidence_verifications(claims: Mapping[str, dict], path: str) -> dict[str, list[str]]:
     """Verification records that explicitly name this file as authority or evidence.
 
@@ -490,7 +507,8 @@ def context_for(
     contracts, decisions = items("contracts"), items("decisions")
     constraints = items("constraints")
     alternatives = items("alternatives")
-    history, verification = items("history"), items("verification_refs")
+    history = [_history_item(cid, claims[cid], buckets["history"][cid]) for cid in sorted(buckets["history"])]
+    verification = items("verification_refs")
     lists = {"contracts": contracts, "constraints": constraints, "decisions": decisions,
              "alternatives": alternatives, "history": history,
              "verification_refs": verification}
