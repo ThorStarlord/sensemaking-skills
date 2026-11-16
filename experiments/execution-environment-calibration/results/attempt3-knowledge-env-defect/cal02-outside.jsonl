@@ -1,0 +1,1 @@
+{"ts_start": "2026-11-16T04:47:32.513633+00:00", "ts_end": "2026-11-16T04:47:32.514526+00:00", "tool": "git_show_file", "args": {"rev": "HEAD", "path": "../other-repo/secret.txt"}, "status": "REFUSED", "stdout_sha256": "2f1e851086bdc4edcc8a3e52c30247e23085f3d93920c980babbfccb310643b8", "stdout_bytes": 74}

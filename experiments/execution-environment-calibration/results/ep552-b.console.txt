@@ -1,0 +1,15 @@
+{
+  "label": "ep552-b",
+  "model": "claude-haiku-5-5",
+  "sm_connected": true,
+  "shell_or_web_tools_absent": true,
+  "canary_leak_free": true,
+  "net_hits": 0,
+  "mcp_count_matches_log": true,
+  "tool_uses_without_result": 0,
+  "server_statuses": [
+    "0"
+  ],
+  "result": "success",
+  "cost": 0.3476969999999999
+}

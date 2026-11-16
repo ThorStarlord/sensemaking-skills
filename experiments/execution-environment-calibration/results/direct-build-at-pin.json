@@ -1,0 +1,10 @@
+{
+  "source": "orchestrator direct CLI builds at the pinned SHA, user environment",
+  "pinned": "b7ce9e699d63d637c9798da6b15db325a02f7ce8",
+  "digest_at_sandbox_path": "b7a4d6370d167936774a7d103b8859889e711dc8e52fc77fe58d13c3cc3b37f2",
+  "digest_at_debug_clone_path": "84dc854cc917e932de16b1c391725948a5c2fecb238136f99d8be6179498a198",
+  "claim_count": 255,
+  "note": "digests depend on the repository path; compare only at the same path (PREREG-AMENDMENT-4.md)",
+  "b6_search_claim_ids_identical": true,
+  "b6_explain_claim_ids_identical": true
+}

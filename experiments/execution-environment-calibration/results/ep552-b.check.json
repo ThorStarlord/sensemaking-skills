@@ -1,0 +1,35 @@
+{
+  "run_completed_within_limits": true,
+  "measure1_knowledge_calls_before_final": 1,
+  "measure1_knowledge_call_names": [
+    "knowledge_query"
+  ],
+  "measure2_source_reads_before_final": 5,
+  "measure3_claim_ids_cited": {},
+  "measure3_all_claims_exist": false,
+  "measure4_commits_cited": {
+    "b7ce9e699d63d637c9798da6b15db325a02f7ce8": true
+  },
+  "measure4_paths_cited": {
+    "STATUS.md": true,
+    "docs/adr/0031-persistent-semantic-stewardship.md": true,
+    "docs/persistent-semantic-stewardship-plan.md": true,
+    "knowledge.py": false,
+    "knowledge_architecture.py": false,
+    "src/sensemaking_skills/semantic_architecture/knowledge_sources.py": true,
+    "src/sensemaking_skills/semantic_architecture/knowledge_store.py": true,
+    "tests/test_semantic_knowledge.py": true
+  },
+  "measure4_all_citations_exist": false,
+  "verdict_tokens_in_final": [
+    "CHANGE_RECOMMENDED"
+  ],
+  "tool_calls_total": 15,
+  "result": {
+    "subtype": "success",
+    "is_error": false,
+    "num_turns": 16,
+    "total_cost_usd": 0.3476969999999999,
+    "duration_ms": 65770
+  }
+}

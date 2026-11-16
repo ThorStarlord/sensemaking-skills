@@ -1,0 +1,1 @@
+{"ts_start": "2026-11-16T05:03:21.136776+00:00", "ts_end": "2026-11-16T05:03:26.978367+00:00", "tool": "knowledge_query", "args": {"operation": "search", "subject": "", "search_terms": ["stale source span"], "limit": 10}, "status": 0, "stdout_sha256": "9bbc161bc6bcb338c34f2233b84ecbb36a8654c7ad4f76f18a4881e1a9021657", "stdout_bytes": 1420}

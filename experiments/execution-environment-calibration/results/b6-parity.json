@@ -1,0 +1,48 @@
+{
+  "pinned": "b7ce9e699d63d637c9798da6b15db325a02f7ce8",
+  "repo_path": "C:\\Users\\Admin\\AppData\\Local\\Temp\\claude\\283a4123a15423ed\\a859bb74-70f0-4338-b907-557bc3ec73c3\\scratchpad\\exec-cal-a6\\sandbox\\repo",
+  "cli_src": "C:\\Users\\Admin\\AppData\\Local\\Temp\\claude\\283a4123a15423ed\\a859bb74-70f0-4338-b907-557bc3ec73c3\\scratchpad\\exec-cal-a6\\sandbox\\repo\\src",
+  "direct_build_digest": "b7a4d6370d167936774a7d103b8859889e711dc8e52fc77fe58d13c3cc3b37f2",
+  "server_build_digest": "b7a4d6370d167936774a7d103b8859889e711dc8e52fc77fe58d13c3cc3b37f2",
+  "digest_identical": true,
+  "direct_claim_count": 255,
+  "server_claim_count": 255,
+  "search_claim_ids_identical": true,
+  "explain_claim_ids_identical": true,
+  "direct_search_ids": [
+    "incident:source-context-link-gaps-20261102",
+    "lesson:console-guard-literal-print-arguments-only",
+    "lesson:distinguish-provenance-content-and-meaning",
+    "lesson:grounding-waiver",
+    "lesson:installed-skill-currency-includes-references",
+    "lesson:pr-review-merge-base-is-scope-evidence",
+    "lesson:query-completeness-is-evidence",
+    "lesson:safe-mode-alone-does-not-confine-file-reads",
+    "lesson:separate-clone-changes-audited-bytes",
+    "lesson:source-anchored-context-reentry"
+  ],
+  "direct_explain_ids": [
+    "component:semantic-cli",
+    "incident:pr-review-diverged-tip-scope-20261112",
+    "lesson:pr-review-merge-base-is-scope-evidence"
+  ],
+  "server_search_ids": [
+    "incident:source-context-link-gaps-20261102",
+    "lesson:console-guard-literal-print-arguments-only",
+    "lesson:distinguish-provenance-content-and-meaning",
+    "lesson:grounding-waiver",
+    "lesson:installed-skill-currency-includes-references",
+    "lesson:pr-review-merge-base-is-scope-evidence",
+    "lesson:query-completeness-is-evidence",
+    "lesson:safe-mode-alone-does-not-confine-file-reads",
+    "lesson:separate-clone-changes-audited-bytes",
+    "lesson:source-anchored-context-reentry"
+  ],
+  "server_explain_ids": [
+    "component:semantic-cli",
+    "incident:pr-review-diverged-tip-scope-20261112",
+    "lesson:pr-review-merge-base-is-scope-evidence"
+  ],
+  "direct_errors": {},
+  "b6_pass": true
+}

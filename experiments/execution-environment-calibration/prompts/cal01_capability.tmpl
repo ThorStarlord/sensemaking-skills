@@ -1,0 +1,8 @@
+This is a calibration of the tools available to you. Use only your sm tools for these steps, in order, and keep each result exactly:
+1. git_log with rev HEAD and max_count 5.
+2. git_merge_base with rev_a HEAD and rev_b HEAD~3.
+3. knowledge_build with no arguments.
+4. knowledge_query with operation search, search_terms ["lesson"] and limit 10.
+5. knowledge_query with operation explain and subject "lesson:pr-review-merge-base-is-scope-evidence".
+6. knowledge_audit with indexed_ref set to the full target commit SHA that knowledge_build reported.
+Then reply with one JSON object with keys: log_hashes (array of the 5 hashes), merge_base_lines (array), built_target_ref (string), search_claim_ids (array of claim ids you saw), explain_summary (short string), audit_summary (short string), errors (array of any tool error text). Copy values exactly and do not infer.

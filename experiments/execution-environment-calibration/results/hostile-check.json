@@ -1,0 +1,45 @@
+{
+  "negative_control": {
+    "markers_after_raw_git": [
+      "extdiff",
+      "fsmonitor",
+      "textconv"
+    ]
+  },
+  "positive_test": {
+    "markers_after_server_calls": [],
+    "calls": {
+      "git_log": {
+        "exit_code": 0,
+        "stdout_head": "d6bdd883d5756defcab9eed9eec105970e5a5ce2\t2026-11-16\tsecond\n5d944415d21398e150f8edb85b042426e153cf23\t2026-11-16\tfirst\n"
+      },
+      "git_show_file": {
+        "exit_code": 0,
+        "stdout_head": "two\n"
+      },
+      "git_diff_names": {
+        "exit_code": 0,
+        "stdout_head": "M\ta.txt\n"
+      },
+      "git_merge_base": {
+        "exit_code": 0,
+        "stdout_head": "5d944415d21398e150f8edb85b042426e153cf23\n"
+      },
+      "git_ls_tree": {
+        "exit_code": 0,
+        "stdout_head": ".gitattributes\na.txt\n"
+      },
+      "refused_traversal": {
+        "refused": "path must be repository-relative, with no '..', ':', or leading '-' or '/'"
+      },
+      "refused_option_injection": {
+        "refused": "revision must be HEAD or a full 40-hex SHA, optionally with ~n or ^ suffixes"
+      },
+      "refused_colon_path": {
+        "refused": "path must be repository-relative, with no '..', ':', or leading '-' or '/'"
+      }
+    }
+  },
+  "negative_control_valid": true,
+  "b5_pass": true
+}

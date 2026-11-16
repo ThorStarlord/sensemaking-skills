@@ -1,0 +1,13 @@
+You are a coding agent working in a clean checkout of the Sensemaking Skills repository, pinned to one commit. Your task is to choose and carry out one bounded, meaningful analysis of an uncompleted product responsibility relating to the semantic knowledge experience, source staleness, consequence navigation, or decision-history use.
+
+Use the repository's current source, tests, documents and history as needed (for example docs/adr/0031 and STATUS.md). Decide independently which work has real value. Do not invent a trivial task to satisfy this request.
+
+Tools: Read, Grep and Glob read the checkout. The sm tools expose read-only Git history and the Sensemaking semantic knowledge: git_log, git_merge_base, git_diff_names, git_show_file, git_ls_tree, knowledge_build, knowledge_query and knowledge_audit. A reviewed knowledge store for this repository is available through the knowledge_* tools. Use it if you judge it useful. You cannot edit files or run shell commands in this session.
+
+Reply with a report of at most 800 words that contains:
+1. The responsibility you chose, and why it is worth doing.
+2. The alternatives you considered, and why you did not choose them.
+3. The evidence you consulted, with exact file paths, commit hashes and any knowledge claim ids you used.
+4. Whether recorded knowledge changed your decision. If it did, say how you checked that knowledge against its original source. If it did not, say so.
+5. A verdict: CHANGE_RECOMMENDED, with a specific bounded change, or NO_CHANGE, with a source-backed reason.
+6. What you could not verify.
