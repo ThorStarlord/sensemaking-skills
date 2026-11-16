@@ -72,7 +72,10 @@ with (repo / ".git" / "config").open("a", encoding="utf-8") as fh:
 hook = repo / ".git" / "hooks" / "post-checkout"
 hook.parent.mkdir(exist_ok=True)
 hook.write_text('#!/bin/sh\necho x >> "' + marker("post-checkout") + '"\n', encoding="utf-8")
+index_hook = repo / ".git" / "hooks" / "post-index-change"
+index_hook.write_text('#!/bin/sh\necho x >> "' + marker("post-index-change") + '"\n', encoding="utf-8")
 
 # Stat-dirty with identical content: any command that re-hashes notes.txt runs the clean filter.
-os.utime(repo / "notes.txt", None)
+later = 4102444800  # year 2100: a guaranteed stat mismatch, so git re-hashes and rewrites the index
+os.utime(repo / "notes.txt", (later, later))
 print(f"repo={repo} markers={markers} mode={mode} head={git('rev-parse', 'HEAD').stdout.strip()}")

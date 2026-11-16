@@ -3,7 +3,8 @@
     "exit": 0,
     "canaries_fired": [
       "clean",
-      "fsmonitor"
+      "fsmonitor",
+      "post-index-change"
     ]
   },
   "ls_files_cached": {
@@ -22,7 +23,8 @@
     "exit": 0,
     "canaries_fired": [
       "clean",
-      "fsmonitor"
+      "fsmonitor",
+      "post-index-change"
     ]
   },
   "diff_patch_commits": {
@@ -62,6 +64,7 @@
     "canaries_fired": [
       "fsmonitor",
       "post-checkout",
+      "post-index-change",
       "smudge"
     ]
   }

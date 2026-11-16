@@ -17,11 +17,14 @@ def _git(
     overrides = [part for name in disable_filters for part in ("-c", f"{name}=")]
     try:
         result = subprocess.run(
-            ["git", "-c", "core.fsmonitor=false", *overrides, "-C", str(root), *args],
+            # core.hooksPath: a diff against the worktree writes the index, which runs the
+            # repository's post-index-change hook even with GIT_OPTIONAL_LOCKS=0.
+            ["git", "-c", "core.fsmonitor=false", "-c", f"core.hooksPath={os.devnull}",
+             *overrides, "-C", str(root), *args],
             env={**os.environ, "GIT_OPTIONAL_LOCKS": "0", "GIT_TERMINAL_PROMPT": "0"},
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            timeout=20,
+            timeout=30,
             check=False,
         )
         if result.returncode and not (no_match_ok and result.returncode == 1):

@@ -5,7 +5,7 @@ from pathlib import Path
 import os
 HERE = Path(os.environ["GITSAFETY_SCRATCH"])  # fixtures go here, never inside the repository
 MAKE = Path(__file__).resolve().parent / "make_repo.py"
-SRC = Path(__file__).resolve().parents[3] / "src"  # the worktree under test
+SRC = Path(os.environ.get("GITSAFETY_SRC", str(Path(__file__).resolve().parents[3] / "src")))  # default: the worktree under test
 assert SRC.is_dir(), f"source tree not found: {SRC}"  # never fall back to an installed package
 BOOT = ("import sys; sys.path.insert(0, sys.argv[1]); "
         "sys.argv = ['sensemaking-skills'] + sys.argv[2:]; from sensemaking_skills.cli import main; main()")

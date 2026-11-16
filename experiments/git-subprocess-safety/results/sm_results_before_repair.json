@@ -2,7 +2,8 @@
   "knowledge_build_active": {
     "exit": 0,
     "canaries_fired": [
-      "fsmonitor"
+      "fsmonitor",
+      "post-index-change"
     ],
     "last_stderr": ""
   },
@@ -23,7 +24,8 @@
   "knowledge_audit_temp": {
     "exit": 0,
     "canaries_fired": [
-      "fsmonitor"
+      "fsmonitor",
+      "post-index-change"
     ],
     "last_stderr": ""
   },
@@ -36,7 +38,8 @@
     "exit": 0,
     "canaries_fired": [
       "clean",
-      "fsmonitor"
+      "fsmonitor",
+      "post-index-change"
     ],
     "last_stderr": ""
   },
@@ -52,7 +55,8 @@
     "exit": 3,
     "canaries_fired": [
       "clean",
-      "fsmonitor"
+      "fsmonitor",
+      "post-index-change"
     ],
     "last_stderr": ""
   }
