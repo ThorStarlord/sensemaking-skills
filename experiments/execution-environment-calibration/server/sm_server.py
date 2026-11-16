@@ -52,7 +52,10 @@ mcp = FastMCP("sm")
 
 
 def _env() -> dict[str, str]:
-    env = {k: os.environ[k] for k in ("PATH", "SYSTEMROOT", "TEMP", "TMP") if k in os.environ}
+    # APPDATA and LOCALAPPDATA locate the user site-packages where the CLI dependencies (click) live.
+    # They are path variables only; no secret values are passed.
+    env = {k: os.environ[k] for k in ("PATH", "SYSTEMROOT", "TEMP", "TMP", "APPDATA", "LOCALAPPDATA")
+           if k in os.environ}
     env.update({
         "HOME": str(HOME), "USERPROFILE": str(HOME),
         "GIT_CONFIG_GLOBAL": os.devnull, "GIT_CONFIG_NOSYSTEM": "1", "GIT_ATTR_NOSYSTEM": "1",

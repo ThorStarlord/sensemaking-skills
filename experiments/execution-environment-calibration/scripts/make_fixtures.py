@@ -39,6 +39,11 @@ for d in (SB, CAN, RENDER):
 repo = SB / "repo"
 git("clone", "--no-hardlinks", "--no-checkout", str(source), str(repo))
 git("remote", "remove", "origin", cwd=repo)
+# Local settings so the sandbox does not depend on the host's system Git config, which the server
+# disables with GIT_CONFIG_NOSYSTEM=1. autocrlf=true would make every file look modified; longpaths
+# is needed for tracked paths longer than the Windows default limit.
+git("config", "core.autocrlf", "false", cwd=repo)
+git("config", "core.longpaths", "true", cwd=repo)
 git("checkout", "--detach", pin, cwd=repo)
 assert git("rev-parse", "HEAD", cwd=repo) == pin, "pinned HEAD mismatch"
 assert git("status", "--porcelain", cwd=repo) == "", "clone is not clean"
