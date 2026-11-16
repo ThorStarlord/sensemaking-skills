@@ -4,7 +4,7 @@
     {
       "id": "goal:domain-general-cognitive-development",
       "kind": "goal",
-      "statement": "Sensemaking's owner-ratified fundamental purpose is domain-general cognitive development: support increasingly capable agent judgment through integrated understanding, prospective discovery, metareasoning, experience-grounded learning and continuity. This intended benefit is not yet independently qualified.",
+      "statement": "Sensemaking's owner-ratified fundamental purpose is domain-general cognitive development: support increasingly capable and independent agents through persistent situated understanding, prospective opportunity discovery, reflective value formation, adaptive metareasoning, experience-grounded method adaptation and cognitive continuity. The developmental benefit and comparative improvement remain unqualified.",
       "authority_kind": "policy",
       "authority_ref": "docs/adr/0037-domain-general-cognitive-development.md",
       "evidence_refs": ["file:docs/adr/0037-domain-general-cognitive-development.md", "file:docs/product-strategy.md", "file:artifacts/history/2026-11-13-domain-general-cognitive-thesis-reconciliation.md"],
