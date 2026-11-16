@@ -135,8 +135,16 @@ def is_repository_file_path(value: str) -> bool:
     return _valid_repo_path(value, glob=False) and not value.endswith("/")
 
 
+# Limits a record states about itself. Returned as written on every context item, so a reader can
+# judge applicability at retrieval time; the system does not establish that they apply here.
+RECORDED_CONDITION_KEYS = (
+    "scope", "claim_ceiling", "known_limits", "exclusion_condition", "revisit_when",
+    "staleness_condition", "decision_changed", "operationalized_by", "revised",
+)
+
+
 def _context_item(cid: str, claim: Mapping[str, Any], matched_by: set[str]) -> dict:
-    return {
+    item = {
         "claim_id": cid, "kind": claim["kind"], "statement": claim["statement"],
         "epistemic_status": claim.get("epistemic_status"),
         "authority_kind": claim.get("authority_kind"),
@@ -144,20 +152,8 @@ def _context_item(cid: str, claim: Mapping[str, Any], matched_by: set[str]) -> d
         "evidence_refs": claim.get("evidence_refs", []),
         "matched_by": sorted(matched_by),
     }
-
-
-# Limits a history record (lesson, incident, observation) states about itself. Returned as written so
-# a reader can judge applicability at retrieval time; the system does not establish that they apply.
-HISTORY_CONDITION_KEYS = (
-    "scope", "claim_ceiling", "revisit_when", "staleness_condition",
-    "decision_changed", "operationalized_by", "revised",
-)
-
-
-def _history_item(cid: str, claim: Mapping[str, Any], matched_by: set[str]) -> dict:
-    item = _context_item(cid, claim, matched_by)
     attributes = claim.get("attributes") or {}
-    conditions = {key: attributes[key] for key in HISTORY_CONDITION_KEYS if key in attributes}
+    conditions = {key: attributes[key] for key in RECORDED_CONDITION_KEYS if key in attributes}
     if conditions:
         item["recorded_conditions"] = conditions
     return item
@@ -507,8 +503,7 @@ def context_for(
     contracts, decisions = items("contracts"), items("decisions")
     constraints = items("constraints")
     alternatives = items("alternatives")
-    history = [_history_item(cid, claims[cid], buckets["history"][cid]) for cid in sorted(buckets["history"])]
-    verification = items("verification_refs")
+    history, verification = items("history"), items("verification_refs")
     lists = {"contracts": contracts, "constraints": constraints, "decisions": decisions,
              "alternatives": alternatives, "history": history,
              "verification_refs": verification}
