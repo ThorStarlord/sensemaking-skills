@@ -35,18 +35,25 @@ for d in (SB, CAN, RENDER):
         shutil.rmtree(d, onexc=_clear_readonly)
     d.mkdir(parents=True)
 
-# 1. Pinned clone: objects copied (no hardlinks, no alternates), origin removed, detached at the pin.
+# 1. Pinned sandbox: a fresh repository holding only the pinned revision's ancestry. A plain clone
+# would copy every branch, tag and later commit of the source (PREREG-AMENDMENT-5). Fetching by SHA
+# copies the closure reachable from the pin and nothing else.
 repo = SB / "repo"
-git("clone", "--no-hardlinks", "--no-checkout", str(source), str(repo))
-git("remote", "remove", "origin", cwd=repo)
+repo.mkdir(parents=True)
+git("init", "-q", cwd=repo)
+git("fetch", "--no-tags", "--quiet", str(source), pin, cwd=repo)
 # Local settings so the sandbox does not depend on the host's system Git config, which the server
 # disables with GIT_CONFIG_NOSYSTEM=1. autocrlf=true would make every file look modified; longpaths
 # is needed for tracked paths longer than the Windows default limit.
 git("config", "core.autocrlf", "false", cwd=repo)
 git("config", "core.longpaths", "true", cwd=repo)
-git("checkout", "--detach", pin, cwd=repo)
+git("checkout", "-q", "--detach", "FETCH_HEAD", cwd=repo)
 assert git("rev-parse", "HEAD", cwd=repo) == pin, "pinned HEAD mismatch"
-assert git("status", "--porcelain", cwd=repo) == "", "clone is not clean"
+assert git("status", "--porcelain", cwd=repo) == "", "sandbox is not clean"
+assert git("for-each-ref", cwd=repo) == "", "refs present beyond the pin"
+assert git("tag", cwd=repo) == "", "tags present beyond the pin"
+assert git("rev-list", "--all", "--count", cwd=repo) == git("rev-list", pin, "--count", cwd=repo), \
+    "objects present beyond the pin"
 for name in ("index", "run", "home", "log"):
     (SB / name).mkdir()
 (SB / "mcp-config.json").write_text(json.dumps({"mcpServers": {"sm": {
@@ -90,7 +97,9 @@ for tmpl in sorted(prompts_dir.glob("*.tmpl")):
         text = text.replace(key, value)
     (RENDER / (tmpl.stem + ".txt")).write_text(text, encoding="utf-8")
 
-print(json.dumps({"pinned": pin, "clone_head": git("rev-parse", "HEAD", cwd=repo),
-                  "clone_status": git("status", "--porcelain", cwd=repo) or "clean",
+print(json.dumps({"pinned": pin, "sandbox_head": git("rev-parse", "HEAD", cwd=repo),
+                  "sandbox_status": git("status", "--porcelain", cwd=repo) or "clean",
+                  "refs": git("for-each-ref", cwd=repo) or "none",
+                  "commits_in_store": git("rev-list", "--all", "--count", cwd=repo),
                   "remotes": git("remote", cwd=repo) or "none",
                   "prompts": sorted(p.name for p in RENDER.glob("*.txt"))}, indent=2))

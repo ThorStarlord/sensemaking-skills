@@ -1,8 +1,14 @@
 """Narrow read-only Git and Sensemaking interface (execution-calibration scope, mechanism A).
 
-No shell is exposed. Each tool builds a fixed argv from validated arguments and runs it
-inside one pinned sandbox repository, with a neutralised Git environment. Every call,
-including refusals, is appended to a server-side log outside the subject's file scope.
+No shell is exposed to the subject. Each tool builds a fixed argv from validated arguments
+and runs it against one pinned repository, with a neutralised Git environment. Every call,
+including refusals and errors, is appended to a server-side log outside the subject's file scope.
+
+Trust model (PREREG-AMENDMENT-5): the boundary is the tool surface and argument validation.
+It is NOT operating-system isolation. The server runs git and the Sensemaking CLI with the
+operator's OS privileges, and the CLI imports Python code from the pinned repository's src/.
+The pinned repository is the object of study and is treated as trusted content. Objects beyond
+the pin are absent from the sandbox, because it is built from the pinned ancestry only.
 
 Configuration: environment variable SM_SANDBOX names a sandbox directory containing
   repo/   pinned clean clone (the only repository this server can see)
@@ -66,7 +72,7 @@ def _env() -> dict[str, str]:
 
 
 def _rev(value: str) -> str:
-    if not REV_RE.match(value or ""):
+    if not REV_RE.fullmatch(value or ""):  # fullmatch: '$' would accept a trailing newline
         raise ValueError("revision must be HEAD or a full 40-hex SHA, optionally with ~n or ^ suffixes")
     return value
 
@@ -119,6 +125,9 @@ def _call(name: str, args: dict, build) -> dict:
     except ValueError as exc:
         _log(name, args, "REFUSED", str(exc).encode(), time.time())
         return {"refused": True, "reason": str(exc)}
+    except Exception as exc:  # any other failure is still logged, so the attribution log stays complete
+        _log(name, args, f"ERROR:{type(exc).__name__}", str(exc).encode(), time.time())
+        return {"error": f"{type(exc).__name__}: {exc}"}
     return _run(name, args, argv, cwd, cap)
 
 
@@ -126,7 +135,7 @@ def _head_sha() -> str:
     proc = subprocess.run(GIT + ["rev-parse", "--verify", "HEAD^{commit}"], cwd=REPO, env=_env(),
                           capture_output=True, text=True, timeout=30, stdin=subprocess.DEVNULL)
     sha = proc.stdout.strip()
-    if proc.returncode or not FULL_SHA_RE.match(sha):
+    if proc.returncode or not FULL_SHA_RE.fullmatch(sha):
         raise ValueError("cannot resolve HEAD of the pinned repository")
     return sha
 
@@ -216,8 +225,9 @@ def knowledge_build() -> dict:
 def knowledge_query(operation: str, subject: str = "", search_terms: list[str] | None = None,
                     limit: int = 50) -> dict:
     """Query the built index for the pinned HEAD. operation: snapshot, search, explain, impact, why,
-    history, rules-for, term, orientation-summary or context-for. subject: a claim id, literal text
-    (search, term), or a repository-relative path (rules-for, context-for)."""
+    history, rules-for, term, orientation-summary or context-for. subject: passed as one argument to
+    the CLI. For claim operations it is a claim id; for search and term it is literal text; for
+    rules-for and context-for it is a path. These operations do no file I/O on the subject's path."""
     def build():
         if operation not in OPERATIONS:
             raise ValueError("unsupported operation")
@@ -241,7 +251,7 @@ def knowledge_query(operation: str, subject: str = "", search_terms: list[str] |
 def knowledge_audit(indexed_ref: str) -> dict:
     """Source drift between an index built earlier in this sandbox (indexed_ref, a full SHA) and pinned HEAD."""
     def build():
-        if not FULL_SHA_RE.match(indexed_ref or ""):
+        if not FULL_SHA_RE.fullmatch(indexed_ref or ""):
             raise ValueError("indexed_ref must be a full 40-hex SHA")
         sha = _head_sha()
         db = INDEX / f"{indexed_ref}.db"
