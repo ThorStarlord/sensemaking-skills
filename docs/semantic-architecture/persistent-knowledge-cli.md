@@ -477,22 +477,26 @@ sensemaking-skills semantic knowledge-query --operation search \
 This mode tokenizes Unicode letters/numbers (splitting punctuation and
 underscores), folds case, removes duplicate tokens and ignores one-character
 tokens. Input is bounded to 300 characters and 1..24 distinct words of length
-at least two. A claim is a candidate when at least one query token is a literal
-substring of its ID or statement, or when the token and one of the claim's words
-share a simple stem after one common inflection is removed. For example, the query
-`subagents` finds a statement that says `subagent`, and `reading` finds `read`.
-Results are ordered by number of distinct
-matching tokens, then their combined length, then claim ID. No embedding,
-language-model call, inferred graph edge or semantic authority is used.
+at least two. Common English function words (for example `the`, `and`, `when`,
+`before`) are dropped before matching and listed in `ignored_function_words`.
+A claim is a candidate when at least one remaining content token is a literal
+substring of its statement or of its ID without the claim-kind prefix, provided the
+token has five or more letters, or when the token and one of the claim's words
+share a simple stem after one common inflection is removed. Shorter tokens match
+only as whole words or stems, so `act` does not match `exact`. For example, the
+query `subagents` finds a statement that says `subagent`, and `reading` finds `read`.
+Results are ordered by number of distinct matching content tokens, then their
+combined length, then claim ID. No embedding, language-model call, inferred graph
+edge or semantic authority is used.
 
 JSON reports `search_mode: ranked_lexical_tokens_any`,
-`search_hit_total`, `query_tokens` and bounded `match_details` with
-each returned claim's literal `matched_tokens`. The normal
+`search_hit_total`, `query_tokens`, `ignored_function_words` and bounded
+`match_details` with each returned claim's literal `matched_tokens`. The normal
 `truncated` flag applies when the result exceeds `--limit`; a missing
 or weak lexical match is **NOT ASSESSED**, not proof that relevant reviewed
-knowledge is absent. Stop words are not semantically analyzed, so a broad
-question may return noisy candidates. Check exact cited sources before
-relying on a result.
+knowledge is absent. A question made only of function words returns no candidates.
+Lexical matching is still not semantic, so a broad question may return noisy
+candidates. Check exact cited sources before relying on a result.
 
 `--query-text` works only with `--operation search`, and cannot be combined
 with `--subject`, repeated `--term` or multi-file path queries. Existing

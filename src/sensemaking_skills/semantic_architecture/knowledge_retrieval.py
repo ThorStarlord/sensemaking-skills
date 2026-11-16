@@ -35,6 +35,29 @@ def _stem(word: str) -> str:
     return word
 
 
+# Function words and question scaffolding carry no topic. They are dropped before
+# lexical ranking so that they cannot lift an unrelated claim above a content match.
+_FUNCTION_WORDS = frozenset("""
+a about above after again against all also am an and any are as at be because been
+before being below between both but by can could did do does doing done down during
+each either few for from further had has have having he her here hers him his how i
+if in into is it its itself just let may me might more most must my no nor not now of
+off on once only or other our out over own same shall she should so some such than
+that the their them then there these they this those through to too under until up us
+very via was we were what when where whether which while who whom why will with
+within would yet you your
+""".split())
+# Shorter query words match only as whole words or stems, so "act" does not match "exact".
+_SUBSTRING_MIN_LENGTH = 5
+
+
+def _lexical_hit(word: str, name: str, statement: str, stems: set[str]) -> bool:
+    """Whole word or inflection match; substring matching only for longer words."""
+    if _stem(word) in stems:
+        return True
+    return len(word) >= _SUBSTRING_MIN_LENGTH and (word in name or word in statement)
+
+
 def validate_retrieval_options(
     *, operation: str, subject: str | None,
     search_terms: tuple[str, ...], expected_kinds: tuple[str, ...],
@@ -88,14 +111,16 @@ def search_matches(
     filter_metadata = {"search_kind_filter": sorted(kind_filter)} if kind_filter else {}
     if query_text is not None:
         tokens = _query_tokens(query_text)
+        content_words = tuple(word for word in tokens if word not in _FUNCTION_WORDS)
         ranked: list[tuple[int, int, str, dict, tuple[str, ...]]] = []
         for claim in candidates:
-            id_text = claim["id"].casefold()
+            # The kind prefix ("lesson:") is taxonomy shared by every claim of a kind, not topic.
+            name = claim["id"].casefold().partition(":")[2] or claim["id"].casefold()
             statement = claim["statement"].casefold()
-            stems = {_stem(word) for word in _QUESTION_WORD.findall(f"{id_text} {statement}")}
+            stems = {_stem(word) for word in _QUESTION_WORD.findall(f"{name} {statement}")}
             matched = tuple(
-                word for word in tokens
-                if word in id_text or word in statement or _stem(word) in stems
+                word for word in content_words
+                if _lexical_hit(word, name, statement, stems)
             )
             if matched:
                 ranked.append((
@@ -109,15 +134,17 @@ def search_matches(
             "search_mode": "ranked_lexical_tokens_any",
             "search_hit_total": len(found),
             "query_tokens": list(tokens),
+            "ignored_function_words": [word for word in tokens if word in _FUNCTION_WORDS],
             "match_details": [
                 {"claim_id": item[2], "matched_tokens": list(item[4])}
                 for item in ranked[:limit]
             ],
             "match_details_truncated": len(ranked) > limit,
             "ranking_limit": (
-                "Ranked by number and total length of matching distinct literal "
-                "word substrings or word stems (plural and tense forms), then claim ID; "
-                "matches are discovery candidates, "
+                "Ranked by number and total length of matching distinct content words "
+                "(function words ignored) or their stems (plural and tense forms), then claim ID. "
+                "Words under five letters match only as whole words or stems; claim-kind "
+                "prefixes are not matched. Matches are discovery candidates, "
                 "not semantic similarity, verified applicability or authority."
             ),
         }
