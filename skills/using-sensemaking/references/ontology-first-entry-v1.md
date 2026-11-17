@@ -68,6 +68,25 @@ Recalled records answer these questions only where a current source check
 confirms them for the areas the goal turns on. A summary of records is not an
 inspection of the systems they describe.
 
+**Optional, existing decision-time consumer.** When the repository-wide choice
+turns on the governing product outcome and a reviewed graph is available, inspect
+the product's existing zero-setup source-pinned outline:
+
+```bash
+sensemaking-skills semantic workspace-query --operation product-outline --include-candidates --json
+```
+
+Read the reviewed goals, serving records, candidate futures and source-linked
+`implementation_routes` or `indirect_implementation_routes` (where supported)
+as evidence candidates. A direct route joins explicit `serves_goal` and
+`implemented_by` links; an indirect route adds one authored specialized-goal
+`serves_goal` hop. Neither shows code was executed, a goal achieved, an
+opportunity preferred or an absent route proving a missing feature. Check
+original source/authority and real code/consumers before valuing or selecting
+a responsibility; keep unassessed areas visible. If no index or CLI is usable,
+continue from original repository sources rather than blocking construction.
+No query is needed merely to perform a clear, bounded local repair.
+
 If the answers exist and are current, reuse them and go to exploration. If they
 are missing or materially stale for the area the goal turns on, bootstrap or
 deepen that area by invoking the `repository-semantic-steward` Skill in

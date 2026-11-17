@@ -289,6 +289,17 @@ scope applies; ask again only when it is superseded or materially challenged.
 Record a new owner answer with `[owner: YYYY-MM-DD]` in the same change. Never
 relabel an agent inference as owner intent.
 
+**Decision-time product context (when material).** For an open-ended
+repository-wide responsibility, the existing optional
+`semantic workspace-query --operation product-outline --include-candidates --json`
+can expose reviewed product goals, proposed futures and source-linked
+goal-to-implementation routes
+*before* selecting work. Inspect original sources and actual code; absent routes
+remain `NOT_ASSESSED`, not evidence of a missing capability. Use ordinary source
+inspection if the CLI is unavailable. This is not a mandatory query, a strategic
+ranking mechanism or a step for narrow repairs. See
+`references/ontology-first-entry-v1.md` section 2.
+
 **Repository memory.** Use `../repository-semantic-steward/SKILL.md` for the
 repository's semantic foundation, including when **Sensemaking Skills itself**
 is the target repository. **BOOTSTRAP** is the default first responsibility
