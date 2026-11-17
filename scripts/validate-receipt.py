@@ -687,17 +687,30 @@ def _ascii(text: str) -> str:
     return text.encode("ascii", "replace").decode("ascii")
 
 
+def owning_repository(path: Path) -> Path | None:
+    """Repository that owns a receipt stored at <repo>/.sensemaking/receipts/<name>.
+
+    The command-line default uses it so that referenced paths are checked against the
+    repository the receipt describes, as the repository's own receipt test does.
+    """
+    resolved = path.resolve()
+    if resolved.parent.name == "receipts" and resolved.parent.parent.name == ".sensemaking":
+        return resolved.parents[2]
+    return None
+
+
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(description="Validate a Sensemaking session or semantic query receipt")
     parser.add_argument("artifact_path", help="Path to the receipt YAML (or a frontmatter-prefixed fixture)")
     parser.add_argument("--repo-root", default=".", help="Framework root (harness/router contract; unused)")
     parser.add_argument("--target-repo", default=None,
-                        help="Repository the receipt describes; when given, referenced paths must exist there")
+                        help="Repository the receipt describes; referenced paths must exist there. "
+                             "Defaults to the repository owning a receipt under .sensemaking/receipts/")
     parser.add_argument("--json", action="store_true", help="Emit the router's JSON result envelope")
     args = parser.parse_args(argv)
 
     path = Path(args.artifact_path)
-    target = Path(args.target_repo).resolve() if args.target_repo else None
+    target = Path(args.target_repo).resolve() if args.target_repo else owning_repository(path)
     artifact_id, checker = validate_receipt(path, target)
 
     if args.json:
