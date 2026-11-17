@@ -700,6 +700,26 @@ def product_outline(
          and claims[r["object"]]["kind"] in {"constraint", "invariant"}),
         key=lambda r: (r["subject"], r["object"], r["id"]),
     )
+    # This is a documentary path, not a code-inspection or implementation verdict:
+    # goal <- serves_goal - capability - implemented_by -> component.
+    implementation_edges = sorted(
+        (r for r in edges if r["predicate"] == "implemented_by"
+         and r["subject"] in claims and claims[r["subject"]]["kind"] == "capability"
+         and r["object"] in claims and claims[r["object"]]["kind"] == "component"),
+        key=lambda r: (r["subject"], r["object"], r["id"]),
+    )
+    implementations_by_capability: dict[str, list[dict]] = {}
+    for relation in implementation_edges:
+        implementations_by_capability.setdefault(relation["subject"], []).append(relation)
+    implementation_routes = [
+        (serve, implementation)
+        for serve in serving if claims[serve["subject"]]["kind"] == "capability"
+        for implementation in implementations_by_capability.get(serve["subject"], ())
+    ]
+    visible_routes = [
+        route for route in implementation_routes
+        if route[0]["object"] in visible_goal_set
+    ][:limit]
     candidates = sorted(
         (r for r in edges if r["predicate"] == "candidate_opportunity_for"
          and r["object"] in goal_set and r["subject"] in claims
@@ -723,6 +743,32 @@ def product_outline(
         return {
             "claim_id": other, "kind": claim["kind"], "relation_id": r["id"],
             "relation_epistemic_status": r["epistemic_status"],
+        }
+
+    def implementation_route(serve: dict, implementation: dict) -> dict:
+        capability = claims[serve["subject"]]
+        component = claims[implementation["object"]]
+        return {
+            "capability_claim_id": serve["subject"],
+            "capability_statement": capability["statement"],
+            "capability_epistemic_status": capability["epistemic_status"],
+            "capability_source_ref": capability["source_ref"],
+            "capability_evidence_refs": list(capability["evidence_refs"]),
+            "serves_goal_relation_id": serve["id"],
+            "serves_goal_relation_epistemic_status": serve["epistemic_status"],
+            "serves_goal_relation_evidence_refs": list(serve["evidence_refs"]),
+            "component_claim_id": implementation["object"],
+            "component_statement": component["statement"],
+            "component_epistemic_status": component["epistemic_status"],
+            "component_authority_kind": component["authority_kind"],
+            "component_authority_ref": component["authority_ref"],
+            "component_source_ref": component["source_ref"],
+            "component_evidence_refs": list(component["evidence_refs"]),
+            "component_owned_paths": list(component.get("attributes", {}).get("owned_paths", [])),
+            "implemented_by_relation_id": implementation["id"],
+            "implemented_by_relation_epistemic_status": implementation["epistemic_status"],
+            "implemented_by_relation_evidence_refs": list(implementation["evidence_refs"]),
+            "implementation_verified": False,
         }
 
     def candidate_link(r: dict) -> dict:
@@ -767,6 +813,11 @@ def product_outline(
         bounds = [link(r, r["object"]) for r in constrained_visible if r["subject"] == cid]
         total_linked = sum(r["object"] == cid for r in serving)
         total_bounds = sum(r["subject"] == cid for r in constrained)
+        shown_routes = [
+            implementation_route(serve, implementation)
+            for serve, implementation in visible_routes if serve["object"] == cid
+        ]
+        route_total = sum(serve["object"] == cid for serve, _ in implementation_routes)
         goal = {
             **record(cid),
             "serving_records": linked, "serving_total": total_linked,
@@ -774,6 +825,10 @@ def product_outline(
             "governing_constraints": bounds, "constraint_total": total_bounds,
             "constraint_omitted": total_bounds - len(bounds),
             "serving_link_not_assessed": total_linked == 0,
+            "implementation_routes": shown_routes,
+            "implementation_route_total": route_total,
+            "implementation_route_omitted": route_total - len(shown_routes),
+            "implementation_link_not_assessed": route_total == 0,
         }
         if include_candidates:
             future = [r for r in candidate_visible if r["object"] == cid]
@@ -789,6 +844,7 @@ def product_outline(
         "non_goals": len(non_goal_ids) - len(visible_non_goals),
         "serves_goal_edges": len(serving) - len(served_visible),
         "goal_constraint_edges": len(constrained) - len(constrained_visible),
+        "implementation_routes": len(implementation_routes) - len(visible_routes),
     }
     if include_candidates:
         omitted["candidate_opportunity_edges"] = len(candidates) - len(candidate_visible)
@@ -797,17 +853,22 @@ def product_outline(
         *(r["subject"] for r in served_visible),
         *(r["object"] for r in constrained_visible),
         *(r["subject"] for r in candidate_visible),
+        *(serve["subject"] for serve, _ in visible_routes),
+        *(implementation["object"] for _, implementation in visible_routes),
     ]))
     selected_relation_ids = [
         *(r["id"] for r in served_visible),
         *(r["id"] for r in constrained_visible),
         *(r["id"] for r in candidate_visible),
+        *(serve["id"] for serve, _ in visible_routes),
+        *(implementation["id"] for _, implementation in visible_routes),
     ]
     result = {
         "goals": goals, "non_goals": [record(cid) for cid in visible_non_goals],
         "total_counts": {
             "goals": len(goal_ids), "non_goals": len(non_goal_ids),
             "serves_goal_edges": len(serving), "goal_constraint_edges": len(constrained),
+            "implementation_routes": len(implementation_routes),
         },
         "omitted_counts": omitted,
         "truncated": any(omitted.values()),
@@ -819,6 +880,10 @@ def product_outline(
             "does not prove implementation, value, applicability or priority.",
             "Unlinked goals, absent goals and unrecorded relationships are NOT ASSESSED, "
             "never evidence of no need, no support or no product intent.",
+            "Implementation routes show only an explicit goal-to-capability-to-component "
+            "path via serves_goal and implemented_by. They neither inspect code nor "
+            "establish a working consumer, goal completion, user benefit or priority. "
+            "A missing route is NOT ASSESSED, not an implementation gap verdict.",
             "Independent per-category and global record limits can omit references; "
             "inspect original source evidence before choosing engineering work.",
         ],
