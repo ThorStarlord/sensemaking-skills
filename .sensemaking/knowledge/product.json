@@ -271,6 +271,22 @@
       "object": "goal:domain-general-cognitive-development",
       "evidence_refs": ["file:skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md"],
       "attributes": {"scope": "Prospective opportunity discovery at Level-3 breadth; agent adherence not established"}
+    },
+    {
+      "id": "rel:repository-only-discovery-implemented-by-entrypoint",
+      "subject": "cap:repository-only-discovery",
+      "predicate": "implemented_by",
+      "object": "component:using-sensemaking-skill",
+      "evidence_refs": ["file:skills/using-sensemaking/SKILL.md"],
+      "attributes": {"scope": "Guidance component; no runtime execution or authority is attributed to Sensemaking"}
+    },
+    {
+      "id": "rel:breadth-exploration-implemented-by-strategic-skill",
+      "subject": "cap:breadth-exploration-guidance",
+      "predicate": "implemented_by",
+      "object": "component:strategic-repository-analysis-skill",
+      "evidence_refs": ["file:skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md"],
+      "attributes": {"scope": "Guidance component; agent adherence is not attributed by this relation"}
     }
   ]
 }
