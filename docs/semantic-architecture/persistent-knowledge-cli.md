@@ -625,6 +625,23 @@ as a missing feature or a gap in the real product. Every route states
 remain separately limited; nested routes preserve their own original source
 references even when those envelope records are cut.
 
+When a broader goal is served by a more specialized **goal** rather than
+directly by a capability, the default response separately exposes
+`indirect_implementation_routes` through **exactly one authored goal-to-goal
+`serves_goal` link** followed by the same capability-to-component route.
+Each item names the intermediate `via_goal_claim_id`, its original evidence,
+the intermediate `via_goal_serves_goal_relation_id` and independent link
+evidence, along with the complete direct route to the component.
+
+`indirect_implementation_route_total`,
+`indirect_implementation_route_omitted` and
+`indirect_implementation_link_not_assessed` disclose this second category.
+Top-level counts and omissions include it independently. Longer goal chains,
+unwritten serving relations and absent component links are **NOT_ASSESSED**;
+an indirect path does not certify a capability for the broader goal or infer
+transitive implementation. One-hop reachability is deliberately not a generic
+graph closure or strategic ranking mechanism.
+
 **Decision-time use:** For an open-ended engineering responsibility, inspect
 the governing goal, declared serving capabilities, visible routes and
 candidate futures, then verify decisive claims against current code and users.
