@@ -48,10 +48,12 @@ _TEMPORARY_CHECKOUT_HINT = (
 
 
 def _emit(payload: dict[str, Any], *, output_json: bool) -> None:
+    # ASCII-only JSON: redirected Windows stdout uses the ANSI code page (cp1252), so raw
+    # non-ASCII record text is mis-encoded (not UTF-8) or fails. Escaped output parses identically.
     if output_json:
-        click.echo(json.dumps(payload, sort_keys=True, ensure_ascii=False))
+        click.echo(json.dumps(payload, sort_keys=True))
     else:
-        click.echo(json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=False))
+        click.echo(json.dumps(payload, indent=2, sort_keys=True))
 
 
 def _refusal(exc: Exception, *, temporary_checkout: bool) -> click.ClickException:
