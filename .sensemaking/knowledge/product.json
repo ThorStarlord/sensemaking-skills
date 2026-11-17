@@ -102,6 +102,45 @@
         "claim_ceiling": "Owner-selected identity; benefits of ontology-first entry and single-entrypoint composition unproven.",
         "qualification_status": "The recovered cloud pair completed: the returning agent used retained knowledge to narrow one load-bearing assumption and recalled a coach possibility. This one unreplicated, non-independently assessed pair does not establish comparative superiority; the separate local pair remained interrupted."
       }
+    },
+    {
+      "id": "cap:adaptive-metareasoning",
+      "kind": "capability",
+      "statement": "The active agent proportionately chooses among control moves (act, inquire, challenge, explore, verify, escalate, stop) through the existing metareasoning guidance, without a controller, score or authority grant.",
+      "authority_kind": "policy",
+      "authority_ref": "docs/adr/0036-adaptive-metareasoning-system.md",
+      "evidence_refs": ["file:docs/adr/0036-adaptive-metareasoning-system.md", "file:skills/using-sensemaking/references/metareasoning-policy-v0.md"],
+      "epistemic_status": "declared",
+      "attributes": {
+        "scope": "The single using-sensemaking entrypoint; not a deterministic metareasoner or runtime",
+        "claim_ceiling": "Owner-selected capability with guidance-only implementation; agent application is not independently observed and behavioral benefit is NOT QUALIFIED."
+      }
+    },
+    {
+      "id": "cap:experience-lesson-recall",
+      "kind": "capability",
+      "statement": "Source-grounded lesson records from earlier engineering episodes are retained in reviewed knowledge and returned, with their recorded conditions, by existing search and context-for operations, so a later agent can consult them before a method decision. Whether a later agent applies or adapts a lesson is not established.",
+      "authority_kind": "policy",
+      "authority_ref": "docs/adr/0035-sensemaking-continuous-learning.md",
+      "evidence_refs": ["file:docs/adr/0035-sensemaking-continuous-learning.md", "file:src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py", "file:src/sensemaking_skills/semantic_architecture/knowledge_architecture.py"],
+      "epistemic_status": "declared",
+      "attributes": {
+        "scope": "Reviewed lesson records only; not automatic learning from every episode",
+        "claim_ceiling": "Retention and retrieval exist; source-checked later use and independent method-learning benefit are NOT QUALIFIED."
+      }
+    },
+    {
+      "id": "cap:warrant-and-choice-guidance",
+      "kind": "capability",
+      "statement": "Target-specific, defeasible warrant and choice guidance weighs consequence, reversibility and credible alternatives before a responsibility, claim or action is selected, and allows a justified NO_SELECTION.",
+      "authority_kind": "document",
+      "authority_ref": "skills/using-sensemaking/references/warrant-choice-policy-v0.md",
+      "evidence_refs": ["file:skills/using-sensemaking/references/warrant-choice-policy-v0.md", "file:docs/adr/0037-domain-general-cognitive-development.md"],
+      "epistemic_status": "declared",
+      "attributes": {
+        "scope": "Value formation at Sensemaking decision points; not an automatic scoring or ranking function",
+        "claim_ceiling": "Skill guidance; agent adherence and decision quality are not established."
+      }
     }
   ],
   "relations": [
@@ -160,6 +199,94 @@
       "object": "con:agent-owns-semantic-control",
       "evidence_refs": ["file:docs/adr/0034-ontology-first-adaptive-sensemaking.md"],
       "attributes": {"scope": "A single entrypoint is not a deterministic router (ADR 0034, relationship to ADR 0029)"}
+    },
+    {
+      "id": "rel:adaptive-metareasoning-serves-cognitive-goal",
+      "subject": "cap:adaptive-metareasoning",
+      "predicate": "serves_goal",
+      "object": "goal:domain-general-cognitive-development",
+      "evidence_refs": ["file:docs/adr/0037-domain-general-cognitive-development.md", "file:docs/adr/0036-adaptive-metareasoning-system.md"],
+      "attributes": {"scope": "Intended purpose; ADR 0037 names adaptive metareasoning among the developmental functions. Not proven effect."}
+    },
+    {
+      "id": "rel:adaptive-metareasoning-implemented-by-entrypoint",
+      "subject": "cap:adaptive-metareasoning",
+      "predicate": "implemented_by",
+      "object": "component:using-sensemaking-skill",
+      "evidence_refs": ["file:skills/using-sensemaking/SKILL.md", "file:skills/using-sensemaking/references/metareasoning-policy-v0.md"],
+      "attributes": {"scope": "Guidance component; no runtime execution or authority is attributed to Sensemaking"}
+    },
+    {
+      "id": "rel:experience-lesson-recall-serves-cognitive-goal",
+      "subject": "cap:experience-lesson-recall",
+      "predicate": "serves_goal",
+      "object": "goal:domain-general-cognitive-development",
+      "evidence_refs": ["file:docs/adr/0037-domain-general-cognitive-development.md", "file:docs/adr/0035-sensemaking-continuous-learning.md"],
+      "attributes": {"scope": "Intended purpose; retained experience is an input to method adaptation, not proof of it."}
+    },
+    {
+      "id": "rel:experience-lesson-recall-implemented-by-knowledge-store",
+      "subject": "cap:experience-lesson-recall",
+      "predicate": "implemented_by",
+      "object": "component:knowledge-store",
+      "evidence_refs": ["file:src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py"],
+      "attributes": {"scope": "Search with reviewed-kind filtering over indexed lesson records"}
+    },
+    {
+      "id": "rel:experience-lesson-recall-implemented-by-semantic-plane",
+      "subject": "cap:experience-lesson-recall",
+      "predicate": "implemented_by",
+      "object": "component:semantic-knowledge-plane",
+      "evidence_refs": ["file:src/sensemaking_skills/semantic_architecture/knowledge_architecture.py"],
+      "attributes": {"scope": "context-for returns the recorded conditions of matched lesson records"}
+    },
+    {
+      "id": "rel:warrant-and-choice-serves-cognitive-goal",
+      "subject": "cap:warrant-and-choice-guidance",
+      "predicate": "serves_goal",
+      "object": "goal:domain-general-cognitive-development",
+      "evidence_refs": ["file:docs/adr/0037-domain-general-cognitive-development.md"],
+      "attributes": {"scope": "Intended value-formation purpose (ADR 0037: consider consequences, alternatives, affected parties, uncertainty). Not proof of better choices."}
+    },
+    {
+      "id": "rel:warrant-and-choice-implemented-by-entrypoint",
+      "subject": "cap:warrant-and-choice-guidance",
+      "predicate": "implemented_by",
+      "object": "component:using-sensemaking-skill",
+      "evidence_refs": ["file:skills/using-sensemaking/references/warrant-choice-policy-v0.md"],
+      "attributes": {"scope": "Guidance component; no runtime authority"}
+    },
+    {
+      "id": "rel:repository-only-discovery-serves-cognitive-goal",
+      "subject": "cap:repository-only-discovery",
+      "predicate": "serves_goal",
+      "object": "goal:domain-general-cognitive-development",
+      "evidence_refs": ["file:skills/using-sensemaking/SKILL.md"],
+      "attributes": {"scope": "Repository specialization of persistent situated understanding; not domain-general evidence"}
+    },
+    {
+      "id": "rel:breadth-exploration-serves-cognitive-goal",
+      "subject": "cap:breadth-exploration-guidance",
+      "predicate": "serves_goal",
+      "object": "goal:domain-general-cognitive-development",
+      "evidence_refs": ["file:skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md"],
+      "attributes": {"scope": "Prospective opportunity discovery at Level-3 breadth; agent adherence not established"}
+    },
+    {
+      "id": "rel:repository-only-discovery-implemented-by-entrypoint",
+      "subject": "cap:repository-only-discovery",
+      "predicate": "implemented_by",
+      "object": "component:using-sensemaking-skill",
+      "evidence_refs": ["file:skills/using-sensemaking/SKILL.md"],
+      "attributes": {"scope": "Guidance component; no runtime execution or authority is attributed to Sensemaking"}
+    },
+    {
+      "id": "rel:breadth-exploration-implemented-by-strategic-skill",
+      "subject": "cap:breadth-exploration-guidance",
+      "predicate": "implemented_by",
+      "object": "component:strategic-repository-analysis-skill",
+      "evidence_refs": ["file:skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md"],
+      "attributes": {"scope": "Guidance component; agent adherence is not attributed by this relation"}
     }
   ]
 }
