@@ -1,0 +1,75 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-11-17-cognitive-selection-consumer
+state: final
+created_at: "2026-11-17T04:17:31Z"
+updated_at: "2026-11-17T04:40:00Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: cd804747eb445238e3efa2c477d1e4b507c39387
+  end_ref: 04f69a9748a721fdfc66575f0545d179771308b8
+  worktree_clean_at_end: null
+skill_identity:
+  load_mode: harness_discovered
+  sensemaking_source_ref: null
+goal:
+  statement: "Autonomously identify and deliver the most valuable warranted, authorized, bounded engineering improvement toward domain-general cognitive development (ADR 0037). Consider that no construction may be justified."
+  source: owner_message
+  source_ref: null
+delegation:
+  granted: [read, local_write, run_local_commands, commit, push, open_pr, knowledge_edit, merge]
+  withheld: [release, deploy, external_publication]
+continuity:
+  resumes: null
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: Record the capabilities that serve the ratified cognitive-development goal in reviewed product knowledge
+    capability: ordinary_coding
+    status: completed
+    reason: product-outline routed the ratified goal only through two knowledge-plane sub-goals; its named adaptive metareasoning, experience-grounded learning and value-formation functions had no serving capability record.
+    artifact_refs: [.sensemaking/knowledge/product.json]
+    validation:
+      - command: knowledge-proposal-check on product.json (current worktree bytes)
+        result: PASS
+      - command: workspace-query product-outline on 04f69a97 (index build and goal routes observed)
+        result: PASS
+      - command: static search of tests and src for hard-coded repository pack counts
+        result: PASS
+      - command: local unit and synthetic tests (construction policy)
+        result: NOT_RUN
+      - command: hosted CI on PR head (merge authorized without waiting)
+        result: NOT_RUN
+findings:
+  - id: F-1
+    statement: Reviewed product graph routed the ratified goal only through compounding-knowledge and stewardship sub-goals; no capability serving it was recorded.
+    epistemic_status: OBSERVED
+    evidence_refs: [file:.sensemaking/knowledge/product.json, file:src/sensemaking_skills/semantic_architecture/knowledge_architecture.py]
+    disposition: resolved
+  - id: F-2
+    statement: Cognitive continuity has no capability record; the candidate continuity mechanism (session receipts) is governed by PROPOSED ADR 0032, so recording it now would overstate ratification.
+    epistemic_status: OBSERVED
+    evidence_refs: [file:docs/adr/0032-session-and-query-receipts.md]
+    disposition: handed_off
+open_questions:
+  - id: Q-1
+    question: Should session-receipt continuity be recorded as a serving capability for the cognitive goal, given that ADR 0032 is still proposed?
+    source: owner_intent
+    blocking: false
+    options:
+      - option: Defer continuity until ADR 0032 is decided
+        consequence: No continuity serving edge is recorded; the goal entry stays silent on continuity, which matches current authority.
+      - option: Record continuity now as a capability
+        consequence: The goal entry would present a proposed mechanism as serving the ratified purpose, overstating its authority.
+    durable_ref: null
+stop:
+  disposition: GOAL_SATISFIED
+  reason: The bounded knowledge correction is merged; whether a later agent consults and uses the corrected routes in a real selection is not observed.
+next:
+  warranted_responsibility: null
+  blocked_on: [Q-1]
+persistence: committed
+claim_ceiling: Source-level knowledge correction only; the consumer returns the recorded relations, not their behavioral benefit. Local unit and synthetic tests NOT_RUN; hosted CI not polled; independent agent use, cognitive benefit and continuity capability not established.
+action_authorized_by_receipt: false
+immutable: true
