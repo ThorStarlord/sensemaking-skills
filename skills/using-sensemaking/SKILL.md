@@ -290,9 +290,10 @@ Record a new owner answer with `[owner: YYYY-MM-DD]` in the same change. Never
 relabel an agent inference as owner intent.
 
 **Decision-time product context (when material).** For an open-ended
-repository-wide responsibility, the existing optional `semantic workspace-query
---operation product-outline --include-candidates --json` can expose reviewed
-product goals, proposed futures and source-linked goal-to-implementation routes
+repository-wide responsibility, the existing optional
+`semantic workspace-query --operation product-outline --include-candidates --json`
+can expose reviewed product goals, proposed futures and source-linked
+goal-to-implementation routes
 *before* selecting work. Inspect original sources and actual code; absent routes
 remain `NOT_ASSESSED`, not evidence of a missing capability. Use ordinary source
 inspection if the CLI is unavailable. This is not a mandatory query, a strategic
