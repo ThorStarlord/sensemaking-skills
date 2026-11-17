@@ -720,6 +720,21 @@ def product_outline(
         route for route in implementation_routes
         if route[0]["object"] in visible_goal_set
     ][:limit]
+    # A specialized goal can serve a broader goal. Follow exactly one such
+    # authored link, then the same direct capability-to-component route.
+    routes_by_goal: dict[str, list[tuple[dict, dict]]] = {}
+    for serve, implementation in implementation_routes:
+        routes_by_goal.setdefault(serve["object"], []).append((serve, implementation))
+    indirect_routes = [
+        (higher_goal_service, serve, implementation)
+        for higher_goal_service in serving
+        if claims[higher_goal_service["subject"]]["kind"] == "goal"
+        for serve, implementation in routes_by_goal.get(higher_goal_service["subject"], ())
+    ]
+    visible_indirect_routes = [
+        route for route in indirect_routes
+        if route[0]["object"] in visible_goal_set
+    ][:limit]
     candidates = sorted(
         (r for r in edges if r["predicate"] == "candidate_opportunity_for"
          and r["object"] in goal_set and r["subject"] in claims
@@ -771,6 +786,23 @@ def product_outline(
             "implementation_verified": False,
         }
 
+    def indirect_implementation_route(
+        higher_goal_service: dict, serve: dict, implementation: dict,
+    ) -> dict:
+        specialized_goal = claims[higher_goal_service["subject"]]
+        return {
+            **implementation_route(serve, implementation),
+            "via_goal_claim_id": higher_goal_service["subject"],
+            "via_goal_statement": specialized_goal["statement"],
+            "via_goal_epistemic_status": specialized_goal["epistemic_status"],
+            "via_goal_source_ref": specialized_goal["source_ref"],
+            "via_goal_evidence_refs": list(specialized_goal["evidence_refs"]),
+            "via_goal_serves_goal_relation_id": higher_goal_service["id"],
+            "via_goal_serves_goal_relation_epistemic_status": higher_goal_service["epistemic_status"],
+            "via_goal_serves_goal_relation_evidence_refs": list(higher_goal_service["evidence_refs"]),
+            "intermediate_goal_hops": 1,
+        }
+
     def candidate_link(r: dict) -> dict:
         claim = claims[r["subject"]]
         item = {
@@ -818,6 +850,15 @@ def product_outline(
             for serve, implementation in visible_routes if serve["object"] == cid
         ]
         route_total = sum(serve["object"] == cid for serve, _ in implementation_routes)
+        shown_indirect_routes = [
+            indirect_implementation_route(higher_goal_service, serve, implementation)
+            for higher_goal_service, serve, implementation in visible_indirect_routes
+            if higher_goal_service["object"] == cid
+        ]
+        indirect_route_total = sum(
+            higher_goal_service["object"] == cid
+            for higher_goal_service, _, _ in indirect_routes
+        )
         goal = {
             **record(cid),
             "serving_records": linked, "serving_total": total_linked,
@@ -829,6 +870,10 @@ def product_outline(
             "implementation_route_total": route_total,
             "implementation_route_omitted": route_total - len(shown_routes),
             "implementation_link_not_assessed": route_total == 0,
+            "indirect_implementation_routes": shown_indirect_routes,
+            "indirect_implementation_route_total": indirect_route_total,
+            "indirect_implementation_route_omitted": indirect_route_total - len(shown_indirect_routes),
+            "indirect_implementation_link_not_assessed": indirect_route_total == 0,
         }
         if include_candidates:
             future = [r for r in candidate_visible if r["object"] == cid]
@@ -845,6 +890,7 @@ def product_outline(
         "serves_goal_edges": len(serving) - len(served_visible),
         "goal_constraint_edges": len(constrained) - len(constrained_visible),
         "implementation_routes": len(implementation_routes) - len(visible_routes),
+        "indirect_implementation_routes": len(indirect_routes) - len(visible_indirect_routes),
     }
     if include_candidates:
         omitted["candidate_opportunity_edges"] = len(candidates) - len(candidate_visible)
@@ -855,6 +901,9 @@ def product_outline(
         *(r["subject"] for r in candidate_visible),
         *(serve["subject"] for serve, _ in visible_routes),
         *(implementation["object"] for _, implementation in visible_routes),
+        *(higher["subject"] for higher, _, _ in visible_indirect_routes),
+        *(serve["subject"] for _, serve, _ in visible_indirect_routes),
+        *(implementation["object"] for _, _, implementation in visible_indirect_routes),
     ]))
     selected_relation_ids = [
         *(r["id"] for r in served_visible),
@@ -862,6 +911,9 @@ def product_outline(
         *(r["id"] for r in candidate_visible),
         *(serve["id"] for serve, _ in visible_routes),
         *(implementation["id"] for _, implementation in visible_routes),
+        *(higher["id"] for higher, _, _ in visible_indirect_routes),
+        *(serve["id"] for _, serve, _ in visible_indirect_routes),
+        *(implementation["id"] for _, _, implementation in visible_indirect_routes),
     ]
     result = {
         "goals": goals, "non_goals": [record(cid) for cid in visible_non_goals],
@@ -869,6 +921,7 @@ def product_outline(
             "goals": len(goal_ids), "non_goals": len(non_goal_ids),
             "serves_goal_edges": len(serving), "goal_constraint_edges": len(constrained),
             "implementation_routes": len(implementation_routes),
+            "indirect_implementation_routes": len(indirect_routes),
         },
         "omitted_counts": omitted,
         "truncated": any(omitted.values()),
@@ -884,6 +937,10 @@ def product_outline(
             "path via serves_goal and implemented_by. They neither inspect code nor "
             "establish a working consumer, goal completion, user benefit or priority. "
             "A missing route is NOT ASSESSED, not an implementation gap verdict.",
+            "Indirect implementation routes include exactly one explicitly declared "
+            "serves_goal link from a specialized goal to its broader goal, then a "
+            "direct capability-to-component route. No arbitrary transitive closure "
+            "or inferred implementation occurs; longer paths remain NOT ASSESSED.",
             "Independent per-category and global record limits can omit references; "
             "inspect original source evidence before choosing engineering work.",
         ],
