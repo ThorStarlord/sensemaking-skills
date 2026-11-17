@@ -598,6 +598,43 @@ Each visible goal/non-goal carries its statement, source reference and
 authority/epistemic labels. Each linked record carries its actual declared
 relation ID and claim kind; an opportunity is **not** a shipped capability.
 
+### Source-linked capability-to-component routes
+
+The **default** `product-outline` response also groups
+`implementation_routes` under each visible goal. Each route joins only the
+**explicitly reviewed** path:
+
+```text
+goal <- serves_goal - capability - implemented_by -> component
+```
+
+A route reports the capability and component statements and their independently
+declared source/evidence references, both relation IDs and evidence references,
+the component's authority reference and any authored `owned_paths`. This lets
+an agent inspect the actual owning code when comparing a goal's intended
+capabilities with the implemented consumers. It does **not** follow arbitrary
+graph hops, infer capability implementation, check source correctness, prove a
+working consumer, or establish that a goal has been achieved.
+
+Per-goal `implementation_route_total` and `implementation_route_omitted`,
+plus the top-level `implementation_routes` count and omission count, disclose
+bounded reachability. `implementation_link_not_assessed: true` means no direct
+reviewed route was found **in the indexed revision**; it must not be reported
+as a missing feature or a gap in the real product. Every route states
+`implementation_verified: false`. Top-level `claims` and `relations`
+remain separately limited; nested routes preserve their own original source
+references even when those envelope records are cut.
+
+**Decision-time use:** For an open-ended engineering responsibility, inspect
+the governing goal, declared serving capabilities, visible routes and
+candidate futures, then verify decisive claims against current code and users.
+If a consequential behavior remains unsupported, name that behavior as a
+*source-grounded engineering hypothesis*. Compare a credible alternative by
+expected product value, omission cost and authority before selecting work.
+Retain the intended end-to-end outcome across bounded increments in the
+existing PR/continuation records. This query prepares evidence; the active
+agent makes the semantic judgment and retains the ability to choose no change.
+
 This is a **read-only projection**, not a planner, a derived ontology, a
 dependency inference or an assessment of which goals are achieved. Missing
 goals or missing links are `NOT_ASSESSED`; the query cannot discover all
