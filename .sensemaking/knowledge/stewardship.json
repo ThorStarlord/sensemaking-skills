@@ -750,6 +750,23 @@
         "claim_ceiling": "Conditional methodological caution from one recorded selection and an explicit owner amendment, not proof of an inferior choice, improved cognitive behavior, independent application, transferable learning or comparative advantage.",
         "revisit_when": "Issue #860's construction/qualification boundary changes, a real later choice makes the distinction consequential, or observed usage shows this caution creates unnecessary work or wrong deferral."
       }
+    },
+    {
+      "id": "observation:fresh-agent-episode-20261117-construction-gate-exposure",
+      "kind": "observation",
+      "statement": "A fresh subagent under ordinary repository guidance read the construction-vs-qualification lesson source text before its first Sensemaking query and before choosing its increment. Its final report rejected the qualification-gated Issues 859/872/874 as not construction increments, with no visible applicability check of the lesson's conditional rule; its issue read was body-only and omitted the owner amendment held in an issue comment. The same episode produced a verified consumer fix (PR 900, merged ffcec0e1).",
+      "authority_kind": "document",
+      "authority_ref": "docs/normal-use/2026-11-17-fresh-agent-episode-observation.md",
+      "evidence_refs": [
+        "file:docs/normal-use/2026-11-17-fresh-agent-episode-observation.md",
+        "file:docs/normal-use/2026-11-17-construction-vs-qualification-selection-lesson.md"
+      ],
+      "epistemic_status": "observed",
+      "attributes": {
+        "source_revision": "cd285136",
+        "scope": "One subagent episode on this host under ambient repository and user guidance. Not clean independent evidence and not a matched comparison.",
+        "claim_ceiling": "Shows pre-decision exposure and a visible gap in applicability checking in one episode. Does not show causation, recall reliability, cognitive benefit or repeatability."
+      }
     }
   ],
   "relations": [
@@ -1475,6 +1492,19 @@
       "epistemic_status": "declared",
       "attributes": {
         "scope": "Links the new conditional method-selection interpretation to the reported PR #898 decision and Issue #860's actual two-track construction disposition; not a claim of a later independent result."
+      }
+    },
+    {
+      "id": "rel:episode-observation-references-construction-gate-lesson",
+      "subject": "observation:fresh-agent-episode-20261117-construction-gate-exposure",
+      "predicate": "references",
+      "object": "lesson:separate-construction-from-learning-qualification-gates",
+      "evidence_refs": [
+        "file:docs/normal-use/2026-11-17-fresh-agent-episode-observation.md"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "scope": "Revisit-condition evidence: a real later choice where the distinction was consequential. The lesson statement is unchanged."
       }
     }
   ]
