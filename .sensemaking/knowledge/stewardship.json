@@ -711,6 +711,45 @@
         "scope": "Three episodes per arm in one harness and one task; not a claim about the lesson's effect"
       },
       "epistemic_status": "observed"
+    },
+    {
+      "id": "observation:pr898-construction-qualification-selection-20261117",
+      "kind": "observation",
+      "statement": "PR #898's authored decision note grouped #859/#860/#864 as qualification-gated work and selected a reviewed-knowledge correction after reporting product-outline consultation. Issue #860's 2026-11-15 owner amendment explicitly separates authorized useful construction from independent-learning qualification. The note's categorical gate rationale is broader than the accepted owner distinction; original private method selection and comparative value were not observed.",
+      "authority_kind": "document",
+      "authority_ref": "docs/normal-use/2026-11-17-construction-vs-qualification-selection-lesson.md",
+      "evidence_refs": [
+        "file:docs/normal-use/2026-11-17-construction-vs-qualification-selection-lesson.md",
+        "file:.sensemaking/receipts/2026-11-17-cognitive-selection-consumer.session.yaml",
+        "file:docs/normal-use/2026-11-17-goal-capability-routes-construction.md"
+      ],
+      "epistemic_status": "observed",
+      "attributes": {
+        "source_revision": "02a9bf4ed277e2ca5cd49bdaa4aa8eb7b48a4128",
+        "scope": "Recorded PR rationale from one authentic repository selection, cross-checked against Issue #860 owner amendment; no predecision native trace is preserved in this source record.",
+        "claim_ceiling": "Does not show the chosen graph correction was strategically inferior, that a behavioral alternative was executable on that host, or that any method caused the result."
+      }
+    },
+    {
+      "id": "lesson:separate-construction-from-learning-qualification-gates",
+      "kind": "lesson",
+      "statement": "When selecting a Sensemaking cognitive-development responsibility, check construction and qualification gates separately before rejecting a behavioral capability as requiring a completed independent-learning study. Issue #860 permits useful warranted SCL/AMS construction without first proving later-agent benefit; #872/#874 still gate stronger empirical claims. Compare actual execution feasibility and beneficiary outcome against graph-maintenance alternatives rather than dismissing construction categorically; the graph repair may still be best.",
+      "authority_kind": "document",
+      "authority_ref": "docs/normal-use/2026-11-17-construction-vs-qualification-selection-lesson.md",
+      "evidence_refs": [
+        "file:docs/normal-use/2026-11-17-construction-vs-qualification-selection-lesson.md",
+        "file:docs/adr/0035-sensemaking-continuous-learning.md",
+        "file:docs/adr/0036-adaptive-metareasoning-system.md",
+        "file:docs/adr/0037-domain-general-cognitive-development.md"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "scope": "Open-ended engineering responsibility selections in Sensemaking under the November 2026 Issue #860 two-track owner amendment; re-check current terms and real available tool/host constraints before reuse.",
+        "method": "Distinguish method-learning construction warrant and action availability from evidence needed to substantiate independent cognitive benefit; compare concrete product capabilities, omitted value, and feasible alternatives.",
+        "original_outcome": "PR #898 produced a useful goal-graph coverage change, but the recorded alternative rationale did not separate the two tracks; no later-agent methodological use was observed.",
+        "claim_ceiling": "Conditional methodological caution from one recorded selection and an explicit owner amendment, not proof of an inferior choice, improved cognitive behavior, independent application, transferable learning or comparative advantage.",
+        "revisit_when": "Issue #860's construction/qualification boundary changes, a real later choice makes the distinction consequential, or observed usage shows this caution creates unnecessary work or wrong deferral."
+      }
     }
   ],
   "relations": [
@@ -1423,6 +1462,20 @@
         "file:docs/normal-use/2026-11-15-harness-calibration-c2.md"
       ],
       "attributes": {}
+    },
+    {
+      "id": "rel:method-lesson-from-pr898-gate-distinction",
+      "subject": "lesson:separate-construction-from-learning-qualification-gates",
+      "predicate": "learned_from",
+      "object": "observation:pr898-construction-qualification-selection-20261117",
+      "evidence_refs": [
+        "file:docs/normal-use/2026-11-17-construction-vs-qualification-selection-lesson.md",
+        "file:.sensemaking/receipts/2026-11-17-cognitive-selection-consumer.session.yaml"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "scope": "Links the new conditional method-selection interpretation to the reported PR #898 decision and Issue #860's actual two-track construction disposition; not a claim of a later independent result."
+      }
     }
   ]
 }
