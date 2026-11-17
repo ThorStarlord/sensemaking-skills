@@ -1,0 +1,122 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-11-17-cognitive-integration-episode
+state: final
+created_at: "2026-11-17T00:00:00Z"
+updated_at: "2026-11-17T12:00:00Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: cd2851365f4a264d7e9abad0ad6f7ebee1af49f3
+  end_ref: 3bbcb03994259cd0648fd11955562ef17fb077f7
+  worktree_clean_at_end: null
+skill_identity:
+  load_mode: harness_discovered
+  sensemaking_source_ref: null
+goal:
+  statement: "Advance integrated cognitive development (ADR 0037) by reconciling the SCL retention/recall, AMS method choice and Learning/Reconciliation chain, selecting one authorized engineering responsibility or a justified NO_CHANGE, and reporting claim levels precisely."
+  source: owner_message
+  source_ref: null
+delegation:
+  granted: [read, local_write, run_local_commands, commit, push, open_pr, knowledge_edit, merge]
+  withheld: [release, deploy, tracker_write, external_publication]
+continuity:
+  resumes: null
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: Reconstruct the integrated chain against ADR 0037, Issues 859/860/872/874 and PRs 898/899
+    capability: ordinary_coding
+    status: completed
+    reason: Separates missing functionality, unencountered functionality, misread functionality and unobserved behavior.
+    artifact_refs: [docs/superpowers/plans/2026-11-12-sensemaking-continuous-learning.md]
+    validation:
+      - command: source and issue reads (ADR 0035/0036/0037, 0029, STATUS.md, issues 859/860/872/874, PRs 898/899)
+        result: PASS
+  - id: R-2
+    responsibility: Observe a fresh later agent doing an ordinary engineering responsibility without a planted lesson
+    capability: fresh_subagent_episode
+    status: completed
+    reason: Q-2 disposition activates independent observation when a worthwhile responsibility has a consequential method choice. The Agent tool is available in this session.
+    artifact_refs: [docs/normal-use/2026-11-17-fresh-agent-episode-observation.md]
+    validation:
+      - command: ordered tool-call trace extracted from the subagent transcript (no content dump)
+        result: PASS
+  - id: R-3
+    responsibility: Verify and integrate the subagent's consumer fix (ASCII-only semantic CLI JSON)
+    capability: ordinary_coding
+    status: completed
+    reason: The episode exposed a real encoding defect in semantic query JSON output.
+    artifact_refs: [src/sensemaking_skills/semantic_cli.py, "PR 900 merged as ffcec0e1"]
+    validation:
+      - command: py_compile on semantic_cli.py
+        result: PASS
+      - command: manual CLI observation, before vs after, unfiltered search (not a test)
+        result: PASS
+      - command: static scan of tests and src for non-ASCII CLI output expectations
+        result: PASS
+      - command: unit and synthetic tests (construction policy)
+        result: NOT_RUN
+      - command: hosted CI at merge time (merged without waiting, per CLAUDE.md)
+        result: NOT_RUN
+  - id: R-4
+    responsibility: Reconcile the PR 899 lesson against its revisit condition, keeping original observations intact
+    capability: knowledge_edit
+    status: completed
+    reason: The later choice made the construction/qualification distinction consequential; its applicability check was not visibly applied.
+    artifact_refs: [.sensemaking/knowledge/stewardship.json]
+    validation:
+      - command: knowledge-proposal-check on stewardship.json at HEAD 3bbcb039 (SEMANTIC_KNOWLEDGE_PROPOSAL_VALID; 47 claims, 64 relations)
+        result: PASS
+findings:
+  - id: F-1
+    statement: A fresh subagent read the construction-vs-qualification lesson source text before its first Sensemaking query and before choosing its increment, via ordinary exploration.
+    epistemic_status: OBSERVED
+    evidence_refs: [file:docs/normal-use/2026-11-17-fresh-agent-episode-observation.md]
+    disposition: resolved
+  - id: F-2
+    statement: No visible applicability check of the lesson's conditional rule; the final rejection of Issues 859/872/874 as qualification-gated matches the pattern the lesson names. Attribution is not established.
+    epistemic_status: OBSERVED
+    evidence_refs: [file:docs/normal-use/2026-11-17-fresh-agent-episode-observation.md]
+    disposition: open
+  - id: F-3
+    statement: The agent's issue read used body-only JSON and omitted the 2026-11-15 owner amendment held in a comment on Issue 860.
+    epistemic_status: OBSERVED
+    evidence_refs: [file:docs/normal-use/2026-11-17-fresh-agent-episode-observation.md]
+    disposition: handed_off
+  - id: F-4
+    statement: The semantic CLI emitted raw cp1252 bytes in redirected JSON, failing UTF-8 readers. Fixed by PR 900; before and after outputs parse to identical claims.
+    epistemic_status: OBSERVED
+    evidence_refs: [file:src/sensemaking_skills/semantic_cli.py]
+    disposition: resolved
+open_questions:
+  - id: Q-1
+    question: Should ranked lesson recall have a bounded default? An unfiltered decision-time query returned 44 full records, about 82 KB.
+    source: owner_intent
+    blocking: false
+    options:
+      - option: Keep the unbounded default and document the cost
+        consequence: No public CLI contract change. Agents keep reading large outputs.
+      - option: Add a bounded default with an explicit flag for full output
+        consequence: Changes the default output of a public query command, so it needs its own decision.
+    durable_ref: null
+  - id: Q-2
+    question: Should the ASCII-only stdout change extend to the campaign and strategy CLI modules (about 47 sites)?
+    source: repository_evidence
+    blocking: false
+    options:
+      - option: Extend in a separate reviewed sweep
+        consequence: Consistent ASCII-safe output across CLIs.
+      - option: Leave the other CLIs as they are
+        consequence: Only semantic query output is ASCII-safe.
+    durable_ref: null
+stop:
+  disposition: NO_FURTHER_WARRANT
+  reason: The end-to-end outcome is not achieved. Pre-decision exposure and a verified consumer fix are observed. Applicability check and attributable use are not. Further construction is not warranted now; the next evidence must come from a natural later episode.
+next:
+  warranted_responsibility: "Record the next ordinary later episode with a consequential method choice, without planted lesson IDs, and reconcile the lesson against its trace."
+  blocked_on: []
+persistence: committed
+claim_ceiling: "One subagent episode under ambient repository and user guidance, and one verified CLI encoding fix. No independent cognitive benefit, causal SCL effect, applicability check or repeatability is established. Unit and synthetic tests NOT_RUN under the construction policy; hosted CI not waited for."
+action_authorized_by_receipt: false
+immutable: true
