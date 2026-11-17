@@ -61,3 +61,15 @@ The agent's final report rejected Issues #859, #872 and #874 as an "owner-gated 
 - **Bounded default for ranked lesson recall.** An unfiltered decision-time query returned 44 full records, about 82 KB. That is a context-cost question. It changes a default contract, so it needs its own decision.
 - **Issue reads should include comments when the status is in comments.** This is a process note for agents. It is not a product change.
 - **ASCII sweep across the campaign and strategy CLI modules,** about 47 stdout sites. It needs a separate reviewed change.
+
+## 8. Addendum (2026-11-17, reconciliation)
+
+Sections 1–7 are the original record and are unchanged. This addendum records a review of the record and one new consumer observation. It does not change any claim level in section 3.
+
+**Review of the record.** The load-bearing factual statements were checked against the transcript and the source. The owner amendment is in the lesson source text (`docs/normal-use/2026-11-17-construction-vs-qualification-selection-lesson.md`, section 1, item 3). The issue read in call #20 was body-only JSON. The search in call #24 returned the lesson first. No factual or contract defect was found.
+
+**New observation: the inline view of the search result.** The host stored the 82.3 KB search result and showed the agent a 2 KB preview. The preview contained the first claim's `attributes` (claim ceiling, method, scope and revisit condition, which name the construction/qualification distinction). It ended before that claim's `id` and `statement`. Stored claim payloads use canonical sorted-key JSON (`knowledge_store.py`, `sort_keys=True`), so `attributes` precede `statement` in every claim. The operative sentence of the rank-1 lesson was therefore not in the one search result the agent saw. The agent had read the lesson's source text in call #18, which states the rule, so this does not show the rule was unseen.
+
+**Bounded-default decision.** The owner decided NO_CHANGE for the default size. This observation concerns field order and inline visibility, not result size, so that decision stands. Statement-first output, a changed canonical key order and a compact view each change a public output contract or the snapshot checksum. They are an owner question, not a repair.
+
+**Issue reading.** `docs/agents/issue-tracker.md` documents `gh issue view <number> --comments`. The agent used a body-only JSON call and did not open that guidance. The documented access path is correct. No repository change is warranted.

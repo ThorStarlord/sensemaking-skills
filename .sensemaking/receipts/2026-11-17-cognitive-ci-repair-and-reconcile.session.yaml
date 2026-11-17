@@ -1,0 +1,126 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-11-17-cognitive-ci-repair-and-reconcile
+state: final
+created_at: "2026-11-17T13:30:00Z"
+updated_at: "2026-11-17T13:30:00Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: 01eeff433a237559bcc4167e123990ad30a88ef5
+  end_ref: 21f40a44ffb5924aa0b668eaad32a9b5b848baef
+  worktree_clean_at_end: null
+skill_identity:
+  load_mode: harness_discovered
+  sensemaking_source_ref: null
+goal:
+  statement: "Repair the hosted receipt-reference failure caused by PR 901 under the owner's one-time exception, reconcile the fresh-agent episode without changing its claims, keep the bounded-default decision, and select only a warranted next responsibility."
+  source: owner_message
+  source_ref: null
+delegation:
+  granted: [read, local_write, run_local_commands, commit, push, open_pr, knowledge_edit, merge]
+  withheld: [release, deploy, tracker_write, external_publication]
+continuity:
+  resumes: 2026-11-17-cognitive-integration-ref-correction
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: Establish current main state and reproduce the hosted failure with the validator in the test's mode
+    capability: ordinary_coding
+    status: completed
+    reason: The hosted Full test suite on main failed one test with RECEIPT_REF_MISSING on the episode receipt. The earlier local check had omitted the target repository.
+    artifact_refs: [scripts/validate-receipt.py, tests/test_sensemaking_receipts.py, .sensemaking/receipts/2026-11-17-cognitive-integration-episode.session.yaml]
+    validation:
+      - command: validate_receipt on all committed receipts with the repository root at 01eeff43
+        result: PASS
+      - command: hosted failed-job log, run 44054448300, read for the failing assertion
+        result: PASS
+  - id: R-2
+    responsibility: Correct the single malformed artifact reference under the owner's one-time exception
+    capability: ordinary_coding
+    status: completed
+    reason: "PR 902 merged as 56a4295b. The reference was replaced with the episode record, which documents PR 900. The original is recoverable at 01eeff43."
+    artifact_refs: [.sensemaking/receipts/2026-11-17-cognitive-integration-ref-correction.session.yaml, docs/normal-use/2026-11-17-fresh-agent-episode-observation.md]
+    validation:
+      - command: validator with target repository on all 99 receipts after the correction
+        result: PASS
+      - command: hosted Full test suite on merge commit 56a4295b
+        result: PASS
+  - id: R-3
+    responsibility: Remove the default that let the validator skip referenced-path checks
+    capability: ordinary_coding
+    status: completed
+    reason: "The default command skipped the existence check, as the contract's generic validator does. PR 903 merged as 21f40a44 and checks owning-repository references by default. The contract string is unchanged because a repository test pins it."
+    artifact_refs: [scripts/validate-receipt.py, .sensemaking/receipts/2026-11-17-cognitive-integration-episode.session.yaml]
+    validation:
+      - command: manual CLI observation on the pre-correction receipt in its canonical location, before and after (not a test)
+        result: PASS
+      - command: default CLI on all committed receipts after the change
+        result: PASS
+      - command: unit and synthetic tests (construction policy)
+        result: NOT_RUN
+  - id: R-4
+    responsibility: Reconcile the episode record and review PR 901 without changing any original claim
+    capability: ordinary_coding
+    status: completed
+    reason: "Load-bearing facts in PR 901 checked against the transcript and source; no factual or contract defect found. Addendum section 8 records a new inline-visibility observation."
+    artifact_refs: [docs/normal-use/2026-11-17-fresh-agent-episode-observation.md, docs/normal-use/2026-11-17-construction-vs-qualification-selection-lesson.md]
+    validation:
+      - command: source check of the amendment in the lesson record and the body-only issue read in the transcript
+        result: PASS
+  - id: R-5
+    responsibility: Decide whether to reopen the bounded-default and issue-reading questions on the new evidence
+    capability: ordinary_coding
+    status: completed
+    reason: "Bounded default stays NO_CHANGE by owner decision. The new evidence is about field order and inline visibility, which needs an owner decision on output shape. Issue reading already has a documented access path."
+    artifact_refs: [docs/agents/issue-tracker.md, src/sensemaking_skills/semantic_architecture/knowledge_store.py]
+    validation:
+      - command: source inspection of canonical payload serialization and the documented issue-read command
+        result: PASS
+findings:
+  - id: F-1
+    statement: The hosted failure came from the validator default, which skipped referenced-path checks. Local validation without the target repository reported RECEIPT_VALID for the same receipt.
+    epistemic_status: OBSERVED
+    evidence_refs: [file:scripts/validate-receipt.py, file:tests/test_sensemaking_receipts.py]
+    disposition: resolved
+  - id: F-2
+    statement: The malformed reference was a description, not a path. Replacing it under the owner exception restored the receipt contract and the Full test suite passed on the merge commit.
+    epistemic_status: OBSERVED
+    evidence_refs: [file:.sensemaking/receipts/2026-11-17-cognitive-integration-episode.session.yaml]
+    disposition: resolved
+  - id: F-3
+    statement: The agent's one search result was shown as a 2 KB preview. Stored claims put attributes before id and statement, so the rank-1 lesson's operative sentence was not in that preview.
+    epistemic_status: OBSERVED
+    evidence_refs: [file:docs/normal-use/2026-11-17-fresh-agent-episode-observation.md, file:src/sensemaking_skills/semantic_architecture/knowledge_store.py]
+    disposition: open
+  - id: F-4
+    statement: The agent used a body-only issue read, while the documented command includes comments. The documented access path is correct and was not opened by the agent.
+    epistemic_status: OBSERVED
+    evidence_refs: [file:docs/agents/issue-tracker.md]
+    disposition: no_action
+  - id: F-5
+    statement: The episode's exposure is observed, but whether the applicability check was applied is still not visible. No further claim is supported by this session.
+    epistemic_status: OBSERVED
+    evidence_refs: [file:docs/normal-use/2026-11-17-fresh-agent-episode-observation.md]
+    disposition: open
+open_questions:
+  - id: Q-1
+    question: Should search results show each claim's id and statement before its attributes? This needs a canonical-order or output-contract decision.
+    source: owner_intent
+    blocking: false
+    options:
+      - option: Keep the current order
+        consequence: No contract change. The rank-1 rule stays below a 2 KB inline preview in unfiltered and filtered results.
+      - option: Show id and statement first
+        consequence: Changes the stored canonical key order or adds a view, so it needs its own contract and checksum decision.
+    durable_ref: docs/normal-use/2026-11-17-fresh-agent-episode-observation.md
+stop:
+  disposition: NO_FURTHER_WARRANT
+  reason: Repairs and reconciliation are complete. The remaining question is an owner output-shape decision. The cognitive chain still needs a natural later episode with a consequential method choice, which should not be manufactured.
+next:
+  warranted_responsibility: null
+  blocked_on: []
+persistence: committed
+claim_ceiling: "Repairs are verified by the validator, source inspection and CLI observations. Local unit and synthetic tests NOT_RUN. At finalization PR 903's post-merge Full test suite was pending. The episode's exposure is observed; applicability, use, benefit, repeatability and transfer are not established."
+action_authorized_by_receipt: false
+immutable: true
