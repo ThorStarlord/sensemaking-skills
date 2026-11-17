@@ -1,0 +1,81 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-11-17-cognitive-integration-ref-correction
+state: final
+created_at: "2026-11-17T13:00:00Z"
+updated_at: "2026-11-17T13:00:00Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: 01eeff433a237559bcc4167e123990ad30a88ef5
+  end_ref: 01eeff433a237559bcc4167e123990ad30a88ef5
+  worktree_clean_at_end: null
+skill_identity:
+  load_mode: harness_discovered
+  sensemaking_source_ref: null
+goal:
+  statement: "Correct one malformed artifact reference in the finalized cognitive-integration episode receipt under the owner's one-time exception, so the receipt test passes. Substantive findings, chronology, dispositions and claim ceilings are unchanged."
+  source: owner_message
+  source_ref: null
+delegation:
+  granted: [read, local_write, commit, push, open_pr, merge]
+  withheld: [release, deploy, tracker_write, external_publication]
+continuity:
+  resumes: 2026-11-17-cognitive-integration-episode
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: Reproduce the hosted receipt-reference failure with the validator in the same mode the repository test uses
+    capability: ordinary_coding
+    status: completed
+    reason: "Failing hosted test asserted validate_receipt(path, ROOT) with RECEIPT_REF_MISSING on responsibilities[2].artifact_refs[1] = 'PR 900 merged as ffcec0e1'. The earlier local check omitted the target repository, so existence was not checked."
+    artifact_refs: [scripts/validate-receipt.py, tests/test_sensemaking_receipts.py, .sensemaking/receipts/2026-11-17-cognitive-integration-episode.session.yaml]
+    validation:
+      - command: validate_receipt on all 98 committed receipts with target repository = repository root at 01eeff43
+        result: PASS
+      - command: hosted Full test suite failed log, run 44054448300, read for the failing assertion
+        result: PASS
+  - id: R-2
+    responsibility: Replace only the malformed reference with an existing, relevant repository-relative path
+    capability: ordinary_coding
+    status: completed
+    reason: "Replaced the single artifact_refs[1] entry in the R-3 responsibility with docs/normal-use/2026-11-17-fresh-agent-episode-observation.md, the record that documents PR 900 and its verification. No other field changed. Original content remains in Git at 01eeff43."
+    artifact_refs: [.sensemaking/receipts/2026-11-17-cognitive-integration-episode.session.yaml, docs/normal-use/2026-11-17-fresh-agent-episode-observation.md]
+    validation:
+      - command: git diff of the original receipt, one line changed
+        result: PASS
+      - command: validate-receipt.py with target repository on the corrected receipt
+        result: PASS
+      - command: unit and synthetic tests (construction policy)
+        result: NOT_RUN
+  - id: R-3
+    responsibility: Record the correction, its authority and the PR 900 identification in this linked receipt
+    capability: ordinary_coding
+    status: completed
+    reason: The owner's one-time exception covers only the malformed reference. The PR 900 identification is preserved here and in the normal-use record.
+    artifact_refs: [docs/normal-use/2026-11-17-fresh-agent-episode-observation.md]
+    validation:
+      - command: receipt contract review of the correction record
+        result: PASS
+findings:
+  - id: F-1
+    statement: A description string, 'PR 900 merged as ffcec0e1', was stored in artifact_refs. The contract requires repository-relative paths that resolve to files, so the target-repository validation fails.
+    epistemic_status: OBSERVED
+    evidence_refs: [file:scripts/validate-receipt.py, file:tests/test_sensemaking_receipts.py]
+    disposition: resolved
+  - id: F-2
+    statement: The earlier local validation of the episode receipt omitted the target repository, so the existence check was skipped and the defect was missed. Verification for receipts must pass the repository root, as the repository test does.
+    epistemic_status: OBSERVED
+    evidence_refs: [file:tests/test_sensemaking_receipts.py]
+    disposition: resolved
+open_questions: []
+stop:
+  disposition: GOAL_SATISFIED
+  reason: "The malformed reference is corrected and the repository validator passes for every committed receipt. Hosted CI on main is checked after merge and reported separately."
+next:
+  warranted_responsibility: null
+  blocked_on: []
+persistence: committed
+claim_ceiling: "Reference-field correction only; no finding, chronology, disposition or claim ceiling of the linked receipt changed. Unit and synthetic tests NOT_RUN under the construction policy. The failing test is verified by the validator in the test's mode, not by pytest."
+action_authorized_by_receipt: false
+immutable: true

@@ -47,7 +47,7 @@ responsibilities:
     capability: ordinary_coding
     status: completed
     reason: The episode exposed a real encoding defect in semantic query JSON output.
-    artifact_refs: [src/sensemaking_skills/semantic_cli.py, "PR 900 merged as ffcec0e1"]
+    artifact_refs: [src/sensemaking_skills/semantic_cli.py, docs/normal-use/2026-11-17-fresh-agent-episode-observation.md]
     validation:
       - command: py_compile on semantic_cli.py
         result: PASS
