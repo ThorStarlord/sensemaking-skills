@@ -498,6 +498,12 @@ knowledge is absent. A question made only of function words returns no candidate
 Lexical matching is still not semantic, so a broad question may return noisy
 candidates. Check exact cited sources before relying on a result.
 
+In search JSON (`workspace-query` and `knowledge-query`, `--operation search`), each
+returned claim lists `id` and `statement` first, then its other fields in key order,
+so a host that shows only the start of a long result still shows what each claim is
+and says. This is presentation only: stored records, snapshot digests, ranking and
+parsed values are unchanged. Other operations keep their sorted key order.
+
 `--query-text` works only with `--operation search`, and cannot be combined
 with `--subject`, repeated `--term` or multi-file path queries. Existing
 literal `--subject` search and explicit OR `--term` search preserve their
