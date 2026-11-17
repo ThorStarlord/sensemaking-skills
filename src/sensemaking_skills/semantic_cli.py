@@ -47,13 +47,44 @@ _TEMPORARY_CHECKOUT_HINT = (
 )
 
 
-def _emit(payload: dict[str, Any], *, output_json: bool) -> None:
+def _emit(payload: dict[str, Any], *, output_json: bool, statement_first_claims: bool = False) -> None:
     # ASCII-only JSON: redirected Windows stdout uses the ANSI code page (cp1252), so raw
     # non-ASCII record text is mis-encoded (not UTF-8) or fails. Escaped output parses identically.
-    if output_json:
+    if statement_first_claims:
+        # Search only: the identity and statement lead each claim so a truncated preview shows them.
+        payload = _statement_first_payload(payload)
+        if output_json:
+            click.echo(json.dumps(payload))
+        else:
+            click.echo(json.dumps(payload, indent=2))
+    elif output_json:
         click.echo(json.dumps(payload, sort_keys=True))
     else:
         click.echo(json.dumps(payload, indent=2, sort_keys=True))
+
+
+def _statement_first_payload(payload: dict[str, Any]) -> dict[str, Any]:
+    """Sort keys as sort_keys=True does, except that each claim leads with id and statement.
+
+    Presentation only: parsed values, ranking, stored records and digests are unchanged.
+    """
+    ordered = _sorted_keys(payload)
+    if isinstance(ordered.get("claims"), list):
+        ordered["claims"] = [_claim_lead_first(claim) for claim in ordered["claims"]]
+    return ordered
+
+
+def _claim_lead_first(claim: dict[str, Any]) -> dict[str, Any]:
+    lead = {key: claim[key] for key in ("id", "statement") if key in claim}
+    return {**lead, **{key: value for key, value in claim.items() if key not in lead}}
+
+
+def _sorted_keys(value: Any) -> Any:
+    if isinstance(value, dict):
+        return {key: _sorted_keys(value[key]) for key in sorted(value)}
+    if isinstance(value, (list, tuple)):
+        return [_sorted_keys(item) for item in value]
+    return value
 
 
 def _refusal(exc: Exception, *, temporary_checkout: bool) -> click.ClickException:
@@ -375,7 +406,7 @@ def register_semantic_commands(root_cli: click.Group) -> None:
         except (ValueError, OSError, UnicodeError) as exc:
             raise click.ClickException(str(exc)) from exc
         payload["code"] = "SEMANTIC_KNOWLEDGE_QUERY"
-        _emit(payload, output_json=output_json)
+        _emit(payload, output_json=output_json, statement_first_claims=operation == "search")
 
     @semantic_group.command(name="workspace-orient")
     @click.option("--repo", "repo_dir",
@@ -463,7 +494,7 @@ def register_semantic_commands(root_cli: click.Group) -> None:
             )
         except (ValueError, OSError, UnicodeError) as exc:
             raise click.ClickException(str(exc)) from exc
-        _emit(payload, output_json=output_json)
+        _emit(payload, output_json=output_json, statement_first_claims=operation == "search")
 
 
     @semantic_group.command(name="workspace-changes")
