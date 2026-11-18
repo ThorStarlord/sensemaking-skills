@@ -285,7 +285,8 @@ def query_knowledge(
                 query_text=query_text, search_kinds=search_kinds, limit=limit,
             )
             found_claims = [
-                lesson_recall_view(claim) if claim.get("kind") == "lesson" else claim
+                lesson_recall_view(claim, claims=claims, relations=relations)
+                if claim.get("kind") == "lesson" else claim
                 for claim in found_claims
             ]
             if any(claim.get("kind") == "lesson" for claim in found_claims):
@@ -293,6 +294,12 @@ def query_knowledge(
                     "NOT_RECORDED means the reviewed record states no such condition; it does not show "
                     "that none applies. Applicability to the current question is NOT_ESTABLISHED: inspect "
                     "the cited source and any counterevidence before using a recalled lesson."
+                )
+                search_metadata["citing_records_limit"] = (
+                    "citing_records lists reviewed incident, lesson and observation records at this revision "
+                    "that link to the lesson (references, learned_from or contradicts). Whether each one "
+                    "confirms, adapts, narrows or contests the lesson is NOT_ESTABLISHED until it is read, "
+                    "for example with explain. An empty list does not show that the lesson was never used."
                 )
             extra.update(search_metadata)
         elif operation in {"explain", "why"}:
