@@ -14,6 +14,10 @@ or establish comparative benefit. This document remains the evidence-gated
 research account of the three loops; the canonical product intent is in
 `docs/product-strategy.md` and ADR 0035.
 
+**2026-11-18 note:** section 16 records the evolutionary hybrid, an
+owner-preferred and nonbinding research hypothesis. It changes no disposition
+in section 13 and no non-goal in section 12.
+
 ## 1. Purpose
 
 Sensemaking already supports durable learning inside and across repository work:
@@ -597,3 +601,131 @@ building a generic continual-learning runtime.
 > across episodes only when evidence warrants the transfer; change reusable
 > doctrine only through the repository's ordinary review, qualification, and
 > authority boundaries.**
+
+## 16. Research hypothesis: the evolutionary hybrid
+
+**Status:** Owner-preferred architectural direction for exploration —
+2026-11-18 — nonbinding and not ratified as a new runtime or Level-4
+architectural mandate.
+
+The ratified product objective is integrated cognitive development
+([ADR 0037](../adr/0037-domain-general-cognitive-development.md)). The
+evolutionary hybrid is the owner's present preference for how to explore that
+objective. It is a hypothesis, not established empirical knowledge, and it
+changes no ADR. Product intent and specification remain in
+[#906](https://github.com/ThorStarlord/sensemaking-skills/issues/906)
+(layered agent-local and collective learning) and
+[#917](https://github.com/ThorStarlord/sensemaking-skills/issues/917)
+(learning-first gate, evidence rungs and reopening triggers). Neither the #906
+layers nor the #917 research sequence is a mandatory processing pipeline.
+
+### 16.1 Definition
+
+The evolutionary hybrid combines four parts:
+
+1. **Agent-native cognition.** The active agent keeps semantic judgment,
+   method selection, adaptation and evaluation
+   ([ADR 0036](../adr/0036-adaptive-metareasoning-system.md)).
+2. **Persistent cognitive infrastructure.** Sensemaking supplies
+   source-grounded experience, continuity, retrieval, feedback and attribution
+   through the existing SCL, AMS and RECALL capabilities
+   ([ADR 0035](../adr/0035-sensemaking-continuous-learning.md)). The
+   infrastructure supports judgment; it does not make it.
+3. **Agent-local and collective learning.** An agent may develop conditional
+   methods, offer attributable learning candidates and evaluate other agents'
+   experience. None of this changes shared policy by itself; shared Skills and
+   policy keep their separate review and authorization.
+4. **Evolutionary architectural development.** More structured learning
+   machinery may be introduced, revised, replaced or retired when real outcomes
+   warrant it. The architecture is itself subject to the evidence.
+
+Parts 1 and 2 describe capabilities that exist today; their effect on judgment
+is not qualified. Part 3 uses existing reviewed-knowledge records where they
+suffice. Part 4 and the extensions in section 16.5 are speculative.
+
+The direction favors general, adaptable mechanisms that support the host's own
+method development over growing a catalogue of hand-written cognitive
+procedures. It is not another name for the warrant-centered hybrid of
+[Practical Agent Architecture v0](../superpowers/specs/2026-09-17-practical-agent-architecture-v0-design.md),
+which divides one decision between model judgment, deterministic assurance and
+durable state. The evolutionary hybrid concerns how learning capability
+develops across episodes.
+
+### 16.2 Hypothesis
+
+> Persistent experience, adaptable cognitive methods and outcome-informed
+> reflection may together improve an agent's later consequential judgment,
+> provided the host remains an effective learner and the evidence supports each
+> adaptation.
+
+An effective learner, in this hypothesis, can:
+
+- judge for itself whether past experience applies to the current task;
+- apply, adapt, reject or ignore a method candidate when warranted;
+- generate or revise methods rather than only repeat predefined procedures;
+- interpret actual outcomes and correct mistaken assumptions;
+- use relevant retained experience in later decisions without treating it as
+  authority;
+- tell when further reflection is useful and when direct action or stopping is
+  better.
+
+This is an intended capability, not an established property of any current
+host. An improvement in the combined agent system (host plus retained
+experience, methods and supporting infrastructure) is also not a change in the
+underlying model's intelligence. Sensemaking can claim at most the first;
+section 12 excludes model training.
+
+### 16.3 Competing alternatives
+
+| Alternative | Why it stays credible | What the hybrid must show against it |
+| --- | --- | --- |
+| A capable direct agent with ordinary memory and Skills | Lowest cost; may already provide most of the value | Better consequential outcomes at a justified extra cost |
+| A fixed bounded learning loop on current Sensemaking | Already built; no added machinery | That later structured machinery adds value beyond the current loop |
+| A comprehensive automatic Learning Engine runtime | Could learn at scale without relying on host diligence | That agent judgment plus evidence-gated growth avoids its risks: a second controller, entrenched bad lessons and moved authority. Rejected for now by ADR 0035, ADR 0036 and section 12, not forbidden forever |
+| A hand-engineered library of predefined cognitive methods | Predictable and easy to review | That hosts can generate and revise methods beyond today's labels without losing reviewability |
+
+The hybrid differs from the first two by letting structure grow, and from the
+last two by keeping that structure subordinate to agent judgment and evidence.
+It must eventually justify its added complexity against the first two. No
+current evidence shows that it does.
+
+### 16.4 What would weaken or falsify it
+
+The hypothesis is weakened by evidence that:
+
+- agents consistently defer to retrieved guidance instead of judging
+  applicability;
+- agents fail to adapt methods despite relevant feedback;
+- retained lessons reinforce misleading conclusions;
+- learning overhead grows without better consequential outcomes;
+- a simpler direct-agent-plus-memory approach performs as well or better at
+  lower cost.
+
+Such evidence calls for simplifying, replacing or retiring the affected
+mechanism, not for adding rules to defend it (ADR 0037; #906 testing scenario
+16).
+
+### 16.5 Evidence before each extension
+
+The #917 reopening triggers and evidence rungs apply. Operational availability
+of a mechanism is not evidence of cognitive improvement or comparative benefit.
+Each kind of extension needs its own observed limitation:
+
+| Extension | Evidence that would warrant it |
+| --- | --- |
+| More structured retention or retrieval | Real cases where a relevant lesson existed but the host did not see it before a consequential decision |
+| Support for agent-local method development | Hosts with relevant feedback that could not carry a method adaptation forward with existing records |
+| Shared candidates and collective evidence | Independent agents facing the same method question, where one agent's attributable experience would have changed another's decision |
+| Learning-process improvement | An observed limitation in selection, retrieval, applicability checks or feedback, and a consumer difference after the change (#917 decision 10) |
+| Any automatic or more structured engine | A matched comparison ([#874](https://github.com/ThorStarlord/sensemaking-skills/issues/874)) showing advantage over the first two alternatives, including cost |
+
+Independent later-agent reuse remains the separate qualification track of
+[#872](https://github.com/ThorStarlord/sensemaking-skills/issues/872).
+
+### 16.6 Simplification and replacement
+
+The value of the direction is the ability to improve or replace the
+architecture, not to preserve it. Current design already supports retirement:
+Git-reviewed records are the authority and indexes are derived and rebuildable,
+so removing a derived mechanism need not lose original evidence. If outcomes
+favor a simpler alternative, the architecture should move toward it.
