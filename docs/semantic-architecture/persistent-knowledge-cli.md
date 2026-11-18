@@ -512,6 +512,16 @@ recorded value or `NOT_RECORDED`, and `applicability_to_current_question` is alw
 condition; it does not show that none applies. The stored lesson is unchanged, and
 the search adds `recall_conditions_limit` whenever a lesson is returned.
 
+Each returned lesson also lists `citing_records`: the reviewed `incident`,
+`lesson` and `observation` records at the indexed revision that link to it through
+`references`, `learned_from` or `contradicts`. These are typically later
+applications, adaptations, narrowings or rejections. Each entry gives the record
+`id`, `kind`, `predicate`, the relation `id` and the relation's `relation_scope`
+(or `NOT_RECORDED`). Whether a record confirms, adapts, narrows or contests the
+lesson is not inferred; read it, for example with `explain`. An empty list does not
+show that the lesson was never used. The search adds `citing_records_limit`
+whenever a lesson is returned.
+
 `--query-text` works only with `--operation search`, and cannot be combined
 with `--subject`, repeated `--term` or multi-file path queries. Existing
 literal `--subject` search and explicit OR `--term` search preserve their
