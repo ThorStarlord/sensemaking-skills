@@ -207,6 +207,40 @@ _CAPABILITY_TARGET_KINDS = {
 _HISTORY_PREDICATES = frozenset({"references", "learned_from", "contradicts"})
 
 
+def lesson_citing_records(
+    lesson_id: object,
+    claims: Mapping[str, Mapping[str, Any]],
+    relations: Iterable[Mapping[str, Any]],
+) -> list[dict]:
+    """Reviewed incident, lesson and observation records that link to a lesson.
+
+    Typically these are later applications, adaptations, narrowings or rejections that a
+    later agent should read before reuse. A link does not say which of those it is; that
+    stays NOT_ESTABLISHED until the record itself is read. Callers that scan several
+    lessons must pass a reusable sequence, not a one-shot iterator.
+    """
+    records: list[dict] = []
+    for relation in relations:
+        subject = relation.get("subject")
+        if (relation.get("object") != lesson_id or subject == lesson_id
+                or relation.get("predicate") not in _HISTORY_PREDICATES):
+            continue
+        kind = (claims.get(subject) or {}).get("kind")
+        if kind not in HISTORY_KINDS:
+            continue
+        relation_attributes = relation.get("attributes")
+        scope = (relation_attributes.get("scope")
+                 if isinstance(relation_attributes, Mapping) else None)
+        records.append({
+            "id": subject,
+            "kind": kind,
+            "predicate": relation.get("predicate"),
+            "relation": relation.get("id"),
+            "relation_scope": scope if scope not in (None, "", []) else "NOT_RECORDED",
+        })
+    return records
+
+
 def _evidence_paths(claim: Mapping[str, Any]) -> set[str]:
     """Supported file evidence identities; retain original citations in the record."""
     paths: set[str] = set()
@@ -504,6 +538,11 @@ def context_for(
     constraints = items("constraints")
     alternatives = items("alternatives")
     history, verification = items("history"), items("verification_refs")
+    # A linked lesson can be adapted, narrowed or contested by records that link to the
+    # lesson but not to this file; list them so the reader knows what else to read.
+    for item in history:
+        if item["kind"] == "lesson":
+            item["citing_records"] = lesson_citing_records(item["claim_id"], claims, edges)
     lists = {"contracts": contracts, "constraints": constraints, "decisions": decisions,
              "alternatives": alternatives, "history": history,
              "verification_refs": verification}

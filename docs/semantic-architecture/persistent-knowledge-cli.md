@@ -883,7 +883,11 @@ sensemaking-skills semantic knowledge-query --db "$db" --repository "$repository
   them under `recorded_conditions` (any of `scope`, `claim_ceiling`, `known_limits`,
   `exclusion_condition`, `revisit_when`, `staleness_condition`, `decision_changed`,
   `operationalized_by`, `revised`), as written. These are the record's stated conditions, not a determination that they
-  apply to the file under review.
+  apply to the file under review. A **lesson** item in `context.history` also lists
+  `citing_records`, in the same shape as lesson search results: the reviewed
+  incidents, lessons and observations that link to that lesson, even when they do not
+  link to this file. They are pointers to read, not context items, and are not
+  added to the top-level claims or relations.
 - `context.verification_refs`: verification records linked by `tested_by` from
   an owner or a matched rule. For a file that **no component owns**, a
   verification record whose `authority_ref` is that file, or whose `evidence_refs`
