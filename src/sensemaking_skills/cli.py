@@ -177,7 +177,7 @@ def _echo_campaign_status(snapshot: CampaignSnapshot, *, heading: str) -> None:
     else:
         click.echo(
             "Active responsibility: "
-            f"{state.active_responsibility.id} — {state.active_responsibility.statement}"
+            f"{state.active_responsibility.id} - {state.active_responsibility.statement}"
         )
     click.echo(f"Transitions: {len(snapshot.transitions)}")
     click.echo(f"Evidence records: {len(snapshot.evidence_refs)}")

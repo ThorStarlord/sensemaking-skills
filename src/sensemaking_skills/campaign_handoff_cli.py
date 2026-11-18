@@ -52,7 +52,7 @@ def _echo_resume(result: CampaignResumeEnvelope, *, heading: str) -> None:
         click.echo("Active responsibility: none")
     else:
         click.echo(
-            f"Active responsibility: {state.active_responsibility.id} — "
+            f"Active responsibility: {state.active_responsibility.id} - "
             f"{state.active_responsibility.statement}"
         )
     click.echo(f"Transitions: {len(result.snapshot.transitions)}")
