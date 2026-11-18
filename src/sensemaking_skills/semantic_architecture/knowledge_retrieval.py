@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import re
-from collections.abc import Iterable, Mapping
+from collections.abc import Mapping, Sequence
 
 from .knowledge import (
     AUTHORED_SCHEMA_VERSIONS, CLAIM_KINDS, V2_CLAIM_KINDS,
@@ -72,7 +72,7 @@ _RECALL_CONDITION_FIELDS = (
 def lesson_recall_view(
     claim: Mapping[str, object], *,
     claims: Mapping[str, Mapping[str, object]],
-    relations: Iterable[Mapping[str, object]],
+    relations: Sequence[Mapping[str, object]],
 ) -> dict:
     """Return a copy of a lesson claim with explicit recall conditions and citing records.
 
@@ -99,12 +99,12 @@ def lesson_recall_view(
 def _citing_records(
     lesson_id: object,
     claims: Mapping[str, Mapping[str, object]],
-    relations: Iterable[Mapping[str, object]],
+    relations: Sequence[Mapping[str, object]],
 ) -> list[dict]:
     """Reviewed incident, lesson and observation records that link to a lesson.
 
-    These are the later applications, adaptations, narrowings or rejections a later
-    agent should read before reuse. A link does not say which of those it is; that stays
+    Typically these are later applications, adaptations, narrowings or rejections that a
+    later agent should read before reuse. A link does not say which of those it is; that stays
     NOT_ESTABLISHED until the record itself is read.
     """
     records: list[dict] = []
