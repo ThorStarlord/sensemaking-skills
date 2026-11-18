@@ -767,6 +767,27 @@
         "scope": "One subagent episode on this host under ambient repository and user guidance. Not clean independent evidence and not a matched comparison.",
         "claim_ceiling": "Shows pre-decision exposure and a visible gap in applicability checking in one episode. Does not show causation, recall reliability, cognitive benefit or repeatability."
       }
+    },
+    {
+      "id": "observation:receiving-agent-console-output-20261118",
+      "kind": "observation",
+      "statement": "A fresh subagent given a bounded CLI console-output responsibility ran its own recorded-experience query before its first edit; the console-guard lesson ranked first among 74 hits. It read the guard test and cli.main. It reported that the guard inspects only literal arguments of bare print() calls, so click.echo output is not covered, and that the stdout escape is installed only by cli.main. It extended the lesson's sufficiency claim: a character encodable in cp1252 can still arrive as a byte that a UTF-8 consumer cannot decode. It changed two campaign status echoes from an em dash to an ASCII hyphen (PR 913) and changed neither the lesson, the guard, nor any test. Its method was adapted during the run after an orchestrator correction about cp1252 encodability.",
+      "authority_kind": "document",
+      "authority_ref": "docs/normal-use/2026-11-18-receiving-agent-adaptation-909.md",
+      "evidence_refs": [
+        "file:docs/normal-use/2026-11-18-receiving-agent-adaptation-909.md",
+        "file:tests/test_console_output_ascii_only.py",
+        "file:src/sensemaking_skills/cli.py",
+        "file:src/sensemaking_skills/campaign_handoff_cli.py"
+      ],
+      "epistemic_status": "observed",
+      "attributes": {
+        "actor": "fresh general-purpose subagent spawned by the orchestrator on 2026-11-18 as a receiving agent; not the orchestrator and not the originating lesson author",
+        "source_revision": "c8859a2f",
+        "decision_changed": "Two campaign status echoes emit an ASCII hyphen instead of an em dash (PR 913, merge 6f27122b)",
+        "scope": "One episode under ambient repository and user guidance. Predecision encounter is observed, but the responsibility was chosen by the orchestrator on the lesson's own subject, so this is not blind discovery.",
+        "claim_ceiling": "Shows an encounter before the edit, a source check, an adapted extension and a verified two-line change. Does not show a later changed decision, independent application, repeatability or cognitive benefit. The agent's self-report about the influence of the lesson is not verified."
+      }
     }
   ],
   "relations": [
@@ -1505,6 +1526,19 @@
       "epistemic_status": "declared",
       "attributes": {
         "scope": "Revisit-condition evidence: a real later choice where the distinction was consequential. The lesson statement is unchanged."
+      }
+    },
+    {
+      "id": "rel:receiving-agent-console-observation-references-lesson",
+      "subject": "observation:receiving-agent-console-output-20261118",
+      "predicate": "references",
+      "object": "lesson:console-guard-literal-print-arguments-only",
+      "evidence_refs": [
+        "file:docs/normal-use/2026-11-18-receiving-agent-adaptation-909.md"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "scope": "Attributes the receiving agent's scope extension to this lesson. The lesson statement is unchanged; the extension is an observation, not a revision of the lesson."
       }
     }
   ]
