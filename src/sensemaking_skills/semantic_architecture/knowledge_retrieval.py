@@ -8,7 +8,7 @@ from .knowledge import (
     AUTHORED_SCHEMA_VERSIONS, CLAIM_KINDS, V2_CLAIM_KINDS,
     read_authored_claim, read_authored_relation, record_dict,
 )
-from .knowledge_architecture import HISTORY_KINDS, _HISTORY_PREDICATES
+from .knowledge_architecture import lesson_citing_records
 
 
 _QUESTION_WORD = re.compile(r"[^\W_]+", re.UNICODE)
@@ -92,41 +92,8 @@ def lesson_recall_view(
     return {
         **claim,
         "recall_conditions": conditions,
-        "citing_records": _citing_records(claim.get("id"), claims, relations),
+        "citing_records": lesson_citing_records(claim.get("id"), claims, relations),
     }
-
-
-def _citing_records(
-    lesson_id: object,
-    claims: Mapping[str, Mapping[str, object]],
-    relations: Sequence[Mapping[str, object]],
-) -> list[dict]:
-    """Reviewed incident, lesson and observation records that link to a lesson.
-
-    Typically these are later applications, adaptations, narrowings or rejections that a
-    later agent should read before reuse. A link does not say which of those it is; that stays
-    NOT_ESTABLISHED until the record itself is read.
-    """
-    records: list[dict] = []
-    for relation in relations:
-        subject = relation.get("subject")
-        if (relation.get("object") != lesson_id or subject == lesson_id
-                or relation.get("predicate") not in _HISTORY_PREDICATES):
-            continue
-        kind = (claims.get(subject) or {}).get("kind")
-        if kind not in HISTORY_KINDS:
-            continue
-        relation_attributes = relation.get("attributes")
-        scope = (relation_attributes.get("scope")
-                 if isinstance(relation_attributes, Mapping) else None)
-        records.append({
-            "id": subject,
-            "kind": kind,
-            "predicate": relation.get("predicate"),
-            "relation": relation.get("id"),
-            "relation_scope": scope if scope not in (None, "", []) else "NOT_RECORDED",
-        })
-    return records
 
 
 def validate_retrieval_options(
