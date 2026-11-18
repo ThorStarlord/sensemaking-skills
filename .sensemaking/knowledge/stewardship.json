@@ -788,6 +788,26 @@
         "scope": "One episode under ambient repository and user guidance. Predecision encounter is observed, but the responsibility was chosen by the orchestrator on the lesson's own subject, so this is not blind discovery.",
         "claim_ceiling": "Shows an encounter before the edit, a source check, an adapted extension and a verified two-line change. Does not show a later changed decision, independent application, repeatability or cognitive benefit. The agent's self-report about the influence of the lesson is not verified."
       }
+    },
+    {
+      "id": "observation:construction-gate-application-20261118",
+      "kind": "observation",
+      "statement": "A fresh subagent asked for evidence on whether a planned SCL/AMS construction item should wait for independent later-agent qualification ran its own lexical query and returned the construction-gate lesson first, without its ID. It opened the lesson's authority file and the 2026-11-17 fresh-agent observation, and reported applying the two-gate check. Its recommendation was not to defer construction solely because the item is qualification-gated. The question used the lesson's own vocabulary.",
+      "authority_kind": "document",
+      "authority_ref": "docs/normal-use/2026-11-18-shared-learning-candidate-907.md",
+      "evidence_refs": [
+        "file:docs/normal-use/2026-11-18-shared-learning-candidate-907.md",
+        "file:docs/normal-use/2026-11-17-fresh-agent-episode-observation.md",
+        "file:docs/normal-use/2026-11-17-construction-vs-qualification-selection-lesson.md"
+      ],
+      "epistemic_status": "observed",
+      "attributes": {
+        "actor": "fresh general-purpose subagent spawned by the orchestrator on 2026-11-18 for an evidence-collection question; not the 2026-11-17 episode agent",
+        "source_revision": "55059e3f",
+        "decision_changed": "None. A recommendation only; no engineering action was taken on it",
+        "scope": "One evidence-collection question on one host under ambient repository guidance. Retrieval is from a relevant question that uses the lesson's own terms.",
+        "claim_ceiling": "Shows a retrieval from a relevant question and a self-reported two-gate application, which is distinct from the 2026-11-17 categorical rejection. Does not show independence, a real owner decision, a changed outcome or benefit. The application is self-reported."
+      }
     }
   ],
   "relations": [
@@ -1539,6 +1559,19 @@
       "epistemic_status": "declared",
       "attributes": {
         "scope": "Attributes the receiving agent's scope extension to this lesson. The lesson statement is unchanged; the extension is an observation, not a revision of the lesson."
+      }
+    },
+    {
+      "id": "rel:construction-gate-application-observation-references-lesson",
+      "subject": "observation:construction-gate-application-20261118",
+      "predicate": "references",
+      "object": "lesson:separate-construction-from-learning-qualification-gates",
+      "evidence_refs": [
+        "file:docs/normal-use/2026-11-18-collective-reconciliation-910.md"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "scope": "Retains a distinct application episode against the construction-gate lesson alongside the earlier rejection episode. The lesson statement is unchanged; this is evidence, not revision."
       }
     }
   ]
