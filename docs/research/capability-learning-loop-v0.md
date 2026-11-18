@@ -643,7 +643,7 @@ Parts 1 and 2 describe capabilities that exist today; their effect on judgment
 is not qualified. Part 3 uses existing reviewed-knowledge records where they
 suffice. Part 4 and the extensions in section 16.5 are speculative.
 
-The direction favours general, adaptable mechanisms that support the host's own
+The direction favors general, adaptable mechanisms that support the host's own
 method development over growing a catalogue of hand-written cognitive
 procedures. It is not another name for the warrant-centered hybrid of
 [Practical Agent Architecture v0](../superpowers/specs/2026-09-17-practical-agent-architecture-v0-design.md),
@@ -728,4 +728,4 @@ The value of the direction is the ability to improve or replace the
 architecture, not to preserve it. Current design already supports retirement:
 Git-reviewed records are the authority and indexes are derived and rebuildable,
 so removing a derived mechanism need not lose original evidence. If outcomes
-favour a simpler alternative, the architecture should move toward it.
+favor a simpler alternative, the architecture should move toward it.
