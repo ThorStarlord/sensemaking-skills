@@ -17,7 +17,7 @@ from .knowledge import KnowledgeSnapshot, fingerprint, record_dict, validate_sna
 from .knowledge_architecture import context_for, is_repository_file_path, orientation_summary, product_outline, rules_for, term
 from .knowledge_retrieval import (
     assess_current_authored_record, bounded_kind_coverage, classify_indexed_changes,
-    context_workspace_overlap, search_matches, validate_retrieval_options,
+    context_workspace_overlap, lesson_recall_view, search_matches, validate_retrieval_options,
     workspace_source_overlap,
 )
 
@@ -284,6 +284,16 @@ def query_knowledge(
                 claims, subject=subject, search_terms=search_terms,
                 query_text=query_text, search_kinds=search_kinds, limit=limit,
             )
+            found_claims = [
+                lesson_recall_view(claim) if claim.get("kind") == "lesson" else claim
+                for claim in found_claims
+            ]
+            if any(claim.get("kind") == "lesson" for claim in found_claims):
+                search_metadata["recall_conditions_limit"] = (
+                    "NOT_RECORDED means the reviewed record states no such condition; it does not show "
+                    "that none applies. Applicability to the current question is NOT_ESTABLISHED: inspect "
+                    "the cited source and any counterevidence before using a recalled lesson."
+                )
             extra.update(search_metadata)
         elif operation in {"explain", "why"}:
             if subject not in claims:

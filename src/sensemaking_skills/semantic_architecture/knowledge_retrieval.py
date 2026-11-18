@@ -58,6 +58,35 @@ def _lexical_hit(word: str, name: str, statement: str, stems: set[str]) -> bool:
     return len(word) >= _SUBSTRING_MIN_LENGTH and (word in name or word in statement)
 
 
+# Conditions a later agent needs before applying a recalled lesson. A field that the
+# reviewed record does not state is reported as NOT_RECORDED, never silently omitted.
+_RECALL_CONDITION_FIELDS = (
+    ("scope", ("scope",)),
+    ("claim_ceiling", ("claim_ceiling",)),
+    ("revisit_when", ("revisit_when", "staleness_condition")),
+    ("decision_link", ("decision_changed", "operationalized_by")),
+)
+
+
+def lesson_recall_view(claim: Mapping[str, object]) -> dict:
+    """Return a copy of a lesson claim with explicit recall conditions.
+
+    The indexed claim is not changed. Applicability to the current question is always
+    NOT_ESTABLISHED: a recorded condition is authored context, not a finding that the
+    lesson applies here.
+    """
+    attributes = claim.get("attributes")
+    attributes = attributes if isinstance(attributes, Mapping) else {}
+    conditions: dict[str, object] = {}
+    for name, keys in _RECALL_CONDITION_FIELDS:
+        conditions[name] = next(
+            (attributes[key] for key in keys if attributes.get(key) not in (None, "", [])),
+            "NOT_RECORDED",
+        )
+    conditions["applicability_to_current_question"] = "NOT_ESTABLISHED"
+    return {**claim, "recall_conditions": conditions}
+
+
 def validate_retrieval_options(
     *, operation: str, subject: str | None,
     search_terms: tuple[str, ...], expected_kinds: tuple[str, ...],
