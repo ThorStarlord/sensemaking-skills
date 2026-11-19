@@ -136,9 +136,14 @@ def changed_paths_since_indexed_ref(repo_root: Path, indexed_ref: str) -> dict[s
         raise ValueError("indexed revision is not available in the local Git repository; NOT ASSESSED") from exc
     tracked = _git(top, "diff", "--no-ext-diff", "--no-textconv", "--no-renames", "--ignore-submodules=all",
                    "--name-only", "-z", indexed_ref, "--", disable_filters=disabled).split(b"\x00")
+    # A staged index entry can differ from the cited revision even when the
+    # working file has been restored to identical bytes. Query both trees.
+    staged = _git(top, "diff", "--cached", "--no-ext-diff", "--no-textconv", "--no-renames",
+                  "--ignore-submodules=all", "--name-only", "-z", indexed_ref, "--",
+                  disable_filters=disabled).split(b"\x00")
     untracked = _git(top, "ls-files", "--others", "--exclude-standard", "-z",
                      disable_filters=disabled).split(b"\x00")
     paths = frozenset(
-        item.decode("utf-8", "surrogateescape") for item in (*tracked, *untracked) if item
+        item.decode("utf-8", "surrogateescape") for item in (*tracked, *staged, *untracked) if item
     )
     return {"paths": paths, "external_filter_commands_disabled_count": len(disabled)}
