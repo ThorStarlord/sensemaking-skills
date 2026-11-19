@@ -208,6 +208,8 @@ def record_method_episode(repo: Path, episode_path: str, output_path: str) -> di
     if output_file.exists():
         raise ValueError("output already exists; refusing to overwrite a proposal or reviewed record")
 
+    if episode_file.stat().st_size > 131072:
+        raise ValueError("episode source exceeds the 128 KiB bounded input limit")
     data = json.loads(episode_file.read_text(encoding="utf-8"))
     if not isinstance(data, dict):
         raise ValueError("episode input must be a JSON object")
@@ -268,7 +270,7 @@ def record_method_episode(repo: Path, episode_path: str, output_path: str) -> di
     if previous and previous not in _reviewed_lesson_ids(root):
         raise ValueError("prior_lesson_id not found in the current reviewed knowledge files")
     raw_evidence = data.get("evidence_refs")
-    if (not isinstance(raw_evidence, list) or not raw_evidence
+    if (not isinstance(raw_evidence, list) or not 1 <= len(raw_evidence) <= 20
             or any(not isinstance(ref, str) or not ref.startswith("file:") for ref in raw_evidence)):
         raise ValueError("evidence_refs must be a nonempty list of tracked file: paths")
     for reference in raw_evidence:
