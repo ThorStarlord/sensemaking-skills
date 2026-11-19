@@ -36,3 +36,7 @@ The install record does not store a source commit. For an unrecorded copy from a
 ## Claim ceiling
 
 This record shows the state of one host's copies after one update, and that the pre-update user-level `using-sensemaking` content equals committed `0b69c1c5` apart from CRLF line endings. It does not show which Skill text any harness loaded during a session, and it does not show improved agent judgment.
+
+## Addendum (2026-11-19): section 5 follow-up closed
+
+Sections 1-5 are the original record and are unchanged. The gap in section 5 is closed. [PR #923](https://github.com/ThorStarlord/sensemaking-skills/pull/923), merged at `0c6a1cf8`, records `source_commit` in the install record when the Skill source is a Git checkout with no uncommitted or ignored file under `skills/`. On 2026-11-19 the 52 user-level records were refreshed from `0c6a1cf8` without force, and each now names that commit. Installation provenance still does not show which Skill text any harness loaded.

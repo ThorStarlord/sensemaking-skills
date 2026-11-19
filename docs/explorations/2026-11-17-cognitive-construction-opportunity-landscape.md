@@ -205,3 +205,5 @@ Possible next *intellectual* responsibilities: targeted depth on current decisio
 - **No automatic promotion to reviewed knowledge.** This exploration alone does not warrant new **poss:** records, new authored goals, new lessons or revision of existing hypothetical possibility statuses.
 
 **Handoff question:** Which materially different construction direction creates the greatest credible value for a real agent while remaining compatible with existing consumer boundaries, construction-first policy and legitimate authority? Answer that separately from this divergent map; the strongest direction may be a reuse, integration, new consumer, sustained trajectory or simplification.
+
+**Answer to the handoff question (2026-11-19):** [the cognitive capability assessment](../research/cognitive-capability-assessment-20261119.md) answers it for the evidence available then. It recommends no product code change and an observe-only next responsibility, and it records the conditions that would change that recommendation.
