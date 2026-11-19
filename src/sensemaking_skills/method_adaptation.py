@@ -180,7 +180,7 @@ def _known_claim_ids(root: Path, tracked: set[str]) -> set[str]:
 def _reviewed_lesson_ids(root: Path) -> set[str]:
     """Prior precedents must exist at committed HEAD, not only in dirty drafts."""
     names = _git(root, "ls-tree", "-r", "-z", "--name-only", "HEAD", "--",
-                 ".sensemaking/knowledge").split("\\0")
+                 ".sensemaking/knowledge").split(chr(0))
     lesson_ids: set[str] = set()
     for name in filter(None, names):
         if not name.endswith(".json"):
