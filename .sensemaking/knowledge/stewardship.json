@@ -808,6 +808,48 @@
         "scope": "One evidence-collection question on one host under ambient repository guidance. Retrieval is from a relevant question that uses the lesson's own terms.",
         "claim_ceiling": "Shows a retrieval from a relevant question and a self-reported two-gate application, which is distinct from the 2026-11-17 categorical rejection. Does not show independence, a real owner decision, a changed outcome or benefit. The application is self-reported."
       }
+    },
+    {
+      "id": "observation:method-adaptation-closure-overreach-20261119",
+      "kind": "observation",
+      "statement": "A prior Sensemaking completion claim used PR 913's source-informed encoding repair as evidence that the bounded methodological-development construction goal had been served. The owner later corrected that inference: the visible episode adapts a technical sufficiency hypothesis, not an attributable reusable reasoning procedure. The PR 930 receipt remains immutable and its technical observations remain historical evidence; methodological-development completion stays open.",
+      "authority_kind": "document",
+      "authority_ref": "docs/normal-use/2026-11-19-method-adaptation-claim-correction.md",
+      "evidence_refs": [
+        "file:docs/normal-use/2026-11-19-method-adaptation-claim-correction.md",
+        "file:docs/normal-use/2026-11-18-receiving-agent-adaptation-909.md",
+        "file:.sensemaking/receipts/2026-11-19-bounded-method-adaptation-consumer.session.yaml"
+      ],
+      "epistemic_status": "observed",
+      "attributes": {
+        "actor": "Owner corrective instruction to a later review session; a reviewed correction of the previous claim, not evidence that the earlier agent learned a method",
+        "source_revision": "6a7ab47ce10527c4771cd614e2473b31a58eed74",
+        "original_outcome": "PR 913 merged a narrow two-line technical correction; PR 930 reported no new consumer code gap and stopped with NO_FURTHER_WARRANT",
+        "scope": "One prior completion inference in the Sensemaking bounded method-development track; preserves historical observations and immutable prior receipt",
+        "claim_ceiling": "Source-grounded correction of a claim about goal satisfaction, not an observed spontaneous reasoning-procedure change, later use or cognitive improvement"
+      }
+    },
+    {
+      "id": "lesson:method-adaptation-check-procedure-not-only-outcome",
+      "kind": "lesson",
+      "statement": "When an engineering success is cited as method-learning completion, compare the agent's before/after conditional reasoning PROCEDURE (question framing, evidence search, counterevidence, alternative selection or stop criteria) separately from changed domain facts, technical hypotheses and task-local repair choices. Without observed procedural change, method adaptation is NOT_ESTABLISHED even if the task succeeded. Retain any warranted procedural candidate with its source, trigger, conditions, exclusions and counterexamples; later consequential reuse and benefit require separate evidence.",
+      "authority_kind": "document",
+      "authority_ref": "docs/normal-use/2026-11-19-method-adaptation-claim-correction.md",
+      "evidence_refs": [
+        "file:docs/normal-use/2026-11-19-method-adaptation-claim-correction.md",
+        "file:skills/using-sensemaking/references/learning-reconciliation-policy-v0.md",
+        "file:skills/using-sensemaking/references/metareasoning-policy-v0.md",
+        "file:.sensemaking/receipts/2026-11-19-bounded-method-adaptation-consumer.session.yaml"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "method": "Optional adaptation-object check: identify what changed; compare before/after intellectual procedure; demand relevant source evidence; record triggers/limits if reusable; separate subsequent use and benefit",
+        "scope": "Consequential closure or retention claims in which technical task completion is offered as evidence of methodological development; not a mandatory stage for routine coding",
+        "original_outcome": "Owner corrected the stronger inference from the PR 913 / PR 930 record; the corrected review identifies a candidate adjudication procedure",
+        "counterevidence": "Unrecorded reasoning might have changed; some task-local choices can instantiate procedures. Missing trace is NOT_ESTABLISHED, not proof of impossibility",
+        "claim_ceiling": "This is an owner-prompted, agent-authored nonbinding conditional procedure candidate derived from one claim correction. It is not observed independent later use, skill acquisition or improved cognition",
+        "revisit_when": "A later genuine methodological-development judgment has observable before/after procedure evidence; the check causes a missed useful adaptation or disproportionate cognitive overhead; or the governing purpose changes"
+      }
     }
   ],
   "relations": [
@@ -1572,6 +1614,46 @@
       "epistemic_status": "declared",
       "attributes": {
         "scope": "Retains a distinct application episode against the construction-gate lesson alongside the earlier rejection episode. The lesson statement is unchanged; this is evidence, not revision."
+      }
+    },
+    {
+      "id": "rel:method-completion-correction-references-technical-episode",
+      "subject": "observation:method-adaptation-closure-overreach-20261119",
+      "predicate": "references",
+      "object": "observation:receiving-agent-console-output-20261118",
+      "evidence_refs": [
+        "file:docs/normal-use/2026-11-19-method-adaptation-claim-correction.md",
+        "file:docs/normal-use/2026-11-18-receiving-agent-adaptation-909.md"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "scope": "References the historical episode without changing its factual claims or treating technical repair as method development"
+      }
+    },
+    {
+      "id": "rel:method-completion-correction-references-original-lesson",
+      "subject": "observation:method-adaptation-closure-overreach-20261119",
+      "predicate": "references",
+      "object": "lesson:console-guard-literal-print-arguments-only",
+      "evidence_refs": [
+        "file:docs/normal-use/2026-11-19-method-adaptation-claim-correction.md"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "scope": "A later correction of the method-development inference, not a rejection of the console guard's technical constraints"
+      }
+    },
+    {
+      "id": "rel:method-claim-adjudication-candidate-learned-from-correction",
+      "subject": "lesson:method-adaptation-check-procedure-not-only-outcome",
+      "predicate": "learned_from",
+      "object": "observation:method-adaptation-closure-overreach-20261119",
+      "evidence_refs": [
+        "file:docs/normal-use/2026-11-19-method-adaptation-claim-correction.md"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "scope": "Nonbinding reasoning-procedure candidate from owner-corrected closure inference; no autonomous later learning established"
       }
     }
   ]
