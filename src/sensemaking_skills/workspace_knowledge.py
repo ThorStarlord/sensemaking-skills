@@ -514,8 +514,9 @@ def run_workspace_review_context(
     repository: str | None = None, index_dir: str | Path | None = None,
     refresh: bool = False, limit: int = 25, depth: int = 2, max_paths: int = 8,
     pr_merge_base: bool = False, include_candidates: bool = False,
+    include_worktree: bool = False,
 ) -> dict[str, Any]:
-    """Review committed changed paths against source-pinned BASE product knowledge.
+    """Review committed changes and optional working changes against BASE knowledge.
 
     This is evidence preparation, not architectural anomaly detection. The
     baseline is intentional: a deletion still has its prior file context, and
@@ -536,7 +537,13 @@ def run_workspace_review_context(
     base_sha = _unique_pr_merge_base(root, base_tip_sha, sha) if pr_merge_base else base_tip_sha
     label, label_source = _repository_label(root, repository)
 
-    # Both operands are commit trees. Git does not read the worktree or execute
+    # The opt-in overlay must be the actual checkout at the selected target
+    # commit, not a guessed uncommitted extension of a historical tree.
+    target_worktree = inspect_worktree_context(root, sha) if include_worktree else None
+    if include_worktree and not target_worktree["head_matches_indexed_ref"]:
+        raise ValueError("--include-worktree requires --ref to resolve to current HEAD")
+
+    # Both committed diff operands are commit trees. Git does not read the worktree or execute
     # external diff/text conversion; no rename or semantic inference is made.
     diff = _git(
         root, "diff", "--no-ext-diff", "--no-textconv", "--no-renames",
@@ -550,10 +557,29 @@ def run_workspace_review_context(
         if "\ufffd" not in path and is_repository_file_path(path)
     ]
     unrepresentable_count = len(raw_paths) - len(paths)
-    selected = paths[:max_paths]
-    # Include every representable changed path in source-overlap review even if
-    # per-file context is bounded to the first max_paths paths.
     committed_changed_paths = frozenset(paths)
+    # Keep uncommitted bytes OUT of the index. Reuse the guarded Git worktree
+    # reader (filters/hooks/fsmonitor disabled) for names only. This includes
+    # staged, unstaged and untracked paths, never their source contents.
+    raw_working_paths: list[str] = []
+    working_paths: list[str] = []
+    if include_worktree:
+        raw_working_paths = sorted(changed_paths_since_indexed_ref(root, sha)["paths"])
+        working_paths = [
+            path for path in raw_working_paths
+            if "\ufffd" not in path
+            and not any(0xD800 <= ord(char) <= 0xDFFF for char in path)
+            and is_repository_file_path(path)
+        ]
+        # Fail if HEAD moved during the two reads; otherwise changes from a
+        # later commit might be mislabelled as staged/unstaged work.
+        if inspect_worktree_context(root, sha)["current_head"] != sha:
+            raise ValueError("HEAD changed during --include-worktree inspection; retry")
+    working_changed_paths = frozenset(working_paths)
+    combined_changed_paths = committed_changed_paths | working_changed_paths
+    all_paths = sorted(combined_changed_paths)
+    selected = all_paths[:max_paths]
+    working_unrepresentable_count = len(raw_working_paths) - len(working_paths)
 
     clone_dir, database = _cache_paths(root, index_dir, base_sha)
     state, build_source = _ensure_snapshot(
@@ -564,7 +590,7 @@ def run_workspace_review_context(
             database, repository=label, target_ref=base_sha,
             operation="product-outline", limit=limit,
             include_candidates=include_candidates,
-            candidate_changed_paths=committed_changed_paths if include_candidates else None,
+            candidate_changed_paths=combined_changed_paths if include_candidates else None,
         )
         # Reuse the same reviewed-source fingerprint overlap as workspace-impact.
         # Here its changed paths come from TWO COMMITS, not the working overlay.
@@ -584,37 +610,63 @@ def run_workspace_review_context(
             "verdict. Uncited paths are coverage gaps; absent fingerprints, "
             "mechanical observations and unrepresentable paths are NOT ASSESSED."
         )
+        working_overlap = None
+        if include_worktree:
+            worktree_impact = query_knowledge(
+                database, repository=label, target_ref=base_sha,
+                operation="workspace-impact", limit=limit,
+                workspace_changed_paths=working_changed_paths,
+            )
+            working_overlap = dict(worktree_impact["workspace_impact"])
+            working_overlap.pop("workspace_impact_limit", None)
+            working_overlap["source_ref"] = base_sha
+            working_overlap["working_source_ref"] = sha
+            working_overlap["note"] = (
+                "Working-tree path overlap against BASE reviewed source fingerprints. "
+                "Includes staged, unstaged and untracked path names only; uncommitted "
+                "bytes were NOT indexed. Re-inspect cited sources; no stale-claim "
+                "or architectural-violation verdict is established."
+            )
         contexts = []
         for path in selected:
             result = query_knowledge(
                 database, repository=label, target_ref=base_sha,
                 operation="context-for", subject=path, limit=limit, depth=depth,
-                workspace_changed_paths=committed_changed_paths,
+                workspace_changed_paths=combined_changed_paths,
             )
             context = result["context"]
             relevance = context.pop("workspace_relevance")
             relevance["note"] = (
-                "BASE context and its unanchored relevance candidates are "
-                "compared with committed changed path names, not working-tree "
-                "bytes. Fingerprint overlap flags original sources for "
-                "re-inspection but cannot establish relevance, staleness, "
-                "architectural meaning or changed behavior. Missing links "
-                "remain NOT ASSESSED."
+                "BASE source context and fingerprint overlap flag re-inspection "
+                "candidates, not verified architectural meaning or behavior. "
+                + ("Combined committed and working-tree path names are included; "
+                   "uncommitted bytes were NOT indexed. " if include_worktree
+                   else "Committed paths only; working changes are excluded. ")
+                + "Absent source links remain NOT ASSESSED."
             )
-            context["committed_change_relevance"] = relevance
-            contexts.append({
+            context["change_relevance" if include_worktree else "committed_change_relevance"] = relevance
+            entry = {
                 "path": path, "context": context,
                 "claims": result["claims"], "relations": result["relations"],
                 "truncated": result["truncated"],
-            })
+            }
+            if include_worktree:
+                entry["change_modes"] = [
+                    mode for mode, source in (
+                        ("committed", committed_changed_paths),
+                        ("worktree", working_changed_paths),
+                    ) if path in source
+                ]
+            contexts.append(entry)
     except sqlite3.Error as exc:
         raise ValueError(
             f"cannot read cached baseline index; retry with --refresh: {exc}"
         ) from exc
 
-    omitted = len(paths) - len(selected)
+    omitted = len(all_paths) - len(selected)
     packet = {
-        "code": "SEMANTIC_COMMITTED_REVIEW_CONTEXT",
+        "code": ("SEMANTIC_WORKTREE_REVIEW_CONTEXT" if include_worktree
+                 else "SEMANTIC_COMMITTED_REVIEW_CONTEXT"),
         "operation": "review-context", "repository": label,
         "base_ref": base_sha, "target_ref": sha,
         "product_outline": outline["product_outline"],
@@ -628,8 +680,8 @@ def run_workspace_review_context(
             "comparison_mode": "pr_merge_base" if pr_merge_base else "explicit_commits",
             "merge_base_calculated": pr_merge_base,
             "changed_paths_total": len(raw_paths),
-            "changed_paths_with_valid_context": len(paths),
-            "source_overlap_paths_assessed": len(committed_changed_paths),
+            "changed_paths_with_valid_context": len(all_paths),
+            "source_overlap_paths_assessed": len(combined_changed_paths),
             "selected_paths": selected, "omitted_path_count": omitted,
             "unrepresentable_path_count": unrepresentable_count,
             "omitted_path_sample": paths[max_paths:max_paths + 16],
@@ -663,9 +715,12 @@ def run_workspace_review_context(
             "Source-overlap inspection covers every valid changed path even "
             "when per-path context is omitted; capped record and uncited-path "
             "lists remain truncated. A source overlap is not semantic drift.",
-            "Uncommitted changes, rename attribution, GitHub PR identity and "
-            "file-list equality, complete Git ancestry, runtime behavior and "
-            "architectural drift are not assessed.",
+            ("Uncommitted source bytes, rename attribution, GitHub PR identity "
+             "and file-list equality, runtime behavior and architectural drift "
+             "are not assessed." if include_worktree else
+             "Uncommitted changes, rename attribution, GitHub PR identity and "
+             "file-list equality, complete Git ancestry, runtime behavior and "
+             "architectural drift are not assessed."),
         ],
         "workspace_context": inspect_worktree_context(root, base_sha),
         "workspace_index": {
@@ -678,6 +733,36 @@ def run_workspace_review_context(
         },
         "semantic_truth_established": False, "action_authorized": False,
     }
+    if include_worktree:
+        packet["working_evidence_reinspection"] = working_overlap
+        packet["review_scope"].update({
+            "review_mode": "committed_plus_worktree",
+            "target_checkout_ref": sha,
+            "worktree_changed_paths_total": len(raw_working_paths),
+            "worktree_representable_path_count": len(working_paths),
+            "worktree_unrepresentable_path_count": working_unrepresentable_count,
+            "combined_representable_path_count": len(all_paths),
+            "committed_changed_paths_total": len(raw_paths),
+            "working_change_names_only": True,
+            "working_changes_indexed": False,
+            "working_tree_consumer": "opt_in",
+            "note": (
+                "Product intent and all context come from BASE committed knowledge. "
+                "Review includes committed diff paths plus the local target checkout's "
+                "staged, unstaged and untracked names. Uncommitted contents and runtime "
+                "effects are not indexed, compared or verified. Source-overlap calls "
+                "for inspection, not a stale-record verdict."
+            ),
+        })
+        packet["truncated"] = bool(packet["truncated"] or working_unrepresentable_count
+                                   or (worktree_impact["truncated"] if working_overlap else False))
+        packet["explicit_limits"].append(
+            "Opt-in worktree context uses path names only, cannot assess changed file "
+            "contents, and requires --ref to equal current HEAD. Committed and worktree "
+            "evidence overlaps are separate; shared paths may occur in both."
+        )
+        packet["workspace_context"]["target_checkout_ref"] = sha
+        packet["workspace_context"]["target_head_matches"] = True
     if include_candidates:
         packet["review_scope"]["candidate_source_overlap_assessed"] = True
         packet["explicit_limits"].append(
