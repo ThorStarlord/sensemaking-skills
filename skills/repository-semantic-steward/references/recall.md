@@ -65,10 +65,11 @@ Use this when **authentic engineering work** raises a consequential choice of in
 ```bash
 sensemaking-skills semantic method context \
   --question "How should this responsibility compare source evidence before deciding?" \
+  --path docs/adr/0035-sensemaking-continuous-learning.md \
   --repo . --ref HEAD --json
 ```
 
-This composes the existing exact-commit, zero-setup reviewed index; selects only `lesson` claims with an explicit authored `attributes.method`, uses lexical matching over the statement/procedure/recorded conditions, and includes linked later incidents or observations. No semantic applicability ranking is performed. Source checks, current worktree differences, contrary evidence, authority and ACT/INQUIRE/CHALLENGE/etc. selection remain the host's work. A miss is `NOT_ASSESSED`, and a bound of 250 reviewed lessons is disclosed.
+This composes the existing exact-commit, zero-setup reviewed index; selects only `lesson` claims with an explicit authored `attributes.method`, uses lexical matching over the statement/procedure/recorded conditions, and includes linked later incidents or observations. The optional repeatable `--path` (up to eight repository-relative files) adds source-anchored discovery from authored evidence references and the existing reviewed `context-for` history: a candidate can surface because its source relates to the current file even without matching the question's words. The result identifies each `AUTHORED_SOURCE_REF` / `REVIEWED_CONTEXT_HISTORY` route, source coverage and truncation; a cited path establishes provenance, **not** file ownership or the method's applicability. All follow-up reads are pinned to the first query's exact commit even if the checkout's HEAD changes during the session. No semantic applicability ranking is performed. Source checks, current worktree differences, contrary evidence, authority and ACT/INQUIRE/CHALLENGE/etc. selection remain the host's work. A miss is `NOT_ASSESSED`, and a bound of 250 reviewed lessons is disclosed.
 
 **After an actual episode, only if a reusable procedural insight merits retention:**
 
@@ -80,7 +81,7 @@ The episode JSON has these fields:
 {
   "episode_id": "YYYY-MM-DD-unique-episode",
   "actor": "the actual executing agent or actor",
-  "source_revision": "40-character Git commit SHA",
+  "source_revision": "40-character Git commit SHA for the cited decision-time source",
   "decision": "consequential question and selected responsibility",
   "disposition": "develop | adapt | apply | reject | no_change",
   "procedure_before": "prior intellectual procedure, not merely a software hypothesis",
@@ -96,7 +97,7 @@ The episode JSON has these fields:
 }
 ```
 
-`develop` and `adapt` require a genuinely different, explicit before/after *reasoning procedure*; `adapt` requires a checked prior reviewed lesson. `apply` and `reject` preserve an attributed observation referencing a prior lesson without manufacturing a new method. `no_change` writes nothing. An input that merely changes a factual or technical hypothesis should use ordinary RECONCILE, not manufacture method adaptation.
+`develop` and `adapt` require a genuinely different, explicit before/after *reasoning procedure*; `adapt` requires a checked prior reviewed lesson **already present at the stated `source_revision`** (not merely a lesson introduced later on `HEAD`). The producer reports which tracked evidence paths were not yet present at that source commit: a later result may legitimately cite those paths, but their presence must not be retroactively attributed to the earlier decision. This mechanical history check does not prove a prior agent actually read a lesson. `apply` and `reject` preserve an attributed observation referencing a prior lesson without manufacturing a new method. `no_change` writes nothing. An input that merely changes a factual or technical hypothesis should use ordinary RECONCILE, not manufacture method adaptation.
 
 ```bash
 git add path/to/actual-episode.json
