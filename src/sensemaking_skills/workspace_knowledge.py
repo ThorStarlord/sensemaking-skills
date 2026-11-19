@@ -637,12 +637,17 @@ def run_workspace_review_context(
             context = result["context"]
             relevance = context.pop("workspace_relevance")
             relevance["note"] = (
-                "BASE source context and fingerprint overlap flag re-inspection "
-                "candidates, not verified architectural meaning or behavior. "
-                + ("Combined committed and working-tree path names are included; "
-                   "uncommitted bytes were NOT indexed. " if include_worktree
-                   else "Committed paths only; working changes are excluded. ")
-                + "Absent source links remain NOT ASSESSED."
+                ("BASE context and its unanchored relevance candidates are "
+                 "compared with committed changed path names, not working-tree "
+                 "bytes. Fingerprint overlap flags original sources for "
+                 "re-inspection but cannot establish relevance, staleness, "
+                 "architectural meaning or changed behavior. Missing links "
+                 "remain NOT ASSESSED.") if not include_worktree else
+                ("BASE source context and fingerprint overlap flag re-inspection "
+                 "candidates, not verified architectural meaning or behavior. "
+                 "Combined committed and working-tree path names are included; "
+                 "uncommitted bytes were NOT indexed. "
+                 "Absent source links remain NOT ASSESSED.")
             )
             context["change_relevance" if include_worktree else "committed_change_relevance"] = relevance
             entry = {
@@ -684,7 +689,7 @@ def run_workspace_review_context(
             "source_overlap_paths_assessed": len(combined_changed_paths),
             "selected_paths": selected, "omitted_path_count": omitted,
             "unrepresentable_path_count": unrepresentable_count,
-            "omitted_path_sample": paths[max_paths:max_paths + 16],
+            "omitted_path_sample": all_paths[max_paths:max_paths + 16],
             "per_path_limit": limit, "max_paths": max_paths,
             "source_intent_revision": base_sha,
             "git_ancestry_assessed": pr_merge_base, "working_changes_indexed": False,
@@ -743,6 +748,10 @@ def run_workspace_review_context(
             "worktree_unrepresentable_path_count": working_unrepresentable_count,
             "combined_representable_path_count": len(all_paths),
             "committed_changed_paths_total": len(raw_paths),
+            "changed_paths_total": len(set(raw_paths) | set(raw_working_paths)),
+            "unrepresentable_path_count": (
+                unrepresentable_count + working_unrepresentable_count
+            ),
             "working_change_names_only": True,
             "working_changes_indexed": False,
             "working_tree_consumer": "opt_in",
@@ -761,6 +770,9 @@ def run_workspace_review_context(
             "contents, and requires --ref to equal current HEAD. Committed and worktree "
             "evidence overlaps are separate; shared paths may occur in both."
         )
+        target_at_end = inspect_worktree_context(root, sha)
+        if not target_at_end["head_matches_indexed_ref"]:
+            raise ValueError("HEAD changed during worktree review; retry")
         packet["workspace_context"]["target_checkout_ref"] = sha
         packet["workspace_context"]["target_head_matches"] = True
     if include_candidates:
