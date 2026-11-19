@@ -549,7 +549,8 @@ def register_semantic_commands(root_cli: click.Group) -> None:
                   help="Maximum retrieved records per file and product outline")
     @click.option("--depth", type=click.IntRange(0, 4), default=2)
     @click.option("--max-paths", type=click.IntRange(1, 32), default=8, show_default=True,
-                  help="Maximum changed paths to contextualize, sorted by path")
+                  help="Maximum changed paths to contextualize; committed, then staged, "
+                       "unstaged and untracked paths, sorted within each group")
     @click.option("--pr-merge-base", is_flag=True,
                   help="For a PR, use the unique Git merge base of --base-ref and --ref")
     @click.option("--include-candidates", is_flag=True,

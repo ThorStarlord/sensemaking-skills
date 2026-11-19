@@ -1361,3 +1361,12 @@ checks. The agent must inspect original sources, actual code changes and
 authoritative decisions before making a judgment. Unlike
 `workspace-changes`, this command compares code path names rather than
 knowledge-record payloads. Neither command replaces the other.
+
+With `--include-worktree` at the checkout's own HEAD, the same packet also
+lists staged, unstaged and untracked path names without indexing their bytes.
+Per-file context is allocated in `review_scope.selection_order`: committed
+changes first, then staged, unstaged and untracked paths, sorted within each
+group. A partially staged file belongs to both the staged and unstaged groups;
+its first listed group wins the slot. This ordering is a context-budget
+policy, not a claim that untracked files are unimportant, and
+`omitted_path_sample` reports what the budget excluded.

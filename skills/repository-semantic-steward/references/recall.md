@@ -32,7 +32,11 @@ RECALL is lightweight by default. It does not decide whether a task is warranted
    `--include-worktree --ref HEAD` to the same `workspace-review-context`
    command. It reuses BASE-revision product/architecture context while listing
    staged, unstaged and untracked path names; no working source bytes enter the
-   index. Inspect `working_evidence_reinspection` separately from
+   index. Per-file context follows `review_scope.selection_order`: committed
+   paths, then staged, unstaged and untracked paths, sorted within each group,
+   so untracked artifacts do not take every `--max-paths` slot from pending
+   source edits. Inspect
+   `working_evidence_reinspection` separately from
    `committed_evidence_reinspection`, and each path's `change_modes` and
    `context.change_relevance`. It refuses a target ref other than the current
    checkout's HEAD. Absence of a matching path/record is not clearance; use

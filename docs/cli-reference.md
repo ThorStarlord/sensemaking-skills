@@ -108,7 +108,11 @@ This opt-in mode assembles baseline product/architecture context for staged,
 unstaged and untracked **path names** as well as any committed differences
 between the supplied commits. Original product intent and source fingerprints
 remain from the committed BASE revision; working file bytes are **not**
-indexed. The output distinguishes `committed_evidence_reinspection` from
+indexed. Per-file context is allocated in `review_scope.selection_order`:
+committed changes first, then staged, unstaged and untracked paths, sorted
+within each group, so incidental untracked artifacts do not displace pending
+source edits from `--max-paths`. The output distinguishes
+`committed_evidence_reinspection` from
 `working_evidence_reinspection`, and per-path `change_modes` and
 `context.change_relevance` indicate which paths need the agent's own
 source/diff inspection. A file present in both categories is reported in
