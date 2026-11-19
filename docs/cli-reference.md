@@ -94,6 +94,31 @@ explicit two-commit comparison. Missing or ambiguous merge bases fail closed.
 The review also exposes path-level overlaps with BASE cited evidence and
 uncited changed-path gaps, without inferring semantic staleness.
 This is review evidence, not a drift/violation verdict.
+
+For changes **still being edited** in the checkout, add `--include-worktree`
+with `--ref HEAD` (or an exact revision equal to the checkout's HEAD).
+For example:
+
+```bash
+sensemaking-skills semantic workspace-review-context \
+  --base-ref HEAD --ref HEAD --include-worktree --repo . --json
+```
+
+This opt-in mode assembles baseline product/architecture context for staged,
+unstaged and untracked **path names** as well as any committed differences
+between the supplied commits. Original product intent and source fingerprints
+remain from the committed BASE revision; working file bytes are **not**
+indexed. The output distinguishes `committed_evidence_reinspection` from
+`working_evidence_reinspection`, and per-path `change_modes` and
+`context.change_relevance` indicate which paths need the agent's own
+source/diff inspection. A file present in both categories is reported in
+both. The existing committed-only behavior and
+`context.committed_change_relevance` remain unchanged without the flag.
+The checkout must still point at the requested target revision; otherwise
+the optional mode refuses rather than mislabeling later commits as local edits.
+Neither a changed path nor a source-fingerprint overlap establishes semantic
+staleness, a code defect or architectural noncompliance.
+
 For JavaScript/TypeScript source orientation, both `semantic knowledge-build`
 and zero-setup `semantic workspace-query` accept
 `--include-js-module-imports --max-js-imports N`. The latter keeps its default
