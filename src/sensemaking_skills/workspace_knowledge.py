@@ -750,7 +750,7 @@ def run_workspace_review_context(
             "committed_changed_paths_total": len(raw_paths),
             "changed_paths_total": len(set(raw_paths) | set(raw_working_paths)),
             "unrepresentable_path_count": (
-                unrepresentable_count + working_unrepresentable_count
+                len(set(raw_paths) | set(raw_working_paths)) - len(all_paths)
             ),
             "working_change_names_only": True,
             "working_changes_indexed": False,
