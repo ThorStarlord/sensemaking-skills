@@ -758,9 +758,9 @@ def run_workspace_review_context(
             "note": (
                 "Product intent and all context come from BASE committed knowledge. "
                 "Review includes committed diff paths plus the local target checkout's "
-                "staged, unstaged and untracked names. Uncommitted contents and runtime "
-                "effects are not indexed, compared or verified. Source-overlap calls "
-                "for inspection, not a stale-record verdict."
+                "staged, unstaged and untracked names. Uncommitted contents are "
+                "not indexed or returned; behavior and runtime effects are not "
+                "assessed. Source-overlap calls for inspection, not a stale verdict."
             ),
         })
         packet["truncated"] = bool(packet["truncated"] or working_unrepresentable_count
