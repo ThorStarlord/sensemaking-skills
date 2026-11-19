@@ -90,7 +90,15 @@ def guarded_git_text(root: Path, *args: str, disable_filters: bool = True,
 
 
 def inspect_worktree_context(repo_root: Path, indexed_ref: str) -> dict[str, object]:
-    """Inspect HEAD and dirtiness without indexing or running source filters."""
+    """Inspect HEAD and dirtiness without indexing or running source filters.
+
+    Untracked paths are counted in Git's normal mode: a wholly untracked
+    directory is one entry, not one entry per file inside it. Expanding every
+    untracked file can cost tens of seconds on a checkout with a large
+    unignored artifact directory, and the exact file count is not
+    decision-relevant here. Callers that need individual untracked file names
+    use the separate path listing API.
+    """
     if not re.fullmatch(r"[0-9a-f]{40}", indexed_ref):
         raise ValueError("indexed_ref must be an exact 40-character Git SHA")
     root = Path(repo_root).expanduser().resolve()
@@ -99,17 +107,46 @@ def inspect_worktree_context(repo_root: Path, indexed_ref: str) -> dict[str, obj
     top = Path(_git(root, "rev-parse", "--show-toplevel").decode("utf-8").strip()).resolve()
     disabled = _configured_external_filters(top)
     head = _git(top, "rev-parse", "HEAD", disable_filters=disabled).decode("ascii").strip()
-    tracked = _git(top, "diff", "--no-ext-diff", "--no-textconv", "--ignore-submodules=all", "--name-only", "-z", "HEAD", "--", disable_filters=disabled).split(b"\x00")
-    untracked = _git(top, "ls-files", "--others", "--exclude-standard", "-z", disable_filters=disabled).split(b"\x00")
-    status = _git(top, "status", "--porcelain=v1", "--ignore-submodules=all", "--untracked-files=all", "-z", disable_filters=disabled)
+    # One normal-mode status read: tracked modifications (staged or unstaged),
+    # untracked entries and conflicts. Expanding every untracked file costs
+    # tens of seconds on a checkout with a large unignored artifact directory,
+    # and `ls-files --directory` would report a directory whose only contents
+    # are ignored (for example .ruff_cache). Normal mode matches the dirtiness
+    # Git itself reports.
+    status = _git(top, "status", "--porcelain=v1", "--ignore-submodules=all",
+                  "--untracked-files=normal", "-z", disable_filters=disabled)
+    modified_paths = 0
+    untracked_entries = 0
+    fields = status.split(b"\x00")
+    index = 0
+    while index < len(fields):
+        entry = fields[index]
+        index += 1
+        if not entry:
+            continue
+        if len(entry) < 3:
+            # A short entry is unexpected; count it as a change rather than
+            # claim the worktree is clean.
+            modified_paths += 1
+            continue
+        x_status, y_status = entry[0:1], entry[1:2]
+        if x_status == b"?" and y_status == b"?":
+            untracked_entries += 1
+            continue
+        modified_paths += 1
+        # Porcelain -z appends the original path for a rename or copy.
+        if x_status in (b"R", b"C") or y_status in (b"R", b"C"):
+            index += 1
+    dirty = bool(modified_paths or untracked_entries)
     return {
         "current_head": head,
         "indexed_ref": indexed_ref,
         "head_matches_indexed_ref": head == indexed_ref,
-        "worktree_clean": not bool(status),
-        "modified_tracked_count": sum(bool(path) for path in tracked),
-        "untracked_count": sum(bool(path) for path in untracked),
-        "uncommitted_changes_not_indexed": bool(status),
+        "worktree_clean": not dirty,
+        "modified_tracked_count": modified_paths,
+        "untracked_count": untracked_entries,
+        "untracked_count_scope": "normal_mode_entries",
+        "uncommitted_changes_not_indexed": dirty,
         "source_alignment_not_semantic_truth": True,
         "external_filter_commands_disabled_count": len(disabled),
         "submodule_worktrees_not_assessed": True,
