@@ -94,7 +94,9 @@ def method_context(
             "recall_conditions": claim.get("recall_conditions", {}),
             "later_related_records": history,
             "related_records_complete": (
-                not neighbors.get("truncated", False) if linked else True
+                not neighbors.get("truncated", False)
+                and all(item["source_read_status"] == "INDEXED_RECORD" for item in history)
+                if linked else True
             ),
             "applicability_to_present_task": "NOT_ESTABLISHED",
             "present_method_decision": "AGENT_OWNED",
@@ -175,6 +177,21 @@ def _known_claim_ids(root: Path, tracked: set[str]) -> set[str]:
     return ids
 
 
+def _reviewed_lesson_ids(root: Path) -> set[str]:
+    """Prior precedents must exist at committed HEAD, not only in dirty drafts."""
+    names = _git(root, "ls-tree", "-r", "-z", "--name-only", "HEAD", "--",
+                 ".sensemaking/knowledge").split("\\0")
+    lesson_ids: set[str] = set()
+    for name in filter(None, names):
+        if not name.endswith(".json"):
+            continue
+        data = json.loads(_git(root, "show", "HEAD:" + name))
+        for record in data.get("claims", []):
+            if record.get("kind") == "lesson":
+                lesson_ids.add(record["id"])
+    return lesson_ids
+
+
 def record_method_episode(repo: Path, episode_path: str, output_path: str) -> dict[str, Any]:
     """Create a new uncommitted Git-reviewable pack, never mutate reviewed policy.
 
@@ -248,7 +265,7 @@ def record_method_episode(repo: Path, episode_path: str, output_path: str) -> di
     tracked = set(filter(None, _git(root, "ls-files", "-z").split("\0")))
     if episode_relative not in tracked:
         raise ValueError("stage or commit the originating episode file before preparing a reviewed proposal")
-    if previous and previous not in _known_claim_ids(root, tracked):
+    if previous and previous not in _reviewed_lesson_ids(root):
         raise ValueError("prior_lesson_id not found in the current reviewed knowledge files")
     raw_evidence = data.get("evidence_refs")
     if (not isinstance(raw_evidence, list) or not raw_evidence
