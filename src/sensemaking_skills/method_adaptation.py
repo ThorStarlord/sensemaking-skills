@@ -28,6 +28,7 @@ _METHOD_CLAIM_LIMIT = 250
 def method_context(
     question: str, initial: Mapping[str, Any],
     explain: Callable[[str], Mapping[str, Any]], *, limit: int = 8,
+    path_contexts: Mapping[str, Mapping[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """Compose existing reviewed lesson search + explicit later evidence.
 
@@ -45,7 +46,25 @@ def method_context(
     if not content_words:
         raise ValueError("question must contain a decision-relevant content word")
 
-    ranked: list[tuple[int, int, str, dict, tuple[str, ...]]] = []
+    # Context-for carries explicit source/ownership routes. Evidence references
+    # are provenance, not file ownership or proof that a method applies.
+    path_contexts = path_contexts or {}
+    context_history: dict[str, set[str]] = {}
+    path_disclosures: list[dict[str, Any]] = []
+    for path, envelope in path_contexts.items():
+        ctx = envelope.get("context", {})
+        for item in ctx.get("history", []):
+            if item.get("kind") == "lesson":
+                context_history.setdefault(item["claim_id"], set()).add(path)
+        path_disclosures.append({
+            "path": path,
+            "coverage_status": ctx.get("ownership", {}).get("coverage_status", "NOT_ASSESSED"),
+            "context_truncated": bool(ctx.get("truncated", False) or envelope.get("truncated", False)),
+            "knowledge_gaps": ctx.get("knowledge_gaps", []),
+            "source_ref": envelope.get("target_ref"),
+        })
+
+    ranked: list[tuple[int, int, int, str, dict, tuple[str, ...], list[dict]]] = []
     for claim in initial.get("claims", []):
         if claim.get("kind") != "lesson":
             continue
@@ -60,12 +79,26 @@ def method_context(
         )).casefold()
         stems = {_stem(word) for word in _QUESTION_WORD.findall(name + " " + text)}
         matched = tuple(word for word in content_words if _lexical_hit(word, name, text, stems))
-        if matched:
-            ranked.append((-len(matched), -sum(map(len, matched)), claim["id"], claim, matched))
-    ranked.sort(key=lambda item: (item[0], item[1], item[2]))
+        authored_sources = {ref[5:] for ref in claim.get("evidence_refs", [])
+                           if isinstance(ref, str) and ref.startswith("file:")}
+        routes: list[dict] = []
+        for path in path_contexts:
+            reasons = []
+            if path in authored_sources or path == claim.get("authority_ref"):
+                reasons.append("AUTHORED_SOURCE_REF")
+            if path in context_history.get(claim["id"], set()):
+                reasons.append("REVIEWED_CONTEXT_HISTORY")
+            if reasons:
+                routes.append({"path": path, "routes": reasons})
+        if matched or routes:
+            ranked.append((
+                -len(routes), -len(matched), -sum(map(len, matched)),
+                claim["id"], claim, matched, routes,
+            ))
+    ranked.sort(key=lambda item: (item[0], item[1], item[2], item[3]))
 
     candidates = []
-    for _, _, identifier, claim, matched in ranked[:limit]:
+    for _, _, _, identifier, claim, matched, routes in ranked[:limit]:
         linked = claim.get("citing_records") or []
         neighbors = explain(identifier) if linked else {}
         indexed = {record.get("id"): record for record in neighbors.get("claims", [])}
@@ -88,6 +121,7 @@ def method_context(
             "statement": claim.get("statement"),
             "procedure": claim["attributes"]["method"],
             "matched_tokens": list(matched),
+            "matched_paths": routes,
             "epistemic_status": claim.get("epistemic_status"),
             "authority_ref": claim.get("authority_ref"),
             "evidence_refs": claim.get("evidence_refs", []),
@@ -110,6 +144,7 @@ def method_context(
         "workspace_context": initial.get("workspace_context", {}),
         "workspace_index": initial.get("workspace_index", {}),
         "method_candidates": candidates,
+        "path_context": path_disclosures,
         "method_candidate_matches": len(ranked),
         "method_candidate_matches_omitted": max(0, len(ranked) - limit),
         "lesson_corpus_returned": len(initial.get("claims", [])),
@@ -120,7 +155,7 @@ def method_context(
         "action_authorized": False,
         "explicit_limits": [
             "Methods are explicit authored lesson.attributes.method strings, not inferred from technical lessons.",
-            "Candidate matching is literal word overlap across statement, procedure and recorded conditions; not semantic relevance.",
+            "Candidate discovery uses literal question words or explicit authored evidence/context-for path routes; neither establishes method applicability.",
             "The reviewed lesson corpus is bounded at 250 records. A miss or truncated source is NOT_ASSESSED, not absence.",
             "Related records and their statements are indexed evidence, not verified support/refutation or Git chronology.",
             "Inspect original sources, changed conditions, current authority and counterevidence before selecting a method.",
@@ -177,15 +212,15 @@ def _known_claim_ids(root: Path, tracked: set[str]) -> set[str]:
     return ids
 
 
-def _reviewed_lesson_ids(root: Path) -> set[str]:
-    """Prior precedents must exist at committed HEAD, not only in dirty drafts."""
-    names = _git(root, "ls-tree", "-r", "-z", "--name-only", "HEAD", "--",
+def _reviewed_lesson_ids(root: Path, source_revision: str) -> set[str]:
+    """A prior method must exist at the episode's cited revision, not only HEAD."""
+    names = _git(root, "ls-tree", "-r", "-z", "--name-only", source_revision, "--",
                  ".sensemaking/knowledge").split(chr(0))
     lesson_ids: set[str] = set()
     for name in filter(None, names):
         if not name.endswith(".json"):
             continue
-        data = json.loads(_git(root, "show", "HEAD:" + name))
+        data = json.loads(_git(root, "show", source_revision + ":" + name))
         for record in data.get("claims", []):
             if record.get("kind") == "lesson":
                 lesson_ids.add(record["id"])
@@ -267,8 +302,8 @@ def record_method_episode(repo: Path, episode_path: str, output_path: str) -> di
     tracked = set(filter(None, _git(root, "ls-files", "-z").split("\0")))
     if episode_relative not in tracked:
         raise ValueError("stage or commit the originating episode file before preparing a reviewed proposal")
-    if previous and previous not in _reviewed_lesson_ids(root):
-        raise ValueError("prior_lesson_id not found in the current reviewed knowledge files")
+    if previous and previous not in _reviewed_lesson_ids(root, source_revision):
+        raise ValueError("prior_lesson_id is absent from reviewed knowledge at source_revision")
     raw_evidence = data.get("evidence_refs")
     if (not isinstance(raw_evidence, list) or not 1 <= len(raw_evidence) <= 20
             or any(not isinstance(ref, str) or not ref.startswith("file:") for ref in raw_evidence)):
@@ -278,6 +313,14 @@ def record_method_episode(repo: Path, episode_path: str, output_path: str) -> di
         if path not in tracked:
             raise ValueError(f"evidence file is not staged or committed: {path}")
     references = list(dict.fromkeys(["file:" + episode_relative, *raw_evidence]))
+    # The source revision may legitimately precede a task's observed result.
+    # Disclose that provenance distinction, without claiming chronology or
+    # treating a post-decision outcome source as invalid.
+    source_paths = set(filter(None, _git(
+        root, "ls-tree", "-r", "-z", "--name-only", source_revision, "--",
+    ).split(chr(0))))
+    missing_at_source = sorted({ref[5:] for ref in references
+                                if ref[5:] not in source_paths})
 
     observation_id = "observation:method-episode-" + episode_id
     lesson_id = "lesson:conditional-method-" + episode_id
@@ -296,6 +339,7 @@ def record_method_episode(repo: Path, episode_path: str, output_path: str) -> di
         "attributes": {
             "actor": actor,
             "source_revision": source_revision,
+            "evidence_paths_not_in_source_revision": missing_at_source,
             "decision": decision,
             "method_disposition": disposition,
             "procedure_before": procedure_before or "NOT_RECORDED",
@@ -381,6 +425,7 @@ def record_method_episode(repo: Path, episode_path: str, output_path: str) -> di
         "proposed_claim_ids": [item["id"] for item in claims],
         "proposed_relation_ids": [item["id"] for item in relations],
         "source_revision": source_revision,
+        "evidence_paths_not_in_source_revision": missing_at_source,
         "review_state": "UNREVIEWED_DRAFT",
         "semantic_truth_established": False,
         "method_learning_demonstrated": False,
