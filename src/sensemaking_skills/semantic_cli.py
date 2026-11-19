@@ -971,3 +971,72 @@ def register_semantic_commands(root_cli: click.Group) -> None:
         _emit(payload, output_json=output_json)
         if result.diagnostics:
             raise click.exceptions.Exit(3)
+
+    @semantic_group.group(name="method")
+    def semantic_method() -> None:
+        """Optional experience-informed methods: agent judgment, reviewed knowledge."""
+
+    @semantic_method.command(name="context")
+    @click.option("--question", required=True,
+                  help="Current consequential decision question; lexical discovery, not method selection")
+    @click.option("--repo", "repo_dir", default=Path("."),
+                  type=click.Path(exists=True, file_okay=False, path_type=Path),
+                  help="Current Git worktree; source-pinned knowledge is indexed outside it")
+    @click.option("--ref", default="HEAD", show_default=True,
+                  help="Exact committed source revision (default: HEAD)")
+    @click.option("--limit", type=click.IntRange(1, 25), default=8,
+                  help="Maximum explicit methodological candidates to inspect")
+    @click.option("--json", "output_json", is_flag=True)
+    def semantic_method_context(
+        question: str, repo_dir: Path, ref: str, limit: int, output_json: bool,
+    ) -> None:
+        """Read candidate procedures and later cited episodes before an agent decision.
+
+        Reads the existing reviewed lesson index and one-hop source links;
+        does not determine whether any candidate is applicable or beneficial.
+        """
+        from .method_adaptation import method_context
+        from .workspace_knowledge import run_workspace_query
+
+        try:
+            # Literal ID prefix retrieves explicit lessons from the existing index.
+            # The helper ranks only those whose authored attributes define a method.
+            initial = run_workspace_query(
+                repo=repo_dir, ref=ref, operation="search", subject="lesson:",
+                search_kinds=("lesson",), limit=250,
+            )
+
+            def explain(identifier: str) -> dict:
+                return run_workspace_query(
+                    repo=repo_dir, ref=ref, operation="explain", subject=identifier,
+                    limit=250,
+                )
+
+            payload = method_context(question, initial, explain, limit=limit)
+        except (ValueError, OSError, UnicodeError, KeyError, TypeError) as exc:
+            raise click.ClickException(str(exc)) from exc
+        _emit(payload, output_json=output_json)
+
+    @semantic_method.command(name="record")
+    @click.option("--repo", "repo_dir", default=Path("."),
+                  type=click.Path(exists=True, file_okay=False, path_type=Path))
+    @click.option("--episode", "episode_path", required=True,
+                  help="Tracked source-attributed episode JSON, authored by the active agent")
+    @click.option("--output", "output_path", required=True,
+                  help="New exclusive .sensemaking/knowledge/*.json proposal; never overwrites")
+    @click.option("--json", "output_json", is_flag=True)
+    def semantic_method_record(
+        repo_dir: Path, episode_path: str, output_path: str, output_json: bool,
+    ) -> None:
+        """Materialize an agent-authored adaptation/rejection as reviewable records.
+
+        Does not infer a method, record its success automatically, commit,
+        grant permissions, or change existing lessons and policies.
+        """
+        from .method_adaptation import record_method_episode
+
+        try:
+            payload = record_method_episode(repo_dir, episode_path, output_path)
+        except (ValueError, OSError, UnicodeError, KeyError, TypeError) as exc:
+            raise click.ClickException(str(exc)) from exc
+        _emit(payload, output_json=output_json)
