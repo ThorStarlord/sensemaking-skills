@@ -56,4 +56,60 @@ Use this when the current engineering question involves a consequential assumpti
 
 Example: for work on `knowledge_retrieval.py`, `lesson:query-completeness-is-evidence` is a *candidate precedent* because `docs/normal-use/semantic-stewardship-episode-a-2026-10-15.md` reports a historical bounded-query disclosure failure. The agent must still inspect the current query and actual truncation/coverage semantics. It must not infer that the repaired historical defect remains present, that the retrieved lesson is complete, or that merely reading it helped.
 
+## Method Adaptation v0: optional agent-facing lifecycle
+
+Use this when **authentic engineering work** raises a consequential choice of intellectual procedure, or when new evidence could change a prior conditional method. It does not activate for routine edits, mere technical-fact correction, or an effort to fill learning quotas. The host agent retains semantic control.
+
+**Before a method choice, when historical procedure could matter:**
+
+```bash
+sensemaking-skills semantic method context \
+  --question "How should this responsibility compare source evidence before deciding?" \
+  --repo . --ref HEAD --json
+```
+
+This composes the existing exact-commit, zero-setup reviewed index; selects only `lesson` claims with an explicit authored `attributes.method`, uses lexical matching over the statement/procedure/recorded conditions, and includes linked later incidents or observations. No semantic applicability ranking is performed. Source checks, current worktree differences, contrary evidence, authority and ACT/INQUIRE/CHALLENGE/etc. selection remain the host's work. A miss is `NOT_ASSESSED`, and a bound of 250 reviewed lessons is disclosed.
+
+**After an actual episode, only if a reusable procedural insight merits retention:**
+
+Author a UTF-8 JSON record of the episode and stage or commit it first. It must be a real source record: what decision arose, what intellectual procedure was used before and after, actual returned evidence, relevant scope/conditions/counterevidence, actor, exact source commit and a cautious claim ceiling. These are **authored assertions**, not recovered model reasoning.
+
+The episode JSON has these fields:
+
+```json
+{
+  "episode_id": "YYYY-MM-DD-unique-episode",
+  "actor": "the actual executing agent or actor",
+  "source_revision": "40-character Git commit SHA",
+  "decision": "consequential question and selected responsibility",
+  "disposition": "develop | adapt | apply | reject | no_change",
+  "procedure_before": "prior intellectual procedure, not merely a software hypothesis",
+  "procedure_after": "changed conditional procedure, if developed or adapted",
+  "observed_result": "source-grounded actual task outcome or limitation",
+  "scope": "where the proposed method would and would not apply",
+  "conditions": "conditions for conditional applicability",
+  "counterevidence": "opposing observations, or explicitly NOT_ASSESSED",
+  "revisit_when": "conditions for source-checked reconsideration",
+  "claim_ceiling": "what the observation cannot show",
+  "evidence_refs": ["file:tracked/evidence/path.md"],
+  "prior_lesson_id": "lesson:existing-procedure-id, only if adapting/applying/rejecting it"
+}
+```
+
+`develop` and `adapt` require a genuinely different, explicit before/after *reasoning procedure*; `adapt` requires a checked prior reviewed lesson. `apply` and `reject` preserve an attributed observation referencing a prior lesson without manufacturing a new method. `no_change` writes nothing. An input that merely changes a factual or technical hypothesis should use ordinary RECONCILE, not manufacture method adaptation.
+
+```bash
+git add path/to/actual-episode.json
+sensemaking-skills semantic method record \
+  --repo . \
+  --episode path/to/actual-episode.json \
+  --output .sensemaking/knowledge/method-episode-unique.json --json
+sensemaking-skills semantic knowledge-proposal-check \
+  --repo . --proposal .sensemaking/knowledge/method-episode-unique.json --json
+```
+
+The `record` command exclusively creates a **new, unreviewed** Git-authored knowledge proposal; it never overwrites the earlier lesson, commits, merges, edits shared Skills/policy, asserts verified cognitive gain or transfers authority. `develop/adapt` produce an attributed episode observation and a new conditional `lesson` with a `learned_from` edge. `apply/reject` produce only a linked observation. The existing knowledge-proposal checker and ordinary review/commit workflow remain necessary. A later agent can revisit these records through `context` and source-first RECALL.
+
+**Claim ceiling:** This is usable method-development infrastructure plus reviewable evidence. A proposal is not genuine procedural adaptation unless the actual source supports it. Later independent use and comparative cognitive benefit remain separate qualification questions (#872 / #874 in the Sensemaking repository).
+
 **Boundary:** optional, selective, source-grounded. No new query, mandatory protocol, implicit lesson scoring, automatic history ingestion or Skill controller is introduced.
