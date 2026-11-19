@@ -61,6 +61,87 @@ jobs:
           assert result["lesson_corpus_truncated"] is False
           print("Reviewed method context is consumer-readable; agent method learning not evaluated.")
           PY
+      - name: Exercise method source-path and draft producer contracts (no learning claim)
+        shell: bash
+        run: |
+          set -euo pipefail
+          REF="$(git rev-parse HEAD)"
+          test -z "$(git status --porcelain)"
+          sensemaking-skills semantic method context \
+            --question "Which decision procedure helps with this responsibility?" \
+            --path docs/adr/0035-sensemaking-continuous-learning.md \
+            --repo . --ref "$REF" --json > "$RUNNER_TEMP/method-path-context.json"
+          METHOD_PATH_RESULT="$RUNNER_TEMP/method-path-context.json" METHOD_REF="$REF" python - <<'PY'
+          import json
+          import os
+          with open(os.environ["METHOD_PATH_RESULT"], encoding="utf-8") as stream:
+              result = json.load(stream)
+          assert result["target_ref"] == os.environ["METHOD_REF"]
+          candidate = next(item for item in result["method_candidates"]
+                           if item["id"] == "lesson:separate-construction-from-learning-qualification-gates")
+          routes = [reason for entry in candidate["matched_paths"]
+                    for reason in entry["routes"]]
+          assert "AUTHORED_SOURCE_REF" in routes
+          assert candidate["applicability_to_present_task"] == "NOT_ESTABLISHED"
+          assert result["action_authorized"] is False
+          PY
+
+          # A disposable, explicitly non-evidential fixture validates the
+          # write-side contract. It is not an autonomous learning episode and
+          # MUST NOT be committed, indexed as history, or cited as learning.
+          EPISODE=".sensemaking/method-contract-ci-fixture.json"
+          PROPOSAL=".sensemaking/knowledge/method-contract-ci-fixture.json"
+          METHOD_REF="$REF" METHOD_EPISODE="$EPISODE" python - <<'PY'
+          import json
+          import os
+          payload = {
+              "episode_id": "ci-contract-fixture",
+              "actor": "CI mechanical contract fixture; not an autonomous learning agent",
+              "source_revision": os.environ["METHOD_REF"],
+              "decision": "Check the optional write-side method-record interface, not a genuine method decision",
+              "disposition": "reject",
+              "procedure_before": "",
+              "procedure_after": "",
+              "observed_result": "Synthetic input for mechanical verification only; no method was independently chosen",
+              "scope": "CI producer contract, never cognitive learning evidence",
+              "conditions": "",
+              "counterevidence": "NOT_ASSESSED",
+              "revisit_when": "",
+              "claim_ceiling": "No genuine episode, decision-time reuse, learned method or improved competence",
+              "evidence_refs": ["file:docs/normal-use/2026-11-17-construction-vs-qualification-selection-lesson.md"],
+              "prior_lesson_id": "lesson:separate-construction-from-learning-qualification-gates",
+          }
+          with open(os.environ["METHOD_EPISODE"], "w", encoding="utf-8") as stream:
+              json.dump(payload, stream)
+          PY
+          git add "$EPISODE"
+          sensemaking-skills semantic method record \
+            --repo . --episode "$EPISODE" --output "$PROPOSAL" --json \
+            > "$RUNNER_TEMP/method-record-output.json"
+          METHOD_RECORD="$RUNNER_TEMP/method-record-output.json" \
+          METHOD_PROPOSAL="$PROPOSAL" METHOD_EPISODE="$EPISODE" python - <<'PY'
+          import json
+          import os
+          with open(os.environ["METHOD_RECORD"], encoding="utf-8") as stream:
+              result = json.load(stream)
+          with open(os.environ["METHOD_PROPOSAL"], encoding="utf-8") as stream:
+              proposal = json.load(stream)
+          assert result["created"] is True
+          assert result["review_state"] == "UNREVIEWED_DRAFT"
+          assert result["semantic_truth_established"] is False
+          assert result["method_learning_demonstrated"] is False
+          assert result["evidence_paths_not_in_source_revision"] == [os.environ["METHOD_EPISODE"]]
+          assert len(proposal["claims"]) == 1
+          assert proposal["claims"][0]["kind"] == "observation"
+          assert proposal["claims"][0]["epistemic_status"] == "declared"
+          assert proposal["relations"][0]["object"] == "lesson:separate-construction-from-learning-qualification-gates"
+          PY
+          sensemaking-skills semantic knowledge-proposal-check \
+            --repo . --proposal "$PROPOSAL" --json > /dev/null
+          git reset -q -- "$EPISODE"
+          rm -- "$EPISODE" "$PROPOSAL"
+          test -z "$(git status --porcelain)"
+          echo "Temporary method proposal validated and discarded; no learning episode retained."
       - name: Build and inspect the real committed graph
         shell: bash
         run: |
