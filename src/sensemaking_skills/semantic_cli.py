@@ -122,6 +122,7 @@ def _temporary_checkout_disclosure(repo_root: Path, ref: str) -> dict[str, Any]:
             "worktree_clean": context["worktree_clean"],
             "modified_tracked_count": context["modified_tracked_count"],
             "untracked_count": context["untracked_count"],
+            "untracked_count_scope": context["untracked_count_scope"],
             "working_changes_read": False,
             "note": "The active checkout was not read; its uncommitted and untracked changes are not part of this result.",
         },

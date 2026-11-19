@@ -149,7 +149,8 @@ same flag under the same checks and limits; audit applies it to
 `--current-ref`. The JSON output then gains `source_checkout`
 (`temporary_worktree`) and `active_checkout`, which reports `head`,
 `head_matches_source_ref`, `worktree_clean`, `modified_tracked_count`,
-`untracked_count`, `working_changes_read` (always `false`) and `note`, a fixed
+`untracked_count`, `untracked_count_scope`, `working_changes_read` (always
+`false`) and `note`, a fixed
 sentence saying that the active checkout was not read and that its uncommitted
 and untracked changes are not part of the result. Everything else equals a
 clean-checkout run at the same commit. Without the flag, a dirty checkout or a
@@ -267,7 +268,13 @@ sensemaking-skills semantic knowledge-query --db $db --repository $repository `
 - `--repo .` adds `workspace_context` to any knowledge query. It reports
   `current_head`, `indexed_ref`, `head_matches_indexed_ref`,
   `worktree_clean`, `modified_tracked_count`, `untracked_count`,
-  `uncommitted_changes_not_indexed`, and `source_alignment_not_semantic_truth`.
+  `untracked_count_scope`, `uncommitted_changes_not_indexed`, and
+  `source_alignment_not_semantic_truth`. `untracked_count_scope` is
+  `normal_mode_entries`: a wholly untracked directory counts once, and its
+  files are not expanded. Expansion can cost tens of seconds on a checkout
+  with a large unignored artifact directory; it is not decision-relevant to
+  whether uncommitted bytes exist. Path-level untracked names remain in
+  `workspace-review-context --include-worktree`, which expands them.
   Without `--repo`, old calls remain valid and omit this object.
 - Repeated `--term` accepts 1–8 explicit nonempty phrases of at most 80
   characters, with case-insensitive literal OR semantics over claim ID or
