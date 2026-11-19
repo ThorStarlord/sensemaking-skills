@@ -51,8 +51,27 @@ ARTIFACT_INVALID_EXIT = 5
 ARTIFACT_VALIDATOR_EXIT = 6
 
 
+def _print_version(ctx: click.Context, _param: click.Parameter, value: bool) -> None:
+    """Print the version and the executing code's location and commit.
+
+    The version string alone is shared by many commits, so it cannot show
+    whether this process runs the code of the checkout being worked on.
+    """
+    if not value or ctx.resilient_parsing:
+        return
+    from .code_provenance import code_provenance_lines
+
+    click.echo(f"{ctx.find_root().info_name}, version {__version__}")
+    for line in code_provenance_lines():
+        click.echo(line)
+    ctx.exit()
+
+
 @click.group()
-@click.version_option(__version__)
+@click.option(
+    "--version", is_flag=True, expose_value=False, is_eager=True, callback=_print_version,
+    help="Show the version and the executing code's location and commit, then exit.",
+)
 def cli():
     """
     Sensemaking Skills: Agent-native repository diagnosis.

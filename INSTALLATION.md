@@ -38,6 +38,15 @@ python -m venv .venv
 python -m pip install -e .
 ```
 
+An editable install runs this checkout's code from every directory, including
+other worktrees of the same repository, until it is reinstalled from elsewhere.
+The package version alone does not identify a source revision, so
+`sensemaking-skills --version` (or `python -m sensemaking_skills.cli --version`)
+also prints the imported package directory and a `code commit` line. It names a
+commit only for a Git checkout whose package directory has no uncommitted or
+untracked change, or for an install whose installer recorded a VCS commit
+(PEP 610 `direct_url.json`); otherwise it names none.
+
 ## What the wheel contains
 
 The Version 1.0 target wheel is intended to contain the shipped Campaign/runtime surface, build-derived Skill trees, and the build-derived canonical validator runtime used by normal `campaign ingest` operations.
