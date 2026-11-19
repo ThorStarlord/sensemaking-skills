@@ -1,0 +1,93 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-11-19-method-v0-source-path-provenance
+state: final
+created_at: "2026-11-19T15:42:46Z"
+updated_at: "2026-11-19T15:42:46Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: 99a8215703d6d714a2eff3a5a37945f76949e349
+  end_ref: b955edd3d1148c01e97a156bf8c748f0e2b60f9e
+  worktree_clean_at_end: null
+skill_identity:
+  load_mode: manual_explicit_load
+  sensemaking_source_ref: null
+goal:
+  statement: "Continue bounded, outcome-driven Method Adaptation v0 construction during genuine engineering work; observe Outcome-Responsibility Drift without inventing learning evidence."
+  source: owner_message
+  source_ref: null
+delegation:
+  granted: [read, local_write, run_local_commands, commit, push, open_pr, merge]
+  withheld: [release, deploy, tracker_write, external_publication]
+continuity:
+  resumes: 2026-11-19-ord-method-v0-continuation-plan
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: Identify actual source-anchored discovery and feedback-provenance gaps
+    capability: using-sensemaking
+    status: completed
+    reason: "The Method v0 context entrypoint was question-only; prior lesson eligibility was checked at HEAD rather than the episode source revision."
+    artifact_refs: [src/sensemaking_skills/method_adaptation.py, src/sensemaking_skills/semantic_cli.py]
+    validation:
+      - command: Inspect main at 99a82157, method consumer code, ORD plan, ADR 0035-0037 and reviewed lesson
+        result: PASS
+  - id: R-2
+    responsibility: Build source-file method discovery and source-revision-correct feedback
+    capability: ordinary_coding
+    status: completed
+    reason: "Adds optional source-route matching, same-SHA followup reads, historical prior-lesson checks, evidence-presence disclosure and guidance through existing interfaces."
+    artifact_refs: [src/sensemaking_skills/method_adaptation.py, src/sensemaking_skills/semantic_cli.py, skills/repository-semantic-steward/references/recall.md]
+    validation:
+      - command: Compare isolated GitHub branch source and diff against main
+        result: PASS
+  - id: R-3
+    responsibility: Exercise source-path lookup and write-side proposal mechanics in hosted CI
+    capability: ordinary_coding
+    status: completed
+    reason: "An exact-source workflow passed source-anchored retrieval and an ephemeral method proposal plus existing knowledge-proposal-check; the CI fixture was discarded."
+    artifact_refs: [.github/workflows/semantic-context-reentry.yml]
+    validation:
+      - command: Hosted Semantic Context Re-entry at b955edd3 (including the disposable draft producer)
+        result: PASS
+      - command: Hosted Product Validation and Release Candidate Distribution at b955edd3
+        result: PASS
+      - command: Local checkout-based CLI, unit and synthetic evidence tests
+        result: NOT_RUN
+  - id: R-4
+    responsibility: Reconcile ORD and the remaining Method Adaptation v0 outcome
+    capability: using-sensemaking
+    status: completed
+    reason: "One coherent consumer increment was built; it does not complete independent method learning or establish a new reasoning-procedure adaptation."
+    artifact_refs: [docs/agents/build-loop.md, docs/superpowers/plans/2026-11-19-method-adaptation-v0-continuation-ord-observation.md]
+    validation:
+      - command: Inspect governing objective against selected responsibility and hosted consumer evidence
+        result: PASS
+findings:
+  - id: F-1
+    statement: "Hosted source-pinned re-entry returned a reviewed method through its authored source-file route, and a disposable write-side draft passed the existing knowledge-proposal check."
+    epistemic_status: OBSERVED
+    evidence_refs: [.github/workflows/semantic-context-reentry.yml]
+    disposition: resolved
+  - id: F-2
+    statement: "Source code now checks preceding lesson presence at the episode source revision and discloses evidence paths unavailable at that revision; a separately authentic episode was not run."
+    epistemic_status: DERIVED
+    evidence_refs: [src/sensemaking_skills/method_adaptation.py]
+    disposition: open
+  - id: F-3
+    statement: "The selected responsibility serves the owner-level capability without asserting global completion. No novel ORD failure or causal explanation was established by this session."
+    epistemic_status: DERIVED
+    evidence_refs: [docs/agents/build-loop.md, docs/superpowers/plans/2026-11-19-method-adaptation-v0-continuation-ord-observation.md]
+    disposition: open
+open_questions: []
+stop:
+  disposition: SCOPE_EXHAUSTED
+  reason: "Source-path/provenance increment is implemented and its mechanical consumer verified. Authentic agent methodological feedback requires a suitable later coding-agent episode, unavailable in this shell environment."
+next:
+  warranted_responsibility: "During an independently valuable later engineering task, try source-path method context and the write-side producer if actual methodological evidence warrants it; repair any concrete consumer failure."
+  blocked_on: []
+persistence: committed
+claim_ceiling: "Hosted mechanics and source review do not prove autonomous method learning, decision-time causation, independent reuse, comparative gain, or ORD remediation. No local GitHub checkout was available."
+action_authorized_by_receipt: false
+immutable: true

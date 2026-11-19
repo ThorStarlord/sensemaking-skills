@@ -979,6 +979,9 @@ def register_semantic_commands(root_cli: click.Group) -> None:
     @semantic_method.command(name="context")
     @click.option("--question", required=True,
                   help="Current consequential decision question; lexical discovery, not method selection")
+    @click.option("--path", "source_paths", multiple=True,
+                  help="Optional relevant repository-relative source path (repeat up to eight);"
+                       " explicit evidence and reviewed context routes, not semantic applicability")
     @click.option("--repo", "repo_dir", default=Path("."),
                   type=click.Path(exists=True, file_okay=False, path_type=Path),
                   help="Current Git worktree; source-pinned knowledge is indexed outside it")
@@ -988,7 +991,8 @@ def register_semantic_commands(root_cli: click.Group) -> None:
                   help="Maximum explicit methodological candidates to inspect")
     @click.option("--json", "output_json", is_flag=True)
     def semantic_method_context(
-        question: str, repo_dir: Path, ref: str, limit: int, output_json: bool,
+        question: str, source_paths: tuple[str, ...], repo_dir: Path,
+        ref: str, limit: int, output_json: bool,
     ) -> None:
         """Read candidate procedures and later cited episodes before an agent decision.
 
@@ -996,23 +1000,38 @@ def register_semantic_commands(root_cli: click.Group) -> None:
         does not determine whether any candidate is applicable or beneficial.
         """
         from .method_adaptation import method_context
-        from .workspace_knowledge import run_workspace_query
+        from .workspace_knowledge import _normalize_path, run_workspace_query
 
         try:
+            if len(source_paths) > 8:
+                raise ValueError("method context accepts at most eight source paths")
+            paths = tuple(dict.fromkeys(_normalize_path(path) for path in source_paths))
             # Literal ID prefix retrieves explicit lessons from the existing index.
             # The helper ranks only those whose authored attributes define a method.
             initial = run_workspace_query(
                 repo=repo_dir, ref=ref, operation="search", subject="lesson:",
                 search_kinds=("lesson",), limit=250,
             )
+            # Pin subsequent lookups to the exact initial revision. A moving
+            # HEAD must never mix lessons, source-path context and feedback.
+            pinned_ref = initial["target_ref"]
 
             def explain(identifier: str) -> dict:
                 return run_workspace_query(
-                    repo=repo_dir, ref=ref, operation="explain", subject=identifier,
+                    repo=repo_dir, ref=pinned_ref, operation="explain", subject=identifier,
                     limit=250,
                 )
 
-            payload = method_context(question, initial, explain, limit=limit)
+            path_contexts = {
+                path: run_workspace_query(
+                    repo=repo_dir, ref=pinned_ref, operation="context-for",
+                    subject=path, limit=250,
+                )
+                for path in paths
+            }
+            payload = method_context(
+                question, initial, explain, limit=limit, path_contexts=path_contexts,
+            )
         except (ValueError, OSError, UnicodeError, KeyError, TypeError) as exc:
             raise click.ClickException(str(exc)) from exc
         _emit(payload, output_json=output_json)
