@@ -28,9 +28,11 @@ change that replacing it would lose.
 
 Install record: each destination root gets one ``.sensemaking-skills-install.json``
 file beside the Skill directories. It maps a Skill name to the digest of the
-tree setup-skills last wrote or verified there, with the package version and
-source kind. The Skill trees themselves stay byte-identical to the packaged
-ones. The record lets a later run tell a copy that is merely outdated from one
+tree setup-skills last wrote or verified there, with the package version, the
+source kind and, when the source is a Git checkout with no uncommitted or ignored
+file under its Skill directory, that checkout's HEAD commit. The Skill trees
+themselves stay byte-identical to the packaged ones. The record lets a later run
+tell a copy that is merely outdated from one
 that changed after installation. It is setup-skills' own bookkeeping: it does
 not show what a host loaded, and copies written by any other tool are not
 recorded.
@@ -438,6 +440,28 @@ class _CommittedSkillHistory:
             return None
         return cls(repo_root, lines[1])
 
+    def clean_head_commit(self, skills_name: str) -> str | None:
+        """Return HEAD when the checkout's ``skills_name`` tree has no uncommitted change.
+
+        Only then does the committed HEAD name the bytes that were installed.
+        Ignored files count as changes, since they can be copied without being
+        committed. A Git failure, a change, or a HEAD that is not a full object
+        id gives ``None``, so the install record names no commit.
+        """
+        # Like the other guarded reads of a checkout, fsmonitor is disabled so that a
+        # checkout's own fsmonitor hook does not run while the install record is read.
+        guard = ("-c", "core.fsmonitor=false")
+        status = self._git(
+            self.repo_root, *guard, "status", "--porcelain", "--ignored", "--", skills_name
+        )
+        if status is None or status.strip():
+            return None
+        head = self._git(self.repo_root, *guard, "rev-parse", "--verify", "HEAD")
+        head = (head or "").strip()
+        if len(head) not in (40, 64) or any(char not in "0123456789abcdef" for char in head):
+            return None
+        return head
+
     @staticmethod
     def _git(repo_root: Path, *args: str, stdin: str | None = None) -> str | None:
         try:
@@ -661,6 +685,7 @@ def _refresh_record_entry(
     *,
     action: str,
     source_kind: str,
+    source_commit: str | None = None,
 ) -> bool:
     """Record a destination tree that now equals its packaged source.
 
@@ -668,8 +693,11 @@ def _refresh_record_entry(
     byte-identical to the source tree, so a record never vouches for bytes that
     setup-skills did not ship. ``action`` says how the recorded digest was
     established (``installed``, ``replaced`` or ``verified`` for a copy that
-    already matched); an entry whose digest, version and source are unchanged
-    is left as it was, so ``action`` and ``recorded_at`` keep their first values.
+    already matched); an entry whose digest, version, source and source commit
+    are unchanged is left as it was, so ``action`` and ``recorded_at`` keep their
+    first values.
+    ``source_commit`` is recorded only for a clean Git checkout and is never
+    inferred; otherwise the entry has no such key.
     """
     if _is_link_like(dest_skill):
         return False
@@ -683,15 +711,19 @@ def _refresh_record_entry(
         and previous.get("tree_sha256") == digest
         and previous.get("package_version") == __version__
         and previous.get("source") == source_kind
+        and previous.get("source_commit") == source_commit
     ):
         return False
-    entries[skill_name] = {
+    entry = {
         "tree_sha256": digest,
         "package_version": __version__,
         "source": source_kind,
         "action": action,
         "recorded_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
     }
+    if source_commit is not None:
+        entry["source_commit"] = source_commit
+    entries[skill_name] = entry
     return True
 
 
@@ -923,6 +955,11 @@ def setup_skill_profile(
         all_success = True
         source_kind = _skill_source_kind(package_skills_dir)
         history = _CommittedSkillHistory.for_source(package_skills_dir)
+        source_commit = (
+            history.clean_head_commit(package_skills_dir.name)
+            if history is not None
+            else None
+        )
         if verbose:
             print(
                 "Committed history for unrecorded copies: "
@@ -993,6 +1030,7 @@ def setup_skill_profile(
                         dest_skill,
                         action=action,
                         source_kind=source_kind,
+                        source_commit=source_commit,
                     ):
                         record_changed = True
 

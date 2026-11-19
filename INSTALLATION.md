@@ -95,8 +95,12 @@ Each destination root gets one install record, `.sensemaking-skills-install.json
 beside the Skill directories. For every Skill it wrote or found already
 identical, `setup-skills` records the digest of that tree, the package version
 and whether the source was a wheel (`packaged`) or a source checkout
-(`source_checkout`). Skill trees themselves stay byte-identical to the
-packaged ones. A dry run writes nothing.
+(`source_checkout`). When the source is a Git checkout with no uncommitted or
+ignored file under `skills/`, it also records that checkout's `HEAD` commit as
+`source_commit`; the package version alone does not identify a source revision.
+Entries written before this field existed have no `source_commit` until a later
+run rewrites them. Skill trees themselves stay byte-identical to the packaged
+ones. A dry run writes nothing.
 
 When an installed copy differs from the packaged version, the record says why:
 
