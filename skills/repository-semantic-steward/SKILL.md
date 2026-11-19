@@ -52,10 +52,10 @@ sensemaking-skills semantic --help
 ```
 
 The version string is shared by many commits. Current `--version` output also
-prints the executing package directory and a `code commit` line. If that line
-names no commit, or a commit other than the revision you intend to use, the
-commands may exist while their behavior differs, so treat the executable as
-unverified, as when a command is absent.
+prints the executing package directory and a `code commit` line. If there is
+no such line, or it names no commit or a commit other than the revision you
+intend to use, the commands may exist while their behavior differs, so treat
+the executable as unverified, as when a command is absent.
 
 If the required command is absent, install the exact reviewed Sensemaking Git
 SHA selected for this task into an isolated `uv` tool environment. Replace the
