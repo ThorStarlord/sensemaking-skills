@@ -308,7 +308,10 @@ restart when adequate knowledge exists. Otherwise start with narrow
 **RECALL** (or read the Git-authored records directly when no index exists),
 verify the cited code and decisions, then reason or build. **AUDIT** when
 knowledge may be stale against current source. After consequential evidence,
-**RECONCILE** only affected knowledge or record `NO_MODEL_CHANGE`. Disputed,
+**RECONCILE** only affected knowledge or record `NO_MODEL_CHANGE`.
+
+**Method Adaptation v0 (conditional, agent-owned):** If authentic work materially changes a *reasoning procedure* (how questions are framed, evidence is sought, alternatives are compared or a stop is chosen), distinguish that change from correcting technical facts or a task-local plan. When prior methodological experience could affect a current consequential decision, the optional `semantic method context --question ...` surfaces reviewed procedure candidates and their later source-linked records. After a real episode, `semantic method record --episode ... --output ...` can create a distinct **unreviewed** observation/conditional-lesson proposal without rewriting the original; ordinary Steward validation and Git review apply. Use `repository-semantic-steward/references/recall.md` (Method Adaptation v0 section) for the exact consumer contract. The host agent still chooses, adapts or rejects the procedure; neither successful code repair nor a generated proposal proves learning, later reuse or benefit. Do not activate this on routine work or manufacture an episode.
+ Disputed,
 superseded, hypothetical and `NOT_ASSESSED` knowledge stays labelled as such;
 none of it establishes clearance. A graph miss is `ABSENT_FROM_GRAPH`, not
 absence (see the Relation rule). Never block ordinary coding because no
