@@ -98,6 +98,59 @@ validator or synthetic evaluation. This is a candidate engineering
 investigation, **not** a ratified automatic PATH-1 backlog item or evidence
 that the documented safeguard already works.
 
+## Outcome-Responsibility Drift (ORD): Method Adaptation construction case (2026-11-19)
+
+**Definition (descriptive, not a new policy):** Outcome-Responsibility Drift occurs
+when the agent selects or closes a local responsibility that is relevant to,
+but materially narrower than, the governing owner outcome, without recognizing
+that the larger outcome remains unmet. A locally correct patch, source review
+or receipt does not by itself satisfy a broader capability goal. **Premature
+local closure** is one observable manifestation. **Defensive minimalism** (a
+preference for easy-to-defend small actions) and **constraint inversion**
+(treating a means-limiting heuristic as the primary objective) are possible
+explanations, **not demonstrated causes**.
+
+**Source-grounded sequence:**
+
+- [PR #930](https://github.com/ThorStarlord/sensemaking-skills/pull/930)
+  concluded `NO_CODE_CHANGE / NO_FURTHER_WARRANT` after using the
+  [#909 receiving-agent record](../normal-use/2026-11-18-receiving-agent-adaptation-909.md)
+  as its existing method-adaptation precedent. That record shows a technical
+  hypothesis correction and a two-line output repair, not attributable
+  development of a reusable reasoning procedure.
+- [PR #931](https://github.com/ThorStarlord/sensemaking-skills/pull/931)
+  correctly narrowed the earlier completion inference and retained a
+  conditional method-claim checking candidate. The correction was useful but
+  did not itself deliver the requested agent-facing method lifecycle.
+- [PR #932](https://github.com/ThorStarlord/sensemaking-skills/pull/932)
+  then delivered optional `semantic method context` and `semantic method
+  record` interfaces. Hosted read-side re-entry succeeded; authentic
+  write-side use and independent cognitive benefit were not established.
+  Its later success does **not** establish why the earlier selections differed.
+
+This resembles the [2026-10-27 task-grounding miss](#observed-repository-only-discovery-miss-2026-10-27),
+but the episodes are not matched comparisons. Plausible alternative
+explanations include differing owner prompts and explicit scope grants,
+reliance on earlier receipts, uneven exposure to guidance, a remote-only
+execution environment favoring documentary changes, or an agent-level
+selection tendency. Do not infer an intrinsic bias or a general failure rate
+from these few episodes.
+
+**Observe during valuable work, without a mandatory procedure:** when a
+consequential responsibility is selected or closed, compare the actual owner
+outcome, the responsibility selected, the user-visible capability delivered,
+and the outcome that remains open. If a material, credible alternative could
+deliver much more value within authority, reconsider before declaring
+`GOAL_SATISFIED` or `NO_FURTHER_WARRANT`. Preserve only original,
+source-attributed task/decision evidence already useful to the work; a
+post-hoc report is not a contemporaneous decision trace. A small patch can
+be exactly right, and a `NO_CODE_CHANGE` decision can be justified.
+
+**Current continuation:** use the
+[Method Adaptation v0 construction-and-observation plan](../superpowers/plans/2026-11-19-method-adaptation-v0-continuation-ord-observation.md).
+ORD is a secondary observation lens, not a new controller, obligatory
+reflection checkpoint, qualification study, or reason to postpone construction.
+
 ## Continue after a spike or merged increment
 
 **Remember:** `GOAL -> SPIKE? -> BUILD -> INTEGRATE -> CONTINUE`.
