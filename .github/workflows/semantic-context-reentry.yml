@@ -772,8 +772,16 @@ jobs:
           sensemaking-skills semantic workspace-review-context \
             --base-ref "$REF" --ref "$REF" --repo . --max-paths 32 --limit 25 \
             --json > "$RUNNER_TEMP/precommit-committed-only.json"
+          # One context slot: a staged source edit must outrank an untracked
+          # path that sorts before it. Alphabetical selection used to give the
+          # slot to the untracked file.
+          sensemaking-skills semantic workspace-review-context \
+            --base-ref "$REF" --ref "$REF" --repo . --include-worktree \
+            --max-paths 1 --limit 25 --json \
+            > "$RUNNER_TEMP/precommit-priority-review.json"
           REVIEW="$RUNNER_TEMP/precommit-worktree-review.json" \
           COMMITTED="$RUNNER_TEMP/precommit-committed-only.json" \
+          PRIORITY="$RUNNER_TEMP/precommit-priority-review.json" \
           TARGET="$TARGET" UNTRACKED="$UNTRACKED" REF="$REF" python - <<'PY'
           import json
           import os
@@ -781,6 +789,8 @@ jobs:
               result = json.load(stream)
           with open(os.environ["COMMITTED"], encoding="utf-8") as stream:
               only_committed = json.load(stream)
+          with open(os.environ["PRIORITY"], encoding="utf-8") as stream:
+              priority = json.load(stream)
           target, untracked = os.environ["TARGET"], os.environ["UNTRACKED"]
           assert result["code"] == "SEMANTIC_WORKTREE_REVIEW_CONTEXT"
           assert result["target_ref"] == result["base_ref"] == os.environ["REF"]
@@ -802,7 +812,14 @@ jobs:
           assert only_committed["code"] == "SEMANTIC_COMMITTED_REVIEW_CONTEXT"
           assert only_committed["contexts"] == []
           assert only_committed["committed_evidence_reinspection"]["changed_path_total"] == 0
+          priority_scope = priority["review_scope"]
+          assert priority_scope["selection_order"] == [
+              "committed", "staged", "unstaged", "untracked",
+          ], priority_scope
+          assert priority_scope["selected_paths"] == [target], priority_scope
+          assert priority_scope["omitted_path_count"] == 1, priority_scope
           print("Live precommit review includes staged-only and untracked paths; no cognitive claim.")
+          print("One context slot goes to the staged edit, not the earlier-sorting untracked path.")
           PY
           git reset -q -- "$TARGET"
           rm -- "$UNTRACKED"

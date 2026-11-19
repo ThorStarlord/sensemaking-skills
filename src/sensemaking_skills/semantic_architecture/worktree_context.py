@@ -120,8 +120,11 @@ def changed_paths_since_indexed_ref(repo_root: Path, indexed_ref: str) -> dict[s
     """List paths whose working-tree state differs from the indexed commit.
 
     Covers commits made after indexing plus staged/unstaged/untracked edits.
-    Return path names only. Git diff may inspect working-tree bytes internally;
-    those bytes are not stored in the semantic index or treated as indexed evidence.
+    Return path names only: `paths` is the union, and `staged`, `unstaged` and
+    `untracked` report the Git change classes so a caller can prioritize
+    review context. Classes are not exclusive. Git diff may inspect
+    working-tree bytes internally; those bytes are not stored in the semantic
+    index or treated as indexed evidence.
     """
     if not re.fullmatch(r"[0-9a-f]{40}", indexed_ref):
         raise ValueError("indexed_ref must be an exact 40-character Git SHA")
@@ -141,9 +144,30 @@ def changed_paths_since_indexed_ref(repo_root: Path, indexed_ref: str) -> dict[s
     staged = _git(top, "diff", "--cached", "--no-ext-diff", "--no-textconv", "--no-renames",
                   "--ignore-submodules=all", "--name-only", "-z", indexed_ref, "--",
                   disable_filters=disabled).split(b"\x00")
+    # Worktree vs index, so a partially staged file stays distinguishable from
+    # a file whose only change is already in the index.
+    unstaged = _git(top, "diff", "--no-ext-diff", "--no-textconv", "--no-renames",
+                    "--ignore-submodules=all", "--name-only", "-z", "--",
+                    disable_filters=disabled).split(b"\x00")
     untracked = _git(top, "ls-files", "--others", "--exclude-standard", "-z",
                      disable_filters=disabled).split(b"\x00")
+
+    def _names(raw: list[bytes]) -> frozenset[str]:
+        return frozenset(item.decode("utf-8", "surrogateescape") for item in raw if item)
+
+    staged_paths = _names(staged)
+    unstaged_paths = _names(unstaged)
+    untracked_paths = _names(untracked)
     paths = frozenset(
         item.decode("utf-8", "surrogateescape") for item in (*tracked, *staged, *untracked) if item
     )
-    return {"paths": paths, "external_filter_commands_disabled_count": len(disabled)}
+    return {
+        "paths": paths,
+        # Change classes for callers that must decide which paths deserve
+        # review context first. A partially staged file appears in both
+        # "staged" and "unstaged"; membership is not exclusive.
+        "staged": staged_paths,
+        "unstaged": unstaged_paths,
+        "untracked": untracked_paths,
+        "external_filter_commands_disabled_count": len(disabled),
+    }
