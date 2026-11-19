@@ -10,6 +10,7 @@ on:
       - '.sensemaking/knowledge/**'
       - 'src/sensemaking_skills/semantic_architecture/**'
       - 'src/sensemaking_skills/semantic_cli.py'
+      - 'src/sensemaking_skills/method_adaptation.py'
       - 'src/sensemaking_skills/workspace_knowledge.py'
       - 'src/sensemaking_skills/workflow_availability.py'
       - 'skills/strategic-repository-analysis/**'
@@ -32,6 +33,34 @@ jobs:
           python-version: '3.11'
       - name: Install this exact repository revision
         run: python -m pip install -e .
+      - name: Re-enter reviewed methodological experience (mechanics only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          REF="$(git rev-parse HEAD)"
+          sensemaking-skills semantic method context \
+            --question "method adaptation construction qualification gates" \
+            --repo . --ref "$REF" --json > "$RUNNER_TEMP/method-context.json"
+          sensemaking-skills semantic method record --help > /dev/null
+          METHOD_RESULT="$RUNNER_TEMP/method-context.json" METHOD_REF="$REF" python - <<'PY'
+          import json
+          import os
+          with open(os.environ["METHOD_RESULT"], encoding="utf-8") as stream:
+              result = json.load(stream)
+          assert result["code"] == "SEMANTIC_METHOD_CONTEXT"
+          assert result["target_ref"] == os.environ["METHOD_REF"]
+          assert result["semantic_truth_established"] is False
+          assert result["action_authorized"] is False
+          methods = {item["id"]: item for item in result["method_candidates"]}
+          precedent = methods["lesson:separate-construction-from-learning-qualification-gates"]
+          assert precedent["procedure"]
+          assert precedent["applicability_to_present_task"] == "NOT_ESTABLISHED"
+          assert precedent["authority_ref"]
+          assert any(row["id"] == "observation:construction-gate-application-20261118"
+                     for row in precedent["later_related_records"])
+          assert result["lesson_corpus_truncated"] is False
+          print("Reviewed method context is consumer-readable; agent method learning not evaluated.")
+          PY
       - name: Build and inspect the real committed graph
         shell: bash
         run: |
