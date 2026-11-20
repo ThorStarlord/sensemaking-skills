@@ -855,6 +855,42 @@ def possibility_ecology(
         selected_relations.extend(rel["relation_id"] for rel in related)
     if focus_kind == "goal":
         selected_relations.extend(r["id"] for r in candidate_edges)
+    shared: dict[str, dict] = {}
+    for item in candidates:
+        for relation in item["relationships"]:
+            other_id = relation["other_claim_id"]
+            entry = shared.setdefault(other_id, {
+                "other_claim_id": other_id,
+                "other_kind": relation["other_kind"],
+                "other_statement": relation["other_statement"],
+                "other_epistemic_status": relation["other_epistemic_status"],
+                "other_authority_kind": relation["other_authority_kind"],
+                "candidates": [],
+                "evidence_refs": [],
+            })
+            entry["candidates"].append({
+                "claim_id": item["claim_id"],
+                "predicate": relation["predicate"],
+                "direction": relation["direction"],
+                "relation_id": relation["relation_id"],
+                "conceptual_relation": relation.get("conceptual_relation"),
+                "relation_evidence_refs": relation["relation_evidence_refs"],
+            })
+            entry["evidence_refs"] = sorted(
+                set(entry["evidence_refs"]) | set(relation["relation_evidence_refs"])
+            )
+    shared_links = [
+        entry for entry in shared.values()
+        if len({link["claim_id"] for link in entry["candidates"]}) >= 2
+    ]
+    shared_links.sort(
+        key=lambda entry: (
+            -len({link["claim_id"] for link in entry["candidates"]}),
+            entry["other_claim_id"],
+        )
+    )
+    shared_total = len(shared_links)
+    shared_visible = shared_links[:10]
     payload = {
         "focus_kind": focus_kind,
         "focus": candidate_record(focus) if focus_kind == "opportunity" else {
@@ -869,10 +905,14 @@ def possibility_ecology(
         "candidate_total": candidate_total,
         "candidate_omitted": candidate_omitted,
         "candidate_link_not_assessed": candidate_total == 0,
+        "shared_links": shared_visible,
+        "shared_link_total": shared_total,
+        "shared_link_omitted": max(0, shared_total - len(shared_visible)),
         "relationship_total": relationship_total,
         "relationship_omitted": relationship_omitted,
         "coverage_complete": False,
-        "truncated": bool(candidate_omitted or relationship_omitted),
+        "truncated": bool(candidate_omitted or relationship_omitted
+                          or shared_total > len(shared_visible)),
         "explicit_limits": [
             "Projects only authored possibility dimensions, disposition history and explicit "
             "relations; it does not infer relationships, shared premises, feasibility, "
@@ -881,6 +921,10 @@ def possibility_ecology(
             "and relations are NOT_ASSESSED, not evidence that none exist.",
             "candidate_opportunity_for links are documentary; they do not establish goal "
             "service, product value or authority to build.",
+            "shared_links group claims that two or more visible candidates explicitly relate "
+            "to. The grouping does not establish a shared premise, complement, conflict, "
+            "dependency, feasibility or priority; candidates omitted by the candidate "
+            "limit are not counted.",
             "The view follows one explicit relationship hop from each candidate; inspect "
             "original sources or explain/knowledge-view-export for deeper traversal.",
         ],

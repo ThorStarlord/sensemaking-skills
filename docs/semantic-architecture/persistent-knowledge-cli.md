@@ -662,13 +662,19 @@ realization summary, `value_hypothesis`, `revisit_when`, bounded
 `distinct_from`, or conceptual `references`) with direction, other claim,
 relation evidence and any authored `conceptual_relation`.
 
+The response also groups claims that two or more visible candidates explicitly
+relate to into `shared_links`, with each candidate's predicate, direction and
+relation ID. This is an authored co-reference, not proof of a shared premise,
+complement, conflict, dependency, feasibility or priority; candidates omitted
+by the limit are not counted.
+
 This is a source-linked projection, not synthesis or selection. It does not
 infer shared premises, complements, conflicts, feasibility, priority,
 implementation, goal service or a recommendation; hypothetical records remain
 hypothetical, and missing dimensions or relations are `NOT_ASSESSED`. One
 explicit relationship hop is followed per candidate; use
-`knowledge-view-export`/`explain` for deeper traversal. Candidate and
-relationship omission counts disclose the bound.
+`knowledge-view-export`/`explain` for deeper traversal. Candidate, relationship
+and shared-link omission counts disclose the bound.
 
 ### Source-linked capability-to-component routes
 
