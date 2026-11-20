@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "claims": [
+    {
+      "id": "decision:possibility-ecology-projection",
+      "kind": "decision",
+      "statement": "Add a read-only possibility-ecology projection: for one goal or opportunity, list direct candidate opportunities with authored dimensions, realization state, goal links, one-hop explicit relations and claims explicitly shared by multiple candidates. It introduces no inference, ranking, synthesis, controller or new schema; it is not the full assumption-aware opportunity ecology, whose independent experience remains NOT_ASSESSED.",
+      "epistemic_status": "declared",
+      "authority_kind": "delegated",
+      "authority_ref": "docs/semantic-architecture/persistent-knowledge-cli.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_architecture.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_store.py",
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:.github/workflows/semantic-context-reentry.yml",
+        "file:docs/normal-use/2026-11-02-creative-prospective-discovery.md"
+      ],
+      "attributes": {
+        "scope": "One goal or opportunity subject; direct candidate edges; one explicit relationship hop per candidate; at most eight relationships per candidate and ten shared links",
+        "decision_changed": "An agent can inspect authored candidate dimensions, realization states, goal links and shared co-references through one bounded query instead of intersecting raw JSON or generic graph edges manually.",
+        "claim_ceiling": "One implementation and local/hosted mechanical probes. Existing generic knowledge-view-export and explain can retrieve raw edges; no independent benefit, comparative improvement, full ecology experience or selection authority is established.",
+        "counterevidence": "docs/normal-use/2026-11-02-creative-prospective-discovery.md (baseline bb77dac) provisionally preferred agent-native relational discovery and retained bounded deterministic graph-assistance only if actual cases show existing search/explain/context-for cannot retrieve needed shared-premise or multi-option neighborhoods. Raw edges are retrievable through the later generic graph view and explain, so the condition is not met as a strict retrieval inability. The projection is warranted here by the owner's current capability-construction mandate and an actual strategic-selection consumer, not by an inability claim; its added value is authored dimensions and shared-link aggregation with lower synthesis overhead. Reconsider or remove it if sustained use does not justify that overhead reduction."
+      }
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel:possibility-ecology-capability",
+      "subject": "cap:semantic-queries",
+      "predicate": "decided_by",
+      "object": "decision:possibility-ecology-projection",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ],
+      "attributes": {
+        "scope": "Read-only prospective projection within the query capability"
+      }
+    },
+    {
+      "id": "rel:possibility-ecology-store",
+      "subject": "component:knowledge-store",
+      "predicate": "decided_by",
+      "object": "decision:possibility-ecology-projection",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_store.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_architecture.py"
+      ],
+      "attributes": {
+        "scope": "Projection and query dispatch"
+      }
+    },
+    {
+      "id": "rel:possibility-ecology-cli",
+      "subject": "component:semantic-cli",
+      "predicate": "decided_by",
+      "object": "decision:possibility-ecology-projection",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:src/sensemaking_skills/workspace_knowledge.py"
+      ],
+      "attributes": {
+        "scope": "Operation registration and workspace-query entry"
+      }
+    },
+    {
+      "id": "rel:possibility-ecology-bounded-slice",
+      "subject": "decision:possibility-ecology-projection",
+      "predicate": "references",
+      "object": "poss:assumption-aware-opportunity-ecology",
+      "evidence_refs": [
+        "file:docs/normal-use/2026-11-02-creative-prospective-discovery.md"
+      ],
+      "attributes": {
+        "relationship": "bounded data-access slice; the full assumption-aware ecology and its independent experience remain NOT_ASSESSED"
+      }
+    },
+    {
+      "id": "rel:possibility-ecology-overlay-boundary",
+      "subject": "decision:possibility-ecology-projection",
+      "predicate": "constrained_by",
+      "object": "inv:index-snapshot-vs-working-overlay",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ]
+    }
+  ]
+}
