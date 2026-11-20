@@ -41,7 +41,9 @@ RECALL is lightweight by default. It does not decide whether a task is warranted
    (`other_changes_assessed: false`). A requested path that does not identify a
    file in the inspected revisions (and the working tree with
    `--include-worktree`) appears in
-   `not_found_requested_paths`, not as unchanged. Inspect
+   `not_found_requested_paths`, not as unchanged; an ignored working-tree path
+   outside those revisions appears in `ignored_requested_paths`, not as
+   unchanged. Inspect
    `working_evidence_reinspection` separately from
    `committed_evidence_reinspection`, and each path's `change_modes` and
    `context.change_relevance`. It refuses a target ref other than the current
