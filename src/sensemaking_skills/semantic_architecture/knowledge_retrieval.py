@@ -207,9 +207,50 @@ def _is_mechanical(record: dict) -> bool:
     return record.get("authority_kind") == "mechanical" or record.get("derivation") == "mechanical"
 
 
+def _path_matches_change(
+    path: str, changed_paths: frozenset[str], untracked_directory_entries: frozenset[str],
+) -> bool:
+    """Exact membership, or a path under an unexpanded untracked directory entry."""
+    return path in changed_paths or any(
+        path.startswith(entry) for entry in untracked_directory_entries if entry.endswith("/")
+    )
+
+
+def _change_scope_metadata(
+    untracked_directory_entries: frozenset[str], untracked_expansion: str,
+) -> dict:
+    """Disclose whether changed paths are file names or include untracked entries."""
+    if untracked_expansion not in ("file_paths", "entry_paths"):
+        raise ValueError("untracked_expansion must be 'file_paths' or 'entry_paths'")
+    expanded = untracked_expansion == "file_paths"
+    metadata = {
+        "changed_path_granularity": (
+            "all_file_paths" if expanded else "tracked_files_and_untracked_entries"
+        ),
+        "untracked_directory_entry_total": len(untracked_directory_entries),
+        "untracked_directory_files_expanded": expanded,
+        "note": (
+            "Changed paths are individual file names. Cited and target paths are "
+            "matched exactly."
+            if expanded else
+            "Changed paths are tracked file names plus Git's untracked entries. A wholly "
+            "untracked directory is one entry ending in '/'; files inside it were not "
+            "enumerated and are NOT ASSESSED individually. Cited and target paths are "
+            "still matched exactly, including paths under an unexpanded directory. "
+            "Directory entries mean at least one untracked file exists below them, not "
+            "that their contents are irrelevant."
+        ),
+    }
+    if not expanded:
+        metadata["untracked_file_total"] = "NOT_ASSESSED"
+    return metadata
+
+
 def workspace_source_overlap(
     claims: Mapping[str, dict], relations: tuple[dict, ...], *,
     changed_paths: frozenset[str], limit: int,
+    untracked_directory_entries: frozenset[str] = frozenset(),
+    untracked_expansion: str = "file_paths",
 ) -> tuple[list[dict], list[dict], dict]:
     """Match indexed source fingerprints to changed workspace paths.
 
@@ -226,7 +267,11 @@ def workspace_source_overlap(
         cited = record.get("attributes", {}).get("source_sha256", {})
         if isinstance(cited, dict) and not _is_mechanical(record):
             reviewed_cited.update(cited)
-        overlap = sorted(path for path in cited if path in changed_paths) if isinstance(cited, dict) else []
+        overlap = (
+            sorted(path for path in cited
+                   if _path_matches_change(path, changed_paths, untracked_directory_entries))
+            if isinstance(cited, dict) else []
+        )
         if not overlap:
             continue
         if _is_mechanical(record):
@@ -245,6 +290,8 @@ def workspace_source_overlap(
     uncited = sorted(changed_paths - reviewed_cited)
     metadata = {
         "changed_path_total": len(changed_paths),
+        "change_scope": _change_scope_metadata(
+            untracked_directory_entries, untracked_expansion),
         "affected_record_total": len(affected),
         "affected_records": affected[:limit],
         "uncited_changed_path_total": len(uncited),
@@ -255,7 +302,8 @@ def workspace_source_overlap(
             "Path-level overlap between cited source fingerprints and working-tree changes since the "
             "indexed revision. Re-inspect listed records; a change does not invalidate them, and "
             "records without fingerprints or uncited consequences are NOT ASSESSED. "
-            "uncited_changed_paths are coverage gaps, not evidence of no semantic effect."
+            "uncited_changed_paths are coverage gaps, not evidence of no semantic effect. "
+            "With untracked entry granularity, a directory entry covers unenumerated files."
         ),
     }
     return hit_claims, hit_relations, metadata
@@ -264,6 +312,7 @@ def workspace_source_overlap(
 
 def _source_overlap(
     records: list[tuple[str, dict]], changed_paths: frozenset[str],
+    untracked_directory_entries: frozenset[str],
 ) -> tuple[list[dict], int, int]:
     """Affected entries, records without fingerprints and mechanical records, in input order."""
     affected: list[dict] = []
@@ -277,7 +326,9 @@ def _source_overlap(
         if not isinstance(cited, dict) or not cited:
             without_fingerprints += 1
             continue
-        overlap = sorted(path for path in cited if path in changed_paths)
+        overlap = sorted(
+            path for path in cited
+            if _path_matches_change(path, changed_paths, untracked_directory_entries))
         if overlap:
             origin = record.get("source_ref", "")
             source_path = origin[5:] if origin.startswith("file:") else None
@@ -296,6 +347,8 @@ def context_workspace_overlap(
     context_truncated: bool,
     candidate_claim_ids: tuple[str, ...] = (),
     candidate_relation_ids: tuple[str, ...] = (),
+    untracked_directory_entries: frozenset[str] = frozenset(),
+    untracked_expansion: str = "file_paths",
 ) -> dict:
     """Read-only source-path overlap for records selected by context-for.
 
@@ -311,17 +364,21 @@ def context_workspace_overlap(
         [("claim", claims[cid]) for cid in selected_claim_ids if cid in claims]
         + [("relation", r) for r in relations if r["id"] in relation_ids]
     )
-    affected, without_fingerprints, mechanical = _source_overlap(selected, changed_paths)
+    affected, without_fingerprints, mechanical = _source_overlap(
+        selected, changed_paths, untracked_directory_entries)
     candidate_relations = set(candidate_relation_ids) - relation_ids
     candidates = (
         [("claim", claims[cid]) for cid in candidate_claim_ids if cid in claims]
         + [("relation", r) for r in relations if r["id"] in candidate_relations]
     )
     candidate_affected, candidate_unfingerprinted, candidate_mechanical = _source_overlap(
-        candidates, changed_paths)
+        candidates, changed_paths, untracked_directory_entries)
     return {
-        "target_path_changed": target_path in changed_paths,
+        "target_path_changed": _path_matches_change(
+            target_path, changed_paths, untracked_directory_entries),
         "changed_path_total": len(changed_paths),
+        "change_scope": _change_scope_metadata(
+            untracked_directory_entries, untracked_expansion),
         "selected_record_total": len(selected),
         "affected_record_total": len(affected),
         "affected_records": affected[:limit],

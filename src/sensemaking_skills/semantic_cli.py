@@ -361,12 +361,18 @@ def register_semantic_commands(root_cli: click.Group) -> None:
                 if base_ref is not None:
                     raise ValueError("--base-ref is not used with context-for --path")
             changed_paths = None
+            untracked_directory_entries = frozenset()
+            untracked_expansion = "file_paths"
             workspace_relevance_error = None
             if operation == "workspace-impact" and repo_root is None:
                 raise ValueError("workspace-impact requires --repo (the active Git worktree)")
             if repo_root is not None and operation in {"workspace-impact", "context-for"}:
                 try:
-                    changed_paths = changed_paths_since_indexed_ref(repo_root, target_ref)["paths"]
+                    changes = changed_paths_since_indexed_ref(
+                        repo_root, target_ref, untracked_expansion="entry_paths")
+                    changed_paths = changes["paths"]
+                    untracked_directory_entries = changes["untracked_directory_entries"]
+                    untracked_expansion = changes["untracked_expansion"]
                 except ValueError as exc:
                     if operation == "workspace-impact":
                         raise
@@ -379,6 +385,8 @@ def register_semantic_commands(root_cli: click.Group) -> None:
                     paths=path_subjects, limit=limit, depth=depth,
                     search_terms=search_terms, expected_kinds=expected_kinds,
                     workspace_changed_paths=changed_paths,
+                    workspace_untracked_directory_entries=untracked_directory_entries,
+                    workspace_untracked_expansion=untracked_expansion,
                 )
             else:
                 payload = query_knowledge(
@@ -389,6 +397,8 @@ def register_semantic_commands(root_cli: click.Group) -> None:
                     query_text=query_text, search_kinds=search_kinds,
                     include_candidates=include_candidates,
                     workspace_changed_paths=changed_paths,
+                    workspace_untracked_directory_entries=untracked_directory_entries,
+                    workspace_untracked_expansion=untracked_expansion,
                 )
             if repo_root is not None:
                 payload["workspace_context"] = inspect_worktree_context(repo_root, target_ref)

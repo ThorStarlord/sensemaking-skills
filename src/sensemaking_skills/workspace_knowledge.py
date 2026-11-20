@@ -381,12 +381,22 @@ def run_workspace_query(
         include_js_module_imports=include_js_module_imports, max_js_imports=max_js_imports,
     )
 
-    changed = changed_paths_since_indexed_ref(root, sha)["paths"] if operation in _WORKSPACE_OPERATIONS else None
+    changes = (
+        changed_paths_since_indexed_ref(root, sha, untracked_expansion="entry_paths")
+        if operation in _WORKSPACE_OPERATIONS else None
+    )
+    changed = changes["paths"] if changes is not None else None
+    untracked_directory_entries = (
+        changes["untracked_directory_entries"] if changes is not None else frozenset())
+    untracked_expansion = (
+        changes["untracked_expansion"] if changes is not None else "file_paths")
     try:
         if len(query_paths) >= 2:
             payload = query_context_paths(
                 database, repository=label, target_ref=sha, paths=query_paths, limit=limit, depth=depth,
                 search_terms=search_terms, expected_kinds=expected_kinds, workspace_changed_paths=changed,
+                workspace_untracked_directory_entries=untracked_directory_entries,
+                workspace_untracked_expansion=untracked_expansion,
             )
         else:
             payload = query_knowledge(
@@ -395,6 +405,8 @@ def run_workspace_query(
                 limit=limit, depth=depth, search_terms=search_terms, expected_kinds=expected_kinds,
                 query_text=query_text, search_kinds=search_kinds,
                 include_candidates=include_candidates, workspace_changed_paths=changed,
+                workspace_untracked_directory_entries=untracked_directory_entries,
+                workspace_untracked_expansion=untracked_expansion,
             )
     except sqlite3.Error as exc:
         raise ValueError(f"cannot read cache file {database}: {exc}; retry with --refresh") from exc

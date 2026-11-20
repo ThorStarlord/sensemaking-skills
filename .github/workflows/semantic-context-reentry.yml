@@ -824,6 +824,36 @@ jobs:
           git reset -q -- "$TARGET"
           rm -- "$UNTRACKED"
           test -z "$(git status --porcelain)"
+      - name: Disclose entry-level untracked coverage for knowledge relevance
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          DIR=".sensemaking/precommit-ci-only-dir"
+          mkdir -p "$DIR"
+          printf 'untracked file inside a new directory\n' > "$DIR/probe.py"
+          REF="$(git rev-parse HEAD)"
+          sensemaking-skills semantic workspace-query \
+            --repo . --ref "$REF" --operation context-for \
+            --subject "$DIR/probe.py" --json > "$RUNNER_TEMP/entry-context.json"
+          ENTRY_CONTEXT="$RUNNER_TEMP/entry-context.json" python - <<'PY'
+          import json
+          import os
+          with open(os.environ["ENTRY_CONTEXT"], encoding="utf-8") as stream:
+              packet = json.load(stream)
+          relevance = packet["context"]["workspace_relevance"]
+          scope = relevance["change_scope"]
+          assert relevance["target_path_changed"] is True
+          assert scope["changed_path_granularity"] == "tracked_files_and_untracked_entries"
+          assert scope["untracked_directory_entry_total"] == 1, scope
+          assert scope["untracked_directory_files_expanded"] is False
+          assert scope["untracked_file_total"] == "NOT_ASSESSED"
+          assert relevance["changed_path_total"] == 1, relevance
+          assert packet["semantic_truth_established"] is False
+          print("Untracked directory is one disclosed entry; its target path still matches exactly.")
+          PY
+          rm -rf "$DIR"
+          test -z "$(git status --porcelain)"
       - name: Read committed source-overlap review packet for the actual PR
         if: github.event_name == 'pull_request'
         shell: bash

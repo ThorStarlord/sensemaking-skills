@@ -286,10 +286,18 @@ sensemaking-skills semantic knowledge-query --db $db --repository $repository `
   omitted by `--limit`, or **not assessed in the explicit one-hop
   neighborhood**. This is never a global completeness result.
 - `--operation workspace-impact` requires `--repo` and answers "which
-  reviewed indexed records cite files I changed?" It compares path names
-  from `git diff --no-renames <indexed_ref>` (commits after indexing plus
-  staged/unstaged edits) and untracked paths with each record's
-  `source_sha256` keys. `workspace_impact.affected_records` separates
+  reviewed indexed records cite files I changed?" It compares tracked changed
+  file names and Git's untracked entries since `<indexed_ref>` with each
+  record's `source_sha256` keys. Entirely untracked directories are not walked
+  file by file: Git's normal untracked view represents each as one entry ending
+  in `/`. A specific cited source or target path under such an entry is still
+  matched exactly. `workspace_impact.change_scope` reports
+  `changed_path_granularity` (`all_file_paths` or
+  `tracked_files_and_untracked_entries`), `untracked_directory_entry_total`,
+  `untracked_directory_files_expanded`, and `untracked_file_total:
+  NOT_ASSESSED` when files inside untracked directories were not enumerated.
+  A directory entry is not evidence that its contents are irrelevant.
+  `workspace_impact.affected_records` separates
   `record_source_changed` (the authored knowledge file itself was edited)
   from `changed_evidence_sources`; mechanical path/containment matches are
   only counted in `mechanical_overlap_counts`. The overlap calculation
@@ -300,7 +308,7 @@ sensemaking-skills semantic knowledge-query --db $db --repository $repository `
   and an indexed SHA missing from local Git is NOT ASSESSED. A listed
   record needs re-inspection, not revocation; changed code that no record
   cites is a coverage gap, not evidence of no semantic effect.
-  `uncited_changed_paths` lists those changed paths that no **reviewed**
+  `uncited_changed_paths` lists those changed entries that no **reviewed**
   record cites (a mechanical path/containment record does not count), sorted
   and bounded by `--limit`; `uncited_changed_path_total` is the pre-limit
   count, and top-level `truncated` is true when either the affected-record or
@@ -1048,12 +1056,16 @@ owner's files, because ownership is recorded per component.
 ### Source overlap during active edits (PATH-1/T5)
 
 When `context-for` is called with `--repo` and the indexed commit is available
-in the local Git checkout, `context.workspace_relevance` compares changed
-tracked/untracked paths since that exact indexed SHA against the original
-source-fingerprint paths of the *selected* context claims and relations. It
-reports `target_path_changed`, the count of changed paths, affected record IDs,
-the cited sources that changed, omitted affected-record totals, and the number
-of records for which there was no fingerprint to assess. Returned relevance
+in the local Git checkout, `context.workspace_relevance` compares tracked
+changed file names and Git's untracked entries since that exact indexed SHA
+against the original source-fingerprint paths of the *selected* context claims
+and relations. It reports `target_path_changed`, the count of changed paths,
+affected record IDs, the cited sources that changed, omitted affected-record
+totals, and the number of records for which there was no fingerprint to
+assess. `change_scope` discloses the granularity: a wholly untracked directory
+is one entry and its files are not enumerated (`untracked_file_total:
+NOT_ASSESSED`), while a specific cited source or the target path under that
+entry is still matched exactly. Returned relevance
 candidates, their capabilities and their route relations get the same
 comparison in a separate `workspace_relevance.relevance_candidates` block with
 its own totals and limit, so they never displace a record of the categories.
@@ -1350,8 +1362,11 @@ context records and less-certain relevance candidates cite changed sources.
 
 These results are **re-inspection candidates**, not a content comparison,
 semantic staleness finding or proof of changed architecture. The original
-`workspace-impact` operation continues to describe active worktree overlap;
-its output contract is unchanged. A change to an authored JSON pack can flag
+`workspace-impact` operation continues to describe active worktree overlap.
+Committed review passes individual file paths, so its overlap summaries report
+`change_scope.changed_path_granularity: all_file_paths`; the same is true for
+live worktree review, which expands untracked files for path selection. A
+change to an authored JSON pack can flag
 many records due to shared-pack fingerprints without changing those records'
 authored meaning. An uncited change is a coverage gap, **not clearance**.
 Use `workspace-changes` when the review also needs to compare authored records
