@@ -854,6 +854,39 @@ jobs:
           PY
           rm -rf "$DIR"
           test -z "$(git status --porcelain)"
+      - name: Include committed changes since a historical indexed revision
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          # The fast entry path reads untracked names from Git status, which is
+          # relative to HEAD. Tracked diffs must still compare to --ref, or a
+          # historical index silently loses commits made after it.
+          BASE="$(git rev-parse HEAD)"
+          printf 'committed after the indexed revision\n' > historical-probe.txt
+          git add historical-probe.txt
+          git -c user.email=ci@example.invalid -c user.name=ci \
+            commit -qm "entry-coverage historical probe"
+          sensemaking-skills semantic workspace-query \
+            --repo . --ref "$BASE" --operation workspace-impact --json \
+            > "$RUNNER_TEMP/historical-impact.json"
+          HISTORICAL_IMPACT="$RUNNER_TEMP/historical-impact.json" python - <<'PY'
+          import json
+          import os
+          with open(os.environ["HISTORICAL_IMPACT"], encoding="utf-8") as stream:
+              packet = json.load(stream)
+          impact = packet["workspace_impact"]
+          assert impact["change_scope"]["changed_path_granularity"] == (
+              "tracked_files_and_untracked_entries"
+          ), impact["change_scope"]
+          assert impact["changed_path_total"] == 1, impact
+          assert impact["uncited_changed_paths"] == ["historical-probe.txt"], impact
+          print("Committed change since a historical indexed revision is still reported.")
+          PY
+          git reset -q --soft "$BASE"
+          git reset -q
+          rm -- historical-probe.txt
+          test -z "$(git status --porcelain)"
       - name: Read committed source-overlap review packet for the actual PR
         if: github.event_name == 'pull_request'
         shell: bash
