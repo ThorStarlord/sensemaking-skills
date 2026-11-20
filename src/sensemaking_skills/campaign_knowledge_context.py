@@ -87,10 +87,10 @@ def build_reviewed_knowledge(
         commit_match = MATCH if target_head == knowledge_ref else MISMATCH
     else:
         commit_match = NOT_ASSESSED
-    changed_paths, overlay_note = _workspace_overlay(knowledge_repo, knowledge_ref)
+    changes, overlay_note = _workspace_overlay(knowledge_repo, knowledge_ref)
     query = _query_paths(
         knowledge_db, repository=knowledge_repository, target_ref=knowledge_ref,
-        paths=paths, changed_paths=changed_paths,
+        paths=paths, changes=changes,
     )
     contexts = _contexts_by_path(query, paths)
     if overlay_note is not None:
@@ -156,26 +156,36 @@ def _checkout_identity(repo: Path) -> tuple[str, str]:
 
 
 def _workspace_overlay(repo: Path, indexed_ref: str) -> tuple[Any, str | None]:
-    """Changed paths for the context-for overlay, or the reason they cannot be compared."""
+    """Changed entries for the context-for overlay, or the reason they cannot be compared."""
     try:
-        return changed_paths_since_indexed_ref(repo, indexed_ref)["paths"], None
+        return changed_paths_since_indexed_ref(
+            repo, indexed_ref, untracked_expansion="entry_paths"), None
     except ValueError as exc:
         return None, str(exc)
 
 
 def _query_paths(
-    db_path: Path, *, repository: str, target_ref: str, paths: tuple[str, ...], changed_paths: Any,
+    db_path: Path, *, repository: str, target_ref: str, paths: tuple[str, ...], changes: Any,
 ) -> dict[str, Any]:
     """One file keeps the single context-for envelope; two to eight use the multi-file envelope."""
+    changed_paths = changes["paths"] if changes is not None else None
+    untracked_directory_entries = (
+        changes["untracked_directory_entries"] if changes is not None else frozenset())
+    untracked_expansion = (
+        changes["untracked_expansion"] if changes is not None else "file_paths")
     try:
         if len(paths) == 1:
             return query_knowledge(
                 db_path, repository=repository, target_ref=target_ref, operation="context-for",
                 subject=paths[0], workspace_changed_paths=changed_paths,
+                workspace_untracked_directory_entries=untracked_directory_entries,
+                workspace_untracked_expansion=untracked_expansion,
             )
         return query_context_paths(
             db_path, repository=repository, target_ref=target_ref, paths=paths,
             workspace_changed_paths=changed_paths,
+            workspace_untracked_directory_entries=untracked_directory_entries,
+            workspace_untracked_expansion=untracked_expansion,
         )
     except (ValueError, OSError, UnicodeError, sqlite3.Error) as exc:
         raise CampaignKnowledgeError(f"reviewed knowledge query failed: {exc}") from exc

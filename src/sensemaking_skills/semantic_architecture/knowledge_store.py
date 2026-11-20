@@ -218,6 +218,8 @@ def query_knowledge(
     include_candidates: bool = False,
     candidate_changed_paths: frozenset[str] | None = None,
     workspace_changed_paths: frozenset[str] | None = None,
+    workspace_untracked_directory_entries: frozenset[str] = frozenset(),
+    workspace_untracked_expansion: str = "file_paths",
 ) -> dict:
     """Retrieve exact, explicitly declared links; never infer semantic closure.
 
@@ -261,6 +263,14 @@ def query_knowledge(
         raise ValueError("workspace-impact requires workspace changed paths (CLI --repo)")
     if workspace_changed_paths is not None and operation not in {"workspace-impact", "context-for"}:
         raise ValueError("workspace changed paths are supported only for workspace-impact or context-for")
+    if workspace_untracked_expansion not in ("file_paths", "entry_paths"):
+        raise ValueError("workspace untracked expansion must be 'file_paths' or 'entry_paths'")
+    if workspace_untracked_directory_entries and (
+        workspace_changed_paths is None or workspace_untracked_expansion != "entry_paths"
+    ):
+        raise ValueError("untracked directory entries require workspace changed paths with entry_paths")
+    if any(not path.endswith("/") for path in workspace_untracked_directory_entries):
+        raise ValueError("untracked directory entries must end with '/'")
     validate_retrieval_options(
         operation=operation, subject=subject, search_terms=search_terms,
         expected_kinds=expected_kinds, query_text=query_text,
@@ -409,6 +419,8 @@ def query_knowledge(
             assert workspace_changed_paths is not None
             found_claims, found_relations, overlap = workspace_source_overlap(
                 claims, relations, changed_paths=workspace_changed_paths, limit=limit,
+                untracked_directory_entries=workspace_untracked_directory_entries,
+                untracked_expansion=workspace_untracked_expansion,
             )
             extra["workspace_impact"] = overlap
             extra_truncated = (
@@ -505,6 +517,8 @@ def query_knowledge(
                     candidate_claim_ids=tuple(
                         cid for cid in candidate_claim_ids if cid not in set(selected_claims)),
                     candidate_relation_ids=tuple(sorted(candidate_relation_ids)),
+                    untracked_directory_entries=workspace_untracked_directory_entries,
+                    untracked_expansion=workspace_untracked_expansion,
                 )
                 relevance = extra["context"]["workspace_relevance"]
                 if (relevance["affected_records_omitted"]
@@ -568,6 +582,8 @@ def query_context_paths(
     paths: tuple[str, ...], limit: int = 50, depth: int = 2,
     search_terms: tuple[str, ...] = (), expected_kinds: tuple[str, ...] = (),
     workspace_changed_paths: frozenset[str] | None = None,
+    workspace_untracked_directory_entries: frozenset[str] = frozenset(),
+    workspace_untracked_expansion: str = "file_paths",
 ) -> dict:
     """Compose existing source-pinned context-for responses for 2..8 files.
 
@@ -594,6 +610,8 @@ def query_context_paths(
             operation="context-for", subject=path, limit=limit, depth=depth,
             search_terms=search_terms, expected_kinds=expected_kinds,
             workspace_changed_paths=workspace_changed_paths,
+            workspace_untracked_directory_entries=workspace_untracked_directory_entries,
+            workspace_untracked_expansion=workspace_untracked_expansion,
         )
         if first is None:
             first = result

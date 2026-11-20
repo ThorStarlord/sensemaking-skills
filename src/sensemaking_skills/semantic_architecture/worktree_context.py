@@ -89,6 +89,51 @@ def guarded_git_text(root: Path, *args: str, disable_filters: bool = True,
     return _git(root, *args, disable_filters=disabled).decode(encoding, errors)
 
 
+def _status_changes(
+    top: Path, disabled: tuple[str, ...], *, untracked: str = "normal",
+) -> tuple[frozenset[str], frozenset[str], frozenset[str], frozenset[str]]:
+    """Return (tracked, staged, unstaged, untracked) names from one guarded status read.
+
+    `untracked` selects Git's untracked mode. `normal` collapses a wholly
+    untracked directory into one entry and matches the dirtiness Git itself
+    reports; `all` expands every untracked file. Porcelain -z appends the
+    original path for a rename or copy, so that field is skipped.
+    """
+    if untracked not in ("normal", "all"):
+        raise ValueError("untracked must be 'normal' or 'all'")
+    status = _git(top, "status", "--porcelain=v1", "--ignore-submodules=all",
+                  f"--untracked-files={untracked}", "-z", disable_filters=disabled)
+    tracked: set[str] = set()
+    staged: set[str] = set()
+    unstaged: set[str] = set()
+    untracked_paths: set[str] = set()
+    fields = status.split(b"\x00")
+    index = 0
+    while index < len(fields):
+        entry = fields[index]
+        index += 1
+        if not entry:
+            continue
+        if len(entry) < 4:
+            # A short entry is unexpected; count it as a tracked change rather
+            # than claim the worktree is clean.
+            tracked.add(entry.decode("utf-8", "surrogateescape"))
+            continue
+        path = entry[3:].decode("utf-8", "surrogateescape")
+        x_status, y_status = entry[0:1], entry[1:2]
+        if x_status == b"?" and y_status == b"?":
+            untracked_paths.add(path)
+            continue
+        tracked.add(path)
+        if x_status not in (b" ", b"?"):
+            staged.add(path)
+        if y_status not in (b" ", b"?"):
+            unstaged.add(path)
+        if x_status in (b"R", b"C") or y_status in (b"R", b"C"):
+            index += 1
+    return frozenset(tracked), frozenset(staged), frozenset(unstaged), frozenset(untracked_paths)
+
+
 def inspect_worktree_context(repo_root: Path, indexed_ref: str) -> dict[str, object]:
     """Inspect HEAD and dirtiness without indexing or running source filters.
 
@@ -107,44 +152,15 @@ def inspect_worktree_context(repo_root: Path, indexed_ref: str) -> dict[str, obj
     top = Path(_git(root, "rev-parse", "--show-toplevel").decode("utf-8").strip()).resolve()
     disabled = _configured_external_filters(top)
     head = _git(top, "rev-parse", "HEAD", disable_filters=disabled).decode("ascii").strip()
-    # One normal-mode status read: tracked modifications (staged or unstaged),
-    # untracked entries and conflicts. Expanding every untracked file costs
-    # tens of seconds on a checkout with a large unignored artifact directory,
-    # and `ls-files --directory` would report a directory whose only contents
-    # are ignored (for example .ruff_cache). Normal mode matches the dirtiness
-    # Git itself reports.
-    status = _git(top, "status", "--porcelain=v1", "--ignore-submodules=all",
-                  "--untracked-files=normal", "-z", disable_filters=disabled)
-    modified_paths = 0
-    untracked_entries = 0
-    fields = status.split(b"\x00")
-    index = 0
-    while index < len(fields):
-        entry = fields[index]
-        index += 1
-        if not entry:
-            continue
-        if len(entry) < 3:
-            # A short entry is unexpected; count it as a change rather than
-            # claim the worktree is clean.
-            modified_paths += 1
-            continue
-        x_status, y_status = entry[0:1], entry[1:2]
-        if x_status == b"?" and y_status == b"?":
-            untracked_entries += 1
-            continue
-        modified_paths += 1
-        # Porcelain -z appends the original path for a rename or copy.
-        if x_status in (b"R", b"C") or y_status in (b"R", b"C"):
-            index += 1
-    dirty = bool(modified_paths or untracked_entries)
+    tracked, _, _, untracked = _status_changes(top, disabled)
+    dirty = bool(tracked or untracked)
     return {
         "current_head": head,
         "indexed_ref": indexed_ref,
         "head_matches_indexed_ref": head == indexed_ref,
         "worktree_clean": not dirty,
-        "modified_tracked_count": modified_paths,
-        "untracked_count": untracked_entries,
+        "modified_tracked_count": len(tracked),
+        "untracked_count": len(untracked),
         "untracked_count_scope": "normal_mode_entries",
         "uncommitted_changes_not_indexed": dirty,
         "source_alignment_not_semantic_truth": True,
@@ -153,7 +169,9 @@ def inspect_worktree_context(repo_root: Path, indexed_ref: str) -> dict[str, obj
     }
 
 
-def changed_paths_since_indexed_ref(repo_root: Path, indexed_ref: str) -> dict[str, object]:
+def changed_paths_since_indexed_ref(
+    repo_root: Path, indexed_ref: str, *, untracked_expansion: str = "file_paths",
+) -> dict[str, object]:
     """List paths whose working-tree state differs from the indexed commit.
 
     Covers commits made after indexing plus staged/unstaged/untracked edits.
@@ -162,7 +180,16 @@ def changed_paths_since_indexed_ref(repo_root: Path, indexed_ref: str) -> dict[s
     review context. Classes are not exclusive. Git diff may inspect
     working-tree bytes internally; those bytes are not stored in the semantic
     index or treated as indexed evidence.
+
+    `untracked_expansion="file_paths"` (default) returns every untracked file
+    name. `"entry_paths"` uses Git's normal untracked view instead: a wholly
+    untracked directory is one entry ending in "/", which avoids walking every
+    file inside it. `untracked_directory_entries` lists those entries so a
+    caller can still match a specific path under one exactly. Ignored-only
+    directories are not entries in either mode.
     """
+    if untracked_expansion not in ("file_paths", "entry_paths"):
+        raise ValueError("untracked_expansion must be 'file_paths' or 'entry_paths'")
     if not re.fullmatch(r"[0-9a-f]{40}", indexed_ref):
         raise ValueError("indexed_ref must be an exact 40-character Git SHA")
     root = Path(repo_root).expanduser().resolve()
@@ -174,30 +201,37 @@ def changed_paths_since_indexed_ref(repo_root: Path, indexed_ref: str) -> dict[s
         _git(top, "cat-file", "-e", f"{indexed_ref}^{{commit}}", disable_filters=disabled)
     except ValueError as exc:
         raise ValueError("indexed revision is not available in the local Git repository; NOT ASSESSED") from exc
-    tracked = _git(top, "diff", "--no-ext-diff", "--no-textconv", "--no-renames", "--ignore-submodules=all",
-                   "--name-only", "-z", indexed_ref, "--", disable_filters=disabled).split(b"\x00")
-    # A staged index entry can differ from the cited revision even when the
-    # working file has been restored to identical bytes. Query both trees.
-    staged = _git(top, "diff", "--cached", "--no-ext-diff", "--no-textconv", "--no-renames",
-                  "--ignore-submodules=all", "--name-only", "-z", indexed_ref, "--",
-                  disable_filters=disabled).split(b"\x00")
-    # Worktree vs index, so a partially staged file stays distinguishable from
-    # a file whose only change is already in the index.
-    unstaged = _git(top, "diff", "--no-ext-diff", "--no-textconv", "--no-renames",
-                    "--ignore-submodules=all", "--name-only", "-z", "--",
-                    disable_filters=disabled).split(b"\x00")
-    untracked = _git(top, "ls-files", "--others", "--exclude-standard", "-z",
-                     disable_filters=disabled).split(b"\x00")
+    if untracked_expansion == "entry_paths":
+        tracked_paths, staged_paths, unstaged_paths, untracked_paths = _status_changes(
+            top, disabled, untracked="normal")
+        paths = tracked_paths | untracked_paths
+        directory_entries = frozenset(path for path in untracked_paths if path.endswith("/"))
+    else:
+        tracked = _git(top, "diff", "--no-ext-diff", "--no-textconv", "--no-renames", "--ignore-submodules=all",
+                       "--name-only", "-z", indexed_ref, "--", disable_filters=disabled).split(b"\x00")
+        # A staged index entry can differ from the cited revision even when the
+        # working file has been restored to identical bytes. Query both trees.
+        staged = _git(top, "diff", "--cached", "--no-ext-diff", "--no-textconv", "--no-renames",
+                      "--ignore-submodules=all", "--name-only", "-z", indexed_ref, "--",
+                      disable_filters=disabled).split(b"\x00")
+        # Worktree vs index, so a partially staged file stays distinguishable
+        # from a file whose only change is already in the index.
+        unstaged = _git(top, "diff", "--no-ext-diff", "--no-textconv", "--no-renames",
+                        "--ignore-submodules=all", "--name-only", "-z", "--",
+                        disable_filters=disabled).split(b"\x00")
+        untracked = _git(top, "ls-files", "--others", "--exclude-standard", "-z",
+                         disable_filters=disabled).split(b"\x00")
 
-    def _names(raw: list[bytes]) -> frozenset[str]:
-        return frozenset(item.decode("utf-8", "surrogateescape") for item in raw if item)
+        def _names(raw: list[bytes]) -> frozenset[str]:
+            return frozenset(item.decode("utf-8", "surrogateescape") for item in raw if item)
 
-    staged_paths = _names(staged)
-    unstaged_paths = _names(unstaged)
-    untracked_paths = _names(untracked)
-    paths = frozenset(
-        item.decode("utf-8", "surrogateescape") for item in (*tracked, *staged, *untracked) if item
-    )
+        staged_paths = _names(staged)
+        unstaged_paths = _names(unstaged)
+        untracked_paths = _names(untracked)
+        paths = frozenset(
+            item.decode("utf-8", "surrogateescape") for item in (*tracked, *staged, *untracked) if item
+        )
+        directory_entries = frozenset()
     return {
         "paths": paths,
         # Change classes for callers that must decide which paths deserve
@@ -206,5 +240,7 @@ def changed_paths_since_indexed_ref(repo_root: Path, indexed_ref: str) -> dict[s
         "staged": staged_paths,
         "unstaged": unstaged_paths,
         "untracked": untracked_paths,
+        "untracked_expansion": untracked_expansion,
+        "untracked_directory_entries": directory_entries,
         "external_filter_commands_disabled_count": len(disabled),
     }

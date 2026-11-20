@@ -82,6 +82,12 @@ when topology itself is decision-relevant.
 (one-revision knowledge retrieval), and `workspace-changes --base-ref REV`
 (two-commit semantic delta without manual index preparation; optional
 `--pr-merge-base` for PR-scoped semantic knowledge changes).
+`workspace-query --operation context-for|workspace-impact --repo .` compares
+tracked changed file names and Git's untracked entries, not every file inside a
+wholly untracked directory; `change_scope` discloses the granularity and
+`untracked_file_total: NOT_ASSESSED`. Cited sources and target paths are still
+matched exactly. Use `workspace-review-context --include-worktree` when
+individual untracked file names are required for review.
 Both `knowledge-query` and `workspace-query` support `--operation product-outline` for a bounded, source-linked view of reviewed goals, non-goals, serving records and constraints. Add `--include-candidates` to expose separately linked possible futures without promoting them to goal service or engineering priority. `workspace-review-context --include-candidates` additionally shows BASE candidate evidence paths touched by a committed diff as reinspection signals, never automatic strategic reassessment.
 For `knowledge-query` and `workspace-query`, `--operation search --query-text TEXT`
 provides opt-in ranked lexical question matching; it never infers semantic
