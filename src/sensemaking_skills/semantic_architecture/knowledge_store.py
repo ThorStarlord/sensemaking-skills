@@ -14,7 +14,10 @@ from pathlib import Path
 from urllib.parse import quote
 
 from .knowledge import KnowledgeSnapshot, fingerprint, record_dict, validate_snapshot, SCHEMA_VERSION
-from .knowledge_architecture import context_for, is_repository_file_path, orientation_summary, product_outline, rules_for, term
+from .knowledge_architecture import (
+    context_for, is_repository_file_path, orientation_summary, possibility_ecology,
+    product_outline, rules_for, term,
+)
 from .knowledge_retrieval import (
     assess_current_authored_record, bounded_kind_coverage, classify_indexed_changes,
     context_workspace_overlap, lesson_recall_view, search_matches, validate_retrieval_options,
@@ -232,7 +235,8 @@ def query_knowledge(
     if not 1 <= limit <= 250 or not 0 <= depth <= 4:
         raise ValueError("query limit must be 1..250 and depth 0..4")
     valid = {"search", "explain", "impact", "why", "contradictions", "history", "changes", "snapshot",
-             "workspace-impact", "rules-for", "term", "orientation-summary", "product-outline", "context-for"}
+             "workspace-impact", "rules-for", "term", "orientation-summary", "product-outline",
+             "possibility-ecology", "context-for"}
     if operation not in valid:
         raise ValueError(f"unsupported semantic knowledge query: {operation}")
     if operation in {"explain", "impact", "why", "history"} and not subject:
@@ -249,6 +253,10 @@ def query_knowledge(
                          "(no globs, absolute paths, traversal or trailing slash)")
     if operation == "term" and not subject:
         raise ValueError("term requires --subject <term>")
+    if operation == "possibility-ecology" and not subject:
+        raise ValueError(
+            "possibility-ecology requires --subject <goal claim id or opportunity claim id>"
+        )
     if include_candidates and operation != "product-outline":
         raise ValueError("candidate opportunities are supported only for product-outline")
     if candidate_changed_paths is not None and (not include_candidates or operation != "product-outline"):
@@ -534,6 +542,15 @@ def query_knowledge(
             extra_truncated = extra["term"]["truncated"]
         elif operation == "orientation-summary":
             extra["orientation"] = orientation_summary(claims, relations)
+        elif operation == "possibility-ecology":
+            assert subject is not None
+            extra["possibility_ecology"], ecology_claims, ecology_relations = possibility_ecology(
+                claims, relations, subject=subject, limit=limit,
+            )
+            found_claims = [claims[cid] for cid in ecology_claims if cid in claims]
+            related = set(ecology_relations)
+            found_relations = [r for r in relations if r["id"] in related]
+            extra_truncated = extra["possibility_ecology"]["truncated"]
         elif operation == "product-outline":
             extra["product_outline"], selected_ids, relation_ids = product_outline(
                 claims, relations, limit=limit, include_candidates=include_candidates,

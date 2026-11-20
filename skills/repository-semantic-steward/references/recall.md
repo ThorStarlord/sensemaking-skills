@@ -8,6 +8,11 @@ RECALL is lightweight by default. It does not decide whether a task is warranted
 
    `search` preserves case-insensitive **literal substring matching in a claim statement or ID**; repeated `--term PHRASE` flags (1–8 phrases) preserve explicit literal OR matches. When the agent has a question but not the exact source phrasing, use `semantic workspace-query --operation search --query-text "Which decisions constrain repository knowledge?" --json` (or `knowledge-query` with explicit index identity). This **opt-in lexical** mode tokenizes the question, drops common function words (reported in `ignored_function_words`), and ranks matches by distinct content-word overlap. Plural or tense forms of a word match their stem (`subagents` finds `subagent`); words under five letters match only as whole words or stems. `match_details` disclose each returned hit's matching tokens. It is neither semantic search nor proof of relevance: inspect the original source. The new `--query-text` is mutually exclusive with `--subject` and `--term`; legacy modes are unchanged. A miss or weak match remains **NOT ASSESSED**, not proof that relevant knowledge is absent. Use `impact` only as an explicitly declared-edge **candidate** view.
    For repository-level product orientation, use `semantic workspace-query --operation product-outline --json` to inspect source-linked goals, non-goals and declared serving records/constraints without guessing the right file. For prospective questions, add `--include-candidates` to show explicit goal-linked possible futures separately from serving records; candidate links neither select nor authorize work.
+   When candidate dimensions, realization state or inter-candidate relationships
+   could change the comparison, use
+   `--operation possibility-ecology --subject <goal-or-opportunity-id>`. It
+   projects only authored dimensions and one-hop explicit relations, not
+   inferred shared premises, ranking or selection.
    Open `claim_evidence_refs` and `relation_evidence_refs` independently
    when a candidate's sources or its relationship to a goal would affect
    the next question; the

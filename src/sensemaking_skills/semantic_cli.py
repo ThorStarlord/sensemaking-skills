@@ -314,10 +314,12 @@ def register_semantic_commands(root_cli: click.Group) -> None:
     @click.option("--target-ref", required=True, help="Exact indexed revision to examine")
     @click.option("--operation", required=True,
                   type=click.Choice(["snapshot", "search", "explain", "impact", "why", "contradictions", "history", "changes",
-                                     "workspace-impact", "rules-for", "term", "orientation-summary", "product-outline", "context-for"]))
+                                     "workspace-impact", "rules-for", "term", "orientation-summary", "product-outline",
+                                     "possibility-ecology", "context-for"]))
     @click.option("--subject", default=None,
                   help="Exact claim id; literal search text (search); one repository-relative "
-                       "file path (rules-for, context-for); literal term (term)")
+                       "file path (rules-for, context-for); literal term (term); goal or "
+                       "opportunity claim id (possibility-ecology)")
     @click.option("--path", "path_subjects", multiple=True,
                   help="Repeat 2..8 distinct paths for a bounded multi-file context-for query; "
                        "mutually exclusive with --subject")
@@ -451,9 +453,9 @@ def register_semantic_commands(root_cli: click.Group) -> None:
     @click.argument("paths", nargs=-1)
     @click.option("--operation", default="context-for", show_default=True,
                   type=click.Choice(["context-for", "rules-for", "search", "explain", "why", "impact", "term",
-                                     "orientation-summary", "product-outline", "contradictions", "snapshot", "workspace-impact",
+                                     "orientation-summary", "product-outline", "possibility-ecology", "contradictions", "snapshot", "workspace-impact",
                                      "changes", "history"]))
-    @click.option("--subject", default=None, help="One repository-relative file path or the operation's subject")
+    @click.option("--subject", default=None, help="One repository-relative file path or the operation's subject; possibility-ecology takes a goal or opportunity claim id")
     @click.option("--term", "search_terms", multiple=True, help="Repeat explicit literal OR phrase (search operation only)")
     @click.option("--query-text", default=None,
                   help="Opt-in ranked lexical word overlap (search only; no semantic inference)")

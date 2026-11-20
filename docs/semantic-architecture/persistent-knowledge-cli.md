@@ -637,6 +637,39 @@ Each visible goal/non-goal carries its statement, source reference and
 authority/epistemic labels. Each linked record carries its actual declared
 relation ID and claim kind; an opportunity is **not** a shipped capability.
 
+### Possibility ecology (`possibility-ecology`)
+
+Goal-level candidates are intentionally flat. For prospective reasoning about
+interacting possible futures, project one goal's or one opportunity's authored
+candidate ecology:
+
+```bash
+sensemaking-skills semantic workspace-query --operation possibility-ecology \
+  --subject goal:compounding-product-knowledge --json
+
+sensemaking-skills semantic knowledge-query --operation possibility-ecology \
+  --db /outside-checkout/knowledge.sqlite --repository owner/repository \
+  --target-ref <exact-indexed-sha> --subject poss:example-opportunity --json
+```
+
+The subject must be an indexed `goal` or `opportunity` claim. For a goal, the
+response lists its direct `candidate_opportunity_for` opportunities; for an
+opportunity it focuses that record. Each candidate carries its **authored**
+`dimensions` (alignment, ambition, horizon, realization and their bases),
+realization summary, `value_hypothesis`, `revisit_when`, bounded
+`disposition_history`, goal links, and up to eight explicit relationships
+(`derived_from`, `requires_capability`, `contradicts`, `relates_to`,
+`distinct_from`, or conceptual `references`) with direction, other claim,
+relation evidence and any authored `conceptual_relation`.
+
+This is a source-linked projection, not synthesis or selection. It does not
+infer shared premises, complements, conflicts, feasibility, priority,
+implementation, goal service or a recommendation; hypothetical records remain
+hypothetical, and missing dimensions or relations are `NOT_ASSESSED`. One
+explicit relationship hop is followed per candidate; use
+`knowledge-view-export`/`explain` for deeper traversal. Candidate and
+relationship omission counts disclose the bound.
+
 ### Source-linked capability-to-component routes
 
 The **default** `product-outline` response also groups
