@@ -186,7 +186,9 @@ def changed_paths_since_indexed_ref(
     untracked directory is one entry ending in "/", which avoids walking every
     file inside it. `untracked_directory_entries` lists those entries so a
     caller can still match a specific path under one exactly. Ignored-only
-    directories are not entries in either mode.
+    directories are not entries in either mode. In both modes the tracked
+    diffs compare the worktree and index to `indexed_ref`, so commits made
+    after a historical indexed revision remain included.
     """
     if untracked_expansion not in ("file_paths", "entry_paths"):
         raise ValueError("untracked_expansion must be 'file_paths' or 'entry_paths'")
@@ -201,37 +203,36 @@ def changed_paths_since_indexed_ref(
         _git(top, "cat-file", "-e", f"{indexed_ref}^{{commit}}", disable_filters=disabled)
     except ValueError as exc:
         raise ValueError("indexed revision is not available in the local Git repository; NOT ASSESSED") from exc
+    tracked = _git(top, "diff", "--no-ext-diff", "--no-textconv", "--no-renames", "--ignore-submodules=all",
+                   "--name-only", "-z", indexed_ref, "--", disable_filters=disabled).split(b"\x00")
+    # A staged index entry can differ from the cited revision even when the
+    # working file has been restored to identical bytes. Query both trees.
+    staged = _git(top, "diff", "--cached", "--no-ext-diff", "--no-textconv", "--no-renames",
+                  "--ignore-submodules=all", "--name-only", "-z", indexed_ref, "--",
+                  disable_filters=disabled).split(b"\x00")
+    # Worktree vs index, so a partially staged file stays distinguishable from
+    # a file whose only change is already in the index.
+    unstaged = _git(top, "diff", "--no-ext-diff", "--no-textconv", "--no-renames",
+                    "--ignore-submodules=all", "--name-only", "-z", "--",
+                    disable_filters=disabled).split(b"\x00")
+
+    def _names(raw: list[bytes]) -> frozenset[str]:
+        return frozenset(item.decode("utf-8", "surrogateescape") for item in raw if item)
+
+    tracked_paths = _names(tracked)
+    staged_paths = _names(staged)
+    unstaged_paths = _names(unstaged)
     if untracked_expansion == "entry_paths":
-        tracked_paths, staged_paths, unstaged_paths, untracked_paths = _status_changes(
-            top, disabled, untracked="normal")
-        paths = tracked_paths | untracked_paths
+        # Only untracked discovery changes. Tracked diffs stay relative to the
+        # cited revision, so a historical index still sees later commits.
+        _, _, _, untracked_paths = _status_changes(top, disabled, untracked="normal")
         directory_entries = frozenset(path for path in untracked_paths if path.endswith("/"))
     else:
-        tracked = _git(top, "diff", "--no-ext-diff", "--no-textconv", "--no-renames", "--ignore-submodules=all",
-                       "--name-only", "-z", indexed_ref, "--", disable_filters=disabled).split(b"\x00")
-        # A staged index entry can differ from the cited revision even when the
-        # working file has been restored to identical bytes. Query both trees.
-        staged = _git(top, "diff", "--cached", "--no-ext-diff", "--no-textconv", "--no-renames",
-                      "--ignore-submodules=all", "--name-only", "-z", indexed_ref, "--",
-                      disable_filters=disabled).split(b"\x00")
-        # Worktree vs index, so a partially staged file stays distinguishable
-        # from a file whose only change is already in the index.
-        unstaged = _git(top, "diff", "--no-ext-diff", "--no-textconv", "--no-renames",
-                        "--ignore-submodules=all", "--name-only", "-z", "--",
-                        disable_filters=disabled).split(b"\x00")
         untracked = _git(top, "ls-files", "--others", "--exclude-standard", "-z",
                          disable_filters=disabled).split(b"\x00")
-
-        def _names(raw: list[bytes]) -> frozenset[str]:
-            return frozenset(item.decode("utf-8", "surrogateescape") for item in raw if item)
-
-        staged_paths = _names(staged)
-        unstaged_paths = _names(unstaged)
         untracked_paths = _names(untracked)
-        paths = frozenset(
-            item.decode("utf-8", "surrogateescape") for item in (*tracked, *staged, *untracked) if item
-        )
         directory_entries = frozenset()
+    paths = tracked_paths | staged_paths | untracked_paths
     return {
         "paths": paths,
         # Change classes for callers that must decide which paths deserve
