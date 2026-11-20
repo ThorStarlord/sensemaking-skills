@@ -71,6 +71,11 @@ def _path_in_commit(root: Path, commit: str, path: str) -> bool:
     return proc.returncode == 0 and proc.stdout.strip() == "blob"
 
 
+def _path_is_ignored(root: Path, path: str) -> bool:
+    """Whether Git ignore rules exclude a working-tree path from source scope."""
+    return _git(root, "check-ignore", "-q", "--", path).returncode == 0
+
+
 def _checkout_root(repo: Path) -> Path:
     top = _git_text(repo, "rev-parse", "--show-toplevel",
                     message=f"not inside a Git working tree: {repo}")
@@ -631,6 +636,7 @@ def run_workspace_review_context(
     combined_changed_paths = committed_changed_paths | working_changed_paths
     not_found_requested: list[str] = []
     unchanged_requested: list[str] = []
+    ignored_requested: list[str] = []
     if explicit_scope:
         # A requested path that exists in neither the inspected revisions nor
         # the working tree is NOT "unchanged"; the two mean different things.
@@ -638,15 +644,16 @@ def run_workspace_review_context(
         for path in requested:
             if path in changed:
                 continue
-            exists = False
+            worktree_file = False
             if include_worktree:
                 candidate = root / path
-                exists = candidate.is_file() or candidate.is_symlink()
-            if not exists:
-                exists = (_path_in_commit(root, base_sha, path)
-                          or _path_in_commit(root, sha, path))
-            if exists:
+                worktree_file = candidate.is_file() or candidate.is_symlink()
+            in_commit = (_path_in_commit(root, base_sha, path)
+                         or _path_in_commit(root, sha, path))
+            if in_commit or (worktree_file and not _path_is_ignored(root, path)):
                 unchanged_requested.append(path)
+            elif worktree_file:
+                ignored_requested.append(path)
             else:
                 not_found_requested.append(path)
     if explicit_scope:
@@ -837,12 +844,15 @@ def run_workspace_review_context(
             "changed_requested_paths": sorted(combined_changed_paths),
             "unchanged_requested_paths": unchanged_requested,
             "not_found_requested_paths": not_found_requested,
+            "ignored_requested_paths": ignored_requested,
             "other_changes_assessed": False,
         })
         packet["explicit_limits"].append(
             "A requested path that does not identify a file in the inspected "
             "revision(s) or, with --include-worktree, the working tree is listed in "
-            "not_found_requested_paths and is not counted as unchanged."
+            "not_found_requested_paths and is not counted as unchanged. A path that "
+            "Git ignores and that is absent from the inspected revisions is listed "
+            "in ignored_requested_paths; it is outside the review source scope."
         )
     if include_worktree:
         packet["working_evidence_reinspection"] = working_overlap

@@ -789,12 +789,19 @@ jobs:
           sensemaking-skills semantic workspace-review-context \
             --base-ref "$REF" --ref "$REF" --repo . --include-worktree \
             --path "$MISSING" --json > "$RUNNER_TEMP/missing-review.json"
+          IGNORED=".pytest_cache/precommit-ci-ignored.txt"
+          mkdir -p .pytest_cache
+          printf 'ignored\n' > "$IGNORED"
+          sensemaking-skills semantic workspace-review-context \
+            --base-ref "$REF" --ref "$REF" --repo . --include-worktree \
+            --path "$IGNORED" --json > "$RUNNER_TEMP/ignored-review.json"
           REVIEW="$RUNNER_TEMP/precommit-worktree-review.json" \
           COMMITTED="$RUNNER_TEMP/precommit-committed-only.json" \
           PRIORITY="$RUNNER_TEMP/precommit-priority-review.json" \
           EXPLICIT="$RUNNER_TEMP/explicit-review.json" \
           MISSING_REVIEW="$RUNNER_TEMP/missing-review.json" \
-          MISSING="$MISSING" \
+          IGNORED_REVIEW="$RUNNER_TEMP/ignored-review.json" \
+          MISSING="$MISSING" IGNORED="$IGNORED" \
           TARGET="$TARGET" UNTRACKED="$UNTRACKED" REF="$REF" python - <<'PY'
           import json
           import os
@@ -857,13 +864,24 @@ jobs:
           assert missing_scope["unchanged_requested_paths"] == []
           assert missing_scope["changed_requested_paths"] == []
           assert missing_scope["selected_paths"] == [missing_path]
+          with open(os.environ["IGNORED_REVIEW"], encoding="utf-8") as stream:
+              ignored = json.load(stream)
+          ignored_scope = ignored["review_scope"]
+          ignored_path = os.environ["IGNORED"]
+          assert ignored_scope["ignored_requested_paths"] == [ignored_path]
+          assert ignored_scope["unchanged_requested_paths"] == []
+          assert ignored_scope["not_found_requested_paths"] == []
+          assert ignored_scope["changed_requested_paths"] == []
+          assert ignored_scope["selected_paths"] == [ignored_path]
           print("Live precommit review includes staged-only and untracked paths; no cognitive claim.")
           print("One context slot goes to the staged edit, not the earlier-sorting untracked path.")
           print("Explicit review scope inspects only the requested paths; others are NOT_ASSESSED.")
           print("A nonexistent requested path is reported as not found, not unchanged.")
+          print("An ignored working-tree path is reported as ignored, not unchanged.")
           PY
           git reset -q -- "$TARGET"
           rm -- "$UNTRACKED"
+          rm -f -- "$IGNORED"
           test -z "$(git status --porcelain)"
       - name: Disclose entry-level untracked coverage for knowledge relevance
         if: github.event_name == 'pull_request'
