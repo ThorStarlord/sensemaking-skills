@@ -65,6 +65,12 @@ def _git_text(cwd: Path, *args: str, message: str) -> str:
     return proc.stdout.strip()
 
 
+def _path_in_commit(root: Path, commit: str, path: str) -> bool:
+    """Whether a repository-relative path is a file entry in one commit."""
+    proc = _git(root, "cat-file", "-t", f"{commit}:{path}")
+    return proc.returncode == 0 and proc.stdout.strip() == "blob"
+
+
 def _checkout_root(repo: Path) -> Path:
     top = _git_text(repo, "rev-parse", "--show-toplevel",
                     message=f"not inside a Git working tree: {repo}")
@@ -623,6 +629,26 @@ def run_workspace_review_context(
             raise ValueError("HEAD changed during --include-worktree inspection; retry")
     working_changed_paths = frozenset(working_paths)
     combined_changed_paths = committed_changed_paths | working_changed_paths
+    not_found_requested: list[str] = []
+    unchanged_requested: list[str] = []
+    if explicit_scope:
+        # A requested path that exists in neither the inspected revisions nor
+        # the working tree is NOT "unchanged"; the two mean different things.
+        changed = set(combined_changed_paths)
+        for path in requested:
+            if path in changed:
+                continue
+            exists = False
+            if include_worktree:
+                candidate = root / path
+                exists = candidate.is_file() or candidate.is_symlink()
+            if not exists:
+                exists = (_path_in_commit(root, base_sha, path)
+                          or _path_in_commit(root, sha, path))
+            if exists:
+                unchanged_requested.append(path)
+            else:
+                not_found_requested.append(path)
     if explicit_scope:
         # Requested paths keep their caller order and all receive BASE context;
         # max-paths selection applies only to automatic whole-change scope.
@@ -809,11 +835,15 @@ def run_workspace_review_context(
         packet["review_scope"].update({
             "requested_paths": list(requested),
             "changed_requested_paths": sorted(combined_changed_paths),
-            "unchanged_requested_paths": [
-                path for path in requested if path not in combined_changed_paths
-            ],
+            "unchanged_requested_paths": unchanged_requested,
+            "not_found_requested_paths": not_found_requested,
             "other_changes_assessed": False,
         })
+        packet["explicit_limits"].append(
+            "A requested path that does not identify a file in the inspected "
+            "revision(s) or, with --include-worktree, the working tree is listed in "
+            "not_found_requested_paths and is not counted as unchanged."
+        )
     if include_worktree:
         packet["working_evidence_reinspection"] = working_overlap
         packet["review_scope"].update({

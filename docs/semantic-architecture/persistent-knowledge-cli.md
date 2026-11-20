@@ -1356,7 +1356,11 @@ literal paths, so an unrelated untracked tree is never walked and `--max-paths`
 selection does not apply. Every requested path receives BASE context; the
 response reports `scope_mode: explicit_paths`, `max_paths_applied: false`,
 `requested_paths`, `changed_requested_paths`, `unchanged_requested_paths`,
-`other_changes_assessed: false` and exact counts for the requested set. Every
+`not_found_requested_paths`, `other_changes_assessed: false` and exact counts
+for the requested set. A requested path that does not identify a file in the
+inspected revisions (and, with `--include-worktree`, the working tree) is
+`not_found`, not
+`unchanged`. Every
 other committed or working change is **NOT_ASSESSED**; the packet is not a
 complete PR or worktree review. Cited-source overlap and candidate overlaps
 also cover only the requested changed paths.

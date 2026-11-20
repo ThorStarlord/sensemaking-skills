@@ -38,7 +38,10 @@ RECALL is lightweight by default. It does not decide whether a task is warranted
    source edits. When the pending set is known, repeat `--path` (1..32) for an
    explicit-scope review: Git reads use only those literal paths, `--max-paths`
    selection does not apply, and every other change is NOT_ASSESSED
-   (`other_changes_assessed: false`). Inspect
+   (`other_changes_assessed: false`). A requested path that does not identify a
+   file in the inspected revisions (and the working tree with
+   `--include-worktree`) appears in
+   `not_found_requested_paths`, not as unchanged. Inspect
    `working_evidence_reinspection` separately from
    `committed_evidence_reinspection`, and each path's `change_modes` and
    `context.change_relevance`. It refuses a target ref other than the current

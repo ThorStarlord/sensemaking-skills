@@ -785,10 +785,16 @@ jobs:
             --base-ref "$REF" --ref "$REF" --repo . --include-worktree \
             --path "$TARGET" --path "$UNTRACKED" --json \
             > "$RUNNER_TEMP/explicit-review.json"
+          MISSING="src/does-not-exist-ci-only.py"
+          sensemaking-skills semantic workspace-review-context \
+            --base-ref "$REF" --ref "$REF" --repo . --include-worktree \
+            --path "$MISSING" --json > "$RUNNER_TEMP/missing-review.json"
           REVIEW="$RUNNER_TEMP/precommit-worktree-review.json" \
           COMMITTED="$RUNNER_TEMP/precommit-committed-only.json" \
           PRIORITY="$RUNNER_TEMP/precommit-priority-review.json" \
           EXPLICIT="$RUNNER_TEMP/explicit-review.json" \
+          MISSING_REVIEW="$RUNNER_TEMP/missing-review.json" \
+          MISSING="$MISSING" \
           TARGET="$TARGET" UNTRACKED="$UNTRACKED" REF="$REF" python - <<'PY'
           import json
           import os
@@ -843,9 +849,18 @@ jobs:
                      for item in explicit_contexts.values())
           assert any("Explicit-path review inspects only the requested paths" in limit
                      for limit in explicit["explicit_limits"])
+          with open(os.environ["MISSING_REVIEW"], encoding="utf-8") as stream:
+              missing = json.load(stream)
+          missing_scope = missing["review_scope"]
+          missing_path = os.environ["MISSING"]
+          assert missing_scope["not_found_requested_paths"] == [missing_path]
+          assert missing_scope["unchanged_requested_paths"] == []
+          assert missing_scope["changed_requested_paths"] == []
+          assert missing_scope["selected_paths"] == [missing_path]
           print("Live precommit review includes staged-only and untracked paths; no cognitive claim.")
           print("One context slot goes to the staged edit, not the earlier-sorting untracked path.")
           print("Explicit review scope inspects only the requested paths; others are NOT_ASSESSED.")
+          print("A nonexistent requested path is reported as not found, not unchanged.")
           PY
           git reset -q -- "$TARGET"
           rm -- "$UNTRACKED"

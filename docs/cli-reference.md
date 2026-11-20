@@ -123,9 +123,12 @@ For a known pending set, repeat `--path PATH` (1..32) instead. Explicit-scope
 review restricts Git reads to those literal paths, so an unrelated untracked
 tree is not walked; every requested path gets BASE context and `--max-paths`
 selection does not apply. `review_scope` reports `scope_mode:
-explicit_paths`, `changed_requested_paths`, `unchanged_requested_paths` and
+explicit_paths`, `changed_requested_paths`, `unchanged_requested_paths`,
+`not_found_requested_paths` and
 `other_changes_assessed: false`: every other committed or working change is
-NOT_ASSESSED, not silently treated as reviewed or unchanged.
+NOT_ASSESSED, not silently treated as reviewed or unchanged. A requested path
+that does not identify a file in the inspected revisions (and, with
+`--include-worktree`, the working tree) is not-found, never unchanged.
 
 The output distinguishes
 `committed_evidence_reinspection` from
