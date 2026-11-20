@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "claims": [
+    {
+      "id": "decision:untracked-entry-coverage-exact-source-matching",
+      "kind": "decision",
+      "statement": "Knowledge impact and context relevance read untracked paths as Git normal-mode entries: a wholly untracked directory is one disclosed entry, while changed tracked file names stay exact and a cited source or target path under an entry is still matched by exact prefix. Live review keeps full file-level expansion because it selects individual new files.",
+      "epistemic_status": "declared",
+      "authority_kind": "delegated",
+      "authority_ref": "docs/semantic-architecture/persistent-knowledge-cli.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:src/sensemaking_skills/semantic_architecture/worktree_context.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py",
+        "file:src/sensemaking_skills/workspace_knowledge.py",
+        "file:.github/workflows/semantic-context-reentry.yml"
+      ],
+      "attributes": {
+        "scope": "Delegated construction choice within ADR 0031; knowledge queries only, not live review path selection",
+        "claim_ceiling": "One measured Windows checkout, one repo shape and scratch probes; independent-agent benefit NOT TESTED and timings are environment-specific",
+        "rejected_alternative": "Expand every untracked file by default; exact but spent about 30 seconds per knowledge query on a checkout with 54,765 untracked files, and those file names cannot change cited-source overlap because cited sources are committed at the indexed revision."
+      }
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel:untracked-entry-coverage-decision",
+      "subject": "cap:semantic-queries",
+      "predicate": "decided_by",
+      "object": "decision:untracked-entry-coverage-exact-source-matching",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ],
+      "attributes": {
+        "scope": "Active-workspace overlap operations within the capability"
+      }
+    },
+    {
+      "id": "rel:untracked-entry-coverage-store-decision",
+      "subject": "component:knowledge-store",
+      "predicate": "decided_by",
+      "object": "decision:untracked-entry-coverage-exact-source-matching",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py"
+      ],
+      "attributes": {
+        "scope": "Overlap summaries and change-scope disclosure"
+      }
+    },
+    {
+      "id": "rel:untracked-entry-coverage-cli-decision",
+      "subject": "component:semantic-cli",
+      "predicate": "decided_by",
+      "object": "decision:untracked-entry-coverage-exact-source-matching",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/workspace_knowledge.py",
+        "file:src/sensemaking_skills/semantic_architecture/worktree_context.py"
+      ],
+      "attributes": {
+        "scope": "Workspace query and review entry points"
+      }
+    },
+    {
+      "id": "rel:untracked-entry-coverage-overlay-boundary",
+      "subject": "decision:untracked-entry-coverage-exact-source-matching",
+      "predicate": "constrained_by",
+      "object": "inv:index-snapshot-vs-working-overlay",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ]
+    }
+  ]
+}
