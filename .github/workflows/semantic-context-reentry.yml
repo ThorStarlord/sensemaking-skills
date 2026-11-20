@@ -779,9 +779,16 @@ jobs:
             --base-ref "$REF" --ref "$REF" --repo . --include-worktree \
             --max-paths 1 --limit 25 --json \
             > "$RUNNER_TEMP/precommit-priority-review.json"
+          # Explicit path scope must inspect only the named staged and
+          # untracked paths, without applying --max-paths selection.
+          sensemaking-skills semantic workspace-review-context \
+            --base-ref "$REF" --ref "$REF" --repo . --include-worktree \
+            --path "$TARGET" --path "$UNTRACKED" --json \
+            > "$RUNNER_TEMP/explicit-review.json"
           REVIEW="$RUNNER_TEMP/precommit-worktree-review.json" \
           COMMITTED="$RUNNER_TEMP/precommit-committed-only.json" \
           PRIORITY="$RUNNER_TEMP/precommit-priority-review.json" \
+          EXPLICIT="$RUNNER_TEMP/explicit-review.json" \
           TARGET="$TARGET" UNTRACKED="$UNTRACKED" REF="$REF" python - <<'PY'
           import json
           import os
@@ -818,8 +825,27 @@ jobs:
           ], priority_scope
           assert priority_scope["selected_paths"] == [target], priority_scope
           assert priority_scope["omitted_path_count"] == 1, priority_scope
+          with open(os.environ["EXPLICIT"], encoding="utf-8") as stream:
+              explicit = json.load(stream)
+          explicit_scope = explicit["review_scope"]
+          assert explicit_scope["review_mode"] == "explicit_paths_plus_worktree"
+          assert explicit_scope["scope_mode"] == "explicit_paths"
+          assert explicit_scope["max_paths_applied"] is False
+          assert explicit_scope["selected_paths"] == [target, untracked]
+          assert explicit_scope["changed_requested_paths"] == sorted([target, untracked])
+          assert explicit_scope["unchanged_requested_paths"] == []
+          assert explicit_scope["omitted_path_count"] == 0
+          assert explicit_scope["worktree_changed_paths_total"] == 2
+          assert explicit_scope["other_changes_assessed"] is False
+          explicit_contexts = {item["path"]: item for item in explicit["contexts"]}
+          assert set(explicit_contexts) == {target, untracked}
+          assert all(item["change_modes"] == ["worktree"]
+                     for item in explicit_contexts.values())
+          assert any("Explicit-path review inspects only the requested paths" in limit
+                     for limit in explicit["explicit_limits"])
           print("Live precommit review includes staged-only and untracked paths; no cognitive claim.")
           print("One context slot goes to the staged edit, not the earlier-sorting untracked path.")
+          print("Explicit review scope inspects only the requested paths; others are NOT_ASSESSED.")
           PY
           git reset -q -- "$TARGET"
           rm -- "$UNTRACKED"

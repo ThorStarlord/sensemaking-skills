@@ -117,7 +117,17 @@ remain from the committed BASE revision; working file bytes are **not**
 indexed. Per-file context is allocated in `review_scope.selection_order`:
 committed changes first, then staged, unstaged and untracked paths, sorted
 within each group, so incidental untracked artifacts do not displace pending
-source edits from `--max-paths`. The output distinguishes
+source edits from `--max-paths`.
+
+For a known pending set, repeat `--path PATH` (1..32) instead. Explicit-scope
+review restricts Git reads to those literal paths, so an unrelated untracked
+tree is not walked; every requested path gets BASE context and `--max-paths`
+selection does not apply. `review_scope` reports `scope_mode:
+explicit_paths`, `changed_requested_paths`, `unchanged_requested_paths` and
+`other_changes_assessed: false`: every other committed or working change is
+NOT_ASSESSED, not silently treated as reviewed or unchanged.
+
+The output distinguishes
 `committed_evidence_reinspection` from
 `working_evidence_reinspection`, and per-path `change_modes` and
 `context.change_relevance` indicate which paths need the agent's own

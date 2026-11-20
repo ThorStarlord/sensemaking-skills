@@ -526,7 +526,7 @@ def run_workspace_review_context(
     repository: str | None = None, index_dir: str | Path | None = None,
     refresh: bool = False, limit: int = 25, depth: int = 2, max_paths: int = 8,
     pr_merge_base: bool = False, include_candidates: bool = False,
-    include_worktree: bool = False,
+    include_worktree: bool = False, explicit_paths: tuple[str, ...] = (),
 ) -> dict[str, Any]:
     """Review committed changes and optional working changes against BASE knowledge.
 
@@ -535,9 +535,24 @@ def run_workspace_review_context(
     code newly added at the target cannot silently create accepted intent.
     An explicit PR-style mode uses the unique Git merge base as that baseline;
     otherwise the given commits are compared exactly as supplied.
+
+    `explicit_paths` narrows the review to named repository files. It changes
+    the scope question: only those paths, their committed/working change modes
+    and their BASE context are inspected. Every other committed or working
+    change is NOT_ASSESSED, never silently treated as unchanged or reviewed.
     """
     if not 1 <= limit <= 100 or not 0 <= depth <= 4 or not 1 <= max_paths <= 32:
         raise ValueError("review-context requires limit 1..100, depth 0..4 and max-paths 1..32")
+    requested: tuple[str, ...] = ()
+    if explicit_paths:
+        if not 1 <= len(explicit_paths) <= 32:
+            raise ValueError("explicit review paths require 1..32 paths")
+        requested = tuple(_normalize_path(path) for path in explicit_paths)
+        if len(set(requested)) != len(requested):
+            raise ValueError("explicit review paths must be distinct")
+        if any(not is_repository_file_path(path) for path in requested):
+            raise ValueError("explicit review paths must be repository-relative file paths")
+    explicit_scope = bool(requested)
     _validate_ref_text(base_ref)
     _validate_ref_text(ref)
     repo_dir = Path(repo).expanduser().resolve()
@@ -558,8 +573,10 @@ def run_workspace_review_context(
     # Both committed diff operands are commit trees. Git does not read the worktree or execute
     # external diff/text conversion; no rename or semantic inference is made.
     diff = _git(
-        root, "diff", "--no-ext-diff", "--no-textconv", "--no-renames",
-        "--ignore-submodules=all", "--name-only", "-z", base_sha, sha, "--",
+        root, *(["--literal-pathspecs"] if requested else []),
+        "diff", "--no-ext-diff", "--no-textconv", "--no-renames",
+        "--ignore-submodules=all", "--name-only", "-z", base_sha, sha,
+        *(["--", *requested] if requested else ["--"]),
     )
     if diff.returncode:
         raise ValueError("cannot list changed paths between the two committed revisions")
@@ -577,7 +594,8 @@ def run_workspace_review_context(
     working_paths: list[str] = []
     selection_order = ["committed"]
     if include_worktree:
-        working_changes = changed_paths_since_indexed_ref(root, sha)
+        working_changes = changed_paths_since_indexed_ref(
+            root, sha, path_filter=requested or None)
         raw_working_paths = sorted(working_changes["paths"])
 
         def _representable(path: str) -> bool:
@@ -605,8 +623,14 @@ def run_workspace_review_context(
             raise ValueError("HEAD changed during --include-worktree inspection; retry")
     working_changed_paths = frozenset(working_paths)
     combined_changed_paths = committed_changed_paths | working_changed_paths
-    all_paths = list(dict.fromkeys([*paths, *working_paths]))
-    selected = all_paths[:max_paths]
+    if explicit_scope:
+        # Requested paths keep their caller order and all receive BASE context;
+        # max-paths selection applies only to automatic whole-change scope.
+        all_paths = list(requested)
+        selected = all_paths
+    else:
+        all_paths = list(dict.fromkeys([*paths, *working_paths]))
+        selected = all_paths[:max_paths]
     working_unrepresentable_count = len(raw_working_paths) - len(working_paths)
 
     clone_dir, database = _cache_paths(root, index_dir, base_sha)
@@ -713,22 +737,28 @@ def run_workspace_review_context(
             "comparison_mode": "pr_merge_base" if pr_merge_base else "explicit_commits",
             "merge_base_calculated": pr_merge_base,
             "changed_paths_total": len(raw_paths),
-            "changed_paths_with_valid_context": len(all_paths),
+            "changed_paths_with_valid_context": (
+                len(combined_changed_paths) if explicit_scope else len(all_paths)
+            ),
             "source_overlap_paths_assessed": len(combined_changed_paths),
             "selected_paths": selected, "omitted_path_count": omitted,
-            "selection_order": selection_order,
+            "selection_order": ["explicit_paths"] if explicit_scope else selection_order,
             "unrepresentable_path_count": unrepresentable_count,
-            "omitted_path_sample": all_paths[max_paths:max_paths + 16],
+            "omitted_path_sample": [] if explicit_scope else all_paths[max_paths:max_paths + 16],
             "per_path_limit": limit, "max_paths": max_paths,
+            "max_paths_applied": not explicit_scope,
+            "scope_mode": "explicit_paths" if explicit_scope else "automatic",
             "source_intent_revision": base_sha,
             "git_ancestry_assessed": pr_merge_base, "working_changes_indexed": False,
             "source_diff_semantics_assessed": False,
             "architectural_drift_established": False,
             "note": (
-                ("PR scope uses the unique Git merge base, not the moving base "
-                 "tip; GitHub PR identity and its server file list are not "
-                 "verified. " if pr_merge_base else
-                 "Two explicit committed trees were compared. ")
+                ("Explicit-path scope: only the requested paths were inspected; every "
+                 "other committed or working change is NOT_ASSESSED. " if explicit_scope else "")
+                + ("PR scope uses the unique Git merge base, not the moving base "
+                   "tip; GitHub PR identity and its server file list are not "
+                   "verified. " if pr_merge_base else
+                   "Two explicit committed trees were compared. ")
                 + "Only committed changed path names were compared. Product "
                 "intent, evidence fingerprints and per-file contexts are "
                 "from the BASE revision. Cited-source overlap marks "
@@ -745,10 +775,15 @@ def run_workspace_review_context(
         "source_scope": outline["source_scope"],
         "explicit_limits": [
             *outline["explicit_limits"],
-            "Only the first max-paths changed paths receive BASE context. With "
-            "--include-worktree, slots are allocated to committed changes, then "
-            "staged, unstaged and untracked paths; paths are sorted within each "
-            "group. Omitted paths still contribute to source-overlap inspection.",
+            ("Explicit-path review inspects only the requested paths; every other "
+             "committed or working change is NOT_ASSESSED. This is not a complete "
+             "PR or worktree review. Changed/unchanged labels cover only the "
+             "inspected scope: the committed range, plus the working tree only "
+             "with --include-worktree." if explicit_scope else
+             "Only the first max-paths changed paths receive BASE context. With "
+             "--include-worktree, slots are allocated to committed changes, then "
+             "staged, unstaged and untracked paths; paths are sorted within each "
+             "group. Omitted paths still contribute to source-overlap inspection."),
             "Source-overlap inspection covers every valid changed path even "
             "when per-path context is omitted; capped record and uncited-path "
             "lists remain truncated. A source overlap is not semantic drift.",
@@ -770,25 +805,40 @@ def run_workspace_review_context(
         },
         "semantic_truth_established": False, "action_authorized": False,
     }
+    if explicit_scope:
+        packet["review_scope"].update({
+            "requested_paths": list(requested),
+            "changed_requested_paths": sorted(combined_changed_paths),
+            "unchanged_requested_paths": [
+                path for path in requested if path not in combined_changed_paths
+            ],
+            "other_changes_assessed": False,
+        })
     if include_worktree:
         packet["working_evidence_reinspection"] = working_overlap
         packet["review_scope"].update({
-            "review_mode": "committed_plus_worktree",
+            "review_mode": ("explicit_paths_plus_worktree" if explicit_scope
+                            else "committed_plus_worktree"),
             "target_checkout_ref": sha,
             "worktree_changed_paths_total": len(raw_working_paths),
             "worktree_representable_path_count": len(working_paths),
             "worktree_unrepresentable_path_count": working_unrepresentable_count,
-            "combined_representable_path_count": len(all_paths),
+            "combined_representable_path_count": (
+                len(combined_changed_paths) if explicit_scope else len(all_paths)
+            ),
             "committed_changed_paths_total": len(raw_paths),
             "changed_paths_total": len(set(raw_paths) | set(raw_working_paths)),
             "unrepresentable_path_count": (
+                0 if explicit_scope else
                 len(set(raw_paths) | set(raw_working_paths)) - len(all_paths)
             ),
             "working_change_names_only": True,
             "working_changes_indexed": False,
             "working_tree_consumer": "opt_in",
             "note": (
-                "Product intent and all context come from BASE committed knowledge. "
+                ("Explicit-path scope: only the requested paths were inspected; every "
+                 "other committed or working change is NOT_ASSESSED. " if explicit_scope else "")
+                + "Product intent and all context come from BASE committed knowledge. "
                 "Review includes committed diff paths plus the local target checkout's "
                 "staged, unstaged and untracked names. Per-file context follows "
                 "selection_order. Uncommitted contents are "
@@ -808,6 +858,8 @@ def run_workspace_review_context(
             raise ValueError("HEAD changed during worktree review; retry")
         packet["workspace_context"]["target_checkout_ref"] = sha
         packet["workspace_context"]["target_head_matches"] = True
+    if explicit_scope and not include_worktree:
+        packet["review_scope"]["review_mode"] = "explicit_paths"
     if include_candidates:
         packet["review_scope"]["candidate_source_overlap_assessed"] = True
         packet["explicit_limits"].append(

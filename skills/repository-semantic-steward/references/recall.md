@@ -35,7 +35,10 @@ RECALL is lightweight by default. It does not decide whether a task is warranted
    index. Per-file context follows `review_scope.selection_order`: committed
    paths, then staged, unstaged and untracked paths, sorted within each group,
    so untracked artifacts do not take every `--max-paths` slot from pending
-   source edits. Inspect
+   source edits. When the pending set is known, repeat `--path` (1..32) for an
+   explicit-scope review: Git reads use only those literal paths, `--max-paths`
+   selection does not apply, and every other change is NOT_ASSESSED
+   (`other_changes_assessed: false`). Inspect
    `working_evidence_reinspection` separately from
    `committed_evidence_reinspection`, and each path's `change_modes` and
    `context.change_relevance`. It refuses a target ref other than the current

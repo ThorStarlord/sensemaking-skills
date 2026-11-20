@@ -562,6 +562,9 @@ def register_semantic_commands(root_cli: click.Group) -> None:
     @click.option("--max-paths", type=click.IntRange(1, 32), default=8, show_default=True,
                   help="Maximum changed paths to contextualize; committed, then staged, "
                        "unstaged and untracked paths, sorted within each group")
+    @click.option("--path", "explicit_paths", multiple=True, metavar="PATH",
+                  help="Explicit repository-relative file to review (repeatable, 1..32); "
+                       "only these paths are inspected and --max-paths does not apply")
     @click.option("--pr-merge-base", is_flag=True,
                   help="For a PR, use the unique Git merge base of --base-ref and --ref")
     @click.option("--include-candidates", is_flag=True,
@@ -573,8 +576,8 @@ def register_semantic_commands(root_cli: click.Group) -> None:
     def semantic_workspace_review_context(
         base_ref: str, ref: str, repo_dir: Path, repository_label: str | None,
         index_dir: Path | None, refresh: bool, limit: int, depth: int,
-        max_paths: int, pr_merge_base: bool, include_candidates: bool,
-        include_worktree: bool, output_json: bool,
+        max_paths: int, explicit_paths: tuple[str, ...], pr_merge_base: bool,
+        include_candidates: bool, include_worktree: bool, output_json: bool,
     ) -> None:
         """Prepare BASE context for committed diffs and optional working changes."""
         from .workspace_knowledge import run_workspace_review_context
@@ -585,7 +588,7 @@ def register_semantic_commands(root_cli: click.Group) -> None:
                 repository=repository_label, index_dir=index_dir,
                 refresh=refresh, limit=limit, depth=depth, max_paths=max_paths,
                 pr_merge_base=pr_merge_base, include_candidates=include_candidates,
-                include_worktree=include_worktree,
+                include_worktree=include_worktree, explicit_paths=explicit_paths,
             )
         except (ValueError, OSError, UnicodeError) as exc:
             raise click.ClickException(str(exc)) from exc
