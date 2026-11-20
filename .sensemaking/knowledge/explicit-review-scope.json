@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "claims": [
+    {
+      "id": "decision:explicit-review-scope",
+      "kind": "decision",
+      "statement": "workspace-review-context supports repeated --path for an explicit-scope review: Git reads are restricted to the requested literal paths, every requested path receives BASE context, --max-paths selection is not applied, and every other committed or working change is disclosed as NOT_ASSESSED. Automatic whole-change review remains the default and keeps file-level untracked expansion for selecting new files.",
+      "epistemic_status": "declared",
+      "authority_kind": "delegated",
+      "authority_ref": "docs/semantic-architecture/persistent-knowledge-cli.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:docs/cli-reference.md",
+        "file:src/sensemaking_skills/workspace_knowledge.py",
+        "file:src/sensemaking_skills/semantic_architecture/worktree_context.py",
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:.github/workflows/semantic-context-reentry.yml"
+      ],
+      "attributes": {
+        "scope": "Caller-selected review scope over 1..32 repository file paths; no directories, globs or inferred paths",
+        "claim_ceiling": "One implementation and scratch/real-checkout probes; independent-agent benefit NOT TESTED and timings are environment-specific",
+        "rejected_alternative": "Change automatic review to entry-level untracked paths or skip expansion conditionally; rejected because the reviewed review carve-out still requires file-level selection whenever untracked files can fill the context budget."
+      }
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel:explicit-review-scope-capability",
+      "subject": "cap:semantic-queries",
+      "predicate": "decided_by",
+      "object": "decision:explicit-review-scope",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ],
+      "attributes": {
+        "scope": "Explicit caller-selected review scope within the capability"
+      }
+    },
+    {
+      "id": "rel:explicit-review-scope-component",
+      "subject": "component:semantic-cli",
+      "predicate": "decided_by",
+      "object": "decision:explicit-review-scope",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:src/sensemaking_skills/workspace_knowledge.py"
+      ],
+      "attributes": {
+        "scope": "Review command and workspace read implementation"
+      }
+    },
+    {
+      "id": "rel:explicit-review-scope-preserves-default",
+      "subject": "decision:explicit-review-scope",
+      "predicate": "references",
+      "object": "decision:untracked-entry-coverage-exact-source-matching",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ],
+      "attributes": {
+        "relationship": "preserves the automatic review default and its file-level untracked selection; adds a caller-selected scope"
+      }
+    },
+    {
+      "id": "rel:explicit-review-scope-overlay-boundary",
+      "subject": "decision:explicit-review-scope",
+      "predicate": "constrained_by",
+      "object": "inv:index-snapshot-vs-working-overlay",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ]
+    }
+  ]
+}
