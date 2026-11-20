@@ -28,7 +28,7 @@ from .semantic_architecture.worktree_context import changed_paths_since_indexed_
 
 OPERATIONS = (
     "context-for", "rules-for", "search", "explain", "why", "impact", "term", "orientation-summary", "product-outline",
-    "contradictions", "snapshot", "workspace-impact", "changes", "history",
+    "possibility-ecology", "contradictions", "snapshot", "workspace-impact", "changes", "history",
 )
 _REFUSED_OPERATIONS = {
     "changes": "changes compares two committed revisions; run 'semantic workspace-changes --base-ref REV "
@@ -354,6 +354,8 @@ def run_workspace_query(
         raise ValueError("--search-kind is supported only for search")
     if include_candidates and operation != "product-outline":
         raise ValueError("--include-candidates is supported only for product-outline")
+    if operation == "possibility-ecology" and subject is None:
+        raise ValueError("possibility-ecology requires --subject <goal claim id or opportunity claim id>")
     if not 0 <= max_js_imports <= 10000:
         raise ValueError("--max-js-imports must be between 0 and 10000")
     if not include_js_module_imports and max_js_imports != 1000:

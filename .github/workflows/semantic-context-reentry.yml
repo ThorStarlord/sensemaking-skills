@@ -749,6 +749,36 @@ jobs:
           }, sort_keys=True))
           PY
 
+      - name: Project authored possibility ecology (planning support, no selection)
+        shell: bash
+        run: |
+          set -euo pipefail
+          REF="$(git rev-parse HEAD)"
+          sensemaking-skills semantic workspace-query --repo . --ref "$REF" \
+            --operation possibility-ecology \
+            --subject goal:compounding-product-knowledge --json \
+            > "$RUNNER_TEMP/possibility-ecology.json"
+          ECOLOGY="$RUNNER_TEMP/possibility-ecology.json" python - <<'PY'
+          import json
+          import os
+          with open(os.environ["ECOLOGY"], encoding="utf-8") as stream:
+              result = json.load(stream)
+          assert result["operation"] == "possibility-ecology"
+          assert result["semantic_truth_established"] is False
+          ecology = result["possibility_ecology"]
+          assert ecology["focus_kind"] == "goal"
+          candidates = {item["claim_id"]: item for item in ecology["candidates"]}
+          target = candidates["poss:assumption-aware-opportunity-ecology"]
+          assert target["dimensions"]["realization"]["value"] == "NOT_ASSESSED"
+          assert target["realization"]["value"] == "NOT_ASSESSED"
+          assert any(item["predicate"] == "derived_from"
+                     for item in target["relationships"])
+          assert any(item.get("conceptual_relation") == "complements"
+                     for item in target["relationships"])
+          assert any("does not infer" in limit for limit in ecology["explicit_limits"])
+          assert target["relationship_total"] >= len(target["relationships"])
+          print("Possibility ecology exposes authored dimensions and relations; no selection.")
+          PY
       - name: Review actual checkout changes before commit (mechanical consumer)
         if: github.event_name == 'pull_request'
         shell: bash

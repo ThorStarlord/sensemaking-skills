@@ -294,8 +294,12 @@ repository-wide responsibility, the existing optional
 `semantic workspace-query --operation product-outline --include-candidates --json`
 can expose reviewed product goals, proposed futures and source-linked
 goal-to-implementation routes
-*before* selecting work. Inspect original sources and actual code; absent routes
-remain `NOT_ASSESSED`, not evidence of a missing capability. Use ordinary source
+*before* selecting work. When candidate relationships, realization states or
+authored assumptions could change the comparison, add
+`--operation possibility-ecology --subject <goal-or-opportunity-id>`; it projects
+only authored dimensions and one-hop relations, not a ranking or selection.
+Inspect original sources and actual code; absent routes remain `NOT_ASSESSED`,
+not evidence of a missing capability. Use ordinary source
 inspection if the CLI is unavailable. This is not a mandatory query, a strategic
 ranking mechanism or a step for narrow repairs. See
 `references/ontology-first-entry-v1.md` section 2.

@@ -13,7 +13,8 @@ from typing import Any, Iterable, Mapping
 from .knowledge import _valid_repo_path, is_path_scope
 from .knowledge_sources import _local_evidence_path
 
-OPERATIONS = frozenset({"rules-for", "term", "orientation-summary", "product-outline", "context-for"})
+OPERATIONS = frozenset({"rules-for", "term", "orientation-summary", "product-outline",
+                        "possibility-ecology", "context-for"})
 NOT_ASSESSED_NOTE = (
     "NOT ASSESSED: no declared component covers this path. Absence here is not evidence "
     "that no rule applies; inspect the code and governing documents before editing."
@@ -704,6 +705,187 @@ def term(claims: Mapping[str, dict], relations: Iterable[dict], *, name: str, li
         "note": None if matches else "NOT ASSESSED: no reviewed definition matches this term.",
         "truncated": any(len(items) > limit for items in (matches, synonyms, distinct)),
     }
+
+
+def possibility_ecology(
+    claims: Mapping[str, dict], relations: Iterable[dict], *, subject: str, limit: int = 25,
+) -> tuple[dict, list[str], list[str]]:
+    """Project one goal's or possibility's authored candidate ecology.
+
+    This is a deliberately narrow prospective-reasoning projection over the
+    existing reviewed records. It reads only authored dimensions, disposition
+    history and explicit relations; it does not infer a relationship, shared
+    premise, feasibility, priority, implementation or selection. Missing
+    dimensions and relations remain NOT_ASSESSED.
+    """
+    if subject not in claims:
+        raise ValueError(f"possibility-ecology subject is not an indexed claim: {subject}")
+    focus = claims[subject]
+    focus_kind = focus.get("kind")
+    if focus_kind not in {"goal", "opportunity"}:
+        raise ValueError("possibility-ecology subject must be a goal or opportunity claim")
+    edges = tuple(relations)
+
+    def candidate_record(claim: dict) -> dict:
+        attrs = claim.get("attributes", {})
+        raw_dimensions = attrs.get("dimensions")
+        dimensions: dict[str, dict] = {}
+        if isinstance(raw_dimensions, dict):
+            for name, value in raw_dimensions.items():
+                if not isinstance(value, dict):
+                    continue
+                item = {"value": value.get("value"), "basis": value.get("basis")}
+                if value.get("establishment"):
+                    item["establishment"] = value["establishment"]
+                history = value.get("history")
+                if isinstance(history, list) and history:
+                    item["history"] = history[-2:]
+                dimensions[str(name)] = item
+        realization = dimensions.get("realization") or {
+            "value": "NOT_ASSESSED",
+            "basis": "No authored realization dimension was recorded.",
+        }
+        disposition = attrs.get("disposition_history")
+        return {
+            "claim_id": claim["id"], "kind": claim["kind"], "statement": claim["statement"],
+            "epistemic_status": claim["epistemic_status"],
+            "authority_kind": claim["authority_kind"],
+            "authority_ref": claim["authority_ref"],
+            "source_ref": claim["source_ref"],
+            "evidence_refs": list(claim["evidence_refs"]),
+            "dimensions": dimensions,
+            "realization": realization,
+            "value_hypothesis": attrs.get("value_hypothesis"),
+            "revisit_when": attrs.get("revisit_when"),
+            "assessed_ref": attrs.get("assessed_ref"),
+            "disposition_history": (
+                disposition[-3:] if isinstance(disposition, list) else []
+            ),
+        }
+
+    def goal_link(relation: dict) -> dict:
+        goal = claims[relation["object"]]
+        return {
+            "goal_claim_id": goal["id"], "goal_statement": goal["statement"],
+            "relation_id": relation["id"],
+            "relation_epistemic_status": relation["epistemic_status"],
+            "relation_evidence_refs": list(relation["evidence_refs"]),
+        }
+
+    def relationships(candidate_id: str) -> tuple[list[dict], int]:
+        items: list[dict] = []
+        for relation in edges:
+            predicate = relation["predicate"]
+            if predicate == "candidate_opportunity_for" or predicate not in {
+                "derived_from", "requires_capability", "contradicts", "relates_to",
+                "distinct_from", "references",
+            }:
+                continue
+            if candidate_id not in (relation["subject"], relation["object"]):
+                continue
+            outgoing = relation["subject"] == candidate_id
+            other_id = relation["object"] if outgoing else relation["subject"]
+            other = claims.get(other_id)
+            if other is None:
+                continue
+            attributes = relation.get("attributes", {})
+            conceptual = attributes.get("conceptual_relation") if isinstance(attributes, dict) else None
+            if predicate == "references" and not (
+                conceptual
+                or other["kind"] in {"opportunity", "hypothesis", "alternative", "decision", "capability"}
+            ):
+                continue
+            item = {
+                "relation_id": relation["id"], "predicate": predicate,
+                "direction": "outgoing" if outgoing else "incoming",
+                "other_claim_id": other_id, "other_kind": other["kind"],
+                "other_statement": other["statement"],
+                "relation_epistemic_status": relation["epistemic_status"],
+                "relation_evidence_refs": list(relation["evidence_refs"]),
+                "other_epistemic_status": other["epistemic_status"],
+                "other_authority_kind": other["authority_kind"],
+            }
+            if conceptual:
+                item["conceptual_relation"] = conceptual
+            item["establishment"] = attributes.get("establishment", "authored")
+            items.append(item)
+        return items[:8], len(items)
+
+    candidate_edges = []
+    if focus_kind == "goal":
+        candidate_edges = sorted(
+            (r for r in edges
+             if r["predicate"] == "candidate_opportunity_for"
+             and r["object"] == subject
+             and r["subject"] in claims
+             and claims[r["subject"]]["kind"] == "opportunity"),
+            key=lambda r: (r["subject"], r["id"]),
+        )
+        candidate_ids = [r["subject"] for r in candidate_edges][:limit]
+    else:
+        candidate_ids = [subject]
+    candidate_total = len(candidate_edges) if focus_kind == "goal" else 1
+    candidate_omitted = candidate_total - len(candidate_ids)
+
+    candidates = []
+    relationship_total = 0
+    relationship_omitted = 0
+    selected_claims: list[str] = [subject]
+    selected_relations: list[str] = []
+    for cid in candidate_ids:
+        item = candidate_record(claims[cid])
+        links = [
+            goal_link(r) for r in edges
+            if r["predicate"] == "candidate_opportunity_for" and r["subject"] == cid
+            and r["object"] in claims and claims[r["object"]]["kind"] == "goal"
+        ][:8]
+        related, total = relationships(cid)
+        relationship_total += total
+        relationship_omitted += max(0, total - len(related))
+        item["goal_links"] = links
+        item["relationships"] = related
+        item["relationship_total"] = total
+        item["relationship_omitted"] = max(0, total - len(related))
+        item["relationships_not_assessed"] = total == 0
+        candidates.append(item)
+        selected_claims.append(cid)
+        selected_claims.extend(link["goal_claim_id"] for link in links)
+        selected_claims.extend(rel["other_claim_id"] for rel in related)
+        selected_relations.extend(link["relation_id"] for link in links)
+        selected_relations.extend(rel["relation_id"] for rel in related)
+    if focus_kind == "goal":
+        selected_relations.extend(r["id"] for r in candidate_edges)
+    payload = {
+        "focus_kind": focus_kind,
+        "focus": candidate_record(focus) if focus_kind == "opportunity" else {
+            "claim_id": focus["id"], "kind": focus["kind"], "statement": focus["statement"],
+            "epistemic_status": focus["epistemic_status"],
+            "authority_kind": focus["authority_kind"],
+            "authority_ref": focus["authority_ref"],
+            "source_ref": focus["source_ref"],
+            "evidence_refs": list(focus["evidence_refs"]),
+        },
+        "candidates": candidates,
+        "candidate_total": candidate_total,
+        "candidate_omitted": candidate_omitted,
+        "candidate_link_not_assessed": candidate_total == 0,
+        "relationship_total": relationship_total,
+        "relationship_omitted": relationship_omitted,
+        "coverage_complete": False,
+        "truncated": bool(candidate_omitted or relationship_omitted),
+        "explicit_limits": [
+            "Projects only authored possibility dimensions, disposition history and explicit "
+            "relations; it does not infer relationships, shared premises, feasibility, "
+            "priority, implementation, recommendation or selection.",
+            "Hypothetical claims remain hypothetical. Missing dimensions, realization states "
+            "and relations are NOT_ASSESSED, not evidence that none exist.",
+            "candidate_opportunity_for links are documentary; they do not establish goal "
+            "service, product value or authority to build.",
+            "The view follows one explicit relationship hop from each candidate; inspect "
+            "original sources or explain/knowledge-view-export for deeper traversal.",
+        ],
+    }
+    return payload, list(dict.fromkeys(selected_claims)), list(dict.fromkeys(selected_relations))
 
 
 def product_outline(
