@@ -91,18 +91,23 @@ def guarded_git_text(root: Path, *args: str, disable_filters: bool = True,
 
 def _status_changes(
     top: Path, disabled: tuple[str, ...], *, untracked: str = "normal",
+    path_filter: tuple[str, ...] | None = None,
 ) -> tuple[frozenset[str], frozenset[str], frozenset[str], frozenset[str]]:
     """Return (tracked, staged, unstaged, untracked) names from one guarded status read.
 
     `untracked` selects Git's untracked mode. `normal` collapses a wholly
     untracked directory into one entry and matches the dirtiness Git itself
     reports; `all` expands every untracked file. Porcelain -z appends the
-    original path for a rename or copy, so that field is skipped.
+    original path for a rename or copy, so that field is skipped. An optional
+    `path_filter` restricts the read to literal repository paths.
     """
     if untracked not in ("normal", "all"):
         raise ValueError("untracked must be 'normal' or 'all'")
-    status = _git(top, "status", "--porcelain=v1", "--ignore-submodules=all",
-                  f"--untracked-files={untracked}", "-z", disable_filters=disabled)
+    args = ["status", "--porcelain=v1", "--ignore-submodules=all",
+            f"--untracked-files={untracked}", "-z"]
+    if path_filter:
+        args = ["--literal-pathspecs", *args, "--", *path_filter]
+    status = _git(top, *args, disable_filters=disabled)
     tracked: set[str] = set()
     staged: set[str] = set()
     unstaged: set[str] = set()
@@ -171,6 +176,7 @@ def inspect_worktree_context(repo_root: Path, indexed_ref: str) -> dict[str, obj
 
 def changed_paths_since_indexed_ref(
     repo_root: Path, indexed_ref: str, *, untracked_expansion: str = "file_paths",
+    path_filter: tuple[str, ...] | None = None,
 ) -> dict[str, object]:
     """List paths whose working-tree state differs from the indexed commit.
 
@@ -189,9 +195,15 @@ def changed_paths_since_indexed_ref(
     directories are not entries in either mode. In both modes the tracked
     diffs compare the worktree and index to `indexed_ref`, so commits made
     after a historical indexed revision remain included.
+
+    `path_filter` restricts every read to the supplied literal repository
+    paths. Callers validate them; it is used by explicit-scope review so an
+    unrelated untracked tree is never walked.
     """
     if untracked_expansion not in ("file_paths", "entry_paths"):
         raise ValueError("untracked_expansion must be 'file_paths' or 'entry_paths'")
+    if path_filter is not None and not path_filter:
+        raise ValueError("path_filter must be non-empty when supplied")
     if not re.fullmatch(r"[0-9a-f]{40}", indexed_ref):
         raise ValueError("indexed_ref must be an exact 40-character Git SHA")
     root = Path(repo_root).expanduser().resolve()
@@ -203,18 +215,22 @@ def changed_paths_since_indexed_ref(
         _git(top, "cat-file", "-e", f"{indexed_ref}^{{commit}}", disable_filters=disabled)
     except ValueError as exc:
         raise ValueError("indexed revision is not available in the local Git repository; NOT ASSESSED") from exc
-    tracked = _git(top, "diff", "--no-ext-diff", "--no-textconv", "--no-renames", "--ignore-submodules=all",
-                   "--name-only", "-z", indexed_ref, "--", disable_filters=disabled).split(b"\x00")
+    literal = ["--literal-pathspecs"] if path_filter else []
+
+    def _diff(*revision_args: str) -> list[bytes]:
+        args = [*literal, "diff", *revision_args, "--no-ext-diff", "--no-textconv",
+                "--no-renames", "--ignore-submodules=all", "--name-only", "-z"]
+        if path_filter:
+            args += ["--", *path_filter]
+        return _git(top, *args, disable_filters=disabled).split(b"\x00")
+
+    tracked = _diff(indexed_ref)
     # A staged index entry can differ from the cited revision even when the
     # working file has been restored to identical bytes. Query both trees.
-    staged = _git(top, "diff", "--cached", "--no-ext-diff", "--no-textconv", "--no-renames",
-                  "--ignore-submodules=all", "--name-only", "-z", indexed_ref, "--",
-                  disable_filters=disabled).split(b"\x00")
+    staged = _diff("--cached", indexed_ref)
     # Worktree vs index, so a partially staged file stays distinguishable from
     # a file whose only change is already in the index.
-    unstaged = _git(top, "diff", "--no-ext-diff", "--no-textconv", "--no-renames",
-                    "--ignore-submodules=all", "--name-only", "-z", "--",
-                    disable_filters=disabled).split(b"\x00")
+    unstaged = _diff()
 
     def _names(raw: list[bytes]) -> frozenset[str]:
         return frozenset(item.decode("utf-8", "surrogateescape") for item in raw if item)
@@ -225,11 +241,14 @@ def changed_paths_since_indexed_ref(
     if untracked_expansion == "entry_paths":
         # Only untracked discovery changes. Tracked diffs stay relative to the
         # cited revision, so a historical index still sees later commits.
-        _, _, _, untracked_paths = _status_changes(top, disabled, untracked="normal")
+        _, _, _, untracked_paths = _status_changes(
+            top, disabled, untracked="normal", path_filter=path_filter)
         directory_entries = frozenset(path for path in untracked_paths if path.endswith("/"))
     else:
-        untracked = _git(top, "ls-files", "--others", "--exclude-standard", "-z",
-                         disable_filters=disabled).split(b"\x00")
+        untracked_args = [*literal, "ls-files", "--others", "--exclude-standard", "-z"]
+        if path_filter:
+            untracked_args += ["--", *path_filter]
+        untracked = _git(top, *untracked_args, disable_filters=disabled).split(b"\x00")
         untracked_paths = _names(untracked)
         directory_entries = frozenset()
     paths = tracked_paths | staged_paths | untracked_paths

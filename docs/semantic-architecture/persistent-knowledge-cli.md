@@ -1350,6 +1350,17 @@ paths than `--max-paths`, the summary is truncated and omitted paths require
 independent inspection. Snapshot truncation is separate from changed-path
 truncation; the final flag reports either.
 
+For a known review set, repeat `--path` with 1..32 distinct repository-relative
+files. This is an **explicit-scope** mode: Git reads are restricted to those
+literal paths, so an unrelated untracked tree is never walked and `--max-paths`
+selection does not apply. Every requested path receives BASE context; the
+response reports `scope_mode: explicit_paths`, `max_paths_applied: false`,
+`requested_paths`, `changed_requested_paths`, `unchanged_requested_paths`,
+`other_changes_assessed: false` and exact counts for the requested set. Every
+other committed or working change is **NOT_ASSESSED**; the packet is not a
+complete PR or worktree review. Cited-source overlap and candidate overlaps
+also cover only the requested changed paths.
+
 The `committed_evidence_reinspection` summary reuses the existing
 `workspace-impact` fingerprint-overlap calculation, but its source is the
 **committed BASE-to-target changed path set**, not a dirty worktree. It covers
