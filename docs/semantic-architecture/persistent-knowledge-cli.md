@@ -635,6 +635,24 @@ permission to act. A missing candidate edge remains `NOT_ASSESSED`. The
 flag works with both `workspace-query` and `knowledge-query`, is rejected
 for other operations, and leaves the default committed-review outline unchanged.
 
+For a selection that also turns on an intellectual procedure, request the
+existing reviewed method context in the same decision-time consumer:
+
+```bash
+sensemaking-skills semantic workspace-query --operation product-outline \
+  --include-candidates \
+  --method-question "Which method should guide this responsibility selection?" --json
+```
+
+The optional `method_precedents` section uses the existing reviewed lesson
+search and method context. It carries each candidate's authored scope,
+conditions, claim ceiling, counterevidence, original outcome, later related
+records and `applicability_to_present_task: NOT_ESTABLISHED`. It does not rank,
+select or establish applicability; a miss is `NOT_ASSESSED`. This composition is
+available on `workspace-query` `product-outline` only; use `semantic method
+context --path` for source-path-anchored method discovery. `--method-limit`
+bounds the returned method candidates.
+
 Each visible goal/non-goal carries its statement, source reference and
 authority/epistemic labels. Each linked record carries its actual declared
 relation ID and claim kind; an opportunity is **not** a shipped capability.

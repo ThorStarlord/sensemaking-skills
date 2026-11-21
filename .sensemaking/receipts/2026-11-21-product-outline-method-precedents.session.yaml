@@ -1,0 +1,102 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-11-21-product-outline-method-precedents
+state: final
+created_at: "2026-11-21T00:00:00Z"
+updated_at: "2026-11-21T00:00:00Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: ff3950eaa31dec1d55f49b98d03ff8f8bf5a44ad
+  end_ref: d5f8c0d0ab58a82861934e02a50b1da7fc88100e
+  worktree_clean_at_end: true
+skill_identity:
+  load_mode: harness_discovered
+  sensemaking_source_ref: ff3950eaa31dec1d55f49b98d03ff8f8bf5a44ad
+goal:
+  statement: "Develop Sensemaking's decision-time methodological applicability through a useful product capability and observe whether retained method experience informs a consequential choice."
+  source: owner_message
+  source_ref: null
+delegation:
+  granted: [read, local_write, run_local_commands, commit, push, open_pr, merge]
+  withheld: [release, deploy, tracker_write, external_publication]
+continuity:
+  resumes: 2026-11-21-method-context-applicability
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: Reconstruct the substrate and loaded Skill identity
+    capability: using-sensemaking
+    status: completed
+    reason: "Canonical source ff3950ea was verified; the host-loaded using-sensemaking copy is stale (734 lines, no PR #948 method-precedent paragraph or possibility-ecology guidance) versus canonical 751 lines. The canonical source was read manually; no global rewrite."
+    artifact_refs: [skills/using-sensemaking/SKILL.md, skills/repository-semantic-steward/references/recall.md, docs/superpowers/plans/2026-11-19-method-adaptation-v0-continuation-ord-observation.md]
+    validation:
+      - command: Native Skill load and canonical source comparison
+        result: PASS
+  - id: R-2
+    responsibility: Select a decision-time consumer integration
+    capability: using-sensemaking
+    status: completed
+    reason: "Method context existed separately from the candidate-selection consumer; the selection failure in #908 and the stale host Skill made the product-outline composition the strongest bounded capability. No new controller, ranking or database."
+    artifact_refs: [src/sensemaking_skills/workspace_knowledge.py, src/sensemaking_skills/semantic_cli.py, docs/semantic-architecture/persistent-knowledge-cli.md]
+    validation:
+      - command: Real semantic method context on the actual selection decision
+        result: PASS
+  - id: R-3
+    responsibility: Attach method precedents to product-outline selection
+    capability: ordinary_coding
+    status: completed
+    reason: "Added optional --method-question/--method-limit to workspace-query product-outline; reuses the existing review search, method context and recall conditions; default output is unchanged."
+    artifact_refs: [src/sensemaking_skills/workspace_knowledge.py, src/sensemaking_skills/semantic_cli.py, .github/workflows/semantic-context-reentry.yml, skills/using-sensemaking/SKILL.md, skills/repository-semantic-steward/references/recall.md, docs/cli-reference.md]
+    validation:
+      - command: ruff check src/sensemaking_skills/workspace_knowledge.py src/sensemaking_skills/semantic_cli.py
+        result: PASS
+      - command: python -m compileall -q src/sensemaking_skills
+        result: PASS
+      - command: Real product-outline --method-question and default product-outline
+        result: PASS
+      - command: YAML parse and git diff --check
+        result: PASS
+      - command: Hosted CI for the PR head
+        result: NOT_RUN
+  - id: R-4
+    responsibility: Apply methodological precedent and reconcile the result
+    capability: using-sensemaking
+    status: completed
+    reason: "The construction-gate lesson was applied: construction warrant and independent-benefit qualification were checked separately. The method-adaptation lesson was considered but is not a method-learning claim here; no method record or adaptation is warranted."
+    artifact_refs: [.sensemaking/knowledge/stewardship.json, docs/normal-use/2026-11-17-construction-vs-qualification-selection-lesson.md, docs/normal-use/2026-11-19-method-adaptation-claim-correction.md]
+    validation:
+      - command: Method context conditions, counterevidence and applicability inspection
+        result: PASS
+findings:
+  - id: F-1
+    statement: "The host-loaded using-sensemaking copy is stale: 734 lines and no PR #948 method-precedent paragraph or possibility-ecology guidance, versus 751 lines at canonical ff3950ea."
+    epistemic_status: OBSERVED
+    evidence_refs: [skills/using-sensemaking/SKILL.md]
+    disposition: open
+  - id: F-2
+    statement: "The real method context surfaced the construction-gate and method-adaptation lessons. The construction-gate lesson was applicable to this open-ended Sensemaking selection; the method-adaptation lesson was a caution, not a product-decision method."
+    epistemic_status: OBSERVED
+    evidence_refs: [.sensemaking/knowledge/stewardship.json, docs/normal-use/2026-11-17-construction-vs-qualification-selection-lesson.md, docs/normal-use/2026-11-19-method-adaptation-claim-correction.md]
+    disposition: resolved
+  - id: F-3
+    statement: "Product-outline now optionally returns method precedents with applicability NOT_ESTABLISHED, authored conditions and counterevidence; no ranking or selection is introduced."
+    epistemic_status: OBSERVED
+    evidence_refs: [src/sensemaking_skills/workspace_knowledge.py, src/sensemaking_skills/semantic_cli.py, .github/workflows/semantic-context-reentry.yml]
+    disposition: resolved
+open_questions:
+  - id: Q-1
+    question: "Will a later agent use selection-time method precedents in a consequential choice?"
+    source: empirical
+    blocking: false
+    durable_ref: null
+stop:
+  disposition: NO_FURTHER_WARRANT
+  reason: "The optional product-outline method section is implemented and verified; no further retrieval field or controller is warranted from this evidence."
+next:
+  warranted_responsibility: "Observe whether a later agent uses selection-time method precedents in a consequential choice; keep #872/#874 separate."
+  blocked_on: []
+persistence: committed
+claim_ceiling: "Functional consumer integration only; no unprompted method discovery, applicability behavior, comparative benefit or cognitive improvement. Host Skill copy was stale; canonical source was read manually. #872/#874 open."
+action_authorized_by_receipt: false
+immutable: true
