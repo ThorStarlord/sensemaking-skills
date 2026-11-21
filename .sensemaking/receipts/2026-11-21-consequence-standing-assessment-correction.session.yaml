@@ -1,0 +1,112 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-11-21-consequence-standing-assessment-correction
+state: final
+created_at: "2026-11-21T00:00:00Z"
+updated_at: "2026-11-21T00:00:00Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: ffc4d61628bec61af5f2d6dd05aca68967112a6d
+  end_ref: 304d3bd5e3b3c80d6a45a6bf9ba0b15272961910
+  worktree_clean_at_end: true
+skill_identity:
+  load_mode: harness_discovered
+  sensemaking_source_ref: b30bbc361789b39aa872ed9aaad89de4d2679e04
+goal:
+  statement: "Correct normalized consequence-assessment statuses so each describes its own prediction, and re-verify the consumers."
+  source: owner_message
+  source_ref: null
+delegation:
+  granted: [read, local_write, run_local_commands, commit, push, open_pr]
+  withheld: [merge, release, deploy, tracker_write, external_publication]
+continuity:
+  resumes: 2026-11-21-consequence-standing
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: Re-read each prediction against its legacy entry
+    capability: using-sensemaking
+    status: completed
+    reason: "All six conseq: statements and their four legacy assessments were read. knowledge-surface-bootstrap predicts owner resistance; its NOT_YET_OBSERVABLE described the maintenance burden of a different consequence. persistence-requires-write-authority is a constraint whose premises are observed rules."
+    artifact_refs: [.sensemaking/knowledge/prospective-reasoning.json, .sensemaking/knowledge/consequence-assessments.json]
+    validation:
+      - command: Full attribute dump of all six consequences
+        result: PASS
+  - id: R-2
+    responsibility: Correct the two statuses and define status semantics
+    capability: ordinary_coding
+    status: completed
+    reason: "Both are PARTIALLY_OBSERVED with explicit ceilings. Status meanings were undefined, so a later assessment could borrow an adjacent consequence's label; the ontology now states what each status describes. The hosted consumer asserts the corrected statuses and counts."
+    artifact_refs: [.sensemaking/knowledge/consequence-assessments.json, docs/semantic-architecture/prospective-reasoning-ontology.md, .github/workflows/semantic-context-reentry.yml]
+    validation:
+      - command: semantic knowledge-proposal-check on the corrected pack
+        result: PASS
+      - command: semantic knowledge-build at 304d3bd5
+        result: PASS
+      - command: semantic knowledge-audit at 304d3bd5
+        result: PASS
+      - command: context-for on skills/using-sensemaking/SKILL.md
+        result: PASS
+      - command: Hosted CI on the corrected PR head
+        result: NOT_RUN
+  - id: R-3
+    responsibility: Preserve the prior record and the legacy text
+    capability: using-sensemaking
+    status: completed
+    reason: "The finalized receipt is preserved; this successor is linked through continuity.resumes. Both legacy entries and every prediction remain byte-identical in prospective-reasoning.json."
+    artifact_refs: [.sensemaking/receipts/2026-11-21-consequence-standing.session.yaml, .sensemaking/knowledge/prospective-reasoning.json]
+    validation:
+      - command: git diff against the branch base for prospective-reasoning.json
+        result: PASS
+  - id: R-4
+    responsibility: Re-check the methodological precedent
+    capability: using-sensemaking
+    status: completed
+    reason: "The correction is a factual re-reading of source evidence, not a changed reasoning procedure. The construction-gate lesson remains applied without changing the selection; no method record is warranted."
+    artifact_refs: [docs/normal-use/2026-11-17-construction-vs-qualification-selection-lesson.md]
+    validation:
+      - command: Source inspection only
+        result: PASS
+findings:
+  - id: F-1
+    statement: "conseq:knowledge-surface-bootstrap was NOT_YET_OBSERVABLE, which described the maintenance burden rather than the predicted owner resistance. Surface creation was observed once, resistance was not: PARTIALLY_OBSERVED."
+    epistemic_status: OBSERVED
+    evidence_refs: [.sensemaking/knowledge/consequence-assessments.json]
+    disposition: resolved
+  - id: F-2
+    statement: "conseq:persistence-requires-write-authority was NOT_OBSERVED although its persistence premises are observed rules. The mechanism-level constraint is supported; no session-level loss is recorded: PARTIALLY_OBSERVED."
+    epistemic_status: OBSERVED
+    evidence_refs: [.sensemaking/knowledge/consequence-assessments.json]
+    disposition: resolved
+  - id: F-3
+    statement: "candidate-recall remains NOT_OBSERVED: its conditions obtained and the predicted recall was not observed. prospective-decision-memory-reuse remains OBSERVED_CONSISTENT: one same-session realization."
+    epistemic_status: OBSERVED
+    evidence_refs: [.sensemaking/knowledge/consequence-assessments.json]
+    disposition: resolved
+  - id: F-4
+    statement: "Status meanings were undefined, allowing an assessment to borrow a label that describes an adjacent consequence. The ontology now states what each status describes."
+    epistemic_status: OBSERVED
+    evidence_refs: [docs/semantic-architecture/prospective-reasoning-ontology.md]
+    disposition: resolved
+  - id: F-5
+    statement: "Both legacy entries and every prediction remain byte-identical; the correction changes only normalized assessments and their ceilings."
+    epistemic_status: OBSERVED
+    evidence_refs: [.sensemaking/knowledge/prospective-reasoning.json]
+    disposition: resolved
+open_questions:
+  - id: Q-1
+    question: "Will a later agent consult consequence standing at a real architecture decision?"
+    source: empirical
+    blocking: false
+    durable_ref: null
+stop:
+  disposition: NO_FURTHER_WARRANT
+  reason: "The two mislabelled statuses are corrected with explicit ceilings, status semantics are defined, and the consumers were re-exercised. The PR remains open for the parent's merge decision."
+next:
+  warranted_responsibility: "Observe whether a later agent uses consequence standing in a genuine decision; keep #872 and #874 as separate qualification boundaries."
+  blocked_on: []
+persistence: committed
+claim_ceiling: "Two corrected assessments at mechanism or partial observation. No causal effect, benefit, failure, independent later use or comparative advantage is established. #872 and #874 remain open."
+action_authorized_by_receipt: false
+immutable: true
