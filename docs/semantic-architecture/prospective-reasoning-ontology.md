@@ -165,6 +165,17 @@ The observation carries these authored attributes, validated at build and propos
 | `claim_ceiling` | what the assessment cannot establish |
 | `scope` | where the observation applies |
 
+Statuses describe the **prediction**, not the prediction's side effects and not a different consequence:
+
+| Status | Meaning |
+| --- | --- |
+| `OBSERVED_CONSISTENT` | an observed outcome matches the predicted effect |
+| `OBSERVED_CONTRADICTED` | an observed outcome contradicts the predicted effect |
+| `PARTIALLY_OBSERVED` | part of the prediction (its condition, one component, or its mechanism premises) was observed; the remainder was not |
+| `NOT_OBSERVED` | the predicted effect was not observed although its conditions obtained |
+| `NOT_YET_OBSERVABLE` | the conditions for observing the effect have not occurred |
+| `SUPERSEDED` | a later assessment replaced this one |
+
 ```text
 prediction            != observation
 OBSERVED_CONSISTENT   != causal effect established
