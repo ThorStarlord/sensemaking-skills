@@ -183,7 +183,7 @@ NOT_OBSERVED          != refuted
 changed source        != invalid prediction
 ```
 
-Consumers are the existing ones. `context-for` returns an anchored assessment in `history` (or as a citation candidate) with its `consequence_assessment` and `recorded_conditions`, and `knowledge-audit` reports a bounded `consequence_standing` projection. Completing, replacing or contesting an assessment is steward RECONCILE: a new attributed observation, never an edit of the original.
+Consumers are the existing ones. `context-for` returns an anchored assessment in `history` (or as a citation candidate) with its `consequence_assessment` and `recorded_conditions`, and `knowledge-audit` reports a bounded `consequence_standing` projection. Its `decision_links` section groups visible consequence rows by the authored `source_option` and carries the option's authored preference and decision-changing condition as evidence; reconsideration remains agent-owned, and no preference is selected or validated. Completing, replacing or contesting an assessment is steward RECONCILE: a new attributed observation, never an edit of the original.
 
 ## 8. Authority and currentness
 

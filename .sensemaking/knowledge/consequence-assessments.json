@@ -16,7 +16,7 @@
       ],
       "attributes": {
         "consequence_ref": "conseq:candidate-recall-in-later-discovery",
-        "assessment_status": "NOT_OBSERVED",
+        "assessment_status": "SUPERSEDED",
         "observed_effect": "Mechanism now also in discovery: the portable loop tells every discovery to read retained poss: records before comparing (plan PR H). The predicted effect is not yet observed in any later session.",
         "assessed_at_revision": "7858c9eb847cee68449a4153c98f35f016025db7",
         "counterevidence": "Not tested in any independent session.",
@@ -93,6 +93,29 @@
         "claim_ceiling": "Single same-session realization; later independent reuse, retention quality and decision benefit are not established.",
         "scope": "Authorized target repositories that retain architecture options and consequences as reviewed records.",
         "normalized_from": "prospective-reasoning.json#conseq:prospective-decision-memory-reuse.attributes.assessments[0] (2026-10-28 entry, preserved verbatim)"
+      }
+    },
+    {
+      "id": "observation:consequence-assessment-candidate-recall-correction-20261028",
+      "kind": "observation",
+      "statement": "Consequence assessment correction 2026-10-28 (NOT_YET_OBSERVABLE) for conseq:candidate-recall-in-later-discovery: At the 2026-10-28 assessment revision, no qualifying later discovery session is recorded; the prediction's condition for observation had not yet occurred. The legacy entry says the predicted effect was not yet observed in any later session.",
+      "epistemic_status": "declared",
+      "authority_kind": "document",
+      "authority_ref": "artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "file:docs/normal-use/prospective-reasoning-atlas-001.md"
+      ],
+      "attributes": {
+        "consequence_ref": "conseq:candidate-recall-in-later-discovery",
+        "assessment_status": "NOT_YET_OBSERVABLE",
+        "observed_effect": "At the 2026-10-28 assessment revision, no qualifying later discovery session is recorded; the prediction's condition for observation had not yet occurred.",
+        "assessed_at_revision": "7858c9eb847cee68449a4153c98f35f016025db7",
+        "counterevidence": "The 2026-10-28 Atlas first target application is not a later discovery session with declined candidates; no qualifying session is recorded. A later qualifying session could change this status.",
+        "claim_ceiling": "No qualifying later discovery session at the original assessment revision; later target sessions are not assessed as qualifying discovery.",
+        "scope": "Later discovery in an authorized target that retains declined candidates and their reasons.",
+        "correction_of": "observation:consequence-assessment-candidate-recall-20261028",
+        "normalized_from": "prospective-reasoning.json#conseq:candidate-recall-in-later-discovery.attributes.assessments[0] (2026-10-28 entry, preserved verbatim)"
       }
     }
   ],
@@ -204,6 +227,47 @@
       ],
       "attributes": {
         "scope": "Assessment of one authored consequence prediction; the prediction itself is unchanged."
+      }
+    },
+    {
+      "id": "rel:consequence-assessment-candidate-recall-correction-references-prediction",
+      "subject": "observation:consequence-assessment-candidate-recall-correction-20261028",
+      "predicate": "references",
+      "object": "conseq:candidate-recall-in-later-discovery",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "file:docs/normal-use/prospective-reasoning-atlas-001.md"
+      ],
+      "attributes": {
+        "scope": "Correction of the 2026-10-28 normalization; the prediction itself is unchanged."
+      }
+    },
+    {
+      "id": "rel:consequence-assessment-candidate-recall-correction-supersedes-old",
+      "subject": "observation:consequence-assessment-candidate-recall-correction-20261028",
+      "predicate": "supersedes",
+      "object": "observation:consequence-assessment-candidate-recall-20261028",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md"
+      ],
+      "attributes": {
+        "scope": "The corrected NOT_YET_OBSERVABLE assessment replaces the earlier NOT_OBSERVED normalization; legacy text remains on both observations."
+      }
+    },
+    {
+      "id": "rel:repository-analysis-skill-references-candidate-recall-correction",
+      "subject": "component:strategic-repository-analysis-skill",
+      "predicate": "references",
+      "object": "observation:consequence-assessment-candidate-recall-correction-20261028",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "file:skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md"
+      ],
+      "attributes": {
+        "scope": "The corrected assessment concerns the discovery guidance this component owns."
       }
     }
   ]

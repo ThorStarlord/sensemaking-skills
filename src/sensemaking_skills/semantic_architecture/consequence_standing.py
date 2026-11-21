@@ -131,6 +131,11 @@ def consequence_standing(
         rows.append({
             "consequence_id": identifier,
             "category": attributes.get("category") or "NOT_RECORDED",
+            "source_option": attributes.get("source_option") or "NOT_RECORDED",
+            "analysis_ref": attributes.get("analysis_ref") or "NOT_RECORDED",
+            "would_change_decision_if": attributes.get("would_change_decision_if") or "NOT_RECORDED",
+            "decision_changing": bool(attributes.get("decision_changing", False)),
+            "feedback_outcome": attributes.get("feedback_outcome") or "NOT_RECORDED",
             "standing": standing,
             "assessment_ids": assessment_ids,
             "assessment_statuses": distinct,
@@ -151,6 +156,52 @@ def consequence_standing(
             "legacy_assessment_entries": len(legacy) if isinstance(legacy, list) else 0,
         })
 
+    decision_links: dict[str, dict] = {}
+    for row in rows[:limit]:
+        source_option = row["source_option"]
+        if source_option == "NOT_RECORDED":
+            continue
+        option = claims.get(source_option) or {}
+        option_attributes = option.get("attributes")
+        option_attributes = option_attributes if isinstance(option_attributes, Mapping) else {}
+        preference = option_attributes.get("preference")
+        preference_view = None
+        if isinstance(preference, Mapping):
+            preference_view = {
+                key: preference.get(key) for key in
+                ("status", "current_scope", "scope", "attributed_to", "authority", "basis")
+                if preference.get(key) is not None
+            }
+            history = preference.get("history")
+            if isinstance(history, list) and history:
+                preference_view["history"] = history[-2:]
+        link = decision_links.setdefault(source_option, {
+            "source_option": source_option,
+            "option_title": option_attributes.get("title") or "NOT_RECORDED",
+            "option_preference": preference_view,
+            "analysis_refs": [],
+            "consequence_ids": [],
+            "standings": [],
+            "decision_changing_consequences": [],
+            "feedback_outcomes": [],
+            "reconsideration": "AGENT_OWNED",
+            "note": "Authored decision link only; inspect the original option, prediction and analysis before reconsidering.",
+        })
+        if row["analysis_ref"] != "NOT_RECORDED" and row["analysis_ref"] not in link["analysis_refs"]:
+            link["analysis_refs"].append(row["analysis_ref"])
+        link["consequence_ids"].append(row["consequence_id"])
+        link["standings"].append({
+            "consequence_id": row["consequence_id"],
+            "standing": row["standing"],
+            "due_for_recheck": row["due_for_recheck"],
+            "recheck_reason": row["recheck_reason"],
+        })
+        if row["decision_changing"]:
+            link["decision_changing_consequences"].append(row["consequence_id"])
+        if row["feedback_outcome"] != "NOT_RECORDED" and row["feedback_outcome"] not in link["feedback_outcomes"]:
+            link["feedback_outcomes"].append(row["feedback_outcome"])
+    links = sorted(decision_links.values(), key=lambda item: item["source_option"])
+
     due_rows = [row["consequence_id"] for row in rows if row["due_for_recheck"]]
     return {
         "consequence_total": len(rows),
@@ -159,6 +210,9 @@ def consequence_standing(
         "due_for_recheck_total": len(due_rows),
         "status_counts": dict(sorted(status_counts.items())),
         "consequences": rows[:limit],
+        "decision_links": links,
+        "decision_link_total": len(links),
+        "decision_link_omitted": max(0, len(rows) - limit),
         "due_for_recheck": due_rows[:limit],
         "omitted": max(0, len(rows) - limit),
         "truncated": len(rows) > limit,
@@ -171,5 +225,9 @@ def consequence_standing(
             "NO_ASSESSMENT is NOT ASSESSED, not refuted; a superseded prediction keeps its history.",
             "Changed or missing cited bytes make re-inspection worthwhile; they do not invalidate a prediction.",
             "The authored knowledge pack a record lives in is excluded from its own currency comparison.",
+            "Decision links are authored source-option/preference references; they do not show selection, validity or that reconsideration is warranted.",
+            "Source-byte currency is not experiential currentness; a new experience is represented only by a new assessment observation.",
+            "Multiple active assessments remain visible through assessment_ids and assessment_statuses; SUPERSEDED excludes an earlier assessment, while MIXED_ASSESSMENTS requires agent inspection.",
+            "A revised prediction remains visible; inspect its epistemic_status and supersedes relations rather than treating a superseded prediction as current.",
         ],
     }
