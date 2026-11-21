@@ -1,0 +1,125 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-11-21-consequence-standing
+state: final
+created_at: "2026-11-21T00:00:00Z"
+updated_at: "2026-11-21T00:00:00Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: b30bbc361789b39aa872ed9aaad89de4d2679e04
+  end_ref: ffc4d61628bec61af5f2d6dd05aca68967112a6d
+  worktree_clean_at_end: true
+skill_identity:
+  load_mode: harness_discovered
+  sensemaking_source_ref: b30bbc361789b39aa872ed9aaad89de4d2679e04
+goal:
+  statement: "Build one warranted capability that closes the prospective-reasoning loop by assessing predicted consequences without rewriting them."
+  source: owner_message
+  source_ref: null
+delegation:
+  granted: [read, local_write, run_local_commands, commit, push, open_pr]
+  withheld: [merge, release, deploy, tracker_write, external_publication]
+continuity:
+  resumes: 2026-11-21-product-outline-method-precedents
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: Reconstruct the substrate and consumer routes
+    capability: using-sensemaking
+    status: completed
+    reason: "Canonical source b30bbc36 verified. The host-loaded using-sensemaking tree is byte-identical to canonical. context-for history accepts observation records, not hypothesis records, so an assessment must be an observation anchored to an owning component."
+    artifact_refs: [skills/using-sensemaking/SKILL.md, skills/repository-semantic-steward/references/recall.md]
+    validation:
+      - command: Native Skill load and file-parity comparison
+        result: PASS
+  - id: R-2
+    responsibility: Select the consequence-standing capability
+    capability: using-sensemaking
+    status: completed
+    reason: "The prospective loop lists 'reconcile observed outcomes with the earlier predictions' but no record form, validator or consumer carried it. Alternatives compared and rejected: another retrieval field, a proactive recall trigger, agent-level state, a standalone consequence artifact."
+    artifact_refs: [docs/semantic-architecture/prospective-reasoning-ontology.md, skills/workflow-planner/references/artifact-contracts.yaml]
+    validation:
+      - command: Real lesson search before selection
+        result: PASS
+  - id: R-3
+    responsibility: Implement the validated assessment and bounded standing
+    capability: ordinary_coding
+    status: completed
+    reason: "Added a closed assessment vocabulary and shape on the existing observation kind, an additive knowledge-audit consequence_standing projection over existing currency, and context-for exposure. No new claim kind, predicate, command, flag, artifact or controller."
+    artifact_refs: [src/sensemaking_skills/semantic_architecture/knowledge.py, src/sensemaking_skills/semantic_architecture/consequence_standing.py, .sensemaking/knowledge/consequence-assessments.json]
+    validation:
+      - command: ruff check src/sensemaking_skills/semantic_architecture
+        result: PASS
+      - command: python -m compileall -q src/sensemaking_skills
+        result: PASS
+      - command: semantic knowledge-proposal-check on the new pack
+        result: PASS
+      - command: semantic knowledge-build at a312c86
+        result: PASS
+      - command: semantic knowledge-audit at a312c86
+        result: PASS
+      - command: context-for on skills/using-sensemaking/SKILL.md
+        result: PASS
+      - command: explain on conseq:candidate-recall-in-later-discovery
+        result: PASS
+      - command: Temporary later-revision currency probe, then reset
+        result: PASS
+      - command: Hosted CI on the PR head
+        result: NOT_RUN
+  - id: R-4
+    responsibility: Apply methodological precedent and reconcile
+    capability: using-sensemaking
+    status: completed
+    reason: "The construction-gate lesson was applied and did not change the selection; the method-adaptation lesson reinforced that a technical change is not a method adaptation. No method record was warranted."
+    artifact_refs: [docs/normal-use/2026-11-17-construction-vs-qualification-selection-lesson.md, docs/normal-use/2026-11-19-method-adaptation-claim-correction.md]
+    validation:
+      - command: Source inspection of both lessons and their authority files
+        result: PASS
+findings:
+  - id: F-1
+    statement: "The baseline has four existing consequence assessments, not three: candidate-recall, persistence-authority, knowledge-surface-bootstrap and prospective-decision-memory-reuse. All four are preserved verbatim in new observations; predictions are untouched."
+    epistemic_status: OBSERVED
+    evidence_refs: [.sensemaking/knowledge/prospective-reasoning.json]
+    disposition: resolved
+  - id: F-2
+    statement: "context-for history accepts incident, lesson and observation, not hypothesis. An assessment therefore reaches the file through an anchored observation or a citation candidate; the prediction itself stays reachable only through explain."
+    epistemic_status: OBSERVED
+    evidence_refs: [src/sensemaking_skills/semantic_architecture/knowledge_architecture.py]
+    disposition: resolved
+  - id: F-3
+    statement: "A record's own authored pack is part of its generated fingerprint. Excluding that one path from the standing currency test keeps an unrelated pack edit from marking every prediction due for re-check."
+    epistemic_status: OBSERVED
+    evidence_refs: [src/sensemaking_skills/semantic_architecture/knowledge_store.py, src/sensemaking_skills/semantic_architecture/knowledge_sources.py]
+    disposition: resolved
+  - id: F-4
+    statement: "Two predictions still have no assessment: conseq:citation-noise and conseq:target-maintenance-burden. They are reported due with reason NO_ASSESSMENT, not as refuted or satisfied."
+    epistemic_status: OBSERVED
+    evidence_refs: [.sensemaking/knowledge/consequence-assessments.json]
+    disposition: open
+  - id: F-5
+    statement: "The temporary later-revision probe made exactly the two Atlas-anchored assessments due with ASSESSMENT_SOURCES_CHANGED naming the edited document; unassessed rows kept NO_ASSESSMENT and unaffected rows stayed current."
+    epistemic_status: OBSERVED
+    evidence_refs: [src/sensemaking_skills/semantic_architecture/consequence_standing.py]
+    disposition: resolved
+open_questions:
+  - id: Q-1
+    question: "Will a later agent consult consequence standing at a real architecture decision?"
+    source: empirical
+    blocking: false
+    durable_ref: null
+  - id: Q-2
+    question: "Will any target repository author a conseq: assessment outside this repository?"
+    source: empirical
+    blocking: false
+    durable_ref: null
+stop:
+  disposition: NO_FURTHER_WARRANT
+  reason: "The validated assessment shape, the bounded audit projection and the context-for exposure are implemented and exercised through real consumers. No further retrieval field or controller is warranted from this evidence."
+next:
+  warranted_responsibility: "Observe whether a later agent uses consequence standing in a genuine decision; keep #872 and #874 as separate qualification boundaries."
+  blocked_on: []
+persistence: committed
+claim_ceiling: "Mechanical consumer integration plus four normalized legacy assessments. No causal effect, benefit, failure, independent use or comparative advantage is established. #872 and #874 remain open."
+action_authorized_by_receipt: false
+immutable: true
