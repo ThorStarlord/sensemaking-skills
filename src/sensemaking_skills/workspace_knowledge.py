@@ -441,6 +441,33 @@ def run_workspace_query(
         payload["workspace_index"]["max_js_imports"] = max_js_imports
     return payload
 
+
+def run_method_context(
+    *, repo: str | Path, ref: str, question: str, limit: int = 8,
+    repository: str | None = None, index_dir: str | Path | None = None,
+) -> dict[str, Any]:
+    """Compose the existing reviewed method context for a selection consumer.
+
+    The method context is read-only; applicability remains agent-owned.
+    """
+    from .method_adaptation import method_context
+
+    initial = run_workspace_query(
+        repo=repo, ref=ref, operation="search", subject="lesson:",
+        search_kinds=("lesson",), limit=250, repository=repository,
+        index_dir=index_dir,
+    )
+    pinned_ref = initial["target_ref"]
+
+    def explain(identifier: str) -> dict[str, Any]:
+        return run_workspace_query(
+            repo=repo, ref=pinned_ref, operation="explain", subject=identifier,
+            limit=250, repository=repository, index_dir=index_dir,
+        )
+
+    return method_context(question, initial, explain, limit=limit)
+
+
 def run_workspace_changes(
     *, repo: str | Path, base_ref: str, ref: str = "HEAD",
     repository: str | None = None, index_dir: str | Path | None = None,

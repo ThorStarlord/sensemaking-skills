@@ -308,7 +308,9 @@ ranking mechanism or a step for narrow repairs. See
 an intellectual procedure, or a retained lesson could change the decision, the
 existing optional `semantic method context --question "<current decision>"
 --repo . --ref HEAD --json` returns authored method candidates with their
-scope, conditions, claim ceiling, counterevidence and original outcome. Its
+scope, conditions, claim ceiling, counterevidence and original outcome. The
+same method section can be requested alongside `product-outline` with
+`--method-question "<current decision>"` when comparing proposed futures. Its
 `applicability_to_present_task` is `NOT_ESTABLISHED`; inspect the original
 sources, current authority and contrary evidence before applying, adapting or
 rejecting a candidate. A miss is `NOT_ASSESSED`. This is not a mandatory

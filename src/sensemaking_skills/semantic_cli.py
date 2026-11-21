@@ -465,6 +465,10 @@ def register_semantic_commands(root_cli: click.Group) -> None:
                   help="Repeat claim kinds to assess in the explicit one-hop explain/why neighborhood")
     @click.option("--include-candidates", is_flag=True,
                   help="Include goal-linked possible futures in product-outline only")
+    @click.option("--method-question", default=None,
+                  help="Optional decision question; include authored method precedents in product-outline only")
+    @click.option("--method-limit", type=click.IntRange(1, 25), default=8,
+                  help="Maximum method candidates for --method-question")
     @click.option("--include-js-module-imports", is_flag=True,
                   help="Index optional static JS/TS ESM specifiers in a separate zero-setup cache profile")
     @click.option("--max-js-imports", type=click.IntRange(0, 10000), default=1000,
@@ -483,7 +487,8 @@ def register_semantic_commands(root_cli: click.Group) -> None:
     def semantic_workspace_query(
         paths: tuple[str, ...], operation: str, subject: str | None, search_terms: tuple[str, ...],
         query_text: str | None, search_kinds: tuple[str, ...], expected_kinds: tuple[str, ...],
-        include_candidates: bool, include_js_module_imports: bool, max_js_imports: int,
+        include_candidates: bool, method_question: str | None, method_limit: int,
+        include_js_module_imports: bool, max_js_imports: int,
         limit: int, depth: int, repo_dir: Path, ref: str,
         repository_label: str | None, index_dir: Path | None, refresh: bool, output_json: bool,
     ) -> None:
@@ -493,9 +498,13 @@ def register_semantic_commands(root_cli: click.Group) -> None:
         (--ref, default HEAD) in a per-user cache outside the checkout (see --index-dir).
         Uncommitted bytes are never indexed; workspace_context reports them.
         """
-        from .workspace_knowledge import run_workspace_query
+        from .workspace_knowledge import run_method_context, run_workspace_query
 
         try:
+            if method_question is not None and operation != "product-outline":
+                raise ValueError("--method-question is supported only for product-outline")
+            if method_question is None and method_limit != 8:
+                raise ValueError("--method-limit requires --method-question")
             payload = run_workspace_query(
                 repo=repo_dir, ref=ref, operation=operation, paths=paths, subject=subject,
                 search_terms=search_terms, expected_kinds=expected_kinds,
@@ -505,6 +514,15 @@ def register_semantic_commands(root_cli: click.Group) -> None:
                 limit=limit, depth=depth,
                 repository=repository_label, index_dir=index_dir, refresh=refresh,
             )
+            if method_question is not None:
+                payload["method_precedents"] = run_method_context(
+                    repo=repo_dir, ref=ref, question=method_question, limit=method_limit,
+                    repository=repository_label, index_dir=index_dir,
+                )
+                payload["method_precedents"]["consumer_note"] = (
+                    "Optional authored method precedents for this selection; "
+                    "applicability is NOT_ESTABLISHED and no selection is made."
+                )
         except (ValueError, OSError, UnicodeError) as exc:
             raise click.ClickException(str(exc)) from exc
         _emit(payload, output_json=output_json, statement_first_claims=operation == "search")

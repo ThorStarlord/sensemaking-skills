@@ -67,6 +67,32 @@ jobs:
           assert result["lesson_corpus_truncated"] is False
           print("Reviewed method context is consumer-readable; agent method learning not evaluated.")
           PY
+      - name: Product-outline selection context includes method precedents (mechanics only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          REF="$(git rev-parse HEAD)"
+          sensemaking-skills semantic workspace-query --repo . --ref "$REF" \
+            --operation product-outline --include-candidates \
+            --method-question "method adaptation construction qualification gates" --json \
+            > "$RUNNER_TEMP/product-method-context.json"
+          PRODUCT_RESULT="$RUNNER_TEMP/product-method-context.json" PRODUCT_REF="$REF" python - <<'PY'
+          import json
+          import os
+          with open(os.environ["PRODUCT_RESULT"], encoding="utf-8") as stream:
+              result = json.load(stream)
+          assert result["code"] == "SEMANTIC_KNOWLEDGE_QUERY"
+          assert result["target_ref"] == os.environ["PRODUCT_REF"]
+          assert result["semantic_truth_established"] is False
+          assert result["action_authorized"] is False
+          assert result["product_outline"]["goals"]
+          methods = {item["id"]: item for item in result["method_precedents"]["method_candidates"]}
+          precedent = methods["lesson:separate-construction-from-learning-qualification-gates"]
+          assert precedent["applicability_to_present_task"] == "NOT_ESTABLISHED"
+          assert precedent["recall_conditions"]["scope"] != "NOT_RECORDED"
+          assert result["method_precedents"]["action_authorized"] is False
+          print("Product-outline method precedents are consumer-readable; no selection.")
+          PY
       - name: Exercise method source-path and draft producer contracts (no learning claim)
         shell: bash
         run: |
