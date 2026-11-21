@@ -554,11 +554,17 @@ jobs:
             > "$RUNNER_TEMP/consequence-context.json"
           sensemaking-skills semantic knowledge-query \
             --db "$DB" --repository ThorStarlord/sensemaking-skills \
+            --target-ref "$REF" --operation context-for \
+            --subject skills/strategic-repository-analysis/SKILL.md --repo . --limit 100 --json \
+            > "$RUNNER_TEMP/consequence-analysis-context.json"
+          sensemaking-skills semantic knowledge-query \
+            --db "$DB" --repository ThorStarlord/sensemaking-skills \
             --target-ref "$REF" --operation explain \
             --subject conseq:candidate-recall-in-later-discovery --repo . --json \
             > "$RUNNER_TEMP/consequence-prediction.json"
           AUDIT="$RUNNER_TEMP/consequence-audit.json" \
           CONTEXT="$RUNNER_TEMP/consequence-context.json" \
+          ANALYSIS_CONTEXT="$RUNNER_TEMP/consequence-analysis-context.json" \
           PREDICTION="$RUNNER_TEMP/consequence-prediction.json" \
           GRAPH_REF="$REF" python - <<'PY'
           import json
@@ -570,6 +576,7 @@ jobs:
 
           audit = read("AUDIT")
           context = read("CONTEXT")["context"]
+          analysis_context = read("ANALYSIS_CONTEXT")["context"]
           prediction = read("PREDICTION")
 
           assert audit["code"] == "SEMANTIC_KNOWLEDGE_SOURCE_AUDIT"
@@ -593,6 +600,18 @@ jobs:
               "observation:consequence-assessment-candidate-recall-20261028",
               "observation:consequence-assessment-candidate-recall-correction-20261028",
           ]
+          old_id = "observation:consequence-assessment-candidate-recall-20261028"
+          new_id = "observation:consequence-assessment-candidate-recall-correction-20261028"
+          history = {
+              item["assessment_id"]: item for item in candidate["assessment_history"]
+          }
+          assert history[old_id]["assessment_status"] == "NOT_OBSERVED"
+          assert history[old_id]["active"] is False
+          assert history[old_id]["superseded_by"] == [new_id]
+          assert history[new_id]["assessment_status"] == "NOT_YET_OBSERVABLE"
+          assert history[new_id]["active"] is True
+          assert history[new_id]["superseded_by"] == []
+          assert candidate["supersession_integrity"] is None
           assert rows["conseq:persistence-requires-write-authority"]["standing"] == "PARTIALLY_OBSERVED"
           assert standing["status_counts"]["NOT_YET_OBSERVABLE"] == 1
           assert standing["status_counts"]["PARTIALLY_OBSERVED"] == 2
@@ -611,6 +630,16 @@ jobs:
           assert option_link["feedback_outcomes"] == ["REVISE_PREFERENCE"]
           assert option_link["reconsideration"] == "AGENT_OWNED"
           assert set(option_link["consequence_ids"]) == set(rows)
+          assert option_link["complete"] is True
+          assert option_link["consequence_total"] == 6
+          assert option_link["consequence_returned_total"] == 6
+          assert option_link["consequence_omitted_total"] == 0
+          assert standing["consequence_total"] == 6
+          assert standing["returned_consequence_total"] == 6
+          assert standing["decision_link_total"] == 1
+          assert standing["decision_link_returned_total"] == 1
+          assert standing["decision_link_omitted_total"] == 0
+          assert standing["decision_link_partial_total"] == 0
           assert audit["source_status_counts"]["source_changed"] == 0
 
           history = {item["claim_id"]: item for item in context["history"]}
@@ -621,6 +650,20 @@ jobs:
           )
           assert assessed["recorded_conditions"]["counterevidence"]
           assert assessed["recorded_conditions"]["claim_ceiling"]
+          assert assessed["consequence_assessment"]["active"] is True
+          assert "superseded_by" not in assessed["consequence_assessment"]
+
+          analysis_history = {
+              item["claim_id"]: item for item in analysis_context["history"]
+          }
+          superseded_view = analysis_history[old_id]["consequence_assessment"]
+          assert superseded_view["assessment_status"] == "NOT_OBSERVED"
+          assert superseded_view["active"] is False
+          assert superseded_view["superseded_by"] == [new_id]
+          current_view = analysis_history[new_id]["consequence_assessment"]
+          assert current_view["assessment_status"] == "NOT_YET_OBSERVABLE"
+          assert current_view["active"] is True
+          assert "superseded_by" not in current_view
 
           predictions = {claim["id"]: claim for claim in prediction["claims"]}
           authored = predictions["conseq:candidate-recall-in-later-discovery"]["attributes"]
