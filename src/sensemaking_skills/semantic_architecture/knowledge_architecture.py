@@ -10,6 +10,7 @@ from __future__ import annotations
 import re
 from typing import Any, Iterable, Mapping
 
+from .consequence_standing import assessment_supersession
 from .knowledge import CONSEQUENCE_ASSESSMENT_KEYS, _valid_repo_path, is_path_scope
 from .knowledge_sources import _local_evidence_path
 
@@ -165,6 +166,29 @@ def _context_item(cid: str, claim: Mapping[str, Any], matched_by: set[str]) -> d
             key: attributes[key] for key in CONSEQUENCE_ASSESSMENT_KEYS if key in attributes
         }
     return item
+
+
+def _annotate_assessment_supersession(
+    items: Iterable[dict],
+    *,
+    superseded_by: Mapping[str, set[str]],
+    cyclic: set[str],
+) -> None:
+    """Mark consequence assessments active or superseded without rewriting status."""
+    for item in items:
+        assessment = item.get("consequence_assessment")
+        if not assessment:
+            continue
+        assessment_id = item["claim_id"]
+        authored_superseded = assessment.get("assessment_status") == "SUPERSEDED"
+        assessment["active"] = (
+            not authored_superseded
+            and (assessment_id in cyclic or assessment_id not in superseded_by)
+        )
+        if assessment_id in cyclic:
+            assessment["supersession_integrity"] = "CYCLE"
+        elif assessment_id in superseded_by:
+            assessment["superseded_by"] = sorted(superseded_by[assessment_id])
 
 
 def _test_evidence_verifications(claims: Mapping[str, dict], path: str) -> dict[str, list[str]]:
@@ -546,9 +570,13 @@ def context_for(
     constraints = items("constraints")
     alternatives = items("alternatives")
     history, verification = items("history"), items("verification_refs")
-    # A linked lesson can be adapted, narrowed or contested by records that link to the
-    # lesson but not to this file; list them so the reader knows what else to read.
+    superseded_by, cyclic = assessment_supersession(claims, edges)
+    _annotate_assessment_supersession(
+        history, superseded_by=superseded_by, cyclic=cyclic
+    )
     for item in history:
+        # A linked lesson can be adapted, narrowed or contested by records that link to the
+        # lesson but not to this file; list them so the reader knows what else to read.
         if item["kind"] == "lesson":
             item["citing_records"] = lesson_citing_records(item["claim_id"], claims, edges)
     lists = {"contracts": contracts, "constraints": constraints, "decisions": decisions,
@@ -680,6 +708,9 @@ def context_for(
         claims, edges, path=path, owners=owners,
         excluded=owners | layer_ids | rule_ids | {cid for group in buckets.values() for cid in group},
         limit=limit,
+    )
+    _annotate_assessment_supersession(
+        candidates["items"], superseded_by=superseded_by, cyclic=cyclic
     )
     context["relevance_candidates"] = candidates
     _disclose_relevance_candidates(context, candidates, limit=limit)

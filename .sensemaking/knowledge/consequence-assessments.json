@@ -16,7 +16,7 @@
       ],
       "attributes": {
         "consequence_ref": "conseq:candidate-recall-in-later-discovery",
-        "assessment_status": "SUPERSEDED",
+        "assessment_status": "NOT_OBSERVED",
         "observed_effect": "Mechanism now also in discovery: the portable loop tells every discovery to read retained poss: records before comparing (plan PR H). The predicted effect is not yet observed in any later session.",
         "assessed_at_revision": "7858c9eb847cee68449a4153c98f35f016025db7",
         "counterevidence": "Not tested in any independent session.",

@@ -321,8 +321,13 @@ provisional preference, the existing `knowledge-audit` `consequence_standing`
 section links predictions and assessments to the authored source option and its
 preference. Its `decision_links` are evidence, not a reconsideration verdict:
 inspect the original option, prediction, analysis and current conditions, then
-reaffirm, revise, reopen, investigate or stop. A missing assessment is
-`NOT_ASSESSED`, not refutation.
+reaffirm, revise, reopen, investigate or stop. A partial link reports only its
+returned consequences; read its member counts before treating it as complete. A
+missing assessment is `NOT_ASSESSED`, not refutation. Each assessment keeps its
+authored status in `assessment_history`; current standing excludes one only
+through a same-prediction `supersedes` relation (or an authored `SUPERSEDED`
+status for compatibility), so a historical status is never rewritten to obtain
+a current projection.
 
 **Repository memory.** Use `../repository-semantic-steward/SKILL.md` for the
 repository's semantic foundation, including when **Sensemaking Skills itself**

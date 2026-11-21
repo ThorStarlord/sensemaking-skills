@@ -839,14 +839,33 @@ additive `decision_links` section groups visible rows by `source_option` and
 carries the option's authored `preference` (status, current scope and bounded
 history), each consequence's standing, the decision-changing consequence IDs
 and feedback outcomes. `reconsideration` is `AGENT_OWNED`: the link is evidence,
-not a verdict, selection or authorization. Source-byte currency is not
-experiential currency; a new experience is represented by a new assessment
-observation. Multiple active assessments remain visible through
-`assessment_ids` and `assessment_statuses`; `SUPERSEDED` excludes an earlier
-assessment, while `MIXED_ASSESSMENTS` requires inspection. A revised prediction
-is a new `conseq:` claim with its epistemic status and `supersedes` relation;
-the old record remains visible, so inspect that status rather than treating it
-as current.
+not a verdict, selection or authorization.
+
+`assessment_statuses` reports only the **active** assessments' statuses.
+`assessment_history` reports every linked assessment with its own authored
+status, whether it is `active`, and any `superseded_by` replacement. An
+assessment is excluded from current standing by a `supersedes` edge whose two
+endpoints are assessments of the same `conseq:` prediction, or by an authored
+`SUPERSEDED` status for compatibility; its authored status is preserved rather
+than rewritten. `MIXED_ASSESSMENTS` therefore means active assessments
+genuinely disagree. A supersession cycle is exposed as
+`supersession_integrity: CYCLE` and does not erase all standing. A revised
+prediction is a new `conseq:` claim with its epistemic status and `supersedes`
+relation; the old record remains visible, so inspect that status rather than
+treating it as current.
+
+`decision_link_total` counts distinct recorded source-option groups across the
+full projection. `decision_link_returned_total` counts groups present in the
+bounded view, `decision_link_omitted_total` counts groups with no visible
+consequence, and `decision_link_partial_total` counts returned groups with
+omitted member consequences. Each link states its `consequence_total`, returned
+and omitted member counts, and `complete`; a partial link's consequence IDs,
+standings and feedback outcomes describe only its returned members.
+
+Source-byte currency is not experiential currency; a new experience is
+represented by a new assessment observation. `context-for` applies the same
+same-prediction supersession rule to an anchored assessment, adding `active`
+and `superseded_by` to its `consequence_assessment` view.
 
 ### Additive indexed change classification (integrated, PR #561)
 
