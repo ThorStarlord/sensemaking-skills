@@ -1,0 +1,104 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-11-21-history-and-agency-repair
+state: final
+created_at: "2026-11-21T00:00:00Z"
+updated_at: "2026-11-21T00:00:00Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: d00caceba24d9aa279b1ecb7d34e8e404eea403e
+  end_ref: 8f7ebae19658f449f9dcc8fa91e4d25d07ea92f4
+  worktree_clean_at_end: true
+skill_identity:
+  load_mode: harness_discovered
+  sensemaking_source_ref: d00caceba24d9aa279b1ecb7d34e8e404eea403e
+goal:
+  statement: "Preserve assessment history while deriving current consequence standing, repair decision-link truncation units, then select the strongest warranted cognitive capability without automatically expanding consequence standing."
+  source: owner_message
+  source_ref: null
+delegation:
+  granted: [read, local_write, run_local_commands, commit, push, open_pr, merge, knowledge_edit]
+  withheld: [release, deploy, tracker_write, external_publication]
+continuity:
+  resumes: 2026-11-21-consequence-informed-reconsideration
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: Reconstruct the PR #951 consequence model and confirm the two integrity concerns
+    capability: using-sensemaking
+    status: completed
+    reason: "The earlier observation's authored status had been rewritten to SUPERSEDED and the projection excluded it by status rather than the supersedes edge; decision_link_omitted subtracted consequence rows while counting source-option groups."
+    artifact_refs: [src/sensemaking_skills/semantic_architecture/consequence_standing.py, src/sensemaking_skills/semantic_architecture/knowledge.py, .sensemaking/knowledge/consequence-assessments.json, docs/semantic-architecture/prospective-reasoning-ontology.md]
+    validation:
+      - command: Source inspection of the projection, validator, assessment pack and relation set
+        result: PASS
+  - id: R-2
+    responsibility: Implement relation-derived assessment supersession and accurate decision-link truncation disclosure
+    capability: ordinary_coding
+    status: completed
+    reason: "Restored the original NOT_OBSERVED status, derived active/superseded state from same-prediction supersedes edges, exposed assessment_history and cycle integrity, and replaced the mislabeled count with group, returned, omitted and partial counts plus per-link completeness."
+    artifact_refs: [src/sensemaking_skills/semantic_architecture/consequence_standing.py, src/sensemaking_skills/semantic_architecture/knowledge_architecture.py, .sensemaking/knowledge/consequence-assessments.json, skills/using-sensemaking/SKILL.md, docs/semantic-architecture/persistent-knowledge-cli.md, docs/semantic-architecture/prospective-reasoning-ontology.md, .github/workflows/semantic-context-reentry.yml]
+    validation:
+      - command: semantic knowledge-proposal-check on consequence-assessments.json
+        result: PASS
+      - command: semantic knowledge-build and knowledge-audit at the code commit
+        result: PASS
+      - command: Real audit at limits 100, 2 and 1
+        result: PASS
+      - command: Real context-for on the strategic-analysis and using-sensemaking paths
+        result: PASS
+      - command: Direct projection probe for multiple option groups, no links, conflict, replacement, cycle, cross-prediction edge and legacy status
+        result: PASS
+      - command: ruff, compileall, YAML parse and git diff --check
+        result: PASS
+      - command: Hosted CI on PR #952
+        result: PASS
+  - id: R-3
+    responsibility: Select the next product-level cognitive capability
+    capability: using-sensemaking
+    status: completed
+    reason: "Existing knowledge, method-recall, metareasoning, discovery and warrant capabilities already serve the ratified goal. The SCL/AMS specs converge on authentic later-agent decision-time use; another projection, field or controller would be speculative."
+    artifact_refs: [docs/product-strategy.md, docs/adr/0037-domain-general-cognitive-development.md, docs/superpowers/plans/2026-11-12-sensemaking-continuous-learning.md, docs/superpowers/plans/2026-11-12-adaptive-metareasoning-system.md, .sensemaking/knowledge/prospective-reasoning.json]
+    validation:
+      - command: Real product-outline with candidates
+        result: PASS
+      - command: Real semantic method context on the product-selection question
+        result: PASS
+findings:
+  - id: F-1
+    statement: "The earlier candidate-recall observation now retains NOT_OBSERVED; a same-prediction supersedes edge from the correction makes it inactive for current standing, which remains NOT_YET_OBSERVABLE."
+    epistemic_status: OBSERVED
+    evidence_refs: [.sensemaking/knowledge/consequence-assessments.json, src/sensemaking_skills/semantic_architecture/consequence_standing.py]
+    disposition: resolved
+  - id: F-2
+    statement: "Decision-link omission is now measured in source-option groups, and a partial link discloses its returned and omitted member consequences instead of presenting a truncated group as complete."
+    epistemic_status: OBSERVED
+    evidence_refs: [src/sensemaking_skills/semantic_architecture/consequence_standing.py, .github/workflows/semantic-context-reentry.yml]
+    disposition: resolved
+  - id: F-3
+    statement: "context-for exposes active and superseded assessment state for history and relevance-candidate views; explain returns both assessments and the correction's correction_of attribute, so the historical record remains reconstructible."
+    epistemic_status: OBSERVED
+    evidence_refs: [src/sensemaking_skills/semantic_architecture/knowledge_architecture.py, src/sensemaking_skills/semantic_architecture/knowledge_store.py]
+    disposition: resolved
+  - id: F-4
+    statement: "No authentic new consequence outcome or method adaptation occurred in this session; the method-context construction-gate lesson supported keeping construction and qualification separate, and the method-adaptation lesson prevented a learning claim."
+    epistemic_status: DERIVED
+    evidence_refs: [.sensemaking/knowledge/stewardship.json, docs/normal-use/2026-11-17-construction-vs-qualification-selection-lesson.md]
+    disposition: no_action
+open_questions:
+  - id: Q-1
+    question: "Will a later independent agent use assessment history or decision links in an authentic consequential reconsideration?"
+    source: empirical
+    blocking: false
+    durable_ref: null
+stop:
+  disposition: NO_FURTHER_WARRANT
+  reason: "Both confirmed integrity defects are repaired and verified, and existing product sources show no further construction responsibility that repository evidence alone can warrant; the next need is authentic later-agent decision-time use."
+next:
+  warranted_responsibility: "Observe an authentic later agent using current decision-time interfaces; assess the two NO_ASSESSMENT consequences only when real target evidence appears. Do not manufacture a qualifying episode."
+  blocked_on: []
+persistence: committed
+claim_ceiling: "Assessment-history and truncation-integrity repair plus functional consumer verification only; no causal benefit, agent adoption, independent reuse, comparative advantage or longitudinal cognitive development is established. #872/#874 remain open."
+action_authorized_by_receipt: false
+immutable: true
