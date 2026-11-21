@@ -316,6 +316,14 @@ sources, current authority and contrary evidence before applying, adapting or
 rejecting a candidate. A miss is `NOT_ASSESSED`. This is not a mandatory
 lookup, a method ranking or a selection mechanism.
 
+**Consequence-informed reconsideration.** When revisiting an earlier option or
+provisional preference, the existing `knowledge-audit` `consequence_standing`
+section links predictions and assessments to the authored source option and its
+preference. Its `decision_links` are evidence, not a reconsideration verdict:
+inspect the original option, prediction, analysis and current conditions, then
+reaffirm, revise, reopen, investigate or stop. A missing assessment is
+`NOT_ASSESSED`, not refutation.
+
 **Repository memory.** Use `../repository-semantic-steward/SKILL.md` for the
 repository's semantic foundation, including when **Sensemaking Skills itself**
 is the target repository. **BOOTSTRAP** is the default first responsibility

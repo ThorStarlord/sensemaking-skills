@@ -833,6 +833,21 @@ bytes are container provenance, not cited evidence. The projection adds no
 command or flag, ranks nothing, and establishes no causation, benefit or
 failure. `NO_ASSESSMENT` is NOT ASSESSED, not refuted.
 
+Each visible row also carries its authored `source_option`, `analysis_ref`,
+`would_change_decision_if`, `decision_changing` and `feedback_outcome`. The
+additive `decision_links` section groups visible rows by `source_option` and
+carries the option's authored `preference` (status, current scope and bounded
+history), each consequence's standing, the decision-changing consequence IDs
+and feedback outcomes. `reconsideration` is `AGENT_OWNED`: the link is evidence,
+not a verdict, selection or authorization. Source-byte currency is not
+experiential currency; a new experience is represented by a new assessment
+observation. Multiple active assessments remain visible through
+`assessment_ids` and `assessment_statuses`; `SUPERSEDED` excludes an earlier
+assessment, while `MIXED_ASSESSMENTS` requires inspection. A revised prediction
+is a new `conseq:` claim with its epistemic status and `supersedes` relation;
+the old record remains visible, so inspect that status rather than treating it
+as current.
+
 ### Additive indexed change classification (integrated, PR #561)
 
 Given two **already indexed committed revisions**, `knowledge-query --operation
