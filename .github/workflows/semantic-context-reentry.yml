@@ -58,6 +58,12 @@ jobs:
           assert precedent["authority_ref"]
           assert any(row["id"] == "observation:construction-gate-application-20261118"
                      for row in precedent["later_related_records"])
+          assert precedent["recall_conditions"]["scope"] != "NOT_RECORDED"
+          assert precedent["recall_conditions"]["claim_ceiling"] != "NOT_RECORDED"
+          adaptation = methods.get("lesson:method-adaptation-check-procedure-not-only-outcome")
+          assert adaptation is not None
+          assert adaptation["recall_conditions"]["counterevidence"] != "NOT_RECORDED"
+          assert adaptation["recall_conditions"]["original_outcome"] != "NOT_RECORDED"
           assert result["lesson_corpus_truncated"] is False
           print("Reviewed method context is consumer-readable; agent method learning not evaluated.")
           PY

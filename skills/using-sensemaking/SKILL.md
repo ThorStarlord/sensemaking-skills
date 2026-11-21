@@ -304,6 +304,16 @@ inspection if the CLI is unavailable. This is not a mandatory query, a strategic
 ranking mechanism or a step for narrow repairs. See
 `references/ontology-first-entry-v1.md` section 2.
 
+**Decision-time method precedent (when procedural).** When the choice turns on
+an intellectual procedure, or a retained lesson could change the decision, the
+existing optional `semantic method context --question "<current decision>"
+--repo . --ref HEAD --json` returns authored method candidates with their
+scope, conditions, claim ceiling, counterevidence and original outcome. Its
+`applicability_to_present_task` is `NOT_ESTABLISHED`; inspect the original
+sources, current authority and contrary evidence before applying, adapting or
+rejecting a candidate. A miss is `NOT_ASSESSED`. This is not a mandatory
+lookup, a method ranking or a selection mechanism.
+
 **Repository memory.** Use `../repository-semantic-steward/SKILL.md` for the
 repository's semantic foundation, including when **Sensemaking Skills itself**
 is the target repository. **BOOTSTRAP** is the default first responsibility
