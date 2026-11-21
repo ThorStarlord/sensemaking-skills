@@ -149,6 +149,31 @@ recall prior possibilities, options and decisions (when they could change the an
 
 **Feedback outcomes** are results of the analysis, not dispositions (the `architectural_synthesis` contract checks them as `preference_feedback` outcomes): `REAFFIRM`, `REVISE_PREFERENCE`, `REOPEN_ALTERNATIVES`, `INVESTIGATE`, `DEFER`, `NO_CHANGE`, `OWNER_DECISION_REQUIRED`, `THESIS_REVIEW_REQUIRED`. Only the existing governing processes turn them into authoritative dispositions: a strategic analysis's `BUILD`, `INVESTIGATE`, `DEFER`, `NO_CHANGE`, `OWNER_DECISION` or `THESIS_REVIEW`, an owner decision, or the Level-4 process. A sound analysis may legitimately end without selection.
 
+### 7.1 Consequence assessment after construction
+
+The last line of the loop needs a durable form, and it may not be a rewrite of the prediction. An assessment is an ordinary `observation` claim that resolves one `conseq:` `hypothesis` through an explicit `references` relation, so the prediction, its authorship and its original wording stay unchanged. No new claim kind, predicate, artifact or query exists for it.
+
+The observation carries these authored attributes, validated at build and proposal-check time:
+
+| Attribute | Content |
+| --- | --- |
+| `consequence_ref` | the `conseq:` hypothesis the assessment resolves; the `references` relation must name the same record |
+| `assessment_status` | one of `OBSERVED_CONSISTENT`, `OBSERVED_CONTRADICTED`, `PARTIALLY_OBSERVED`, `NOT_OBSERVED`, `NOT_YET_OBSERVABLE`, `SUPERSEDED` |
+| `observed_effect` | what was actually observed, stated literally in the claim statement as well |
+| `assessed_at_revision` | the 40-hex revision the observation is attributed to |
+| `counterevidence` | opposing or limiting observations, or an explicit statement that none were found |
+| `claim_ceiling` | what the assessment cannot establish |
+| `scope` | where the observation applies |
+
+```text
+prediction            != observation
+OBSERVED_CONSISTENT   != causal effect established
+NOT_OBSERVED          != refuted
+changed source        != invalid prediction
+```
+
+Consumers are the existing ones. `context-for` returns an anchored assessment in `history` (or as a citation candidate) with its `consequence_assessment` and `recorded_conditions`, and `knowledge-audit` reports a bounded `consequence_standing` projection. Completing, replacing or contesting an assessment is steward RECONCILE: a new attributed observation, never an edit of the original.
+
 ## 8. Authority and currentness
 
 - Every prospective record names its target repository and assessed revision. Currentness is checked with existing surfaces (`strategy drift`, knowledge `changes` and `workspace-impact`).
@@ -190,6 +215,7 @@ resolution establishes truth or action authority.
 | ArchitectureOption | `architectural_synthesis` `architecture_options`, with `proposed_transitions` | `alternative` claim with `arch:` id and `attributes.concept` |
 | FutureCapabilityState | strategic path `future_state`; the path cites its basis with `possibility_refs`, `architecture_option_refs` and top-level `architecture_synthesis_refs` | artifact reference, not an observed `capability` |
 | ConsequenceHypothesis | synthesis `conditional_consequences` (category, assumptions apart from observed premises, what would change the decision), cited by `conditional_consequence_refs`; no standalone consequence artifact | `hypothesis` claim with `conseq:` id |
+| ConsequenceAssessment | not in the synthesis: observed effects belong to steward RECONCILE | `observation` claim with the assessment attributes, linked by `references` to the `conseq:` hypothesis |
 | ComparativeJudgment, ProvisionalPreference | synthesis `option_comparison`, `provisional_preference` | attributes on the analysis reference; never a `decision` claim |
 | derived new possibility | synthesis `derived_possibility_refs` | `opportunity` claim `derived_from` the consequence |
 

@@ -11,7 +11,7 @@ import hashlib
 import json
 import re
 from dataclasses import asdict, dataclass, field
-from typing import Any, Mapping
+from typing import Any, Iterable, Mapping
 
 SCHEMA_VERSION = 1
 # Version of the reviewed authored-document format. Kept separate from
@@ -47,6 +47,29 @@ V2_PREDICATES = frozenset({
 RULE_TYPES = frozenset({"dependency_direction", "placement", "naming", "forbidden_term", "convention"})
 CARDINALITIES = frozenset({"1:1", "1:N", "N:M"})
 RULE_SEVERITIES = frozenset({"warning", "error"})
+
+# Consequence assessments (prospective-reasoning closure). An assessment is an
+# attributed `observation` of what happened after a predicted consequence. The
+# status vocabulary is closed, and no status establishes causation, benefit or
+# failure: consistency is an observation, never a verdict.
+CONSEQUENCE_ASSESSMENT_STATUSES = frozenset({
+    "OBSERVED_CONSISTENT",
+    "OBSERVED_CONTRADICTED",
+    "PARTIALLY_OBSERVED",
+    "NOT_OBSERVED",
+    "NOT_YET_OBSERVABLE",
+    "SUPERSEDED",
+})
+CONSEQUENCE_ASSESSMENT_KEYS = (
+    "consequence_ref",
+    "assessment_status",
+    "observed_effect",
+    "assessed_at_revision",
+    "counterevidence",
+    "claim_ceiling",
+    "scope",
+)
+_MAX_ASSESSMENT_TEXT = 4000
 PREDICATES = frozenset({
     "serves_goal", "requires_capability", "constrained_by", "depends_on",
     "implemented_by", "tested_by", "decided_by", "supersedes",
@@ -101,6 +124,77 @@ def stable_id(prefix: str, *parts: str) -> str:
 
 def _required_id(value: str) -> bool:
     return isinstance(value, str) and bool(ID_PATTERN.fullmatch(value))
+
+
+def validate_consequence_assessment(
+    claim: KnowledgeClaim,
+    *,
+    kinds: Mapping[str, str],
+    relations: Iterable[KnowledgeRelation],
+) -> None:
+    """Validate the optional consequence-assessment shape on an observation.
+
+    The shape is a closed status vocabulary plus the evidence a later reader needs
+    to judge it. It is an attributed observation, so it may not be hypothetical and
+    must resolve a `conseq:` prediction through an explicit existing `references`
+    relation. A valid assessment still establishes no causation, benefit or failure.
+    """
+    attributes = claim.attributes
+    if "assessment_status" not in attributes:
+        return
+    reference = claim.id
+    if claim.kind != "observation":
+        raise ValueError(f"assessment_status is only valid on observation records: {reference}")
+    if claim.epistemic_status == "hypothetical" or claim.authority_kind == "hypothesis":
+        raise ValueError(f"consequence assessment cannot be hypothetical: {reference}")
+    missing = [key for key in CONSEQUENCE_ASSESSMENT_KEYS if key not in attributes]
+    if missing:
+        raise ValueError(f"consequence assessment missing {sorted(missing)}: {reference}")
+    if attributes["assessment_status"] not in CONSEQUENCE_ASSESSMENT_STATUSES:
+        raise ValueError(
+            f"consequence assessment status must be one of "
+            f"{sorted(CONSEQUENCE_ASSESSMENT_STATUSES)}: {reference}"
+        )
+    for key in ("observed_effect", "counterevidence", "claim_ceiling", "scope"):
+        value = attributes[key]
+        if not isinstance(value, str) or not value.strip() or len(value) > _MAX_ASSESSMENT_TEXT:
+            raise ValueError(f"consequence assessment {key} must be non-empty text: {reference}")
+    # The displayed statement is the record a reader meets first; requiring the
+    # authored effect to appear in it keeps display and assertion from diverging.
+    if attributes["observed_effect"] not in claim.statement:
+        raise ValueError(
+            f"consequence assessment observed_effect must appear verbatim in the statement: {reference}"
+        )
+    revision = attributes["assessed_at_revision"]
+    if not isinstance(revision, str) or not SHA_PATTERN.fullmatch(revision):
+        raise ValueError(f"consequence assessment needs a 40-hex assessed_at_revision: {reference}")
+    consequence = attributes["consequence_ref"]
+    if not _required_id(consequence) or not consequence.startswith("conseq:"):
+        raise ValueError(f"consequence assessment needs a conseq: consequence_ref: {reference}")
+    if kinds.get(consequence) != "hypothesis":
+        raise ValueError(
+            f"consequence assessment must resolve a hypothesis consequence: {reference}"
+        )
+    reference_links = [
+        relation for relation in relations
+        if relation.subject == claim.id and relation.predicate == "references"
+    ]
+    if not any(relation.object == consequence for relation in reference_links):
+        raise ValueError(
+            f"consequence assessment needs a references relation to {consequence}: {reference}"
+        )
+    # One assessment resolves one prediction. Extra conseq: links would make the
+    # standing projection ambiguous, so they are refused rather than guessed.
+    other_targets = {
+        relation.object for relation in reference_links
+        if isinstance(relation.object, str) and relation.object.startswith("conseq:")
+        and relation.object != consequence
+    }
+    if other_targets:
+        raise ValueError(
+            f"consequence assessment may reference only {consequence}, not "
+            f"{sorted(other_targets)}: {reference}"
+        )
 
 
 def validate_snapshot(snapshot: KnowledgeSnapshot, *, existence_only_ids: frozenset[str] = frozenset()) -> None:
@@ -175,6 +269,7 @@ def validate_snapshot(snapshot: KnowledgeSnapshot, *, existence_only_ids: frozen
     for claim in snapshot.claims:
         if claim.kind == "architecture_rule" and claim.id not in existence_only_ids and not claim.attributes.get("applies_to") and claim.id not in scoped_rules:
             raise ValueError(f"architecture_rule has no path or graph scope: {claim.id}")
+        validate_consequence_assessment(claim, kinds=kinds, relations=snapshot.relations)
 
 
 def is_path_scope(reference: str) -> bool:

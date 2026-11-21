@@ -119,6 +119,21 @@ Retained architecture options and consequences (conceptual model in `docs/semant
 
 Retain only options and consequences that would change a later decision. Once an option is built, anchor it so file-level `context-for` reaches it (reconciliation reference, prospective records bullet). The comparison itself (option structures, transitions, lenses, the provisional preference and its feedback) belongs in an `architectural_synthesis` artifact ([template](architectural-synthesis-template.md)); records cite it as `analysis_ref`.
 
+**After construction, assess the prediction; never rewrite it.** An observed
+effect of a built change is a new `observation` claim that `references` the
+`conseq:` hypothesis and carries `consequence_ref`, `assessment_status`
+(`OBSERVED_CONSISTENT`, `OBSERVED_CONTRADICTED`, `PARTIALLY_OBSERVED`,
+`NOT_OBSERVED`, `NOT_YET_OBSERVABLE`, `SUPERSEDED`), `observed_effect` (also
+stated literally in the claim statement), `assessed_at_revision`,
+`counterevidence`, `claim_ceiling` and `scope`. The prediction, its wording and
+any earlier assessment stay unchanged. Anchor the assessment to the component
+whose guidance or code produced the effect so `context-for` returns it in
+`history`; otherwise its cited files make it a citation candidate. A status is
+an attributed observation of consistency, not a decision, a causal effect, a
+benefit or a failure, and `NOT_OBSERVED` is not refutation. `knowledge-audit`
+reports which predictions have no assessment and which are worth re-inspecting
+because their cited bytes changed.
+
 ## Exploratory records and fragments
 
 Preserve questions, partial frames, candidate expressions and attributed

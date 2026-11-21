@@ -536,6 +536,93 @@ jobs:
           }, sort_keys=True))
           PY
 
+      - name: Report consequence standing and preserved assessments (mechanics only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          REF="$(git rev-parse HEAD)"
+          DB="$RUNNER_TEMP/sensemaking-graph.sqlite"
+          test -z "$(git status --porcelain)"
+          sensemaking-skills semantic knowledge-audit \
+            --db "$DB" --repo . --repository ThorStarlord/sensemaking-skills \
+            --indexed-ref "$REF" --current-ref "$REF" --json \
+            > "$RUNNER_TEMP/consequence-audit.json"
+          sensemaking-skills semantic knowledge-query \
+            --db "$DB" --repository ThorStarlord/sensemaking-skills \
+            --target-ref "$REF" --operation context-for \
+            --subject skills/using-sensemaking/SKILL.md --repo . --limit 100 --json \
+            > "$RUNNER_TEMP/consequence-context.json"
+          sensemaking-skills semantic knowledge-query \
+            --db "$DB" --repository ThorStarlord/sensemaking-skills \
+            --target-ref "$REF" --operation explain \
+            --subject conseq:candidate-recall-in-later-discovery --repo . --json \
+            > "$RUNNER_TEMP/consequence-prediction.json"
+          AUDIT="$RUNNER_TEMP/consequence-audit.json" \
+          CONTEXT="$RUNNER_TEMP/consequence-context.json" \
+          PREDICTION="$RUNNER_TEMP/consequence-prediction.json" \
+          GRAPH_REF="$REF" python - <<'PY'
+          import json
+          import os
+
+          def read(name):
+              with open(os.environ[name], encoding="utf-8") as stream:
+                  return json.load(stream)
+
+          audit = read("AUDIT")
+          context = read("CONTEXT")["context"]
+          prediction = read("PREDICTION")
+
+          assert audit["code"] == "SEMANTIC_KNOWLEDGE_SOURCE_AUDIT"
+          assert audit["semantic_truth_established"] is False
+          assert audit["action_authorized"] is False
+          standing = audit["consequence_standing"]
+          rows = {row["consequence_id"]: row for row in standing["consequences"]}
+          assert standing["consequence_total"] == 6, standing["consequence_total"]
+          assert standing["assessed_total"] == 4
+          assert standing["not_assessed_total"] == 2
+          assert set(standing["due_for_recheck"]) == {
+              "conseq:target-maintenance-burden",
+              "conseq:citation-noise",
+          }, standing["due_for_recheck"]
+          assert rows["conseq:prospective-decision-memory-reuse"]["standing"] == "OBSERVED_CONSISTENT"
+          assert rows["conseq:knowledge-surface-bootstrap"]["standing"] == "NOT_YET_OBSERVABLE"
+          assert rows["conseq:candidate-recall-in-later-discovery"]["standing"] == "NOT_OBSERVED"
+          assert rows["conseq:persistence-requires-write-authority"]["standing"] == "NOT_OBSERVED"
+          assert rows["conseq:citation-noise"]["standing"] == "NO_ASSESSMENT"
+          assert rows["conseq:citation-noise"]["recheck_reason"] == "NO_ASSESSMENT"
+          assert rows["conseq:prospective-decision-memory-reuse"]["legacy_assessment_entries"] == 1
+          assert standing["currency_not_assessed_total"] == 0
+          assert audit["source_status_counts"]["source_changed"] == 0
+
+          history = {item["claim_id"]: item for item in context["history"]}
+          assessed = history["observation:consequence-assessment-persistence-authority-20261028"]
+          assert assessed["consequence_assessment"]["assessment_status"] == "NOT_OBSERVED"
+          assert assessed["consequence_assessment"]["consequence_ref"] == (
+              "conseq:persistence-requires-write-authority"
+          )
+          assert assessed["recorded_conditions"]["counterevidence"]
+          assert assessed["recorded_conditions"]["claim_ceiling"]
+
+          predictions = {claim["id"]: claim for claim in prediction["claims"]}
+          authored = predictions["conseq:candidate-recall-in-later-discovery"]["attributes"]
+          assert len(authored["assessments"]) == 1
+          assert authored["assessments"][0]["assessed_ref"] == (
+              "7858c9eb847cee68449a4153c98f35f016025db7"
+          )
+          assert authored["assessments"][0]["result"].startswith(
+              "Mechanism now also in discovery"
+          )
+          print(json.dumps({
+              "consumer": "consequence standing and preserved assessments",
+              "source_revision": os.environ["GRAPH_REF"],
+              "consequences": standing["consequence_total"],
+              "assessed": standing["assessed_total"],
+              "due_for_recheck": standing["due_for_recheck"],
+              "ancestor_prediction_unchanged": True,
+              "causal_or_benefit_claim": False,
+              "semantic_truth_established": False,
+          }, sort_keys=True))
+          PY
       - name: Reject altered derived knowledge cache before source-pinned lookup
         shell: bash
         run: |
