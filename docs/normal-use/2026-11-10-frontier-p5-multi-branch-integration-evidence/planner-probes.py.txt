@@ -1,0 +1,227 @@
+"""Frontier P5 probes for the combined integration candidate (real CLI, no unit tests).
+
+They exercise behavior that no single pull request's checks could: the hosted
+context consumer on the combined records, workspace-query passing through both
+context-for extensions, the two extensions composing on one file, and the
+temporary-checkout flag on the combined code.
+
+Usage: python p5_probes.py <candidate_worktree> <scratch_dir>
+Read-only on the checkout; index files and output go to <scratch_dir>.
+"""
+from __future__ import annotations
+
+import ast
+import json
+import os
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+CAND = Path(sys.argv[1]).resolve()
+OUT = Path(sys.argv[2]).resolve()
+OUT.mkdir(parents=True, exist_ok=True)
+BASE = "baaec6b92f87a00dbcefdbf865da04f86d5ce59f"
+REPO_ID = "ThorStarlord/sensemaking-skills"
+CATEGORIES = ("contracts", "constraints", "decisions", "alternatives", "history", "verification_refs")
+TEST_FILE = "tests/test_semantic_knowledge.py"
+PILOT_TEST = "tests/test_legacy_workflow_planner_fail_closed.py"
+STORE = "src/sensemaking_skills/semantic_architecture/knowledge_store.py"
+CLI_FILE = "src/sensemaking_skills/semantic_cli.py"
+UNCITED = "tests/test_cli.py"
+rows: list[tuple[str, str, str]] = []
+facts: dict[str, object] = {}
+
+
+def cli(*args: str) -> subprocess.CompletedProcess:
+    env = {**os.environ, "PYTHONPATH": str(CAND / "src"), "PYTHONUTF8": "1"}
+    return subprocess.run([sys.executable, "-m", "sensemaking_skills.cli", "semantic", *args], cwd=CAND, env=env,
+                          capture_output=True, text=True, encoding="utf-8", timeout=900)
+
+
+def git(*args: str) -> str:
+    return subprocess.run(["git", "-C", str(CAND), *args], capture_output=True, text=True, timeout=120).stdout.strip()
+
+
+def row(name: str, ok: bool | None, detail: str) -> None:
+    rows.append((name, "PASS" if ok else ("INFO" if ok is None else "FAIL"), detail))
+
+
+def ids(items: list[dict]) -> list[str]:
+    return [item["claim_id"] for item in items]
+
+
+def context_for(db: Path, ref: str, path: str, *extra: str) -> dict:
+    proc = cli("knowledge-query", "--db", str(db), "--repository", REPO_ID, "--target-ref", ref,
+               "--operation", "context-for", "--subject", path, "--repo", ".", "--json", *extra)
+    if proc.returncode:
+        raise RuntimeError(f"context-for {path}: {proc.stderr.strip()[:300]}")
+    return json.loads(proc.stdout)
+
+
+def category_ids(context: dict) -> set[str]:
+    found = {cid for name in CATEGORIES for cid in ids(context[name])}
+    found.update(ids(context.get("verified_components", [])))
+    found.update(context["ownership"]["components"])
+    return found
+
+
+def hosted_queries() -> list[tuple]:
+    text = (CAND / ".github/workflows/semantic-context-reentry.yml").read_text(encoding="utf-8")
+    body = re.search(r"queries = \[\n(.*?)\n\s+\]\n", text, re.S).group(1)
+    return list(ast.literal_eval("[" + body.replace("set()", "{None}") + "]"))
+
+
+def main() -> None:
+    head = git("rev-parse", "HEAD")
+    clean = not git("status", "--porcelain", "--untracked-files=all")
+    facts["head"], facts["checkout_clean"] = head, clean
+    db, base_db = OUT / "candidate.sqlite", OUT / "base.sqlite"
+    for path in (db, base_db):
+        path.unlink(missing_ok=True)
+
+    # S1: every pack passes the proposal check, and the combined records build one index.
+    bad = [p.name for p in sorted((CAND / ".sensemaking/knowledge").glob("*.json"))
+           if cli("knowledge-proposal-check", "--repo", ".", "--proposal", str(p), "--json").returncode]
+    row("S1 proposal-check, every pack", not bad, f"invalid={bad}")
+    build = cli("knowledge-build", "--repo", ".", "--repository", REPO_ID, "--target-ref", head, "--db", str(db),
+                "--include-repository-structure", "--temporary-checkout", "--json")
+    row("S1 index of the candidate builds", build.returncode == 0, (build.stdout or build.stderr).strip()[:110])
+    if build.returncode:
+        return
+
+    # H: the hosted consumer's eleven queries and assertions, on the combined records.
+    worst = (0, 0, "")
+    failures = []
+    for path, owner, decisions, alternatives, history in hosted_queries():
+        response = context_for(db, head, path)
+        context = response["context"]
+        checks = {
+            "owner": owner in context["ownership"]["components"],
+            "decisions": (decisions - {None}) <= set(ids(context["decisions"])),
+            "alternatives": (alternatives - {None}) <= set(ids(context["alternatives"])),
+            "history": (history - {None}) <= set(ids(context["history"])),
+            "contract": owner != "component:repository-semantic-steward-skill"
+                        or "contract:architectural-synthesis" in ids(context["contracts"]),
+            "not truncated": not response["truncated"] and not context["truncated"],
+            "authority flags": response["semantic_truth_established"] is False and response["action_authorized"] is False,
+        }
+        failures += [f"{path}: {name}" for name, ok in checks.items() if not ok]
+        size = (len(response["claims"]), len(response["relations"]), path)
+        worst = max(worst, size)
+        facts.setdefault("hosted_sizes", {})[path] = {
+            "claims": size[0], "relations": size[1],
+            "candidates": context.get("relevance_candidates", {}).get("total"),
+            "largest_category": max(len(context[name]) for name in CATEGORIES)}
+    row("H hosted consumer replica (11 paths)", not failures, f"failures={failures[:4]}")
+    row("H envelope headroom against the limit of 50", None,
+        f"largest: {worst[0]} claims, {worst[1]} relations on {worst[2]}")
+
+    # X1: workspace-query (PR 801) passes both context-for extensions through unchanged.
+    wq = cli("workspace-query", TEST_FILE, "--repo", ".", "--index-dir", str(OUT / "wq-index"), "--json")
+    if wq.returncode:
+        row("X1 workspace-query on a test file", False, wq.stderr.strip()[:200])
+    else:
+        via_front_door = json.loads(wq.stdout)
+        index_note = via_front_door.pop("workspace_index")
+        two_step = context_for(db, head, TEST_FILE)
+        # The front door's index has no repository-structure records; compare the context it returns.
+        same = via_front_door["context"] == two_step["context"]
+        keys = {"relevance_candidates", "verified_components"} <= set(via_front_door["context"])
+        row("X1 workspace-query carries both extensions", keys, f"build_source={index_note['build_source']}")
+        row("X1 workspace-query context equals the two-step context", same,
+            "" if same else "differs: " + str(sorted(k for k in two_step["context"]
+                                                     if two_step["context"][k] != via_front_door["context"].get(k))))
+
+    # X2: on a test file no component owns, the two extensions compose without reporting a record twice.
+    for path in (TEST_FILE, PILOT_TEST):
+        context = context_for(db, head, path)["context"]
+        gaps = {gap["category"]: gap["status"] for gap in context["knowledge_gaps"]}
+        candidates = context["relevance_candidates"]
+        overlap = sorted(set(ids(candidates["items"])) & category_ids(context))
+        ok = (context["ownership"]["components"] == [] and context["verification_refs"]
+              and gaps.get("verification_relevance") == "NOT_AN_OWNER" and not overlap)
+        row(f"X2 composition on {path.split('/')[-1]}", bool(ok), f"overlap={overlap}")
+        facts.setdefault("composition", {})[path] = {
+            "verification_refs": ids(context["verification_refs"]),
+            "verified_components": ids(context["verified_components"]),
+            "decisions": ids(context["decisions"]), "constraints": ids(context["constraints"]),
+            "candidates": [(i["claim_id"], i["routes"]) for i in candidates["items"]],
+            "candidate_total": candidates["total"], "gaps": gaps}
+
+    # X3: an owned file keeps its categories, lists candidates separately, and names no record twice.
+    context = context_for(db, head, STORE)["context"]
+    gaps = {gap["category"]: gap["status"] for gap in context["knowledge_gaps"]}
+    overlap = sorted(set(ids(context["relevance_candidates"]["items"])) & category_ids(context))
+    row("X3 owned file: no record in a category and in candidates", not overlap, f"overlap={overlap}")
+    facts["store"] = {"decisions": ids(context["decisions"]), "history": ids(context["history"]),
+                      "verification_refs": ids(context["verification_refs"]),
+                      "verified_components": ids(context["verified_components"]),
+                      "candidates": ids(context["relevance_candidates"]["items"]), "gaps": gaps}
+
+    # X4: an unowned, uncited file gets no speculative context from either extension.
+    context = context_for(db, head, UNCITED)["context"]
+    gaps = {gap["category"]: gap["status"] for gap in context["knowledge_gaps"]}
+    row("X4 unowned, uncited file stays empty", context["relevance_candidates"]["status"] == "NONE_RECORDED"
+        and "verification_relevance" not in gaps and not context["verified_components"],
+        f"status={context['relevance_candidates']['status']}")
+
+    # X5: at limit 1 a verified component still needs its displayed record, and cut candidates are disclosed.
+    response = context_for(db, head, TEST_FILE, "--limit", "1")
+    context = response["context"]
+    shown = set(ids(context["verification_refs"]))
+    supported = all(any(vid in text for vid in shown for text in item["matched_by"])
+                    for item in context["verified_components"])
+    cut = context["omitted"].get("relevance_candidates", 0)
+    row("X5 limit 1: components need a displayed record", supported, f"shown={sorted(shown)}")
+    row("X5 limit 1: omissions are disclosed", bool(context["truncated"]) == bool(any(context["omitted"].values())),
+        f"omitted={ {k: v for k, v in context['omitted'].items() if v} } candidates_cut={cut}")
+
+    # X6: the temporary-checkout flag (PR 804) on the combined code.
+    orient = cli("knowledge-orient", "--repo", ".", "--repository", REPO_ID, "--target-ref", head,
+                 "--temporary-checkout", "--json")
+    rules = cli("knowledge-check-rules", "--repo", ".", "--target-ref", head, "--temporary-checkout", "--json")
+    ok = orient.returncode == 0 and rules.returncode == 0
+    if ok:
+        payload = json.loads(rules.stdout)
+        ok = "note" in json.loads(orient.stdout)["active_checkout"] and payload["source_checkout"] == "temporary_worktree"
+        facts["rules"] = {"rules_total": payload["rules_total"], "findings_total": payload["findings_total"]}
+    row("X6 orient and check-rules with the flag", ok, str(facts.get("rules", (orient.stderr + rules.stderr).strip()[:150])))
+    cli("knowledge-build", "--repo", ".", "--repository", REPO_ID, "--target-ref", BASE, "--db", str(base_db),
+        "--temporary-checkout", "--json")
+    audit = cli("knowledge-audit", "--db", str(base_db), "--repo", ".", "--repository", REPO_ID, "--indexed-ref", BASE,
+                "--current-ref", head, "--temporary-checkout", "--limit", "500", "--json")
+    if audit.returncode:
+        row("X6 audit of base against the candidate", False, audit.stderr.strip()[:200])
+    else:
+        payload = json.loads(audit.stdout)
+        revised = sorted(r["id"] for r in payload["authored_record_audit"]["records"] if r.get("authored_fields_changed"))
+        absent = sorted(r["id"] for r in payload["authored_record_audit"]["records"] if r.get("record_at_original_path") is False)
+        facts["audit"] = {"counts": payload["source_status_counts"], "authored_fields_changed": revised, "absent": absent}
+        row("X6 audit of base against the candidate", True, f"{payload['source_status_counts']}")
+        row("X6 records with revised authored fields", None, f"{revised} absent={absent}")
+
+    # X7: a file-first query on the CLI returns both decisions and one Git-objects alternative.
+    context = context_for(db, head, CLI_FILE)["context"]
+    decisions, alternatives = ids(context["decisions"]), ids(context["alternatives"])
+    objects = [a for a in alternatives if "git-objects" in a]
+    row("X7 semantic_cli.py reaches both decisions",
+        {"decision:index-from-temporary-worktree", "decision:workspace-query-derived-commit-index"} <= set(decisions),
+        f"decisions={decisions}")
+    row("X7 one Git-objects alternative", len(objects) == 1, f"{objects}")
+    facts["cli_file"] = {"decisions": decisions, "alternatives": alternatives}
+
+    leftovers = [line for line in git("worktree", "list").splitlines() if "sensemaking-index-" in line]
+    row("Z no temporary worktree left behind", not leftovers, f"{leftovers}")
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except Exception as exc:  # report, then show what ran
+        row("probe run aborted", False, f"{type(exc).__name__}: {exc}"[:300])
+    width = max(len(r[0]) for r in rows)
+    for name, verdict, detail in rows:
+        print(f"{name.ljust(width)} | {verdict:4} | {detail}")
+    print("SUMMARY", {v: sum(1 for r in rows if r[1] == v) for v in ("PASS", "FAIL", "INFO")})
+    (OUT / "p5-facts.json").write_text(json.dumps(facts, indent=1, sort_keys=True), encoding="utf-8")
