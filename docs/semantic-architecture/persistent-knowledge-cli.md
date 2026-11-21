@@ -520,12 +520,14 @@ and says. This is presentation only: stored records, snapshot digests, ranking a
 parsed values are unchanged. Other operations keep their sorted key order.
 
 Each returned **lesson** claim in search JSON also carries `recall_conditions`:
-`scope`, `claim_ceiling`, `revisit_when` (or `staleness_condition`) and
-`decision_link` (`decision_changed` or `operationalized_by`). Each holds the
-recorded value or `NOT_RECORDED`, and `applicability_to_current_question` is always
-`NOT_ESTABLISHED`. `NOT_RECORDED` means the reviewed record states no such
-condition; it does not show that none applies. The stored lesson is unchanged, and
-the search adds `recall_conditions_limit` whenever a lesson is returned.
+`scope`, `conditions`, `claim_ceiling`, `counterevidence`, `original_outcome`,
+`revisit_when` (or `staleness_condition`) and `decision_link`
+(`decision_changed` or `operationalized_by`). Each holds the recorded value or
+`NOT_RECORDED`, and `applicability_to_current_question` is always
+`NOT_ESTABLISHED`. These are authored claims, not verified current applicability.
+`NOT_RECORDED` means the reviewed record states no such condition; it does not
+show that none applies. The stored lesson is unchanged, and the search adds
+`recall_conditions_limit` whenever a lesson is returned.
 
 Each returned lesson also lists `citing_records`: the reviewed `incident`,
 `lesson` and `observation` records at the indexed revision that link to it through

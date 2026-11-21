@@ -63,7 +63,10 @@ def _lexical_hit(word: str, name: str, statement: str, stems: set[str]) -> bool:
 # reviewed record does not state is reported as NOT_RECORDED, never silently omitted.
 _RECALL_CONDITION_FIELDS = (
     ("scope", ("scope",)),
+    ("conditions", ("conditions",)),
     ("claim_ceiling", ("claim_ceiling",)),
+    ("counterevidence", ("counterevidence",)),
+    ("original_outcome", ("original_outcome",)),
     ("revisit_when", ("revisit_when", "staleness_condition")),
     ("decision_link", ("decision_changed", "operationalized_by")),
 )
