@@ -1,0 +1,184 @@
+artifact_id: semantic_query_receipt
+schema_version: 1
+session_ref: 2026-11-10-frontier-p2-planner-executor
+state: final
+created_at: "2026-11-10T08:47:03Z"
+updated_at: "2026-11-10T09:24:00Z"
+target_repository: ThorStarlord/sensemaking-skills
+modes: [RECALL, RECONCILE]
+decision: "Which reviewed rules and decisions constrain a zero-setup query command, and which records the change makes stale."
+cli_identity:
+  sensemaking_source_ref: baaec6b92f87a00dbcefdbf865da04f86d5ce59f
+  invocation_prefix: PYTHONPATH=src python -m sensemaking_skills.cli (source checkout; the PATH executable is a stale install)
+  version_output: null
+index:
+  indexed_ref: baaec6b92f87a00dbcefdbf865da04f86d5ce59f
+  current_head: baaec6b92f87a00dbcefdbf865da04f86d5ce59f
+  worktree_clean: true
+  uncommitted_changes_not_indexed: false
+queries:
+  - id: QY-1
+    operation: build
+    terms: []
+    subject: null
+    expect_kinds: []
+    target_ref: baaec6b92f87a00dbcefdbf865da04f86d5ce59f
+    result:
+      hit_count: 0
+      claim_ids: []
+      truncated: false
+      not_assessed_kinds: []
+    outcome: NOT_APPLICABLE
+    decision_relevant: false
+  - id: QY-2
+    operation: context-for
+    terms: []
+    subject: src/sensemaking_skills/semantic_cli.py
+    expect_kinds: []
+    target_ref: baaec6b92f87a00dbcefdbf865da04f86d5ce59f
+    result:
+      hit_count: 5
+      claim_ids: ['component:semantic-cli', 'rule:console-output-ascii', 'lesson:console-guard-literal-print-arguments-only', 'verification:console-output-ascii-guard', 'verification:semantic-cli-self-repo-tests']
+      truncated: false
+      not_assessed_kinds: []
+    outcome: PARTIAL
+    decision_relevant: true
+  - id: QY-3
+    operation: context-for
+    terms: []
+    subject: src/sensemaking_skills/semantic_architecture/knowledge_sources.py
+    expect_kinds: []
+    target_ref: baaec6b92f87a00dbcefdbf865da04f86d5ce59f
+    result:
+      hit_count: 7
+      claim_ids: ['rule:frozen-public-python-api', 'rule:stable-core-no-lab-imports', 'inv:index-snapshot-vs-working-overlay', 'decision:index-from-temporary-worktree', 'alternative:dirty-tree-byte-audit', 'alternative:shared-clone-checkout', 'lesson:source-anchored-context-reentry']
+      truncated: false
+      not_assessed_kinds: []
+    outcome: HIT
+    decision_relevant: true
+  - id: QY-4
+    operation: context-for
+    terms: []
+    subject: src/sensemaking_skills/semantic_architecture/knowledge_store.py
+    expect_kinds: []
+    target_ref: baaec6b92f87a00dbcefdbf865da04f86d5ce59f
+    result:
+      hit_count: 5
+      claim_ids: ['rule:frozen-public-python-api', 'rule:stable-core-no-lab-imports', 'lesson:query-completeness-is-evidence', 'lesson:uncited-change-is-coverage-gap', 'lesson:distinguish-provenance-content-and-meaning']
+      truncated: false
+      not_assessed_kinds: []
+    outcome: HIT
+    decision_relevant: true
+  - id: QY-5
+    operation: workspace-impact
+    terms: []
+    subject: null
+    expect_kinds: []
+    target_ref: baaec6b92f87a00dbcefdbf865da04f86d5ce59f
+    result:
+      hit_count: 28
+      claim_ids: ['component:semantic-cli', 'decision:index-from-temporary-worktree', 'inv:index-snapshot-vs-working-overlay', 'observation:knowledge-query-closed-operations', 'cap:path-scoped-architecture-context', 'component:repository-semantic-steward-skill']
+      truncated: false
+      not_assessed_kinds: []
+    outcome: HIT
+    decision_relevant: true
+  - id: QY-6
+    operation: proposal-check
+    terms: []
+    subject: null
+    expect_kinds: []
+    target_ref: null
+    result:
+      hit_count: 0
+      claim_ids: []
+      truncated: false
+      not_assessed_kinds: []
+    outcome: NOT_APPLICABLE
+    decision_relevant: false
+  - id: QY-7
+    operation: build
+    terms: []
+    subject: null
+    expect_kinds: []
+    target_ref: a5590c39e0eb0fc92e32161efc04e1fe34ac22dc
+    result:
+      hit_count: 0
+      claim_ids: []
+      truncated: false
+      not_assessed_kinds: []
+    outcome: NOT_APPLICABLE
+    decision_relevant: false
+  - id: QY-8
+    operation: context-for
+    terms: []
+    subject: src/sensemaking_skills/workspace_knowledge.py
+    expect_kinds: []
+    target_ref: a5590c39e0eb0fc92e32161efc04e1fe34ac22dc
+    result:
+      hit_count: 6
+      claim_ids: ['component:semantic-cli', 'decision:workspace-query-derived-commit-index', 'alternative:ephemeral-index-per-query', 'alternative:implicit-index-in-knowledge-query', 'alternative:snapshot-from-git-objects', 'inv:index-snapshot-vs-working-overlay']
+      truncated: false
+      not_assessed_kinds: []
+    outcome: HIT
+    decision_relevant: true
+source_checks:
+  - claim_id: 'rule:frozen-public-python-api'
+    sources: ['docs/public-api-v1.0.yaml:1-17', 'src/sensemaking_skills/semantic_architecture/__init__.py:39-70']
+    result: SUPPORTED
+  - claim_id: 'inv:index-snapshot-vs-working-overlay'
+    sources: ['src/sensemaking_skills/semantic_architecture/knowledge_sources.py:52-65']
+    result: SUPPORTED
+  - claim_id: 'decision:index-from-temporary-worktree'
+    sources: ['src/sensemaking_skills/semantic_architecture/knowledge_sources.py:86-128', 'docs/semantic-architecture/persistent-knowledge-cli.md:50-70']
+    result: SUPPORTED
+  - claim_id: 'observation:knowledge-query-closed-operations'
+    sources: ['src/sensemaking_skills/semantic_cli.py:209-211']
+    result: SUPPORTED
+misses:
+  - id: M-1
+    query_ref: QY-2
+    needed_for: "Decisions and contracts governing the semantic CLI's commands before adding one; the path returned NOT_ASSESSED for both."
+    kind: NOT_ASSESSED
+    resolved_by: "source inspection: semantic_cli.py:88-289, plus the knowledge_sources.py context of the same run, which carries the temporary-worktree decision"
+    follow_up: ADD_PROPOSED
+    proposal_ref: .sensemaking/knowledge/architecture.json
+reconcile:
+  - claim_id: 'component:semantic-cli'
+    disposition: REVISE
+    applied: true
+    proposal_ref: .sensemaking/knowledge/architecture.json
+    proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID
+  - claim_id: 'decision:workspace-query-derived-commit-index'
+    disposition: ADD
+    applied: true
+    proposal_ref: .sensemaking/knowledge/architecture.json
+    proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID
+  - claim_id: 'alternative:implicit-index-in-knowledge-query'
+    disposition: ADD
+    applied: true
+    proposal_ref: .sensemaking/knowledge/architecture.json
+    proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID
+  - claim_id: 'alternative:snapshot-from-git-objects'
+    disposition: ADD
+    applied: true
+    proposal_ref: .sensemaking/knowledge/architecture.json
+    proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID
+  - claim_id: 'alternative:ephemeral-index-per-query'
+    disposition: ADD
+    applied: true
+    proposal_ref: .sensemaking/knowledge/architecture.json
+    proposal_check: SEMANTIC_KNOWLEDGE_PROPOSAL_VALID
+  - claim_id: 'decision:index-from-temporary-worktree'
+    disposition: CONFIRM
+    applied: true
+    proposal_ref: null
+    proposal_check: NOT_RUN
+  - claim_id: 'inv:index-snapshot-vs-working-overlay'
+    disposition: CONFIRM
+    applied: true
+    proposal_ref: null
+    proposal_check: NOT_RUN
+persistence: committed
+action_authorized: false
+semantic_truth_established: false
+immutable: true
