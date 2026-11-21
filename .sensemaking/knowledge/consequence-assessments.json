@@ -1,0 +1,210 @@
+{
+  "schema_version": 1,
+  "claims": [
+    {
+      "id": "observation:consequence-assessment-candidate-recall-20261028",
+      "kind": "observation",
+      "statement": "Consequence assessment 2026-10-28 (NOT_OBSERVED) for conseq:candidate-recall-in-later-discovery: Mechanism now also in discovery: the portable loop tells every discovery to read retained poss: records before comparing (plan PR H). The predicted effect is not yet observed in any later session.",
+      "epistemic_status": "declared",
+      "authority_kind": "document",
+      "authority_ref": "skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "file:skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md",
+        "file:skills/using-sensemaking/SKILL.md",
+        "file:skills/using-sensemaking/references/portable-construction-loop-v1.md"
+      ],
+      "attributes": {
+        "consequence_ref": "conseq:candidate-recall-in-later-discovery",
+        "assessment_status": "NOT_OBSERVED",
+        "observed_effect": "Mechanism now also in discovery: the portable loop tells every discovery to read retained poss: records before comparing (plan PR H). The predicted effect is not yet observed in any later session.",
+        "assessed_at_revision": "7858c9eb847cee68449a4153c98f35f016025db7",
+        "counterevidence": "Not tested in any independent session.",
+        "claim_ceiling": "Mechanism present in guidance only; no later session is observed recalling declined candidates and their reasons.",
+        "scope": "Discovery sessions that read the portable construction loop and retained possibility records.",
+        "normalized_from": "prospective-reasoning.json#conseq:candidate-recall-in-later-discovery.attributes.assessments[0] (2026-10-28 entry, preserved verbatim)"
+      }
+    },
+    {
+      "id": "observation:consequence-assessment-persistence-authority-20261028",
+      "kind": "observation",
+      "statement": "Consequence assessment 2026-10-28 (PARTIALLY_OBSERVED) for conseq:persistence-requires-write-authority: Built into the guidance: retention is conditioned on knowledge-edit and commit authority (plan PR H). This records how the prediction shaped construction, not an observed effect.",
+      "epistemic_status": "declared",
+      "authority_kind": "document",
+      "authority_ref": "skills/using-sensemaking/references/portable-construction-loop-v1.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "file:skills/using-sensemaking/SKILL.md",
+        "file:skills/using-sensemaking/references/session-receipt-v1.md",
+        "file:skills/using-sensemaking/references/portable-construction-loop-v1.md"
+      ],
+      "attributes": {
+        "consequence_ref": "conseq:persistence-requires-write-authority",
+        "assessment_status": "PARTIALLY_OBSERVED",
+        "observed_effect": "Built into the guidance: retention is conditioned on knowledge-edit and commit authority (plan PR H). This records how the prediction shaped construction, not an observed effect.",
+        "assessed_at_revision": "7858c9eb847cee68449a4153c98f35f016025db7",
+        "counterevidence": "The prediction's premises are observed rules (discovery is read-only by default; uncommitted receipts are working_tree_only and lost). No discovery episode is recorded actually losing compared candidates, so the mechanism is observed but the session-level consequence is not.",
+        "claim_ceiling": "Consistency is at mechanism level: the persistence rules are observed and constrain read-only discovery to persist nothing. The entry records how the prediction shaped guidance; no episode-level loss, benefit, failure or causal effect is established.",
+        "scope": "Read-only discovery sessions that cannot persist the candidates they compared; the mechanism is observed, not a particular session.",
+        "normalized_from": "prospective-reasoning.json#conseq:persistence-requires-write-authority.attributes.assessments[0] (2026-10-28 entry, preserved verbatim)"
+      }
+    },
+    {
+      "id": "observation:consequence-assessment-knowledge-surface-bootstrap-20261028",
+      "kind": "observation",
+      "statement": "Consequence assessment 2026-10-28 (PARTIALLY_OBSERVED) for conseq:knowledge-surface-bootstrap: Occurred once without resistance, under explicit owner authority (Atlas Midgard). Burden not yet observable.",
+      "epistemic_status": "declared",
+      "authority_kind": "document",
+      "authority_ref": "docs/normal-use/prospective-reasoning-atlas-001.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "file:skills/using-sensemaking/references/portable-construction-loop-v1.md",
+        "file:docs/normal-use/prospective-reasoning-atlas-001.md"
+      ],
+      "attributes": {
+        "consequence_ref": "conseq:knowledge-surface-bootstrap",
+        "assessment_status": "PARTIALLY_OBSERVED",
+        "observed_effect": "Occurred once without resistance, under explicit owner authority (Atlas Midgard). Burden not yet observable.",
+        "assessed_at_revision": "e581d0138371e43976f8abeca3f48138c522cce3",
+        "counterevidence": "One authorized occurrence without resistance is weak evidence against the predicted resistance, and the explicit owner authorization may not generalise. The predicted resistance itself was not observed.",
+        "claim_ceiling": "The need for a surface and one successful authorized creation are observed in Atlas; owner resistance and maintenance burden are not observed. A single non-resistant case neither confirms nor refutes that owners may resist.",
+        "scope": "Creating a knowledge surface on demand in an authorized target repository; observed once under explicit owner authority.",
+        "normalized_from": "prospective-reasoning.json#conseq:knowledge-surface-bootstrap.attributes.assessments[0] (2026-10-28 entry, preserved verbatim)"
+      }
+    },
+    {
+      "id": "observation:consequence-assessment-prospective-decision-memory-reuse-20261028",
+      "kind": "observation",
+      "statement": "Consequence assessment 2026-10-28 (OBSERVED_CONSISTENT) for conseq:prospective-decision-memory-reuse: Realized once in Atlas Midgard with existing kinds: options, consequences and the preference were retained and retrieved in the same session. File-level context-for reached them only after anchoring them to the implementing files.",
+      "epistemic_status": "declared",
+      "authority_kind": "document",
+      "authority_ref": "docs/normal-use/prospective-reasoning-atlas-001.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "file:docs/semantic-architecture/prospective-reasoning-ontology.md",
+        "file:docs/normal-use/prospective-reasoning-atlas-001.md"
+      ],
+      "attributes": {
+        "consequence_ref": "conseq:prospective-decision-memory-reuse",
+        "assessment_status": "OBSERVED_CONSISTENT",
+        "observed_effect": "Realized once in Atlas Midgard with existing kinds: options, consequences and the preference were retained and retrieved in the same session. File-level context-for reached them only after anchoring them to the implementing files.",
+        "assessed_at_revision": "e581d0138371e43976f8abeca3f48138c522cce3",
+        "counterevidence": "One same-session Atlas realization; the authored counterevidence notes that it coincides with the intended outcome of the plan that produced it.",
+        "claim_ceiling": "Single same-session realization; later independent reuse, retention quality and decision benefit are not established.",
+        "scope": "Authorized target repositories that retain architecture options and consequences as reviewed records.",
+        "normalized_from": "prospective-reasoning.json#conseq:prospective-decision-memory-reuse.attributes.assessments[0] (2026-10-28 entry, preserved verbatim)"
+      }
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel:consequence-assessment-candidate-recall-references-prediction",
+      "subject": "observation:consequence-assessment-candidate-recall-20261028",
+      "predicate": "references",
+      "object": "conseq:candidate-recall-in-later-discovery",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "file:skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md",
+        "file:skills/using-sensemaking/SKILL.md",
+        "file:skills/using-sensemaking/references/portable-construction-loop-v1.md"
+      ],
+      "attributes": {
+        "scope": "Assessment of one authored consequence prediction; the prediction itself is unchanged."
+      }
+    },
+    {
+      "id": "rel:repository-analysis-skill-references-candidate-recall-assessment",
+      "subject": "component:strategic-repository-analysis-skill",
+      "predicate": "references",
+      "object": "observation:consequence-assessment-candidate-recall-20261028",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "file:skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md",
+        "file:skills/using-sensemaking/SKILL.md",
+        "file:skills/using-sensemaking/references/portable-construction-loop-v1.md"
+      ],
+      "attributes": {
+        "scope": "This component's guidance is where the assessed consequence materialised."
+      }
+    },
+    {
+      "id": "rel:consequence-assessment-persistence-authority-references-prediction",
+      "subject": "observation:consequence-assessment-persistence-authority-20261028",
+      "predicate": "references",
+      "object": "conseq:persistence-requires-write-authority",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "file:skills/using-sensemaking/SKILL.md",
+        "file:skills/using-sensemaking/references/session-receipt-v1.md",
+        "file:skills/using-sensemaking/references/portable-construction-loop-v1.md"
+      ],
+      "attributes": {
+        "scope": "Assessment of one authored consequence prediction; the prediction itself is unchanged."
+      }
+    },
+    {
+      "id": "rel:using-sensemaking-skill-references-persistence-authority-assessment",
+      "subject": "component:using-sensemaking-skill",
+      "predicate": "references",
+      "object": "observation:consequence-assessment-persistence-authority-20261028",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "file:skills/using-sensemaking/SKILL.md",
+        "file:skills/using-sensemaking/references/session-receipt-v1.md",
+        "file:skills/using-sensemaking/references/portable-construction-loop-v1.md"
+      ],
+      "attributes": {
+        "scope": "This component's guidance is where the assessed consequence materialised."
+      }
+    },
+    {
+      "id": "rel:consequence-assessment-knowledge-surface-bootstrap-references-prediction",
+      "subject": "observation:consequence-assessment-knowledge-surface-bootstrap-20261028",
+      "predicate": "references",
+      "object": "conseq:knowledge-surface-bootstrap",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "file:skills/using-sensemaking/references/portable-construction-loop-v1.md",
+        "file:docs/normal-use/prospective-reasoning-atlas-001.md"
+      ],
+      "attributes": {
+        "scope": "Assessment of one authored consequence prediction; the prediction itself is unchanged."
+      }
+    },
+    {
+      "id": "rel:using-sensemaking-skill-references-surface-bootstrap-assessment",
+      "subject": "component:using-sensemaking-skill",
+      "predicate": "references",
+      "object": "observation:consequence-assessment-knowledge-surface-bootstrap-20261028",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "file:skills/using-sensemaking/references/portable-construction-loop-v1.md",
+        "file:docs/normal-use/prospective-reasoning-atlas-001.md"
+      ],
+      "attributes": {
+        "scope": "This component's guidance is where the assessed consequence materialised."
+      }
+    },
+    {
+      "id": "rel:consequence-assessment-prospective-decision-memory-reuse-references-prediction",
+      "subject": "observation:consequence-assessment-prospective-decision-memory-reuse-20261028",
+      "predicate": "references",
+      "object": "conseq:prospective-decision-memory-reuse",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "file:docs/semantic-architecture/prospective-reasoning-ontology.md",
+        "file:docs/normal-use/prospective-reasoning-atlas-001.md"
+      ],
+      "attributes": {
+        "scope": "Assessment of one authored consequence prediction; the prediction itself is unchanged."
+      }
+    }
+  ]
+}

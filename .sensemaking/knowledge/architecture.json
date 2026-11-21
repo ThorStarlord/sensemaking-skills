@@ -70,7 +70,7 @@
     {
       "id": "component:semantic-knowledge-plane",
       "kind": "component",
-      "statement": "Knowledge model, source reader, v1/v2 retrieval options and architecture queries; the store and retrieval modules are owned by component:knowledge-store.",
+      "statement": "Knowledge model, source reader, v1/v2 retrieval options, architecture queries and the bounded standing of authored consequence assessments; the store and retrieval modules are owned by component:knowledge-store.",
       "authority_kind": "code",
       "authority_ref": "src/sensemaking_skills/semantic_architecture/knowledge.py",
       "evidence_refs": [
@@ -80,7 +80,8 @@
         "file:src/sensemaking_skills/semantic_architecture/knowledge_sources.py",
         "file:src/sensemaking_skills/semantic_architecture/knowledge_architecture.py",
         "file:src/sensemaking_skills/semantic_architecture/stewardship_validation.py",
-        "file:src/sensemaking_skills/semantic_architecture/worktree_context.py"
+        "file:src/sensemaking_skills/semantic_architecture/worktree_context.py",
+        "file:src/sensemaking_skills/semantic_architecture/consequence_standing.py"
       ],
       "epistemic_status": "declared",
       "attributes": {
@@ -89,7 +90,8 @@
           "src/sensemaking_skills/semantic_architecture/knowledge_sources.py",
           "src/sensemaking_skills/semantic_architecture/knowledge_architecture.py",
           "src/sensemaking_skills/semantic_architecture/stewardship_validation.py",
-          "src/sensemaking_skills/semantic_architecture/worktree_context.py"
+          "src/sensemaking_skills/semantic_architecture/worktree_context.py",
+          "src/sensemaking_skills/semantic_architecture/consequence_standing.py"
         ]
       }
     },

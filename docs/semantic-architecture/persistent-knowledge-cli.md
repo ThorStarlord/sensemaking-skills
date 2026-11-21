@@ -811,6 +811,28 @@ record-level comparison, but must be the exact clean Git HEAD. Inspect
 original sources and semantics before RECONCILE. `changes.change_classification`
 continues to distinguish the two-index indexed-payload case described below.
 
+#### Consequence standing (bounded projection)
+
+`knowledge-audit` also returns an additive `consequence_standing` section over
+the same loaded snapshot and the same source-currency result. It joins authored
+`conseq:` `hypothesis` claims with authored `observation` assessments that
+resolve them through an existing `references` relation, and reports one row per
+prediction:
+
+- `standing`: the single assessed status, `NO_ASSESSMENT`, `SUPERSEDED` or
+  `MIXED_ASSESSMENTS` when the authored assessments disagree.
+- `due_for_recheck` with `recheck_reason`: `NO_ASSESSMENT`,
+  `ASSESSMENT_SOURCES_CHANGED` or `PREDICTION_SOURCES_CHANGED`. The reason is
+  derived **only** from the audit's existing source-byte currency.
+- `source_currency`: `ASSESSED` or `NOT_ASSESSED`; unassessed rows are listed
+  under `currency_not_assessed` rather than being reported as due or current.
+- bounded `changed_sources` / `missing_sources` with pre-limit totals.
+
+Each record's own authored pack is excluded from its currency comparison: those
+bytes are container provenance, not cited evidence. The projection adds no
+command or flag, ranks nothing, and establishes no causation, benefit or
+failure. `NO_ASSESSMENT` is NOT ASSESSED, not refuted.
+
 ### Additive indexed change classification (integrated, PR #561)
 
 Given two **already indexed committed revisions**, `knowledge-query --operation

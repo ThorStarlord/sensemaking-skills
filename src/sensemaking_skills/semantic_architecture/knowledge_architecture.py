@@ -10,7 +10,7 @@ from __future__ import annotations
 import re
 from typing import Any, Iterable, Mapping
 
-from .knowledge import _valid_repo_path, is_path_scope
+from .knowledge import CONSEQUENCE_ASSESSMENT_KEYS, _valid_repo_path, is_path_scope
 from .knowledge_sources import _local_evidence_path
 
 OPERATIONS = frozenset({"rules-for", "term", "orientation-summary", "product-outline",
@@ -141,6 +141,7 @@ def is_repository_file_path(value: str) -> bool:
 RECORDED_CONDITION_KEYS = (
     "scope", "claim_ceiling", "known_limits", "exclusion_condition", "revisit_when",
     "staleness_condition", "decision_changed", "operationalized_by", "revised",
+    "counterevidence",
 )
 
 
@@ -157,6 +158,12 @@ def _context_item(cid: str, claim: Mapping[str, Any], matched_by: set[str]) -> d
     conditions = {key: attributes[key] for key in RECORDED_CONDITION_KEYS if key in attributes}
     if conditions:
         item["recorded_conditions"] = conditions
+    if "assessment_status" in attributes:
+        # Authored consequence assessment carried by the existing context item.
+        # The status is an observation of consistency, never a verdict.
+        item["consequence_assessment"] = {
+            key: attributes[key] for key in CONSEQUENCE_ASSESSMENT_KEYS if key in attributes
+        }
     return item
 
 

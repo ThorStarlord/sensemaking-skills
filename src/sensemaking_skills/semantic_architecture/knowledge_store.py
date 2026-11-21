@@ -14,6 +14,7 @@ from pathlib import Path
 from urllib.parse import quote
 
 from .knowledge import KnowledgeSnapshot, fingerprint, record_dict, validate_snapshot, SCHEMA_VERSION
+from .consequence_standing import consequence_standing
 from .knowledge_architecture import (
     context_for, is_repository_file_path, orientation_summary, possibility_ecology,
     product_outline, rules_for, term,
@@ -679,6 +680,19 @@ def query_context_paths(
     }
 
 
+def _authored_pack_path(item: dict) -> str | None:
+    """The authored knowledge pack a record lives in, as a repository path."""
+    source_ref = item.get("source_ref")
+    prefix = "file:.sensemaking/knowledge/"
+    if (
+        isinstance(source_ref, str)
+        and source_ref.startswith(prefix)
+        and source_ref.endswith(".json")
+    ):
+        return source_ref[len("file:"):]
+    return None
+
+
 def audit_knowledge_sources(
     db_path: str | Path, *,
     repository: str, indexed_ref: str,
@@ -699,12 +713,17 @@ def audit_knowledge_sources(
     try:
         _snapshot(conn, repository, indexed_ref)
         key = (repository, indexed_ref)
+        authored_claims = _read_claims(conn, key)
+        authored_relations = _read_relations(conn, key)
         records = [
-            ("claim", c) for c in _read_claims(conn, key).values()
+            ("claim", c) for c in authored_claims.values()
         ] + [
-            ("relation", r) for r in _read_relations(conn, key)
+            ("relation", r) for r in authored_relations
         ]
         digests: dict[str, str | None] = {}
+        # Source currency per claim, excluding the authored pack the record lives
+        # in: a pack's own bytes are container provenance, not cited evidence.
+        currency: dict[str, dict] = {}
         # A pack is loaded at most once, and only after the original source-byte
         # audit has identified its container as changed/missing. No overlay
         # content is ever indexed or taken as reviewed semantic authority.
@@ -743,6 +762,13 @@ def audit_knowledge_sources(
                     "source_changed" if changed else "unchanged_source_bytes"
                 )
             totals[status] += 1
+            if kind == "claim":
+                own_pack = _authored_pack_path(item)
+                currency[item["id"]] = {
+                    "assessed": bool(expected),
+                    "changed": [p for p in changed if p != own_pack],
+                    "missing": [p for p in missing if p != own_pack],
+                }
             result_row = {
                 "record_type": kind, "id": item["id"], "source_status": status,
                 "changed_sources": changed, "missing_or_unsafe_sources": missing,
@@ -795,6 +821,9 @@ def audit_knowledge_sources(
             "repository": repository, "indexed_ref": indexed_ref,
             "current_ref": current_ref, "record_count": len(records),
             "source_status_counts": totals,
+            "consequence_standing": consequence_standing(
+                authored_claims, authored_relations, currency=currency, limit=limit,
+            ),
             "affected_records": results[:limit],
             "authored_record_audit": {
                 "assessed_container_record_total": len(authored_details),
