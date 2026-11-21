@@ -1,0 +1,102 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-11-21-method-context-applicability
+state: final
+created_at: "2026-11-21T00:00:00Z"
+updated_at: "2026-11-21T00:00:00Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: a55bbb0730fdfeaa2b3e694569aaf5b5ae21e34e
+  end_ref: 05b5ab796ca05f3109006a6e2e7c4b7f35de63e7
+  worktree_clean_at_end: true
+skill_identity:
+  load_mode: harness_discovered
+  sensemaking_source_ref: a55bbb0730fdfeaa2b3e694569aaf5b5ae21e34e
+goal:
+  statement: "Develop Sensemaking's capacity to support persistent, adaptive agent reasoning by selecting and building the strongest warranted cognitive capability from authentic consumer evidence."
+  source: owner_message
+  source_ref: null
+delegation:
+  granted: [read, local_write, run_local_commands, commit, push, open_pr, merge]
+  withheld: [release, deploy, tracker_write, external_publication]
+continuity:
+  resumes: 2026-11-19-method-adaptation-v0-construction
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: Reconstruct the substrate and external-consumer evidence
+    capability: using-sensemaking
+    status: completed
+    reason: "Reviewed current source, the 2026-11-19 cognitive-capability assessment, #908, the method adaptation plan, Atlas PR #90/#91 evidence and the current CLI output."
+    artifact_refs: [docs/research/cognitive-capability-assessment-20261119.md, docs/normal-use/2026-11-18-contextual-recall-assessment-908.md, docs/superpowers/plans/2026-11-19-method-adaptation-v0-continuation-ord-observation.md, skills/repository-semantic-steward/references/recall.md]
+    validation:
+      - command: Source inspection and current semantic method context
+        result: PASS
+  - id: R-2
+    responsibility: Select a decision-time applicability responsibility
+    capability: strategic-sensemaking-loop
+    status: completed
+    reason: "The method-context consumer carried scope, claim ceiling and revisit conditions but omitted authored counterevidence and original outcome; no-change, a new context bridge, compatibility preflight and method capture were weaker."
+    artifact_refs: [.sensemaking/knowledge/stewardship.json, docs/explorations/2026-11-17-cognitive-construction-opportunity-landscape.md]
+    validation:
+      - command: Compared no-change, context bridge, compatibility preflight and method capture
+        result: PASS
+  - id: R-3
+    responsibility: Expose authored applicability evidence in lesson recall
+    capability: ordinary_coding
+    status: completed
+    reason: "The shared recall view now carries authored conditions, counterevidence and original outcome; the main controller points to the existing optional method context; the hosted consumer asserts the fields."
+    artifact_refs: [src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py, skills/using-sensemaking/SKILL.md, skills/repository-semantic-steward/references/recall.md, docs/semantic-architecture/persistent-knowledge-cli.md, .github/workflows/semantic-context-reentry.yml]
+    validation:
+      - command: ruff check src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py
+        result: PASS
+      - command: python -m compileall -q src/sensemaking_skills
+        result: PASS
+      - command: semantic method context --question "method adaptation construction qualification gates"
+        result: PASS
+      - command: git diff --check
+        result: PASS
+      - command: Hosted CI for the PR head
+        result: NOT_RUN
+  - id: R-4
+    responsibility: Reconcile method and learning claims
+    capability: using-sensemaking
+    status: completed
+    reason: "No new intellectual procedure was developed; this is a decision-time evidence-surfacing improvement. Independent later use and comparative benefit remain unqualified."
+    artifact_refs: [docs/superpowers/plans/2026-11-19-method-adaptation-v0-continuation-ord-observation.md]
+    validation:
+      - command: Compared the functional output to the claim ceiling and #872/#874 boundaries
+        result: PASS
+findings:
+  - id: F-1
+    statement: "Lesson recall exposed scope, claim ceiling, revisit and decision link but omitted authored conditions, counterevidence and original outcome; the method context for the construction-gate lesson omitted the method-adaptation lesson's counterevidence."
+    epistemic_status: OBSERVED
+    evidence_refs: [src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py, .sensemaking/knowledge/stewardship.json]
+    disposition: resolved
+  - id: F-2
+    statement: "The retained construction-gate lesson was retrieved by the real method context and its scope and claim ceiling were checked; it supports separating construction warrant from independent-benefit qualification."
+    epistemic_status: OBSERVED
+    evidence_refs: [.sensemaking/knowledge/stewardship.json, docs/normal-use/2026-11-17-construction-vs-qualification-selection-lesson.md]
+    disposition: resolved
+  - id: F-3
+    statement: "After the change, method context and search expose the authored counterevidence and original outcome; this is functional output evidence, not later-agent use or cognitive benefit."
+    epistemic_status: OBSERVED
+    evidence_refs: [src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py, .github/workflows/semantic-context-reentry.yml]
+    disposition: open
+open_questions:
+  - id: Q-1
+    question: "Will a later agent use the enriched recall conditions in a consequential method choice?"
+    source: empirical
+    blocking: false
+    durable_ref: null
+stop:
+  disposition: NO_FURTHER_WARRANT
+  reason: "The selected decision-time recall improvement is implemented and verified through the real method-context and search consumer; no further code is warranted from this evidence."
+next:
+  warranted_responsibility: "Observe whether a later agent uses the enriched recall conditions in a consequential method choice; no new method record or controller is warranted."
+  blocked_on: []
+persistence: committed
+claim_ceiling: "Functional output improvement only; no independent later-agent use, comparative benefit or cognitive improvement is established. #872/#874 remain open."
+action_authorized_by_receipt: false
+immutable: true
