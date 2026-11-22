@@ -146,6 +146,47 @@ def method_context(
                 "source_read_status": "INDEXED_RECORD",
             })
             seen.add(subject)
+        # The lesson's own derivation is outgoing: learned_from its source
+        # observation and, for an adaptation, references the prior lesson.
+        # Generic citing_records is incoming-only, so surface these separately
+        # instead of pretending the later-record set is the whole provenance.
+        source_records = []
+        seen_sources = set()
+        for relation in neighbors.get("relations", []):
+            if (relation.get("subject") != identifier
+                    or relation.get("predicate") not in {"learned_from", "references"}):
+                continue
+            target = relation.get("object")
+            if not isinstance(target, str) or target in seen_sources:
+                continue
+            source = indexed.get(target)
+            kind = (source or {}).get("kind")
+            if source is None:
+                if not target.startswith(("lesson:", "observation:")):
+                    continue
+                kind = target.split(":", 1)[0]
+            elif kind not in {"observation", "lesson"}:
+                continue
+            scope = (relation.get("attributes") or {}).get("scope")
+            source_records.append({
+                "id": target,
+                "kind": kind,
+                "predicate": relation.get("predicate"),
+                "relation": relation.get("id"),
+                "relation_scope": scope if scope not in (None, "", []) else "NOT_RECORDED",
+                "record": {
+                    "statement": source.get("statement"),
+                    "epistemic_status": source.get("epistemic_status"),
+                    "authority_ref": source.get("authority_ref"),
+                    "evidence_refs": source.get("evidence_refs", []),
+                    "attributes": source.get("attributes", {}),
+                } if source else None,
+                "source_read_status": "INDEXED_RECORD" if source else "NOT_ASSESSED",
+            })
+            seen_sources.add(target)
+        source_records.sort(key=lambda item: (item["kind"], item["id"]))
+        attributes = claim.get("attributes") or {}
+        records = [*history, *source_records]
         candidates.append({
             "id": identifier,
             "statement": claim.get("statement"),
@@ -156,11 +197,17 @@ def method_context(
             "authority_ref": claim.get("authority_ref"),
             "evidence_refs": claim.get("evidence_refs", []),
             "recall_conditions": claim.get("recall_conditions", {}),
+            "procedure_change": {
+                "method_before": attributes.get("method_before") or "NOT_RECORDED",
+                "prior_lesson_id": attributes.get("prior_lesson_id") or "NONE",
+                "method_disposition": attributes.get("method_disposition") or "NOT_RECORDED",
+            },
+            "source_records": source_records,
             "later_related_records": history,
             "related_records_complete": (
                 not neighbors.get("truncated", False)
-                and all(item["source_read_status"] == "INDEXED_RECORD" for item in history)
-                if history else True
+                and all(item["source_read_status"] == "INDEXED_RECORD" for item in records)
+                if records else True
             ),
             "applicability_to_present_task": "NOT_ESTABLISHED",
             "present_method_decision": "AGENT_OWNED",
@@ -187,7 +234,7 @@ def method_context(
             "Methods are explicit authored lesson.attributes.method strings, not inferred from technical lessons.",
             "Candidate discovery uses literal question words or explicit authored evidence/context-for path routes; neither establishes method applicability.",
             "The reviewed lesson corpus is bounded at 250 records. A miss or truncated source is NOT_ASSESSED, not absence.",
-            "Related records and their statements are indexed evidence, not verified support/refutation or Git chronology.",
+            "Later related records are incoming citing records; source_records are the lesson's authored derivation through learned_from and references. Both are indexed evidence, not verified support/refutation or Git chronology; related_records_complete covers both.",
             "Inspect original sources, changed conditions, current authority and counterevidence before selecting a method.",
             "This tool does not choose, adapt, learn, validate or authorize an intellectual procedure.",
         ],
@@ -242,19 +289,21 @@ def _known_claim_ids(root: Path, tracked: set[str]) -> set[str]:
     return ids
 
 
-def _reviewed_lesson_ids(root: Path, source_revision: str) -> set[str]:
-    """A prior method must exist at the episode's cited revision, not only HEAD."""
+def _reviewed_claim_kinds(root: Path, source_revision: str) -> dict[str, str]:
+    """Reviewed claim id -> kind at the episode's cited revision, not only HEAD."""
     names = _git(root, "ls-tree", "-r", "-z", "--name-only", source_revision, "--",
                  ".sensemaking/knowledge").split(chr(0))
-    lesson_ids: set[str] = set()
+    kinds: dict[str, str] = {}
     for name in filter(None, names):
         if not name.endswith(".json"):
             continue
         data = json.loads(_git(root, "show", source_revision + ":" + name))
         for record in data.get("claims", []):
-            if record.get("kind") == "lesson":
-                lesson_ids.add(record["id"])
-    return lesson_ids
+            identifier = record.get("id")
+            kind = record.get("kind")
+            if isinstance(identifier, str) and isinstance(kind, str):
+                kinds[identifier] = kind
+    return kinds
 
 
 def record_method_episode(repo: Path, episode_path: str, output_path: str) -> dict[str, Any]:
@@ -282,7 +331,7 @@ def record_method_episode(repo: Path, episode_path: str, output_path: str) -> di
         "episode_id", "actor", "source_revision", "decision", "disposition",
         "procedure_before", "procedure_after", "observed_result", "scope",
         "conditions", "counterevidence", "revisit_when", "claim_ceiling",
-        "evidence_refs", "prior_lesson_id",
+        "evidence_refs", "prior_lesson_id", "decision_ref",
     }
     unknown = set(data) - accepted
     if unknown:
@@ -318,11 +367,14 @@ def record_method_episode(repo: Path, episode_path: str, output_path: str) -> di
     revisit_when = _string(data, "revisit_when", required=disposition in _METHOD_CHANGES)
     ceiling = _string(data, "claim_ceiling")
     previous = _string(data, "prior_lesson_id", required=False, maximum=160)
+    decision_ref = _string(data, "decision_ref", required=False, maximum=160)
 
     if disposition in {"adapt", "apply", "reject"} and not previous:
         raise ValueError("adapt/apply/reject requires prior_lesson_id")
     if previous and not previous.startswith("lesson:"):
         raise ValueError("prior_lesson_id must name a reviewed lesson claim")
+    if decision_ref and not decision_ref.startswith("decision:"):
+        raise ValueError("decision_ref must name an authored decision claim")
     if disposition in _METHOD_CHANGES:
         if not procedure_before:
             raise ValueError("method development needs an explicit earlier procedure for comparison")
@@ -332,8 +384,11 @@ def record_method_episode(repo: Path, episode_path: str, output_path: str) -> di
     tracked = set(filter(None, _git(root, "ls-files", "-z").split("\0")))
     if episode_relative not in tracked:
         raise ValueError("stage or commit the originating episode file before preparing a reviewed proposal")
-    if previous and previous not in _reviewed_lesson_ids(root, source_revision):
+    reviewed_kinds = _reviewed_claim_kinds(root, source_revision)
+    if previous and reviewed_kinds.get(previous) != "lesson":
         raise ValueError("prior_lesson_id is absent from reviewed knowledge at source_revision")
+    if decision_ref and reviewed_kinds.get(decision_ref) != "decision":
+        raise ValueError("decision_ref is absent from reviewed knowledge at source_revision")
     raw_evidence = data.get("evidence_refs")
     if (not isinstance(raw_evidence, list) or not 1 <= len(raw_evidence) <= 20
             or any(not isinstance(ref, str) or not ref.startswith("file:") for ref in raw_evidence)):
@@ -378,6 +433,7 @@ def record_method_episode(repo: Path, episode_path: str, output_path: str) -> di
             "counterevidence": counterevidence or "NOT_ASSESSED",
             "claim_ceiling": ceiling,
             "prior_lesson_id": previous or "NONE",
+            "decision_ref": decision_ref or "NONE",
         },
     }
     claims = [observation]
@@ -388,6 +444,19 @@ def record_method_episode(repo: Path, episode_path: str, output_path: str) -> di
             "subject": observation_id,
             "predicate": "references",
             "object": previous,
+            "evidence_refs": references,
+            "epistemic_status": "declared",
+        })
+    if decision_ref:
+        # A structured decision anchor lets the existing decision/explain and
+        # method-context consumers reconstruct the method-decision chain. The
+        # relation records attribution, not proof that the method caused the
+        # decision.
+        relations.append({
+            "id": "rel:method-episode-" + episode_id + "-references-decision",
+            "subject": observation_id,
+            "predicate": "references",
+            "object": decision_ref,
             "evidence_refs": references,
             "epistemic_status": "declared",
         })
@@ -415,6 +484,7 @@ def record_method_episode(repo: Path, episode_path: str, output_path: str) -> di
                 "claim_ceiling": ceiling,
                 "method_disposition": disposition,
                 "prior_lesson_id": previous or "NONE",
+                "decision_ref": decision_ref or "NONE",
             },
         })
         relations.append({

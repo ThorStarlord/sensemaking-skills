@@ -650,11 +650,22 @@ conditions, claim ceiling, counterevidence, original outcome, later related
 records and `applicability_to_present_task: NOT_ESTABLISHED`. Later related
 records include linked later decisions as well as incidents, observations and
 lessons; a later decision shows attributed use or reconsideration, not
-validation. The section does not rank, select or establish applicability; a
-miss is `NOT_ASSESSED`. This composition is available on `workspace-query`
-`product-outline` only; use `semantic method context --path` for
-source-path-anchored method discovery. `--method-limit` bounds the returned
-method candidates.
+validation. Each candidate also carries `source_records`: the lesson's outgoing
+`learned_from` source observation and any `references` prior lesson, with their
+authored statements, attributes and relation provenance. `procedure_change`
+exposes `method_before`, `prior_lesson_id` and `method_disposition`.
+`related_records_complete` covers both incoming later records and outgoing
+source records, so an omitted source makes it false rather than silently
+complete. A method episode written with `semantic method record` may name an
+authored `decision` claim at its source revision through `decision_ref`; the
+producer then links the episode observation to that decision. Existing
+`knowledge-query explain` on the decision and `method context` on the lesson
+expose the resulting method-decision chain without a new query surface. The
+link is attribution, not causal proof. The section does not rank, select or
+establish applicability; a miss is `NOT_ASSESSED`. This composition is
+available on `workspace-query` `product-outline` only; use `semantic method
+context --path` for source-path-anchored method discovery. `--method-limit`
+bounds the returned method candidates.
 
 Each visible goal/non-goal carries its statement, source reference and
 authority/epistemic labels. Each linked record carries its actual declared

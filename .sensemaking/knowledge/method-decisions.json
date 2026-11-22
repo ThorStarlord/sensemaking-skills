@@ -1,0 +1,45 @@
+{
+  "schema_version": 2,
+  "claims": [
+    {
+      "id": "decision:method-adaptation-classification-20261122",
+      "kind": "decision",
+      "statement": "Classify the decision-review standing repair as a technical integrity repair, not a methodological adaptation, and do not claim a new learned method from it.",
+      "authority_kind": "delegated",
+      "authority_ref": "artifacts/history/2026-11-22-decision-review-standing-method-episode.json",
+      "evidence_refs": [
+        "file:docs/normal-use/2026-11-19-method-adaptation-claim-correction.md",
+        "file:docs/research/cognitive-capability-assessment-20261119.md",
+        "file:src/sensemaking_skills/decision_review.py",
+        "file:src/sensemaking_skills/method_adaptation.py",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "concept": "MethodClassificationDecision",
+        "decision": "Should the decision-review standing repair be classified as a methodological adaptation or a technical integrity repair?",
+        "classification": "TECHNICAL_INTEGRITY_REPAIR",
+        "basis": "The repair changed how a producer validates an assessment reference at the review source revision. That is a validation-integrity change. It did not demonstrate a changed reusable reasoning procedure, so the adaptation-object check does not support a methodological-development claim.",
+        "conditions": "Applies when a consequential technical repair is offered as evidence of methodological development or a new learned method.",
+        "counterevidence": "The repair yielded a reusable validation principle: derive effective standing with the existing consumer at the exact source revision. That principle is a technical rule; no before/after intellectual procedure was observed.",
+        "claim_ceiling": "One same-agent classification. It does not establish independent reuse, decision influence, comparative benefit, longitudinal development or promotion of a method.",
+        "source_revision": "57ccaa77d42a796bde0077c47d4be8022d3f3b0a",
+        "actor": "Sensemaking construction agent",
+        "agent_owned": true
+      }
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel:method-adaptation-classification-learned-from-lesson",
+      "subject": "decision:method-adaptation-classification-20261122",
+      "predicate": "learned_from",
+      "object": "lesson:method-adaptation-check-procedure-not-only-outcome",
+      "evidence_refs": [
+        "file:docs/normal-use/2026-11-19-method-adaptation-claim-correction.md",
+        "file:docs/research/cognitive-capability-assessment-20261119.md"
+      ],
+      "epistemic_status": "declared"
+    }
+  ]
+}

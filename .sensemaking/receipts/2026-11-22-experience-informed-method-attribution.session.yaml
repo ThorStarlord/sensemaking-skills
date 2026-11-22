@@ -1,0 +1,108 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-11-22-experience-informed-method-attribution
+state: final
+created_at: "2026-11-22T00:00:00Z"
+updated_at: "2026-11-22T00:00:00Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: 7c81c29e0932ff47b32f17f5424edcead7cfc5ec
+  end_ref: fdc0275a0d61a9c611050d82a6340aa2672392f4
+  worktree_clean_at_end: true
+skill_identity:
+  load_mode: harness_discovered
+  sensemaking_source_ref: 57ccaa77d42a796bde0077c47d4be8022d3f3b0a
+goal:
+  statement: "Repair the decision-review assessment-standing validation defect, then develop the strongest warranted SCL-AMS experience-informed method capability without manufacturing a learning episode."
+  source: owner_message
+  source_ref: null
+delegation:
+  granted: [read, local_write, run_local_commands, commit, push, open_pr, merge, knowledge_edit]
+  withheld: [release, deploy, tracker_write, external_publication]
+continuity:
+  resumes: 2026-11-22-consequence-informed-decision-review
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: Repair effective assessment standing in the decision-review producer
+    capability: ordinary_coding
+    status: completed
+    reason: "PR #953 checked only authored assessment_status. PR #952 derives current standing from same-prediction supersedes relations. The producer now reads claims and relations at the exact source revision and reuses assessment_supersession; authored status and effective standing remain distinct."
+    artifact_refs: [src/sensemaking_skills/decision_review.py, .github/workflows/semantic-context-reentry.yml, skills/using-sensemaking/references/decision-review-v1.md, docs/semantic-architecture/persistent-knowledge-cli.md]
+    validation:
+      - command: Real candidate-recall old assessment rejected; active correction accepted; unrelated assessment rejected
+        result: PASS
+      - command: Disposable revision pair verified source-revision mismatch, legacy SUPERSEDED, cross-consequence edge and cycle semantics
+        result: PASS
+      - command: ruff, compileall, YAML parse, git diff --check
+        result: PASS
+      - command: Hosted CI on PR #954
+        result: PASS
+      - command: Post-merge knowledge-build and knowledge-audit at 57ccaa77
+        result: PASS
+  - id: R-2
+    responsibility: Investigate the SCL-AMS method-choice loop and select a warranted capability
+    capability: using-sensemaking
+    status: completed
+    reason: "Method context and method record already cover lesson retrieval, conditions, counterevidence and apply/adapt/reject. The concrete gap was graph attribution: a method episode stored its decision only as free text, so neither consumer could reconstruct the method-decision chain."
+    artifact_refs: [src/sensemaking_skills/method_adaptation.py, skills/repository-semantic-steward/references/recall.md, docs/research/cognitive-capability-assessment-20261119.md]
+    validation:
+      - command: Real method context queries and disposable method-lifecycle probe
+        result: PASS
+      - command: Existing explain consumer exposes an observation linked to a decision without a new query
+        result: PASS
+  - id: R-3
+    responsibility: Implement decision-attributed method episodes and record a real application
+    capability: ordinary_coding
+    status: completed
+    reason: "Optional decision_ref validates an authored decision at the episode source revision, records it on the observation and lesson, and emits a references relation. Existing decision explain and method context reconstruct the chain. The real episode classifies the repair as technical, not methodological."
+    artifact_refs: [src/sensemaking_skills/method_adaptation.py, .sensemaking/knowledge/method-decisions.json, .sensemaking/knowledge/method-episodes.json, artifacts/history/2026-11-22-decision-review-standing-method-episode.json, skills/repository-semantic-steward/references/recall.md]
+    validation:
+      - command: Producer positive, missing-decision and wrong-kind decision_ref probes
+        result: PASS
+      - command: knowledge-proposal-check on the decision and episode packs
+        result: PASS
+      - command: knowledge-build and knowledge-audit at fdc0275a
+        result: PASS
+      - command: Decision explain returns the decision, lesson and method episode; method context returns the decision reference and apply disposition
+        result: PASS
+      - command: ruff, compileall, YAML parse, git diff --check
+        result: PASS
+findings:
+  - id: F-1
+    statement: "The decision-review producer accepted a relation-superseded assessment because it checked only the authored status. The repaired producer reuses assessment_supersession at the exact source revision."
+    epistemic_status: OBSERVED
+    evidence_refs: [src/sensemaking_skills/decision_review.py, src/sensemaking_skills/semantic_architecture/consequence_standing.py]
+    disposition: resolved
+  - id: F-2
+    statement: "SCL method retrieval and method-episode production are functionally integrated. No new selector, controller, mandatory reflection or second supersession engine is warranted."
+    epistemic_status: OBSERVED
+    evidence_refs: [src/sensemaking_skills/method_adaptation.py, docs/research/cognitive-capability-assessment-20261119.md]
+    disposition: no_action
+  - id: F-3
+    statement: "Method episodes recorded a free-text decision but no structured decision relation. The optional decision_ref closes the chain using existing decision and observation kinds and references relations."
+    epistemic_status: OBSERVED
+    evidence_refs: [src/sensemaking_skills/method_adaptation.py, .sensemaking/knowledge/method-episodes.json]
+    disposition: resolved
+  - id: F-4
+    statement: "The recorded method application is same-agent and authored after the decision. It does not establish independent reuse, predecision influence, comparative benefit or longitudinal development."
+    epistemic_status: DERIVED
+    evidence_refs: [artifacts/history/2026-11-22-decision-review-standing-method-episode.json]
+    disposition: no_action
+open_questions:
+  - id: Q-1
+    question: "Will a later independent agent encounter the decision-attributed method episode before a consequential method choice and use, adapt or reject it with source-backed reasons?"
+    source: empirical
+    blocking: false
+    durable_ref: null
+stop:
+  disposition: NO_FURTHER_WARRANT
+  reason: "The integrity repair is merged and verified. The SCL-AMS loop is functionally integrated, and the remaining structured decision attribution is implemented with existing consumers and a real same-agent application. No further code mechanism is warranted without an observed later-agent limitation."
+next:
+  warranted_responsibility: "Observe an authentic later agent using the method-decision chain; do not manufacture the episode. A new mechanism requires a source-grounded consumer failure."
+  blocked_on: []
+persistence: committed
+claim_ceiling: "Functional repair, producer/consumer integration and one same-agent method application only. No independent reuse, decision influence, comparative benefit, longitudinal development, acceptance or promotion is established. #872/#874 remain open."
+action_authorized_by_receipt: false
+immutable: true

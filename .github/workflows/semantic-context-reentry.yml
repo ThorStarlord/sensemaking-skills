@@ -63,10 +63,24 @@ jobs:
                      for row in precedent["later_related_records"])
           assert precedent["recall_conditions"]["scope"] != "NOT_RECORDED"
           assert precedent["recall_conditions"]["claim_ceiling"] != "NOT_RECORDED"
+          assert any(row["id"] == "observation:pr898-construction-qualification-selection-20261117"
+                     and row["predicate"] == "learned_from"
+                     for row in precedent["source_records"])
+          assert precedent["procedure_change"]["method_before"] == "NOT_RECORDED"
+          assert precedent["related_records_complete"] is True
           adaptation = methods.get("lesson:method-adaptation-check-procedure-not-only-outcome")
           assert adaptation is not None
           assert adaptation["recall_conditions"]["counterevidence"] != "NOT_RECORDED"
           assert adaptation["recall_conditions"]["original_outcome"] != "NOT_RECORDED"
+          assert any(row["id"] == "observation:method-adaptation-closure-overreach-20261119"
+                     and row["predicate"] == "learned_from"
+                     for row in adaptation["source_records"])
+          episode = next(row for row in adaptation["later_related_records"]
+                         if row["id"] == "observation:method-episode-2026-11-22-decision-review-standing-method")
+          assert episode["record"]["attributes"]["decision_ref"] == (
+              "decision:method-adaptation-classification-20261122"
+          )
+          assert adaptation["related_records_complete"] is True
           assert result["lesson_corpus_truncated"] is False
           print("Reviewed method context is consumer-readable; agent method learning not evaluated.")
           PY
@@ -145,6 +159,7 @@ jobs:
               "claim_ceiling": "No genuine episode, decision-time reuse, learned method or improved competence",
               "evidence_refs": ["file:docs/normal-use/2026-11-17-construction-vs-qualification-selection-lesson.md"],
               "prior_lesson_id": "lesson:separate-construction-from-learning-qualification-gates",
+              "decision_ref": "decision:review-2026-11-22-local-memory-consequence-review",
           }
           with open(os.environ["METHOD_EPISODE"], "w", encoding="utf-8") as stream:
               json.dump(payload, stream)
@@ -169,7 +184,19 @@ jobs:
           assert len(proposal["claims"]) == 1
           assert proposal["claims"][0]["kind"] == "observation"
           assert proposal["claims"][0]["epistemic_status"] == "declared"
-          assert proposal["relations"][0]["object"] == "lesson:separate-construction-from-learning-qualification-gates"
+          assert proposal["claims"][0]["attributes"]["decision_ref"] == (
+              "decision:review-2026-11-22-local-memory-consequence-review"
+          )
+          assert any(
+              row["predicate"] == "references"
+              and row["object"] == "lesson:separate-construction-from-learning-qualification-gates"
+              for row in proposal["relations"]
+          )
+          assert any(
+              row["predicate"] == "references"
+              and row["object"] == "decision:review-2026-11-22-local-memory-consequence-review"
+              for row in proposal["relations"]
+          )
           PY
           sensemaking-skills semantic knowledge-proposal-check \
             --repo . --proposal "$PROPOSAL" --json > /dev/null

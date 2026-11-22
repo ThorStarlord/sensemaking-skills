@@ -1,0 +1,24 @@
+{
+  "episode_id": "2026-11-22-decision-review-standing-method",
+  "actor": "Sensemaking construction agent",
+  "source_revision": "b8874c02ca83606e7d087c890c269d61ac7248bb",
+  "decision": "Should the decision-review standing repair be classified as a methodological adaptation or a technical integrity repair?",
+  "disposition": "apply",
+  "procedure_before": "Treat a consequential repair that changes evidence validation as a candidate methodological adaptation and consider recording a new learned method.",
+  "procedure_after": "",
+  "observed_result": "The adaptation-object check separated the producer's validation change from a changed intellectual procedure. The repair is classified as a technical integrity repair; no new method lesson or adaptation is claimed.",
+  "scope": "Completion or learning claims that cite a technical repair as evidence of methodological development.",
+  "conditions": "A consequential engineering result is being offered as evidence of a changed reasoning procedure.",
+  "counterevidence": "The repair produced a reusable validation principle, but that is a technical rule; no before/after reasoning procedure was observed.",
+  "revisit_when": "A later episode shows an observable before/after reasoning-procedure change with source evidence.",
+  "claim_ceiling": "One same-agent classification and method application; no independent reuse, decision influence, comparative benefit or longitudinal development.",
+  "evidence_refs": [
+    "file:docs/normal-use/2026-11-19-method-adaptation-claim-correction.md",
+    "file:docs/research/cognitive-capability-assessment-20261119.md",
+    "file:src/sensemaking_skills/decision_review.py",
+    "file:src/sensemaking_skills/method_adaptation.py",
+    "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+  ],
+  "prior_lesson_id": "lesson:method-adaptation-check-procedure-not-only-outcome",
+  "decision_ref": "decision:method-adaptation-classification-20261122"
+}

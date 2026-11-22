@@ -1,0 +1,80 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-11-22-method-source-provenance
+state: final
+created_at: "2026-11-22T00:00:00Z"
+updated_at: "2026-11-22T00:00:00Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: fdc0275a0d61a9c611050d82a6340aa2672392f4
+  end_ref: 520db9101e8560c834591683f570cadb78a39ed3
+  worktree_clean_at_end: true
+skill_identity:
+  load_mode: harness_discovered
+  sensemaking_source_ref: 57ccaa77d42a796bde0077c47d4be8022d3f3b0a
+goal:
+  statement: "Close the method-context source-provenance gap found by an independent source critique while preserving agent-owned applicability judgment."
+  source: owner_message
+  source_ref: null
+delegation:
+  granted: [read, local_write, run_local_commands, commit, push, open_pr, merge, knowledge_edit]
+  withheld: [release, deploy, tracker_write, external_publication]
+continuity:
+  resumes: 2026-11-22-experience-informed-method-attribution
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: Expose each method candidate's outgoing source records and procedure change
+    capability: ordinary_coding
+    status: completed
+    reason: "citing_records is incoming-only. method context now adds the lesson's learned_from observation and any references prior lesson, plus method_before, prior_lesson_id and method_disposition. Completeness covers both directions."
+    artifact_refs: [src/sensemaking_skills/method_adaptation.py, skills/repository-semantic-steward/references/recall.md, docs/semantic-architecture/persistent-knowledge-cli.md]
+    validation:
+      - command: Real lessons show their learned_from source observations; adapted probe lesson shows method_before and prior lesson
+        result: PASS
+      - command: Hosted method-context assertions for source records, completeness and decision_ref
+        result: PASS
+      - command: ruff, compileall, YAML parse, git diff --check
+        result: PASS
+  - id: R-2
+    responsibility: Verify the consumer change requires no producer or schema change
+    capability: using-sensemaking
+    status: completed
+    reason: "explain already returns the source claims and relations. The fix is composition in method_context; no new kind, relation, query or persistent store is needed."
+    artifact_refs: [src/sensemaking_skills/method_adaptation.py, src/sensemaking_skills/semantic_architecture/knowledge_architecture.py]
+    validation:
+      - command: knowledge-build, knowledge-audit and proposal checks at 520db910
+        result: PASS
+findings:
+  - id: F-1
+    statement: "Method context returned related_records_complete true while omitting the lesson's own learned_from source observation and any prior lesson, because citing_records is incoming-only."
+    epistemic_status: OBSERVED
+    evidence_refs: [src/sensemaking_skills/method_adaptation.py, src/sensemaking_skills/semantic_architecture/knowledge_architecture.py]
+    disposition: resolved
+  - id: F-2
+    statement: "The source observation and prior lesson are already in the explain neighborhood; surfacing them is a consumer composition fix, not missing data or retrieval."
+    epistemic_status: OBSERVED
+    evidence_refs: [src/sensemaking_skills/method_adaptation.py]
+    disposition: resolved
+  - id: F-3
+    statement: "No later-agent use of the new source provenance is observed. The change improves disclosure and candidate completeness, not demonstrated decision influence."
+    epistemic_status: DERIVED
+    evidence_refs: [.sensemaking/knowledge/method-episodes.json]
+    disposition: no_action
+open_questions:
+  - id: Q-1
+    question: "Does seeing method_before and the source observation change a later agent's method applicability judgment in authentic work?"
+    source: empirical
+    blocking: false
+    durable_ref: null
+stop:
+  disposition: NO_FURTHER_WARRANT
+  reason: "The consumer provenance gap is closed with existing data and consumers. Further method-context machinery requires an observed later-agent failure, not another representational addition."
+next:
+  warranted_responsibility: "Observe an authentic later agent using method source records and the decision-attributed episode before a consequential choice. Do not manufacture the episode."
+  blocked_on: []
+persistence: committed
+claim_ceiling: "Functional consumer composition and mechanical verification only. No independent reuse, decision influence, comparative benefit or longitudinal development is established. #872/#874 remain open."
+action_authorized_by_receipt: false
+immutable: true
