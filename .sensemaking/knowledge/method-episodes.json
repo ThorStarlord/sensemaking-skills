@@ -1,0 +1,69 @@
+{
+  "schema_version": 2,
+  "claims": [
+    {
+      "id": "observation:method-episode-2026-11-22-decision-review-standing-method",
+      "kind": "observation",
+      "statement": "Agent-authored method episode: The adaptation-object check separated the producer's validation change from a changed intellectual procedure. The repair is classified as a technical integrity repair; no new method lesson or adaptation is claimed.",
+      "authority_kind": "document",
+      "authority_ref": "artifacts/history/2026-11-22-decision-review-standing-method-episode.json",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-22-decision-review-standing-method-episode.json",
+        "file:docs/normal-use/2026-11-19-method-adaptation-claim-correction.md",
+        "file:docs/research/cognitive-capability-assessment-20261119.md",
+        "file:src/sensemaking_skills/decision_review.py",
+        "file:src/sensemaking_skills/method_adaptation.py",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "actor": "Sensemaking construction agent",
+        "source_revision": "b8874c02ca83606e7d087c890c269d61ac7248bb",
+        "evidence_paths_not_in_source_revision": [
+          "artifacts/history/2026-11-22-decision-review-standing-method-episode.json"
+        ],
+        "decision": "Should the decision-review standing repair be classified as a methodological adaptation or a technical integrity repair?",
+        "method_disposition": "apply",
+        "procedure_before": "Treat a consequential repair that changes evidence validation as a candidate methodological adaptation and consider recording a new learned method.",
+        "procedure_after": "NO_CHANGE_RECORDED",
+        "scope": "Completion or learning claims that cite a technical repair as evidence of methodological development.",
+        "counterevidence": "The repair produced a reusable validation principle, but that is a technical rule; no before/after reasoning procedure was observed.",
+        "claim_ceiling": "One same-agent classification and method application; no independent reuse, decision influence, comparative benefit or longitudinal development.",
+        "prior_lesson_id": "lesson:method-adaptation-check-procedure-not-only-outcome",
+        "decision_ref": "decision:method-adaptation-classification-20261122"
+      }
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel:method-episode-2026-11-22-decision-review-standing-method-references-prior",
+      "subject": "observation:method-episode-2026-11-22-decision-review-standing-method",
+      "predicate": "references",
+      "object": "lesson:method-adaptation-check-procedure-not-only-outcome",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-22-decision-review-standing-method-episode.json",
+        "file:docs/normal-use/2026-11-19-method-adaptation-claim-correction.md",
+        "file:docs/research/cognitive-capability-assessment-20261119.md",
+        "file:src/sensemaking_skills/decision_review.py",
+        "file:src/sensemaking_skills/method_adaptation.py",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:method-episode-2026-11-22-decision-review-standing-method-references-decision",
+      "subject": "observation:method-episode-2026-11-22-decision-review-standing-method",
+      "predicate": "references",
+      "object": "decision:method-adaptation-classification-20261122",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-22-decision-review-standing-method-episode.json",
+        "file:docs/normal-use/2026-11-19-method-adaptation-claim-correction.md",
+        "file:docs/research/cognitive-capability-assessment-20261119.md",
+        "file:src/sensemaking_skills/decision_review.py",
+        "file:src/sensemaking_skills/method_adaptation.py",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ],
+      "epistemic_status": "declared"
+    }
+  ]
+}
