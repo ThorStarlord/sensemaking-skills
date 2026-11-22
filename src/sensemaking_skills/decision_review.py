@@ -15,6 +15,7 @@ import re
 from pathlib import Path
 from typing import Any, Mapping
 
+from .semantic_architecture.consequence_standing import assessment_supersession
 from .semantic_architecture.knowledge import read_authored_claim, read_authored_relation
 from .semantic_architecture.worktree_context import guarded_git_text
 
@@ -64,11 +65,14 @@ def _git(root: Path, *args: str) -> str:
         raise ValueError(f"safe Git source check failed: {exc}") from exc
 
 
-def _claims_at_revision(root: Path, revision: str) -> dict[str, dict]:
-    """Read every authored claim as reviewed at the exact source revision."""
+def _knowledge_at_revision(
+    root: Path, revision: str,
+) -> tuple[dict[str, dict], list[dict]]:
+    """Read authored claims and relations as reviewed at the exact source revision."""
     names = _git(root, "ls-tree", "-r", "-z", "--name-only", revision,
                  "--", ".sensemaking/knowledge").split(chr(0))
     claims: dict[str, dict] = {}
+    relations: list[dict] = []
     for name in filter(None, names):
         if not name.endswith(".json"):
             continue
@@ -80,7 +84,11 @@ def _claims_at_revision(root: Path, revision: str) -> dict[str, dict]:
             if identifier in claims:
                 raise ValueError(f"duplicate authored claim id: {identifier}")
             claims[identifier] = record
-    return claims
+        for record in data.get("relations", []):
+            if not isinstance(record, dict):
+                raise ValueError("authored knowledge has an invalid relation")
+            relations.append(record)
+    return claims, relations
 
 
 def _tracked_paths(root: Path) -> set[str]:
@@ -164,7 +172,7 @@ def record_decision_review(repo: Path, episode_path: str, output_path: str) -> d
             raise ValueError(f"evidence file is not staged or committed: {path}")
     references = list(dict.fromkeys(["file:" + episode_relative, *raw_evidence]))
 
-    claims = _claims_at_revision(root, source_revision)
+    claims, relations = _knowledge_at_revision(root, source_revision)
     option = claims.get(source_option)
     if not option or option.get("kind") != "alternative":
         raise ValueError("source_option must be an authored alternative at source_revision")
@@ -179,6 +187,7 @@ def record_decision_review(repo: Path, episode_path: str, output_path: str) -> d
         if (record.get("attributes") or {}).get("source_option") != source_option:
             raise ValueError(f"consequence does not belong to {source_option}: {consequence}")
 
+    superseded_by, cyclic = assessment_supersession(claims, relations)
     for assessment in assessment_refs:
         record = claims.get(assessment)
         if not record or record.get("kind") != "observation":
@@ -186,9 +195,19 @@ def record_decision_review(repo: Path, episode_path: str, output_path: str) -> d
         attributes = record.get("attributes") or {}
         if attributes.get("consequence_ref") not in consequence_refs:
             raise ValueError(f"assessment does not resolve a cited consequence: {assessment}")
-        if attributes.get("assessment_status") == "SUPERSEDED":
+        # Match consequence-standing semantics: an authored SUPERSEDED status is
+        # historical evidence, and a same-prediction supersedes edge makes the
+        # target inactive unless it participates in an invalid cycle. A cycle
+        # keeps its members active instead of erasing standing.
+        relation_superseded = assessment in superseded_by and assessment not in cyclic
+        if attributes.get("assessment_status") == "SUPERSEDED" or relation_superseded:
+            replacements = sorted(superseded_by.get(assessment, ()))
+            reason = (
+                "same-prediction supersession by " + ", ".join(replacements)
+                if replacements else "an authored SUPERSEDED status"
+            )
             raise ValueError(
-                f"assessment_ref cites a superseded assessment; inspect assessment_history: {assessment}"
+                f"assessment_ref is not active at source_revision ({reason}): {assessment}"
             )
 
     if method_ref:
