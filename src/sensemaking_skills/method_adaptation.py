@@ -242,19 +242,21 @@ def _known_claim_ids(root: Path, tracked: set[str]) -> set[str]:
     return ids
 
 
-def _reviewed_lesson_ids(root: Path, source_revision: str) -> set[str]:
-    """A prior method must exist at the episode's cited revision, not only HEAD."""
+def _reviewed_claim_kinds(root: Path, source_revision: str) -> dict[str, str]:
+    """Reviewed claim id -> kind at the episode's cited revision, not only HEAD."""
     names = _git(root, "ls-tree", "-r", "-z", "--name-only", source_revision, "--",
                  ".sensemaking/knowledge").split(chr(0))
-    lesson_ids: set[str] = set()
+    kinds: dict[str, str] = {}
     for name in filter(None, names):
         if not name.endswith(".json"):
             continue
         data = json.loads(_git(root, "show", source_revision + ":" + name))
         for record in data.get("claims", []):
-            if record.get("kind") == "lesson":
-                lesson_ids.add(record["id"])
-    return lesson_ids
+            identifier = record.get("id")
+            kind = record.get("kind")
+            if isinstance(identifier, str) and isinstance(kind, str):
+                kinds[identifier] = kind
+    return kinds
 
 
 def record_method_episode(repo: Path, episode_path: str, output_path: str) -> dict[str, Any]:
@@ -282,7 +284,7 @@ def record_method_episode(repo: Path, episode_path: str, output_path: str) -> di
         "episode_id", "actor", "source_revision", "decision", "disposition",
         "procedure_before", "procedure_after", "observed_result", "scope",
         "conditions", "counterevidence", "revisit_when", "claim_ceiling",
-        "evidence_refs", "prior_lesson_id",
+        "evidence_refs", "prior_lesson_id", "decision_ref",
     }
     unknown = set(data) - accepted
     if unknown:
@@ -318,11 +320,14 @@ def record_method_episode(repo: Path, episode_path: str, output_path: str) -> di
     revisit_when = _string(data, "revisit_when", required=disposition in _METHOD_CHANGES)
     ceiling = _string(data, "claim_ceiling")
     previous = _string(data, "prior_lesson_id", required=False, maximum=160)
+    decision_ref = _string(data, "decision_ref", required=False, maximum=160)
 
     if disposition in {"adapt", "apply", "reject"} and not previous:
         raise ValueError("adapt/apply/reject requires prior_lesson_id")
     if previous and not previous.startswith("lesson:"):
         raise ValueError("prior_lesson_id must name a reviewed lesson claim")
+    if decision_ref and not decision_ref.startswith("decision:"):
+        raise ValueError("decision_ref must name an authored decision claim")
     if disposition in _METHOD_CHANGES:
         if not procedure_before:
             raise ValueError("method development needs an explicit earlier procedure for comparison")
@@ -332,8 +337,11 @@ def record_method_episode(repo: Path, episode_path: str, output_path: str) -> di
     tracked = set(filter(None, _git(root, "ls-files", "-z").split("\0")))
     if episode_relative not in tracked:
         raise ValueError("stage or commit the originating episode file before preparing a reviewed proposal")
-    if previous and previous not in _reviewed_lesson_ids(root, source_revision):
+    reviewed_kinds = _reviewed_claim_kinds(root, source_revision)
+    if previous and reviewed_kinds.get(previous) != "lesson":
         raise ValueError("prior_lesson_id is absent from reviewed knowledge at source_revision")
+    if decision_ref and reviewed_kinds.get(decision_ref) != "decision":
+        raise ValueError("decision_ref is absent from reviewed knowledge at source_revision")
     raw_evidence = data.get("evidence_refs")
     if (not isinstance(raw_evidence, list) or not 1 <= len(raw_evidence) <= 20
             or any(not isinstance(ref, str) or not ref.startswith("file:") for ref in raw_evidence)):
@@ -378,6 +386,7 @@ def record_method_episode(repo: Path, episode_path: str, output_path: str) -> di
             "counterevidence": counterevidence or "NOT_ASSESSED",
             "claim_ceiling": ceiling,
             "prior_lesson_id": previous or "NONE",
+            "decision_ref": decision_ref or "NONE",
         },
     }
     claims = [observation]
@@ -388,6 +397,19 @@ def record_method_episode(repo: Path, episode_path: str, output_path: str) -> di
             "subject": observation_id,
             "predicate": "references",
             "object": previous,
+            "evidence_refs": references,
+            "epistemic_status": "declared",
+        })
+    if decision_ref:
+        # A structured decision anchor lets the existing decision/explain and
+        # method-context consumers reconstruct the method-decision chain. The
+        # relation records attribution, not proof that the method caused the
+        # decision.
+        relations.append({
+            "id": "rel:method-episode-" + episode_id + "-references-decision",
+            "subject": observation_id,
+            "predicate": "references",
+            "object": decision_ref,
             "evidence_refs": references,
             "epistemic_status": "declared",
         })
@@ -415,6 +437,7 @@ def record_method_episode(repo: Path, episode_path: str, output_path: str) -> di
                 "claim_ceiling": ceiling,
                 "method_disposition": disposition,
                 "prior_lesson_id": previous or "NONE",
+                "decision_ref": decision_ref or "NONE",
             },
         })
         relations.append({

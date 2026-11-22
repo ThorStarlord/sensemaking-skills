@@ -119,11 +119,14 @@ The episode JSON has these fields:
   "revisit_when": "conditions for source-checked reconsideration",
   "claim_ceiling": "what the observation cannot show",
   "evidence_refs": ["file:tracked/evidence/path.md"],
-  "prior_lesson_id": "lesson:existing-procedure-id, only if adapting/applying/rejecting it"
+  "prior_lesson_id": "lesson:existing-procedure-id, only if adapting/applying/rejecting it",
+  "decision_ref": "decision:existing-decision-id, optional"
 }
 ```
 
 `develop` and `adapt` require a genuinely different, explicit before/after *reasoning procedure*; `adapt` requires a checked prior reviewed lesson **already present at the stated `source_revision`** (not merely a lesson introduced later on `HEAD`). The producer reports which tracked evidence paths were not yet present at that source commit: a later result may legitimately cite those paths, but their presence must not be retroactively attributed to the earlier decision. This mechanical history check does not prove a prior agent actually read a lesson. `apply` and `reject` preserve an attributed observation referencing a prior lesson without manufacturing a new method. `no_change` writes nothing. An input that merely changes a factual or technical hypothesis should use ordinary RECONCILE, not manufacture method adaptation.
+
+`decision_ref` optionally names an authored `decision` claim at the same `source_revision`. The producer adds a `references` relation from the episode observation to that decision, so `knowledge-query explain` on the decision shows the method episode and `method context` shows the decision reference alongside the lesson. This reconstructs the method-decision chain; it is attribution, not proof that the method caused the decision or that the decision used it before the outcome.
 
 ```bash
 git add path/to/actual-episode.json
