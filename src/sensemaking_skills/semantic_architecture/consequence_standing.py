@@ -20,6 +20,7 @@ MIXED_ASSESSMENTS = "MIXED_ASSESSMENTS"
 SUPERSEDED_ASSESSMENT = "SUPERSEDED"
 
 _MAX_SOURCE_LIST = 8
+_MAX_REVIEW_LIST = 5
 _NO_ASSESSMENT_REASON = "NO_ASSESSMENT"
 _ASSESSMENT_SOURCES_CHANGED = "ASSESSMENT_SOURCES_CHANGED"
 _PREDICTION_SOURCES_CHANGED = "PREDICTION_SOURCES_CHANGED"
@@ -113,6 +114,7 @@ def consequence_standing(
     """Project standing per ``conseq:`` hypothesis from authored records only."""
     if not 1 <= limit <= 500:
         raise ValueError("consequence standing limit must be between 1 and 500")
+    relations = list(relations)
 
     assessments_by_consequence: dict[str, set[str]] = {}
     for relation in relations:
@@ -286,11 +288,42 @@ def consequence_standing(
             link["decision_changing_consequences"].append(row["consequence_id"])
         if row["feedback_outcome"] != "NOT_RECORDED" and row["feedback_outcome"] not in link["feedback_outcomes"]:
             link["feedback_outcomes"].append(row["feedback_outcome"])
+    reviews_by_option: dict[str, dict[str, dict]] = {}
+    for relation in relations:
+        if relation.get("predicate") != "references":
+            continue
+        subject, target = relation.get("subject"), relation.get("object")
+        if not isinstance(subject, str) or not isinstance(target, str):
+            continue
+        if target not in option_totals:
+            continue
+        decision = claims.get(subject) or {}
+        if decision.get("kind") != "decision":
+            continue
+        attributes = decision.get("attributes") or {}
+        if attributes.get("review_of") != target:
+            continue
+        disposition = attributes.get("disposition")
+        if not isinstance(disposition, str) or not disposition:
+            continue
+        revision = attributes.get("source_revision")
+        reviews_by_option.setdefault(target, {})[subject] = {
+            "decision_id": subject,
+            "disposition": disposition,
+            "source_revision": revision if isinstance(revision, str) else "NOT_RECORDED",
+        }
     for link in decision_links.values():
         returned = len(link["consequence_ids"])
         link["consequence_returned_total"] = returned
         link["consequence_omitted_total"] = max(0, link["consequence_total"] - returned)
         link["complete"] = link["consequence_omitted_total"] == 0
+        reviews = sorted(
+            reviews_by_option.get(link["source_option"], {}).values(),
+            key=lambda item: item["decision_id"],
+        )
+        link["reviews"] = reviews[:_MAX_REVIEW_LIST]
+        link["review_total"] = len(reviews)
+        link["review_omitted"] = max(0, len(reviews) - _MAX_REVIEW_LIST)
     links = sorted(decision_links.values(), key=lambda item: item["source_option"])
     total_links = len(option_totals)
     returned_links = len(links)
@@ -327,6 +360,7 @@ def consequence_standing(
             "Each assessment keeps its authored status in assessment_history. A same-prediction supersedes edge, or an authored SUPERSEDED status, excludes it from current standing; the original assertion is never rewritten.",
             "MIXED_ASSESSMENTS means active assessments disagree. A supersession cycle is exposed as supersession_integrity CYCLE and does not erase every assessment from current standing.",
             "decision_link_total counts distinct recorded source-option groups; decision_link_returned_total counts groups present in this bounded view. A returned link with complete false omits member consequences.",
+            "Reviews are authored decision records that reference the option; they are later evidence, not automatic changes to the option or its preference. Review list order is deterministic decision-id order, not proven chronology.",
             "A revised prediction remains visible; inspect its epistemic_status and supersedes relations rather than treating a superseded prediction as current.",
         ],
     }

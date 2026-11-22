@@ -1,0 +1,217 @@
+{
+  "schema_version": 2,
+  "claims": [
+    {
+      "id": "decision:review-2026-11-22-local-memory-consequence-review",
+      "kind": "decision",
+      "statement": "Consequence-informed decision review at 5c84235498: retain_with_limitation for arch:git-reviewed-local-memory. The option remains preferred only within its authored knowledge-edit scope. One Atlas Midgard reuse is observed consistent and the write-authority constraint is partly observed, but the central candidate-recall benefit has no qualifying later discovery session. The option is retained with that limitation rather than treated as validated or rejected.",
+      "authority_kind": "delegated",
+      "authority_ref": "artifacts/history/2026-11-22-local-memory-consequence-review.json",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-22-local-memory-consequence-review.json",
+        "file:.sensemaking/knowledge/prospective-reasoning.json",
+        "file:.sensemaking/knowledge/consequence-assessments.json",
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "file:docs/normal-use/2026-11-17-construction-vs-qualification-selection-lesson.md"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "concept": "DecisionReview",
+        "review_of": "arch:git-reviewed-local-memory",
+        "disposition": "retain_with_limitation",
+        "basis": "The option remains preferred only within its authored knowledge-edit scope. One Atlas Midgard reuse is observed consistent and the write-authority constraint is partly observed, but the central candidate-recall benefit has no qualifying later discovery session. The option is retained with that limitation rather than treated as validated or rejected.",
+        "conditions": "Only sessions that hold knowledge-edit and commit authority in the target. Re-inspect before any broader adoption, preference change or claim that the option improves later discovery.",
+        "counterevidence": "No qualifying later discovery session is recorded for the candidate-recall benefit. Target maintenance burden and citation noise remain NO_ASSESSMENT. The observed reuse is one Atlas Midgard episode, not independent evidence of benefit.",
+        "claim_ceiling": "This is an agent-owned review of authored evidence. It does not establish causal benefit, independent-agent use, comparative advantage or authority to promote the option.",
+        "source_revision": "5c842354983c81b7c9cc4ef61b0b94e940ac3dde",
+        "actor": "Sensemaking construction agent",
+        "consequence_refs": [
+          "conseq:candidate-recall-in-later-discovery",
+          "conseq:persistence-requires-write-authority",
+          "conseq:target-maintenance-burden",
+          "conseq:citation-noise",
+          "conseq:knowledge-surface-bootstrap",
+          "conseq:prospective-decision-memory-reuse"
+        ],
+        "assessment_refs": [
+          "observation:consequence-assessment-candidate-recall-correction-20261028",
+          "observation:consequence-assessment-persistence-authority-20261028",
+          "observation:consequence-assessment-knowledge-surface-bootstrap-20261028",
+          "observation:consequence-assessment-prospective-decision-memory-reuse-20261028"
+        ],
+        "method_ref": "lesson:separate-construction-from-learning-qualification-gates",
+        "agent_owned": true
+      }
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel:decision-review-2026-11-22-local-memory-consequence-review-references-option",
+      "subject": "decision:review-2026-11-22-local-memory-consequence-review",
+      "predicate": "references",
+      "object": "arch:git-reviewed-local-memory",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-22-local-memory-consequence-review.json",
+        "file:.sensemaking/knowledge/prospective-reasoning.json",
+        "file:.sensemaking/knowledge/consequence-assessments.json",
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "file:docs/normal-use/2026-11-17-construction-vs-qualification-selection-lesson.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:decision-review-2026-11-22-local-memory-consequence-review-references-consequence-1",
+      "subject": "decision:review-2026-11-22-local-memory-consequence-review",
+      "predicate": "references",
+      "object": "conseq:candidate-recall-in-later-discovery",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-22-local-memory-consequence-review.json",
+        "file:.sensemaking/knowledge/prospective-reasoning.json",
+        "file:.sensemaking/knowledge/consequence-assessments.json",
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "file:docs/normal-use/2026-11-17-construction-vs-qualification-selection-lesson.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:decision-review-2026-11-22-local-memory-consequence-review-references-consequence-2",
+      "subject": "decision:review-2026-11-22-local-memory-consequence-review",
+      "predicate": "references",
+      "object": "conseq:persistence-requires-write-authority",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-22-local-memory-consequence-review.json",
+        "file:.sensemaking/knowledge/prospective-reasoning.json",
+        "file:.sensemaking/knowledge/consequence-assessments.json",
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "file:docs/normal-use/2026-11-17-construction-vs-qualification-selection-lesson.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:decision-review-2026-11-22-local-memory-consequence-review-references-consequence-3",
+      "subject": "decision:review-2026-11-22-local-memory-consequence-review",
+      "predicate": "references",
+      "object": "conseq:target-maintenance-burden",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-22-local-memory-consequence-review.json",
+        "file:.sensemaking/knowledge/prospective-reasoning.json",
+        "file:.sensemaking/knowledge/consequence-assessments.json",
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "file:docs/normal-use/2026-11-17-construction-vs-qualification-selection-lesson.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:decision-review-2026-11-22-local-memory-consequence-review-references-consequence-4",
+      "subject": "decision:review-2026-11-22-local-memory-consequence-review",
+      "predicate": "references",
+      "object": "conseq:citation-noise",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-22-local-memory-consequence-review.json",
+        "file:.sensemaking/knowledge/prospective-reasoning.json",
+        "file:.sensemaking/knowledge/consequence-assessments.json",
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "file:docs/normal-use/2026-11-17-construction-vs-qualification-selection-lesson.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:decision-review-2026-11-22-local-memory-consequence-review-references-consequence-5",
+      "subject": "decision:review-2026-11-22-local-memory-consequence-review",
+      "predicate": "references",
+      "object": "conseq:knowledge-surface-bootstrap",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-22-local-memory-consequence-review.json",
+        "file:.sensemaking/knowledge/prospective-reasoning.json",
+        "file:.sensemaking/knowledge/consequence-assessments.json",
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "file:docs/normal-use/2026-11-17-construction-vs-qualification-selection-lesson.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:decision-review-2026-11-22-local-memory-consequence-review-references-consequence-6",
+      "subject": "decision:review-2026-11-22-local-memory-consequence-review",
+      "predicate": "references",
+      "object": "conseq:prospective-decision-memory-reuse",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-22-local-memory-consequence-review.json",
+        "file:.sensemaking/knowledge/prospective-reasoning.json",
+        "file:.sensemaking/knowledge/consequence-assessments.json",
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "file:docs/normal-use/2026-11-17-construction-vs-qualification-selection-lesson.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:decision-review-2026-11-22-local-memory-consequence-review-references-assessment-1",
+      "subject": "decision:review-2026-11-22-local-memory-consequence-review",
+      "predicate": "references",
+      "object": "observation:consequence-assessment-candidate-recall-correction-20261028",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-22-local-memory-consequence-review.json",
+        "file:.sensemaking/knowledge/prospective-reasoning.json",
+        "file:.sensemaking/knowledge/consequence-assessments.json",
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "file:docs/normal-use/2026-11-17-construction-vs-qualification-selection-lesson.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:decision-review-2026-11-22-local-memory-consequence-review-references-assessment-2",
+      "subject": "decision:review-2026-11-22-local-memory-consequence-review",
+      "predicate": "references",
+      "object": "observation:consequence-assessment-persistence-authority-20261028",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-22-local-memory-consequence-review.json",
+        "file:.sensemaking/knowledge/prospective-reasoning.json",
+        "file:.sensemaking/knowledge/consequence-assessments.json",
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "file:docs/normal-use/2026-11-17-construction-vs-qualification-selection-lesson.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:decision-review-2026-11-22-local-memory-consequence-review-references-assessment-3",
+      "subject": "decision:review-2026-11-22-local-memory-consequence-review",
+      "predicate": "references",
+      "object": "observation:consequence-assessment-knowledge-surface-bootstrap-20261028",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-22-local-memory-consequence-review.json",
+        "file:.sensemaking/knowledge/prospective-reasoning.json",
+        "file:.sensemaking/knowledge/consequence-assessments.json",
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "file:docs/normal-use/2026-11-17-construction-vs-qualification-selection-lesson.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:decision-review-2026-11-22-local-memory-consequence-review-references-assessment-4",
+      "subject": "decision:review-2026-11-22-local-memory-consequence-review",
+      "predicate": "references",
+      "object": "observation:consequence-assessment-prospective-decision-memory-reuse-20261028",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-22-local-memory-consequence-review.json",
+        "file:.sensemaking/knowledge/prospective-reasoning.json",
+        "file:.sensemaking/knowledge/consequence-assessments.json",
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "file:docs/normal-use/2026-11-17-construction-vs-qualification-selection-lesson.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:decision-review-2026-11-22-local-memory-consequence-review-learned-from-method",
+      "subject": "decision:review-2026-11-22-local-memory-consequence-review",
+      "predicate": "learned_from",
+      "object": "lesson:separate-construction-from-learning-qualification-gates",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-22-local-memory-consequence-review.json",
+        "file:.sensemaking/knowledge/prospective-reasoning.json",
+        "file:.sensemaking/knowledge/consequence-assessments.json",
+        "file:artifacts/history/2026-10-28-discovery-memory-prospective-synthesis.md",
+        "file:docs/normal-use/2026-11-17-construction-vs-qualification-selection-lesson.md"
+      ],
+      "epistemic_status": "declared"
+    }
+  ]
+}

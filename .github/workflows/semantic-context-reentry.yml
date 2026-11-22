@@ -11,6 +11,7 @@ on:
       - 'src/sensemaking_skills/semantic_architecture/**'
       - 'src/sensemaking_skills/semantic_cli.py'
       - 'src/sensemaking_skills/method_adaptation.py'
+      - 'src/sensemaking_skills/decision_review.py'
       - 'src/sensemaking_skills/workspace_knowledge.py'
       - 'src/sensemaking_skills/workflow_availability.py'
       - 'skills/strategic-repository-analysis/**'
@@ -57,6 +58,8 @@ jobs:
           assert precedent["applicability_to_present_task"] == "NOT_ESTABLISHED"
           assert precedent["authority_ref"]
           assert any(row["id"] == "observation:construction-gate-application-20261118"
+                     for row in precedent["later_related_records"])
+          assert any(row["id"] == "decision:review-2026-11-22-local-memory-consequence-review"
                      for row in precedent["later_related_records"])
           assert precedent["recall_conditions"]["scope"] != "NOT_RECORDED"
           assert precedent["recall_conditions"]["claim_ceiling"] != "NOT_RECORDED"
@@ -174,6 +177,66 @@ jobs:
           rm -- "$EPISODE" "$PROPOSAL"
           test -z "$(git status --porcelain)"
           echo "Temporary method proposal validated and discarded; no learning episode retained."
+      - name: Exercise decision-review producer contract (mechanics only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          REF="$(git rev-parse HEAD)"
+          test -z "$(git status --porcelain)"
+          EPISODE=".sensemaking/decision-review-contract-ci-fixture.json"
+          PROPOSAL=".sensemaking/knowledge/decision-review-contract-ci-fixture.json"
+          REVIEW_REF="$REF" REVIEW_EPISODE="$EPISODE" python - <<'PY'
+          import json
+          import os
+          payload = {
+              "review_id": "ci-contract-fixture",
+              "actor": "CI mechanical contract fixture; not an autonomous review agent",
+              "source_revision": os.environ["REVIEW_REF"],
+              "source_option": "arch:git-reviewed-local-memory",
+              "disposition": "reaffirm",
+              "basis": "Synthetic input for mechanical verification only; not a genuine decision review.",
+              "conditions": "CI producer contract, never cognitive evidence.",
+              "counterevidence": "NOT_ASSESSED",
+              "claim_ceiling": "No genuine decision review, decision influence or improved judgment.",
+              "evidence_refs": ["file:.sensemaking/knowledge/prospective-reasoning.json"],
+              "consequence_refs": ["conseq:persistence-requires-write-authority"],
+              "assessment_refs": ["observation:consequence-assessment-persistence-authority-20261028"],
+              "method_ref": "lesson:separate-construction-from-learning-qualification-gates",
+          }
+          with open(os.environ["REVIEW_EPISODE"], "w", encoding="utf-8") as stream:
+              json.dump(payload, stream)
+          PY
+          git add "$EPISODE"
+          sensemaking-skills semantic decision record \
+            --repo . --episode "$EPISODE" --output "$PROPOSAL" --json \
+            > "$RUNNER_TEMP/decision-review-output.json"
+          DECISION_RECORD="$RUNNER_TEMP/decision-review-output.json" \
+          DECISION_PROPOSAL="$PROPOSAL" DECISION_EPISODE="$EPISODE" python - <<'PY'
+          import json
+          import os
+          with open(os.environ["DECISION_RECORD"], encoding="utf-8") as stream:
+              result = json.load(stream)
+          with open(os.environ["DECISION_PROPOSAL"], encoding="utf-8") as stream:
+              proposal = json.load(stream)
+          assert result["created"] is True
+          assert result["review_state"] == "UNREVIEWED_DRAFT"
+          assert result["decision_influence_established"] is False
+          assert result["action_authorized"] is False
+          assert result["evidence_paths_not_in_source_revision"] == [os.environ["DECISION_EPISODE"]]
+          assert len(proposal["claims"]) == 1
+          assert proposal["claims"][0]["kind"] == "decision"
+          assert proposal["claims"][0]["attributes"]["review_of"] == "arch:git-reviewed-local-memory"
+          assert proposal["claims"][0]["attributes"]["disposition"] == "reaffirm"
+          assert any(row["predicate"] == "learned_from"
+                     and row["object"] == "lesson:separate-construction-from-learning-qualification-gates"
+                     for row in proposal["relations"])
+          PY
+          sensemaking-skills semantic knowledge-proposal-check \
+            --repo . --proposal "$PROPOSAL" --json > /dev/null
+          git reset -q -- "$EPISODE"
+          rm -- "$EPISODE" "$PROPOSAL"
+          test -z "$(git status --porcelain)"
+          echo "Temporary decision review proposal validated and discarded; no review retained."
       - name: Build and inspect the real committed graph
         shell: bash
         run: |
@@ -634,6 +697,13 @@ jobs:
           assert option_link["consequence_total"] == 6
           assert option_link["consequence_returned_total"] == 6
           assert option_link["consequence_omitted_total"] == 0
+          assert option_link["review_total"] == 1
+          assert option_link["review_omitted"] == 0
+          assert option_link["reviews"] == [{
+              "decision_id": "decision:review-2026-11-22-local-memory-consequence-review",
+              "disposition": "retain_with_limitation",
+              "source_revision": "5c842354983c81b7c9cc4ef61b0b94e940ac3dde",
+          }]
           assert standing["consequence_total"] == 6
           assert standing["returned_consequence_total"] == 6
           assert standing["decision_link_total"] == 1

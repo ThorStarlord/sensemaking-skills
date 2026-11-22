@@ -100,9 +100,10 @@ def method_context(
     candidates = []
     for _, _, _, identifier, claim, matched, routes in ranked[:limit]:
         linked = claim.get("citing_records") or []
-        neighbors = explain(identifier) if linked else {}
+        neighbors = explain(identifier)
         indexed = {record.get("id"): record for record in neighbors.get("claims", [])}
         history = []
+        seen = set()
         for item in linked:
             source = indexed.get(item.get("id"))
             history.append({
@@ -116,6 +117,35 @@ def method_context(
                 } if source else None,
                 "source_read_status": "INDEXED_RECORD" if source else "NOT_ASSESSED",
             })
+            seen.add(item.get("id"))
+        # A later decision can show how a method was actually used or rejected.
+        # Generic context history stays limited to incident/lesson/observation;
+        # the method consumer adds linked decisions explicitly.
+        for relation in neighbors.get("relations", []):
+            if (relation.get("object") != identifier
+                    or relation.get("predicate") not in {"references", "learned_from", "contradicts"}):
+                continue
+            subject = relation.get("subject")
+            source = indexed.get(subject)
+            if subject in seen or not source or source.get("kind") != "decision":
+                continue
+            scope = (relation.get("attributes") or {}).get("scope")
+            history.append({
+                "id": subject,
+                "kind": "decision",
+                "predicate": relation.get("predicate"),
+                "relation": relation.get("id"),
+                "relation_scope": scope if scope not in (None, "", []) else "NOT_RECORDED",
+                "record": {
+                    "statement": source.get("statement"),
+                    "epistemic_status": source.get("epistemic_status"),
+                    "authority_ref": source.get("authority_ref"),
+                    "evidence_refs": source.get("evidence_refs", []),
+                    "attributes": source.get("attributes", {}),
+                },
+                "source_read_status": "INDEXED_RECORD",
+            })
+            seen.add(subject)
         candidates.append({
             "id": identifier,
             "statement": claim.get("statement"),
@@ -130,7 +160,7 @@ def method_context(
             "related_records_complete": (
                 not neighbors.get("truncated", False)
                 and all(item["source_read_status"] == "INDEXED_RECORD" for item in history)
-                if linked else True
+                if history else True
             ),
             "applicability_to_present_task": "NOT_ESTABLISHED",
             "present_method_decision": "AGENT_OWNED",
