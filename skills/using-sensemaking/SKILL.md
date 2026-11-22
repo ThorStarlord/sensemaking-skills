@@ -327,7 +327,12 @@ missing assessment is `NOT_ASSESSED`, not refutation. Each assessment keeps its
 authored status in `assessment_history`; current standing excludes one only
 through a same-prediction `supersedes` relation (or an authored `SUPERSEDED`
 status for compatibility), so a historical status is never rewritten to obtain
-a current projection.
+a current projection. The link's `reviews` expose earlier attributed decision
+reviews for the same option. When the review yields a durable judgment, the
+optional `semantic decision record` materializes it as a new decision claim
+linked to the option, predictions, active assessments and any method precedent;
+the option and preference remain unchanged. See
+`references/decision-review-v1.md`.
 
 **Repository memory.** Use `../repository-semantic-steward/SKILL.md` for the
 repository's semantic foundation, including when **Sensemaking Skills itself**
@@ -736,6 +741,7 @@ already stated above, so skipping a file never loses the rule.
 | `../repository-semantic-steward/references/relational-reconciliation.md` (RELATE) | an absence, or a relation or behavior stated more strongly than its sources show, would shape a recommendation, a correction or an owner escalation | a file-local change, or a fact one inspected source already states | graph miss != product absence; verdict != decision; unexercised != gap |
 | `references/portable-construction-loop-v1.md` | authorized implementation, an explicit engineering task, coding outside the Sensemaking repository, or earlier-artifact reuse (section 1a) | reasoning-only work, or a clear local fix in a familiar repo | warranted direction != implementation authority |
 | `references/evidence-and-closure-v1.md` | validating, reconciling a claim, verifying a repair, reading a Brief, using a workflow | ordinary tests and diff review settle it | validated != closed |
+| `references/decision-review-v1.md` | reconsidering an earlier architecture option or provisional preference in light of consequences and method evidence | a narrow task or a first-time choice with no prior option | review evidence != automatic preference change or promotion; historical/current assessments stay distinct |
 | `references/session-receipt-v1.md` | every session using this Skill | never; follow the contract when a receipt can be written | receipt != authority |
 | `references/delegated-goal-patterns.md` | a delegated mission's scope, authority or stop is material | a bounded task | desired delegation != granted authority |
 | `references/experiment-economy-v1.md` | an experiment or isolation is actually under consideration | reversible construction can answer it | uncertainty != experiment |

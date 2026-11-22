@@ -647,11 +647,14 @@ sensemaking-skills semantic workspace-query --operation product-outline \
 The optional `method_precedents` section uses the existing reviewed lesson
 search and method context. It carries each candidate's authored scope,
 conditions, claim ceiling, counterevidence, original outcome, later related
-records and `applicability_to_present_task: NOT_ESTABLISHED`. It does not rank,
-select or establish applicability; a miss is `NOT_ASSESSED`. This composition is
-available on `workspace-query` `product-outline` only; use `semantic method
-context --path` for source-path-anchored method discovery. `--method-limit`
-bounds the returned method candidates.
+records and `applicability_to_present_task: NOT_ESTABLISHED`. Later related
+records include linked later decisions as well as incidents, observations and
+lessons; a later decision shows attributed use or reconsideration, not
+validation. The section does not rank, select or establish applicability; a
+miss is `NOT_ASSESSED`. This composition is available on `workspace-query`
+`product-outline` only; use `semantic method context --path` for
+source-path-anchored method discovery. `--method-limit` bounds the returned
+method candidates.
 
 Each visible goal/non-goal carries its statement, source reference and
 authority/epistemic labels. Each linked record carries its actual declared
@@ -839,7 +842,10 @@ additive `decision_links` section groups visible rows by `source_option` and
 carries the option's authored `preference` (status, current scope and bounded
 history), each consequence's standing, the decision-changing consequence IDs
 and feedback outcomes. `reconsideration` is `AGENT_OWNED`: the link is evidence,
-not a verdict, selection or authorization.
+not a verdict, selection or authorization. The link's `reviews` list exposes
+authored decision reviews that reference the same option, with `review_total`
+and `review_omitted`; reviews are later evidence, not automatic changes to the
+option or its preference.
 
 `assessment_statuses` reports only the **active** assessments' statuses.
 `assessment_history` reports every linked assessment with its own authored
@@ -866,6 +872,36 @@ Source-byte currency is not experiential currency; a new experience is
 represented by a new assessment observation. `context-for` applies the same
 same-prediction supersession rule to an anchored assessment, adding `active`
 and `superseded_by` to its `consequence_assessment` view.
+
+#### Decision review producer
+
+`semantic decision record` turns an agent-authored review into a new
+`decision` claim. The claim references the existing `arch:` option, the
+`conseq:` predictions and active assessment observations it reconsidered, and
+optionally a `lesson:` method precedent through `learned_from`. It does not
+rewrite the option, its preference or any assessment, change standing, commit,
+merge or authorize promotion.
+
+The tracked episode carries `review_id`, `actor`, exact `source_revision`,
+`source_option`, a disposition (`reaffirm`, `revise`, `reopen`, `investigate`,
+`retain_with_limitation`, `reject` or `no_change`), `basis`, `conditions`,
+`counterevidence`, `claim_ceiling`, tracked evidence paths, cited consequence
+and assessment IDs, and an optional method lesson. The producer rejects a
+superseded assessment and a consequence that does not belong to the option.
+
+```bash
+sensemaking-skills semantic decision record \
+  --repo . --episode path/to/review.json \
+  --output .sensemaking/knowledge/decision-review.json --json
+```
+
+The output is an `UNREVIEWED_DRAFT` with `action_authorized: false`; ordinary
+`knowledge-proposal-check` and Git review remain necessary. After review,
+`knowledge-audit` shows the record in the link's `reviews` and
+`knowledge-query explain` on the option returns the decision claim and its
+relations. Review order is deterministic decision-id order, not proven
+chronology. A review is attributed evidence, not causal benefit, independent
+reuse or promotion authority.
 
 ### Additive indexed change classification (integrated, PR #561)
 

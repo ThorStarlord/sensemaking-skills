@@ -1098,3 +1098,31 @@ def register_semantic_commands(root_cli: click.Group) -> None:
         except (ValueError, OSError, UnicodeError, KeyError, TypeError) as exc:
             raise click.ClickException(str(exc)) from exc
         _emit(payload, output_json=output_json)
+
+    @semantic_group.group(name="decision")
+    def semantic_decision() -> None:
+        """Optional consequence-informed decision reviews over architecture options."""
+
+    @semantic_decision.command(name="record")
+    @click.option("--repo", "repo_dir", default=Path("."),
+                  type=click.Path(exists=True, file_okay=False, path_type=Path))
+    @click.option("--episode", "episode_path", required=True,
+                  help="Tracked source-attributed review episode JSON, authored by the active agent")
+    @click.option("--output", "output_path", required=True,
+                  help="New exclusive .sensemaking/knowledge/*.json proposal; never overwrites")
+    @click.option("--json", "output_json", is_flag=True)
+    def semantic_decision_record(
+        repo_dir: Path, episode_path: str, output_path: str, output_json: bool,
+    ) -> None:
+        """Materialize an agent-authored decision review as an attributed decision.
+
+        Does not choose a disposition, infer benefit, change the option or its
+        preference, commit, or grant permissions. The review remains evidence.
+        """
+        from .decision_review import record_decision_review
+
+        try:
+            payload = record_decision_review(repo_dir, episode_path, output_path)
+        except (ValueError, OSError, UnicodeError, KeyError, TypeError) as exc:
+            raise click.ClickException(str(exc)) from exc
+        _emit(payload, output_json=output_json)
