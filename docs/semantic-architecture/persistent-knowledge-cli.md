@@ -886,8 +886,13 @@ The tracked episode carries `review_id`, `actor`, exact `source_revision`,
 `source_option`, a disposition (`reaffirm`, `revise`, `reopen`, `investigate`,
 `retain_with_limitation`, `reject` or `no_change`), `basis`, `conditions`,
 `counterevidence`, `claim_ceiling`, tracked evidence paths, cited consequence
-and assessment IDs, and an optional method lesson. The producer rejects a
-superseded assessment and a consequence that does not belong to the option.
+and assessment IDs, and an optional method lesson. The producer reads claims
+and relations at the exact `source_revision` and applies the existing
+same-prediction supersession rule. It rejects an effectively superseded
+assessment even when the assessment retains an older authored status, rejects a
+legacy authored `SUPERSEDED` citation, and keeps supersession-cycle members
+active as consequence standing does. It also rejects a consequence that does
+not belong to the option.
 
 ```bash
 sensemaking-skills semantic decision record \

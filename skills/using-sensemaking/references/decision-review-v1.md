@@ -86,8 +86,13 @@ Author a source-attributed episode JSON. Stage or commit it first.
 
 `source_option` must be an authored `arch:` alternative with an authored
 preference. Every `consequence_ref` must belong to that option. Every
-`assessment_ref` must resolve one of those consequences and must not be
-`SUPERSEDED`. `method_ref` is optional and must name an authored lesson with a
+`assessment_ref` must resolve one of those consequences and must be effectively
+active at `source_revision`: the producer applies the same-prediction
+`supersedes` rule used by consequence standing, so an assessment can be
+rejected even when its authored status is not `SUPERSEDED`. Authored
+`SUPERSEDED` remains historical evidence and is also rejected as a current
+citation. A supersession cycle keeps its members active rather than erasing
+standing. `method_ref` is optional and must name an authored lesson with a
 method. `evidence_refs` must identify tracked source files.
 
 ```bash

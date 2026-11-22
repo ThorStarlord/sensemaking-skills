@@ -237,6 +237,201 @@ jobs:
           rm -- "$EPISODE" "$PROPOSAL"
           test -z "$(git status --porcelain)"
           echo "Temporary decision review proposal validated and discarded; no review retained."
+      - name: Verify decision-review effective assessment standing (mechanics only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import os
+          import shutil
+          import subprocess
+          import tempfile
+          from pathlib import Path
+
+          from sensemaking_skills.decision_review import record_decision_review
+
+
+          def git(root, *args, check=True):
+              result = subprocess.run(
+                  ["git", *args], cwd=root, capture_output=True, text=True
+              )
+              if check and result.returncode:
+                  raise AssertionError(result.stdout + result.stderr)
+              return result.stdout.strip()
+
+
+          def exercise(root, label, revision, option, consequence, assessment, evidence):
+              episode_rel = "artifacts/history/standing-" + label + ".json"
+              output_rel = ".sensemaking/knowledge/standing-" + label + ".json"
+              episode = Path(root) / episode_rel
+              episode.parent.mkdir(parents=True, exist_ok=True)
+              payload = {
+                  "review_id": "standing-" + label,
+                  "actor": "CI mechanical standing fixture; not an autonomous review agent",
+                  "source_revision": revision,
+                  "source_option": option,
+                  "disposition": "reaffirm",
+                  "basis": "Synthetic input for mechanical verification only.",
+                  "conditions": "Never cognitive evidence.",
+                  "counterevidence": "NOT_ASSESSED",
+                  "claim_ceiling": "No genuine decision review or decision influence.",
+                  "evidence_refs": evidence,
+                  "consequence_refs": [consequence],
+                  "assessment_refs": [assessment],
+              }
+              episode.write_text(
+                  json.dumps(payload, indent=2) + "\n", encoding="utf-8", newline="\n"
+              )
+              git(root, "add", episode_rel)
+              try:
+                  try:
+                      record_decision_review(root, episode_rel, output_rel)
+                  except ValueError as exc:
+                      return False, str(exc)
+                  return True, "created"
+              finally:
+                  git(root, "reset", "-q", "--", episode_rel, check=False)
+                  episode.unlink(missing_ok=True)
+                  (Path(root) / output_rel).unlink(missing_ok=True)
+
+          # Real repository case: authored NOT_OBSERVED but relation-superseded.
+          root = Path.cwd()
+          rev = git(root, "rev-parse", "HEAD")
+          option = "arch:git-reviewed-local-memory"
+          consequence = "conseq:candidate-recall-in-later-discovery"
+          evidence = ["file:.sensemaking/knowledge/prospective-reasoning.json"]
+          old = "observation:consequence-assessment-candidate-recall-20261028"
+          correction = "observation:consequence-assessment-candidate-recall-correction-20261028"
+          unrelated = "observation:consequence-assessment-persistence-authority-20261028"
+          assert exercise(root, "real-old", rev, option, consequence, old, evidence)[0] is False
+          assert exercise(root, "real-active", rev, option, consequence, correction, evidence)[0] is True
+          assert exercise(root, "real-unrelated", rev, option, consequence, unrelated, evidence)[0] is False
+
+          # Disposable repository for legacy status, cross-consequence edges,
+          # cycles and exact source-revision semantics.
+          probe = Path(tempfile.mkdtemp(prefix="smk-standing-"))
+          try:
+              (probe / ".sensemaking" / "knowledge").mkdir(parents=True)
+              (probe / "docs").mkdir()
+              (probe / "docs" / "probe.md").write_text(
+                  "Disposable standing-semantics fixture.\n", encoding="utf-8"
+              )
+
+              def claim(cid, kind, attributes):
+                  return {
+                      "id": cid,
+                      "kind": kind,
+                      "statement": "Probe claim.",
+                      "authority_kind": "document",
+                      "authority_ref": "docs/probe.md",
+                      "evidence_refs": ["file:docs/probe.md"],
+                      "epistemic_status": "declared",
+                      "attributes": attributes,
+                  }
+
+              def relation(rid, subject, predicate, obj):
+                  return {
+                      "id": rid,
+                      "subject": subject,
+                      "predicate": predicate,
+                      "object": obj,
+                      "evidence_refs": ["file:docs/probe.md"],
+                      "epistemic_status": "declared",
+                  }
+
+              claims = [
+                  claim("arch:probe-option", "alternative", {
+                      "concept": "ArchitectureOption",
+                      "preference": {"status": "PROVISIONAL"},
+                  }),
+                  claim("conseq:probe-a", "hypothesis", {"source_option": "arch:probe-option"}),
+                  claim("conseq:probe-b", "hypothesis", {"source_option": "arch:probe-option"}),
+                  claim("observation:probe-old", "observation", {
+                      "consequence_ref": "conseq:probe-a", "assessment_status": "NOT_OBSERVED",
+                  }),
+                  claim("observation:probe-active", "observation", {
+                      "consequence_ref": "conseq:probe-a", "assessment_status": "NOT_YET_OBSERVABLE",
+                  }),
+                  claim("observation:probe-legacy", "observation", {
+                      "consequence_ref": "conseq:probe-a", "assessment_status": "SUPERSEDED",
+                  }),
+                  claim("observation:probe-other", "observation", {
+                      "consequence_ref": "conseq:probe-b", "assessment_status": "OBSERVED_CONSISTENT",
+                  }),
+                  claim("observation:probe-cross-source", "observation", {
+                      "consequence_ref": "conseq:probe-a", "assessment_status": "PARTIALLY_OBSERVED",
+                  }),
+                  claim("observation:probe-cross-target", "observation", {
+                      "consequence_ref": "conseq:probe-b", "assessment_status": "OBSERVED_CONSISTENT",
+                  }),
+                  claim("observation:probe-cycle-1", "observation", {
+                      "consequence_ref": "conseq:probe-a", "assessment_status": "OBSERVED_CONSISTENT",
+                  }),
+                  claim("observation:probe-cycle-2", "observation", {
+                      "consequence_ref": "conseq:probe-a", "assessment_status": "NOT_OBSERVED",
+                  }),
+              ]
+              relations = [
+                  relation("rel:probe-" + item["id"].split(":", 1)[1] + "-refs",
+                           item["id"], "references", item["attributes"]["consequence_ref"])
+                  for item in claims[3:]
+              ]
+              pack = probe / ".sensemaking" / "knowledge" / "probe.json"
+              pack.write_text(
+                  json.dumps({"schema_version": 2, "claims": claims, "relations": relations},
+                             indent=2) + "\n",
+                  encoding="utf-8", newline="\n",
+              )
+              git(probe, "init", "-q")
+              git(probe, "config", "user.email", "probe@example.invalid")
+              git(probe, "config", "user.name", "Probe")
+              git(probe, "add", "-A")
+              git(probe, "commit", "-q", "-m", "rev1")
+              rev1 = git(probe, "rev-parse", "HEAD")
+
+              relations2 = relations + [
+                  relation("rel:probe-active-supersedes-old",
+                           "observation:probe-active", "supersedes", "observation:probe-old"),
+                  relation("rel:probe-cross-supersedes-source",
+                           "observation:probe-cross-target", "supersedes",
+                           "observation:probe-cross-source"),
+                  relation("rel:probe-cycle-1-supersedes-2",
+                           "observation:probe-cycle-1", "supersedes", "observation:probe-cycle-2"),
+                  relation("rel:probe-cycle-2-supersedes-1",
+                           "observation:probe-cycle-2", "supersedes", "observation:probe-cycle-1"),
+              ]
+              pack.write_text(
+                  json.dumps({"schema_version": 2, "claims": claims, "relations": relations2},
+                             indent=2) + "\n",
+                  encoding="utf-8", newline="\n",
+              )
+              git(probe, "add", "-A")
+              git(probe, "commit", "-q", "-m", "rev2")
+              rev2 = git(probe, "rev-parse", "HEAD")
+              probe_evidence = ["file:docs/probe.md"]
+              assert exercise(probe, "old-at-rev1", rev1, "arch:probe-option",
+                              "conseq:probe-a", "observation:probe-old", probe_evidence)[0] is True
+              assert exercise(probe, "old-at-rev2", rev2, "arch:probe-option",
+                              "conseq:probe-a", "observation:probe-old", probe_evidence)[0] is False
+              assert exercise(probe, "active-correction", rev2, "arch:probe-option",
+                              "conseq:probe-a", "observation:probe-active", probe_evidence)[0] is True
+              assert exercise(probe, "legacy-authored", rev2, "arch:probe-option",
+                              "conseq:probe-a", "observation:probe-legacy", probe_evidence)[0] is False
+              assert exercise(probe, "cross-consequence", rev2, "arch:probe-option",
+                              "conseq:probe-a", "observation:probe-cross-source", probe_evidence)[0] is True
+              assert exercise(probe, "cycle-member-1", rev2, "arch:probe-option",
+                              "conseq:probe-a", "observation:probe-cycle-1", probe_evidence)[0] is True
+              assert exercise(probe, "cycle-member-2", rev2, "arch:probe-option",
+                              "conseq:probe-a", "observation:probe-cycle-2", probe_evidence)[0] is True
+              assert exercise(probe, "unrelated", rev2, "arch:probe-option",
+                              "conseq:probe-a", "observation:probe-other", probe_evidence)[0] is False
+          finally:
+              shutil.rmtree(probe, ignore_errors=True)
+
+          assert git(root, "status", "--porcelain") == ""
+          print("Effective assessment standing is enforced at the review source revision; no review retained.")
+          PY
       - name: Build and inspect the real committed graph
         shell: bash
         run: |
