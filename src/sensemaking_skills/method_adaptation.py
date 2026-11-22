@@ -146,6 +146,47 @@ def method_context(
                 "source_read_status": "INDEXED_RECORD",
             })
             seen.add(subject)
+        # The lesson's own derivation is outgoing: learned_from its source
+        # observation and, for an adaptation, references the prior lesson.
+        # Generic citing_records is incoming-only, so surface these separately
+        # instead of pretending the later-record set is the whole provenance.
+        source_records = []
+        seen_sources = set()
+        for relation in neighbors.get("relations", []):
+            if (relation.get("subject") != identifier
+                    or relation.get("predicate") not in {"learned_from", "references"}):
+                continue
+            target = relation.get("object")
+            if not isinstance(target, str) or target in seen_sources:
+                continue
+            source = indexed.get(target)
+            kind = (source or {}).get("kind")
+            if source is None:
+                if not target.startswith(("lesson:", "observation:")):
+                    continue
+                kind = target.split(":", 1)[0]
+            elif kind not in {"observation", "lesson"}:
+                continue
+            scope = (relation.get("attributes") or {}).get("scope")
+            source_records.append({
+                "id": target,
+                "kind": kind,
+                "predicate": relation.get("predicate"),
+                "relation": relation.get("id"),
+                "relation_scope": scope if scope not in (None, "", []) else "NOT_RECORDED",
+                "record": {
+                    "statement": source.get("statement"),
+                    "epistemic_status": source.get("epistemic_status"),
+                    "authority_ref": source.get("authority_ref"),
+                    "evidence_refs": source.get("evidence_refs", []),
+                    "attributes": source.get("attributes", {}),
+                } if source else None,
+                "source_read_status": "INDEXED_RECORD" if source else "NOT_ASSESSED",
+            })
+            seen_sources.add(target)
+        source_records.sort(key=lambda item: (item["kind"], item["id"]))
+        attributes = claim.get("attributes") or {}
+        records = [*history, *source_records]
         candidates.append({
             "id": identifier,
             "statement": claim.get("statement"),
@@ -156,11 +197,17 @@ def method_context(
             "authority_ref": claim.get("authority_ref"),
             "evidence_refs": claim.get("evidence_refs", []),
             "recall_conditions": claim.get("recall_conditions", {}),
+            "procedure_change": {
+                "method_before": attributes.get("method_before") or "NOT_RECORDED",
+                "prior_lesson_id": attributes.get("prior_lesson_id") or "NONE",
+                "method_disposition": attributes.get("method_disposition") or "NOT_RECORDED",
+            },
+            "source_records": source_records,
             "later_related_records": history,
             "related_records_complete": (
                 not neighbors.get("truncated", False)
-                and all(item["source_read_status"] == "INDEXED_RECORD" for item in history)
-                if history else True
+                and all(item["source_read_status"] == "INDEXED_RECORD" for item in records)
+                if records else True
             ),
             "applicability_to_present_task": "NOT_ESTABLISHED",
             "present_method_decision": "AGENT_OWNED",
@@ -187,7 +234,7 @@ def method_context(
             "Methods are explicit authored lesson.attributes.method strings, not inferred from technical lessons.",
             "Candidate discovery uses literal question words or explicit authored evidence/context-for path routes; neither establishes method applicability.",
             "The reviewed lesson corpus is bounded at 250 records. A miss or truncated source is NOT_ASSESSED, not absence.",
-            "Related records and their statements are indexed evidence, not verified support/refutation or Git chronology.",
+            "Later related records are incoming citing records; source_records are the lesson's authored derivation through learned_from and references. Both are indexed evidence, not verified support/refutation or Git chronology; related_records_complete covers both.",
             "Inspect original sources, changed conditions, current authority and counterevidence before selecting a method.",
             "This tool does not choose, adapt, learn, validate or authorize an intellectual procedure.",
         ],

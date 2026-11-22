@@ -63,10 +63,24 @@ jobs:
                      for row in precedent["later_related_records"])
           assert precedent["recall_conditions"]["scope"] != "NOT_RECORDED"
           assert precedent["recall_conditions"]["claim_ceiling"] != "NOT_RECORDED"
+          assert any(row["id"] == "observation:pr898-construction-qualification-selection-20261117"
+                     and row["predicate"] == "learned_from"
+                     for row in precedent["source_records"])
+          assert precedent["procedure_change"]["method_before"] == "NOT_RECORDED"
+          assert precedent["related_records_complete"] is True
           adaptation = methods.get("lesson:method-adaptation-check-procedure-not-only-outcome")
           assert adaptation is not None
           assert adaptation["recall_conditions"]["counterevidence"] != "NOT_RECORDED"
           assert adaptation["recall_conditions"]["original_outcome"] != "NOT_RECORDED"
+          assert any(row["id"] == "observation:method-adaptation-closure-overreach-20261119"
+                     and row["predicate"] == "learned_from"
+                     for row in adaptation["source_records"])
+          episode = next(row for row in adaptation["later_related_records"]
+                         if row["id"] == "observation:method-episode-2026-11-22-decision-review-standing-method")
+          assert episode["record"]["attributes"]["decision_ref"] == (
+              "decision:method-adaptation-classification-20261122"
+          )
+          assert adaptation["related_records_complete"] is True
           assert result["lesson_corpus_truncated"] is False
           print("Reviewed method context is consumer-readable; agent method learning not evaluated.")
           PY
