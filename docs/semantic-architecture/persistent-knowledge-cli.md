@@ -728,6 +728,21 @@ scope, predicate, direction and relation ID. This is an authored co-reference,
 not proof of a shared premise, complement, conflict, dependency, feasibility or
 priority; candidates omitted by either limit are not counted.
 
+For an opportunity focus, `required_capability_routes` surfaces the
+capabilities the selected possibility explicitly names through
+`requires_capability`, together with any explicit `implemented_by` component
+route for each capability. Each route keeps the capability and component
+statements, authority and source references, both relation IDs and evidence,
+the component's authored `owned_paths`, and `implementation_verified: false`.
+Up to eight required capabilities and four components per capability are shown;
+the corresponding total and omission counts disclose the bound. This is the
+construction-bridge view of a selected candidate: it joins the possibility's
+declared requirement to the reviewed capability-to-component route without
+requiring a separate `product-outline` cross-reference. It does not inspect
+code, establish a working consumer, sufficiency, applicability, priority,
+readiness or a recommendation; a missing route remains `NOT_ASSESSED`. Goal
+focus leaves the section absent.
+
 This is a source-linked projection, not synthesis or selection. It does not
 infer shared premises, complements, conflicts, feasibility, priority,
 implementation, goal service or a recommendation; hypothetical records remain

@@ -12,6 +12,10 @@ from typing import Any, Mapping
 
 from sensemaking_skills.campaign_semantics import canonicalize, target_snapshot_sha256
 
+from .capability_outcome import (
+    capability_outcome_projection,
+    capability_outcome_summary,
+)
 from .preflight import CampaignPreflightService
 from .uncertainty_history import UncertaintyHistoryService
 
@@ -128,6 +132,11 @@ def _v1_capsule(
         "projection": "compact" if compact else "full",
         "campaign_id": state.campaign_id,
         "mission": state.mission,
+        "capability_outcome": (
+            capability_outcome_summary(state)
+            if compact
+            else capability_outcome_projection(state)
+        ),
         "status": state.status,
         "current_state": state.current_state,
         "authority": _enum(state.authority),
@@ -229,6 +238,7 @@ def build_resume_capsule(
         "projection": profile,
         "campaign_id": state.campaign_id,
         "mission": state.mission,
+        "capability_outcome": capability_outcome_projection(state),
         "status": state.status,
         "current_state": state.current_state,
         "authority": _enum(state.authority),
@@ -243,6 +253,7 @@ def build_resume_capsule(
 
     if profile == "minimal":
         latest = [_compact_transition(item) for item in recent[-1:]]
+        base["capability_outcome"] = capability_outcome_summary(state)
         base.update(
             {
                 "recent_transitions": latest,

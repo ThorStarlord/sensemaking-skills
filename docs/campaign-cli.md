@@ -12,6 +12,8 @@ sensemaking-skills campaign ingest
 sensemaking-skills campaign status
 sensemaking-skills campaign validate
 sensemaking-skills campaign advance
+sensemaking-skills campaign capability-outcome bind
+sensemaking-skills campaign capability-outcome bridge
 sensemaking-skills campaign defer
 sensemaking-skills campaign close
 sensemaking-skills campaign inspect
@@ -97,6 +99,81 @@ Transition IDs and target-state labels are optional; `advance` also generates a
 responsibility ID when omitted. Explicit values remain supported for stable
 external references.
 
+### `campaign capability-outcome bind`
+
+Binds one agent-selected opportunity as the Campaign's governing capability
+outcome. This is the durable seam between opportunity selection and
+multi-increment realization: the Campaign mission and active responsibility
+stay as they are, while the selected claim, desired behavior, completion
+condition, source references, assumptions, counterevidence, required
+capabilities and remaining realization conditions become recoverable from the
+Campaign itself.
+
+```bash
+sensemaking-skills campaign capability-outcome bind \
+  --workspace /path/to/campaign \
+  --decision "Bind the selected construction bridge before the next increment" \
+  --possibility-id poss:goal-family-construction-bridge \
+  --desired-behavior "Preserve the selected outcome across increments" \
+  --completion-condition "A later agent resumes and continues it without re-discovery" \
+  --selection-basis "Observed continuity gap in a fresh continuation" \
+  --source-ref file:.sensemaking/knowledge/possibility-synthesis.json \
+  --assumption "The selected possibility is hypothetical" \
+  --counterevidence "Repository search may already recover the context" \
+  --required-capability cap:adaptive-metareasoning \
+  --remaining-condition "A fresh agent must use the bound outcome"
+```
+
+The binding is a lifecycle transition that preserves the active
+responsibility. It is not a new responsibility, a completion claim, a
+selection performed by the tool, or proof that the opportunity is realized.
+A Campaign may hold one binding; a different governing outcome requires a new
+Campaign rather than silently rewriting the old commitment. The record is
+projected by `campaign working-context` and by `resume-profile` (full in
+`working` and `audit`, compact counts in `minimal`).
+
+```text
+agent-authored binding != opportunity verified
+bound outcome != realized capability
+source reference != admitted Campaign evidence
+```
+
+
+### `campaign capability-outcome bridge`
+
+Projects the compact construction bridge for the bound capability outcome. It
+joins the durable Campaign binding to the selected possibility's explicitly
+declared `requires_capability` and `implemented_by` routes at one committed
+revision, so continuation does not require manually cross-referencing Campaign
+state with a separate `semantic workspace-query` call.
+
+```bash
+sensemaking-skills campaign capability-outcome bridge \
+  --workspace /path/to/campaign \
+  --repo . \
+  --ref <commit> \
+  --json
+```
+
+The bridge carries the full bound outcome, the exact indexed possibility focus,
+each declared capability route and its reviewed components, a mechanical
+alignment check between the Campaign's required capability IDs and the
+repository's declared edges, and a source-reference overlap check. Routes keep
+`implementation_verified: false`; `campaign_only`, `knowledge_only`, truncation
+and missing component links remain explicit. A mismatch is reported, not
+repaired, ranked or turned into a recommendation.
+
+When the Campaign has a bound target, the queried checkout identity must match
+it; when several targets are bound, pass `--target-alias`. When the Campaign has
+no bound target, target binding is `NOT_ASSESSED` and the queried repository is
+recorded as an explicit knowledge source.
+
+```text
+projected bridge != verified implementation
+declared route != working consumer
+route alignment != readiness or recommendation
+```
+
 
 ## JSON output
 
@@ -109,6 +186,8 @@ The JSON surface is intended for coding agents and other deterministic consumers
 - `CAMPAIGN_VALID`
 - `CAMPAIGN_INVALID`
 - `CAMPAIGN_HISTORY`
+- `CAPABILITY_OUTCOME_BOUND`
+- `CAPABILITY_OUTCOME_BRIDGE`
 - `CAMPAIGN_ALREADY_EXISTS`
 - `CAMPAIGN_NOT_INITIALIZED`
 - `CAMPAIGN_IDENTITY_ERROR`
