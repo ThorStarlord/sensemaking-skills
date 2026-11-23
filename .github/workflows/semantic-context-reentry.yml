@@ -84,6 +84,71 @@ jobs:
           assert result["lesson_corpus_truncated"] is False
           print("Reviewed method context is consumer-readable; agent method learning not evaluated.")
           PY
+      - name: Exercise method-context provenance completeness (mechanics only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from sensemaking_skills.method_adaptation import method_context
+
+          lesson = {
+              "id": "lesson:ci-provenance-contract",
+              "kind": "lesson",
+              "statement": "CI provenancecontract method.",
+              "authority_kind": "document",
+              "authority_ref": "docs/normal-use/2026-11-17-construction-vs-qualification-selection-lesson.md",
+              "evidence_refs": [
+                  "file:docs/normal-use/2026-11-17-construction-vs-qualification-selection-lesson.md"
+              ],
+              "epistemic_status": "declared",
+              "attributes": {"method": "Use provenancecontract for mechanical verification only."},
+          }
+          incident = {
+              "id": "incident:ci-provenance-source",
+              "kind": "incident",
+              "statement": "CI incident source.",
+              "authority_kind": "document",
+              "authority_ref": "docs/normal-use/2026-11-17-construction-vs-qualification-selection-lesson.md",
+              "evidence_refs": [
+                  "file:docs/normal-use/2026-11-17-construction-vs-qualification-selection-lesson.md"
+              ],
+              "epistemic_status": "declared",
+              "attributes": {},
+          }
+          relation = {
+              "id": "rel:ci-provenance-contract-learned-from",
+              "subject": "lesson:ci-provenance-contract",
+              "predicate": "learned_from",
+              "object": "incident:ci-provenance-source",
+              "evidence_refs": [
+                  "file:docs/normal-use/2026-11-17-construction-vs-qualification-selection-lesson.md"
+              ],
+              "epistemic_status": "declared",
+          }
+          initial = {
+              "claims": [lesson, incident],
+              "repository": "ci-provenance-contract",
+              "target_ref": "0" * 40,
+          }
+
+          def indexed_explain(_):
+              return {"claims": [lesson, incident], "relations": [relation], "truncated": False}
+
+          indexed = method_context("provenancecontract", initial, indexed_explain, limit=1)
+          candidate = indexed["method_candidates"][0]
+          assert candidate["related_records_complete"] is True
+          assert any(
+              row["id"] == "incident:ci-provenance-source" and row["kind"] == "incident"
+              for row in candidate["source_records"]
+          )
+
+          def truncated_explain(_):
+              return {"claims": [], "relations": [], "truncated": True}
+
+          truncated = method_context("provenancecontract", initial, truncated_explain, limit=1)
+          assert truncated["method_candidates"][0]["related_records_complete"] is False
+          print("Method-context provenance completeness contract is enforced; no cognitive claim.")
+          PY
       - name: Product-outline selection context includes method precedents (mechanics only)
         shell: bash
         run: |
