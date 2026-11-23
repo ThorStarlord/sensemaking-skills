@@ -596,8 +596,9 @@ engineering outcome.
 ## Product-level goal orientation (`product-outline`)
 
 For an engineering responsibility spanning more than one source file, retrieve
-reviewed product intent and the **directly declared** relationships between its
-goals, capabilities, opportunities and governing constraints:
+reviewed product intent and the **directly declared and one-hop goal-family**
+relationships between its goals, capabilities, opportunities and governing
+constraints:
 
 ```bash
 sensemaking-skills semantic workspace-query --operation product-outline --json
@@ -627,13 +628,23 @@ The grouped candidate also retains `claim_evidence_refs` and
 supporting citations and the independent citations for its proposed goal
 relationship. Its `source_ref` identifies the authored knowledge-pack
 container, **not** necessarily one of those original supporting sources.
+
+Each visible goal also carries `indirect_candidate_opportunities`: opportunities
+linked to a specialized goal that explicitly serves this goal, following exactly
+one authored `serves_goal` hop (the same one-hop rule used for indirect
+implementation routes). A candidate already linked directly is not repeated.
+`via_goal_claim_ids` and `via_goal_relations` preserve the authored path;
+`family_candidate_total` counts direct plus one-hop candidates. This is not
+arbitrary transitive closure, an inferred goal hierarchy, a ranking or a
+selection. A missing candidate edge remains `NOT_ASSESSED`.
+
 These fields allow source inspection even when a top-level `claims` or
 `relations` envelope is truncated; they neither establish semantic truth
 nor prove that the candidate is novel, applicable or valuable. The view does
 not imply a selected strategy, implementation readiness, achieved goal or
-permission to act. A missing candidate edge remains `NOT_ASSESSED`. The
-flag works with both `workspace-query` and `knowledge-query`, is rejected
-for other operations, and leaves the default committed-review outline unchanged.
+permission to act. The flag works with both `workspace-query` and
+`knowledge-query`, is rejected for other operations, and leaves the default
+committed-review outline unchanged.
 
 For a selection that also turns on an intellectual procedure, request the
 existing reviewed method context in the same decision-time consumer:
@@ -678,9 +689,9 @@ relation ID and claim kind; an opportunity is **not** a shipped capability.
 
 ### Possibility ecology (`possibility-ecology`)
 
-Goal-level candidates are intentionally flat. For prospective reasoning about
-interacting possible futures, project one goal's or one opportunity's authored
-candidate ecology:
+Goal-level direct candidates remain a flat list. For prospective reasoning
+about interacting possible futures, project one goal's or one opportunity's
+authored candidate ecology, including exactly one explicit specialized-goal hop:
 
 ```bash
 sensemaking-skills semantic workspace-query --operation possibility-ecology \
@@ -692,20 +703,30 @@ sensemaking-skills semantic knowledge-query --operation possibility-ecology \
 ```
 
 The subject must be an indexed `goal` or `opportunity` claim. For a goal, the
-response lists its direct `candidate_opportunity_for` opportunities; for an
-opportunity it focuses that record. Each candidate carries its **authored**
-`dimensions` (alignment, ambition, horizon, realization and their bases),
-realization summary, `value_hypothesis`, `revisit_when`, bounded
+response lists its direct `candidate_opportunity_for` opportunities in
+`candidates`; for an opportunity it focuses that record. Each candidate carries
+its **authored** `dimensions` (alignment, ambition, horizon, realization and
+their bases), realization summary, `value_hypothesis`, `revisit_when`, bounded
 `disposition_history`, goal links, and up to eight explicit relationships
 (`derived_from`, `requires_capability`, `contradicts`, `relates_to`,
 `distinct_from`, or conceptual `references`) with direction, other claim,
 relation evidence and any authored `conceptual_relation`.
 
-The response also groups claims that two or more visible candidates explicitly
-relate to into `shared_links`, with each candidate's predicate, direction and
-relation ID. This is an authored co-reference, not proof of a shared premise,
-complement, conflict, dependency, feasibility or priority; candidates omitted
-by the limit are not counted.
+For a goal, the response also carries `descendant_goal_candidates`: candidates
+linked to a specialized goal that explicitly serves the focus goal, following
+exactly one authored `serves_goal` hop. Direct candidates are not repeated.
+Each descendant entry has `candidate_scope: descendant_goal`, `via_goals` with
+the authored goal and `serves_goal` relation provenance, and
+`intermediate_goal_hops: 1`. `descendant_candidate_total` and
+`family_candidate_total` disclose the direct and one-hop family sizes. This is
+not arbitrary transitive closure, an inferred hierarchy, a ranking or a
+selection.
+
+The response also groups claims that two or more visible direct or descendant
+candidates explicitly relate to into `shared_links`, with each candidate's
+scope, predicate, direction and relation ID. This is an authored co-reference,
+not proof of a shared premise, complement, conflict, dependency, feasibility or
+priority; candidates omitted by either limit are not counted.
 
 This is a source-linked projection, not synthesis or selection. It does not
 infer shared premises, complements, conflicts, feasibility, priority,

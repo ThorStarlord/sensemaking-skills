@@ -750,11 +750,13 @@ def possibility_ecology(
 ) -> tuple[dict, list[str], list[str]]:
     """Project one goal's or possibility's authored candidate ecology.
 
-    This is a deliberately narrow prospective-reasoning projection over the
-    existing reviewed records. It reads only authored dimensions, disposition
-    history and explicit relations; it does not infer a relationship, shared
-    premise, feasibility, priority, implementation or selection. Missing
-    dimensions and relations remain NOT_ASSESSED.
+    For a goal, direct candidates remain flat and one explicit specialized-goal
+    ``serves_goal`` hop is surfaced separately as descendant candidates. This is
+    a deliberately narrow prospective-reasoning projection over the existing
+    reviewed records. It reads only authored dimensions, disposition history and
+    explicit relations; it does not infer a relationship, shared premise,
+    feasibility, priority, implementation or selection. Missing dimensions and
+    relations remain NOT_ASSESSED.
     """
     if subject not in claims:
         raise ValueError(f"possibility-ecology subject is not an indexed claim: {subject}")
@@ -885,6 +887,7 @@ def possibility_ecology(
         item["relationship_total"] = total
         item["relationship_omitted"] = max(0, total - len(related))
         item["relationships_not_assessed"] = total == 0
+        item["candidate_scope"] = "direct"
         candidates.append(item)
         selected_claims.append(cid)
         selected_claims.extend(link["goal_claim_id"] for link in links)
@@ -893,8 +896,80 @@ def possibility_ecology(
         selected_relations.extend(rel["relation_id"] for rel in related)
     if focus_kind == "goal":
         selected_relations.extend(r["id"] for r in candidate_edges)
+
+    descendant_candidates: list[dict] = []
+    descendant_total = 0
+    if focus_kind == "goal":
+        direct_ids = {r["subject"] for r in candidate_edges}
+        via_by_candidate: dict[str, dict] = {}
+        for via in sorted(
+            (
+                r for r in edges
+                if r["predicate"] == "serves_goal" and r["object"] == subject
+                and r["subject"] in claims and claims[r["subject"]]["kind"] == "goal"
+            ),
+            key=lambda r: (r["subject"], r["id"]),
+        ):
+            for candidate_edge in sorted(
+                (
+                    r for r in edges
+                    if r["predicate"] == "candidate_opportunity_for"
+                    and r["object"] == via["subject"] and r["subject"] in claims
+                    and claims[r["subject"]]["kind"] == "opportunity"
+                ),
+                key=lambda r: (r["subject"], r["id"]),
+            ):
+                cid = candidate_edge["subject"]
+                if cid in direct_ids:
+                    continue
+                entry = via_by_candidate.setdefault(cid, {
+                    "candidate_edge": candidate_edge,
+                    "via": [],
+                })
+                entry["via"].append(via)
+        descendant_total = len(via_by_candidate)
+        for cid, entry in sorted(via_by_candidate.items()):
+            item = candidate_record(claims[cid])
+            links = [
+                goal_link(r) for r in edges
+                if r["predicate"] == "candidate_opportunity_for" and r["subject"] == cid
+                and r["object"] in claims and claims[r["object"]]["kind"] == "goal"
+            ][:8]
+            related, total = relationships(cid)
+            item["goal_links"] = links
+            item["relationships"] = related
+            item["relationship_total"] = total
+            item["relationship_omitted"] = max(0, total - len(related))
+            item["relationships_not_assessed"] = total == 0
+            item["candidate_scope"] = "descendant_goal"
+            item["via_goals"] = [
+                {
+                    "goal_claim_id": via["subject"],
+                    "goal_statement": claims[via["subject"]]["statement"],
+                    "goal_epistemic_status": claims[via["subject"]]["epistemic_status"],
+                    "goal_source_ref": claims[via["subject"]]["source_ref"],
+                    "goal_evidence_refs": list(claims[via["subject"]]["evidence_refs"]),
+                    "serves_goal_relation_id": via["id"],
+                    "serves_goal_relation_epistemic_status": via["epistemic_status"],
+                    "serves_goal_relation_evidence_refs": list(via["evidence_refs"]),
+                }
+                for via in entry["via"]
+            ]
+            item["intermediate_goal_hops"] = 1
+            descendant_candidates.append(item)
+            selected_claims.append(cid)
+            selected_claims.extend(link["goal_claim_id"] for link in links)
+            selected_claims.extend(rel["other_claim_id"] for rel in related)
+            selected_claims.extend(via["subject"] for via in entry["via"])
+            selected_relations.extend(link["relation_id"] for link in links)
+            selected_relations.extend(rel["relation_id"] for rel in related)
+            selected_relations.extend(via["id"] for via in entry["via"])
+            selected_relations.append(entry["candidate_edge"]["id"])
+    descendant_visible = descendant_candidates[:limit]
+    descendant_omitted = max(0, descendant_total - len(descendant_visible))
+
     shared: dict[str, dict] = {}
-    for item in candidates:
+    for item in [*candidates, *descendant_visible]:
         for relation in item["relationships"]:
             other_id = relation["other_claim_id"]
             entry = shared.setdefault(other_id, {
@@ -908,6 +983,7 @@ def possibility_ecology(
             })
             entry["candidates"].append({
                 "claim_id": item["claim_id"],
+                "candidate_scope": item.get("candidate_scope", "direct"),
                 "predicate": relation["predicate"],
                 "direction": relation["direction"],
                 "relation_id": relation["relation_id"],
@@ -943,13 +1019,19 @@ def possibility_ecology(
         "candidate_total": candidate_total,
         "candidate_omitted": candidate_omitted,
         "candidate_link_not_assessed": candidate_total == 0,
+        "descendant_goal_candidates": descendant_visible,
+        "descendant_candidate_total": descendant_total,
+        "descendant_candidate_omitted": descendant_omitted,
+        "descendant_candidate_link_not_assessed": descendant_total == 0,
+        "family_candidate_total": candidate_total + descendant_total,
+        "family_candidate_link_not_assessed": candidate_total + descendant_total == 0,
         "shared_links": shared_visible,
         "shared_link_total": shared_total,
         "shared_link_omitted": max(0, shared_total - len(shared_visible)),
         "relationship_total": relationship_total,
         "relationship_omitted": relationship_omitted,
         "coverage_complete": False,
-        "truncated": bool(candidate_omitted or relationship_omitted
+        "truncated": bool(candidate_omitted or descendant_omitted or relationship_omitted
                           or shared_total > len(shared_visible)),
         "explicit_limits": [
             "Projects only authored possibility dimensions, disposition history and explicit "
@@ -959,10 +1041,14 @@ def possibility_ecology(
             "and relations are NOT_ASSESSED, not evidence that none exist.",
             "candidate_opportunity_for links are documentary; they do not establish goal "
             "service, product value or authority to build.",
-            "shared_links group claims that two or more visible candidates explicitly relate "
-            "to. The grouping does not establish a shared premise, complement, conflict, "
-            "dependency, feasibility or priority; candidates omitted by the candidate "
-            "limit are not counted.",
+            "descendant_goal_candidates include exactly one explicitly declared serves_goal "
+            "link from a specialized goal to the focus goal. Direct candidates are not "
+            "repeated; via_goals preserves the authored path. No arbitrary transitive "
+            "closure, inferred hierarchy, ranking or selection occurs.",
+            "shared_links group claims that two or more visible direct or descendant "
+            "candidates explicitly relate to. The grouping does not establish a shared "
+            "premise, complement, conflict, dependency, feasibility or priority; candidates "
+            "omitted by either candidate limit are not counted.",
             "The view follows one explicit relationship hop from each candidate; inspect "
             "original sources or explain/knowledge-view-export for deeper traversal.",
         ],
@@ -975,12 +1061,13 @@ def product_outline(
     include_candidates: bool = False,
     candidate_changed_paths: frozenset[str] | None = None,
 ) -> tuple[dict, list[str], list[str]]:
-    """Project explicit reviewed product goals, non-goals and declared direct links.
+    """Project explicit reviewed product goals, non-goals and declared links.
 
     A recorded serves_goal edge is a documentary relationship, not proof of
     implementation, outcome or the adequacy of the modeled product. Missing
     edges and goals remain NOT ASSESSED. Optional candidate links remain
-    separate from declared goal service, selection and implementation.
+    separate from declared goal service, selection and implementation; indirect
+    candidates follow exactly one explicit specialized-goal hop.
     """
     goal_ids = sorted(cid for cid, claim in claims.items() if claim["kind"] == "goal")
     non_goal_ids = sorted(cid for cid, claim in claims.items() if claim["kind"] == "non_goal")
@@ -1045,6 +1132,29 @@ def product_outline(
         key=lambda r: (r["object"], r["subject"], r["id"]),
     ) if include_candidates else []
     candidate_visible = [r for r in candidates if r["object"] in visible_goal_set][:limit]
+    indirect_candidates_by_goal: dict[str, dict[str, dict]] = {}
+    if include_candidates:
+        serving_goals_by_higher: dict[str, list[dict]] = {}
+        for relation in serving:
+            if claims[relation["subject"]]["kind"] == "goal":
+                serving_goals_by_higher.setdefault(relation["object"], []).append(relation)
+        candidates_by_goal: dict[str, list[dict]] = {}
+        for relation in candidates:
+            candidates_by_goal.setdefault(relation["object"], []).append(relation)
+        for higher_goal in goal_ids:
+            direct_ids = {r["subject"] for r in candidates_by_goal.get(higher_goal, [])}
+            by_candidate: dict[str, dict] = {}
+            for via in serving_goals_by_higher.get(higher_goal, []):
+                for candidate_edge in candidates_by_goal.get(via["subject"], []):
+                    candidate_id = candidate_edge["subject"]
+                    if candidate_id in direct_ids:
+                        continue
+                    entry = by_candidate.setdefault(candidate_id, {
+                        "candidate_edge": candidate_edge,
+                        "via": [],
+                    })
+                    entry["via"].append(via)
+            indirect_candidates_by_goal[higher_goal] = by_candidate
     served_visible = [r for r in serving if r["object"] in visible_goal_set][:limit]
     constrained_visible = [r for r in constrained if r["subject"] in visible_goal_set][:limit]
 
@@ -1142,6 +1252,28 @@ def product_outline(
             }
         return item
 
+    def indirect_candidate_link(entry: dict) -> dict:
+        primary = entry["via"][0]
+        specialized_goal = claims[primary["subject"]]
+        item = candidate_link(entry["candidate_edge"])
+        item.update({
+            "via_goal_claim_id": specialized_goal["id"],
+            "via_goal_statement": specialized_goal["statement"],
+            "via_goal_epistemic_status": specialized_goal["epistemic_status"],
+            "via_goal_source_ref": specialized_goal["source_ref"],
+            "via_goal_evidence_refs": list(specialized_goal["evidence_refs"]),
+            "via_goal_serves_goal_relation_id": primary["id"],
+            "via_goal_serves_goal_relation_epistemic_status": primary["epistemic_status"],
+            "via_goal_serves_goal_relation_evidence_refs": list(primary["evidence_refs"]),
+            "via_goal_claim_ids": sorted({via["subject"] for via in entry["via"]}),
+            "via_goal_relations": [
+                {"goal_claim_id": via["subject"], "relation_id": via["id"]}
+                for via in entry["via"]
+            ],
+            "intermediate_goal_hops": 1,
+        })
+        return item
+
     goals = []
     for cid in visible_goals:
         linked = [link(r, r["subject"]) for r in served_visible if r["object"] == cid]
@@ -1185,6 +1317,20 @@ def product_outline(
             goal["candidate_total"] = total_candidates
             goal["candidate_omitted"] = total_candidates - len(future)
             goal["candidate_link_not_assessed"] = total_candidates == 0
+            indirect_entries = sorted(indirect_candidates_by_goal.get(cid, {}).items())
+            shown_indirect = [
+                indirect_candidate_link(entry) for _, entry in indirect_entries[:limit]
+            ]
+            goal["indirect_candidate_opportunities"] = shown_indirect
+            goal["indirect_candidate_total"] = len(indirect_entries)
+            goal["indirect_candidate_omitted"] = max(
+                0, len(indirect_entries) - len(shown_indirect)
+            )
+            goal["indirect_candidate_link_not_assessed"] = not indirect_entries
+            goal["family_candidate_total"] = total_candidates + len(indirect_entries)
+            goal["family_candidate_link_not_assessed"] = (
+                total_candidates + len(indirect_entries) == 0
+            )
         goals.append(goal)
 
     omitted = {
@@ -1197,11 +1343,21 @@ def product_outline(
     }
     if include_candidates:
         omitted["candidate_opportunity_edges"] = len(candidates) - len(candidate_visible)
+        total_indirect = sum(len(entries) for entries in indirect_candidates_by_goal.values())
+        visible_indirect = sum(
+            len(goal.get("indirect_candidate_opportunities", [])) for goal in goals
+        )
+        omitted["indirect_candidate_opportunity_edges"] = total_indirect - visible_indirect
     selected_claim_ids = list(dict.fromkeys([
         *visible_goals, *visible_non_goals,
         *(r["subject"] for r in served_visible),
         *(r["object"] for r in constrained_visible),
         *(r["subject"] for r in candidate_visible),
+        *(item["claim_id"] for goal in goals
+          for item in goal.get("indirect_candidate_opportunities", [])),
+        *(via for goal in goals
+          for item in goal.get("indirect_candidate_opportunities", [])
+          for via in item.get("via_goal_claim_ids", [])),
         *(serve["subject"] for serve, _ in visible_routes),
         *(implementation["object"] for _, implementation in visible_routes),
         *(higher["subject"] for higher, _, _ in visible_indirect_routes),
@@ -1212,6 +1368,11 @@ def product_outline(
         *(r["id"] for r in served_visible),
         *(r["id"] for r in constrained_visible),
         *(r["id"] for r in candidate_visible),
+        *(item["relation_id"] for goal in goals
+          for item in goal.get("indirect_candidate_opportunities", [])),
+        *(relation["relation_id"] for goal in goals
+          for item in goal.get("indirect_candidate_opportunities", [])
+          for relation in item.get("via_goal_relations", [])),
         *(serve["id"] for serve, _ in visible_routes),
         *(implementation["id"] for _, implementation in visible_routes),
         *(higher["id"] for higher, _, _ in visible_indirect_routes),
@@ -1250,13 +1411,26 @@ def product_outline(
     }
     if include_candidates:
         result["total_counts"]["candidate_opportunity_edges"] = len(candidates)
+        result["total_counts"]["indirect_candidate_opportunity_edges"] = sum(
+            len(entries) for entries in indirect_candidates_by_goal.values()
+        )
         result["explicit_limits"].append(
             "Candidate links are recorded possible futures, not goal service, "
             "strategic selection, implementation priority or authorization."
         )
+        result["explicit_limits"].append(
+            "Indirect candidate opportunities include exactly one explicitly "
+            "declared serves_goal link from a specialized goal to its broader "
+            "goal. Direct candidates are not repeated; via_goal_claim_ids and "
+            "via_goal_relations preserve the authored path. No arbitrary "
+            "transitive closure, ranking or inferred goal hierarchy occurs."
+        )
     if candidate_changed_paths is not None:
         visible = [
-            item for goal in goals for item in goal["candidate_opportunities"]
+            item
+            for goal in goals
+            for key in ("candidate_opportunities", "indirect_candidate_opportunities")
+            for item in goal.get(key, [])
         ]
         affected = [
             item for item in visible
@@ -1264,7 +1438,10 @@ def product_outline(
         ]
         result["candidate_reinspection"] = {
             "visible_candidate_edge_total": len(visible),
-            "candidate_edges_omitted": omitted["candidate_opportunity_edges"],
+            "candidate_edges_omitted": (
+                omitted["candidate_opportunity_edges"]
+                + omitted.get("indirect_candidate_opportunity_edges", 0)
+            ),
             "changed_source_candidate_edge_total": len(affected),
             "changed_source_candidate_claim_ids": sorted({
                 item["claim_id"] for item in affected
