@@ -1,0 +1,96 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-11-22-method-context-provenance
+state: final
+created_at: "2026-11-22T00:00:00Z"
+updated_at: "2026-11-22T00:00:00Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: 91dfc13bd5cd695d9b94dd54c25664cbefe0317b
+  end_ref: 2f24f95149cfc7093d4a35d2bb1a0e0ae006d114
+  worktree_clean_at_end: true
+skill_identity:
+  load_mode: harness_discovered
+  sensemaking_source_ref: 91dfc13bd5cd695d9b94dd54c25664cbefe0317b
+goal:
+  statement: "Investigate why relevant methodological experience is not used appropriately, and correct any concrete method-context provenance defect without inventing a cognitive mechanism."
+  source: owner_message
+  source_ref: null
+delegation:
+  granted: [read, local_write, run_local_commands, commit, push, open_pr, merge, knowledge_edit]
+  withheld: [release, deploy, tracker_write, external_publication]
+continuity:
+  resumes: 2026-11-22-experience-informed-method-attribution
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: Review L1/L2 and the current method-choice consumer
+    capability: using-sensemaking
+    status: completed
+    reason: "L1/L2 remain historical behavioral observations with no controlled comparison. The current D2-like method-context query returns both lessons with source records; discovery and source availability are not the current defect."
+    artifact_refs: [docs/research/cognitive-capability-assessment-20261119.md, docs/normal-use/2026-11-17-fresh-agent-episode-observation.md, docs/normal-use/2026-11-18-shared-learning-candidate-907.md]
+    validation:
+      - command: Real semantic method context and product-outline queries at 91dfc13b
+        result: PASS
+  - id: R-2
+    responsibility: Audit and correct method-context provenance completeness
+    capability: ordinary_coding
+    status: completed
+    reason: "A fresh worker found two reachable defects: empty visible records under a truncated explain neighborhood reported complete, and outgoing learned_from incident/decision sources were dropped. The correction keeps every learned_from source visible and computes completeness over both directions."
+    artifact_refs: [src/sensemaking_skills/method_adaptation.py, docs/semantic-architecture/persistent-knowledge-cli.md, skills/repository-semantic-steward/references/recall.md, .github/workflows/semantic-context-reentry.yml]
+    validation:
+      - command: Real CLI truncation probe (252 claims, 251 relations) returns complete false after correction
+        result: PASS
+      - command: Real CLI incident learned_from probe shows the incident source and complete true
+        result: PASS
+      - command: Real current method candidates remain complete with source observations
+        result: PASS
+      - command: Hosted provenance contract assertions and source checks
+        result: PASS
+  - id: R-3
+    responsibility: Decide whether a broader cognitive mechanism is warranted
+    capability: using-sensemaking
+    status: completed
+    reason: "No current discovery, timing or evidence-access defect was established. The remaining limitation is recognition/applicability judgment with host-invocation and observation alternatives. A selector, checklist or additional projection would replace judgment or add ceremony without evidence."
+    artifact_refs: [docs/normal-use/2026-11-22-method-context-provenance-and-recognition-boundary.md]
+    validation:
+      - command: Qualitative comparison of no-change, guidance, selector/checklist and completeness correction
+        result: PASS
+findings:
+  - id: F-1
+    statement: "L1/L2 establish predecision exposure without a visible applicability check, not that the lesson was ignored, that the decision was worse, or that the pattern recurs."
+    epistemic_status: OBSERVED
+    evidence_refs: [docs/research/cognitive-capability-assessment-20261119.md, docs/normal-use/2026-11-17-fresh-agent-episode-observation.md]
+    disposition: no_action
+  - id: F-2
+    statement: "The current method-context consumer returns the relevant lessons and source records for the D2-like question; discovery and source availability are not the current defect."
+    epistemic_status: OBSERVED
+    evidence_refs: [src/sensemaking_skills/method_adaptation.py]
+    disposition: no_action
+  - id: F-3
+    statement: "related_records_complete returned true for an empty visible set under a truncated neighborhood, and outgoing learned_from incident/decision sources were dropped. Both are reachable and contradicted the documented contract."
+    epistemic_status: OBSERVED
+    evidence_refs: [src/sensemaking_skills/method_adaptation.py, skills/repository-semantic-steward/references/recall.md]
+    disposition: resolved
+  - id: F-4
+    statement: "The correction improves substrate truthfulness but does not establish that an agent will read it, judge applicability or choose a better method."
+    epistemic_status: DERIVED
+    evidence_refs: [docs/normal-use/2026-11-22-method-context-provenance-and-recognition-boundary.md]
+    disposition: no_action
+open_questions:
+  - id: Q-1
+    question: "Will a genuinely later agent facing a selection among candidates use the current source records and completeness signal before deciding, and will its method choice differ from the historical D2 pattern?"
+    source: empirical
+    blocking: false
+    durable_ref: null
+stop:
+  disposition: NO_FURTHER_WARRANT
+  reason: "The concrete provenance defects are corrected and verified, and the historical behavioral evidence does not establish a current substrate defect that a new mechanism would fix. The next evidence requires an authentic later agent, not another interface."
+next:
+  warranted_responsibility: "Observe a later agent on a consequential selection among candidates with the current method-context consumer; record retrieval, source checking, applicability judgment, disposition and outcome separately. Do not manufacture the episode."
+  blocked_on: []
+persistence: committed
+claim_ceiling: "Functionally verified consumer corrections and historical evidence review only. No independent later-agent use, decision influence, comparative benefit, longitudinal development or promotion is established. #872/#874 remain open."
+action_authorized_by_receipt: false
+immutable: true
