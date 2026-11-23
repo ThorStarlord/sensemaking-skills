@@ -19,6 +19,29 @@ progressive disclosure != semantic summarization
 bounded output != evidence ranking
 ```
 
+### Capability Outcome Binding v1
+
+`campaign capability-outcome bind` records one agent-selected opportunity as
+the Campaign's governing capability outcome. The record joins the selected
+claim, desired behavior, observable completion condition, source references,
+assumptions, counterevidence, required capability claims and remaining
+realization conditions.
+
+The binding is stored under the existing Campaign state
+`extensions.capability_outcome` key and committed as a lifecycle transition
+that preserves the active responsibility. `campaign working-context` and
+`resume-profile` project it, so a fresh agent can recover why the work exists
+and what would count as realization without repeating opportunity discovery.
+One Campaign holds one binding; changing the governing outcome requires a new
+Campaign.
+
+```text
+agent-authored binding != opportunity verified
+bound outcome != realized capability
+source reference != admitted Campaign evidence
+projection of assumptions != assumptions established
+```
+
 ### Capability Context v1
 
 `campaign capability-context --responsibility-type <explicit-type>` enumerates compatible declared capabilities only after the active agent supplies the responsibility classification.

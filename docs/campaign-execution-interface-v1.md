@@ -104,6 +104,9 @@ release, or another protected transition.
 `campaign working-context` projects:
 
 - mission and current state;
+- the agent-authored capability outcome when one is bound, including its
+  possibility ID, desired behavior, completion condition, assumptions,
+  counterevidence, required capabilities and remaining realization conditions;
 - active responsibility and decision blocked;
 - authority;
 - active uncertainty;

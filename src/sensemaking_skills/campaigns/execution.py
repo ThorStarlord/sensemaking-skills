@@ -16,6 +16,7 @@ from typing import Any, Mapping
 
 from sensemaking_skills.campaign_semantics import canonicalize, target_snapshot_sha256
 
+from .capability_outcome import capability_outcome_projection
 from .companion_io import append_jsonl_fsync, mapping_sha256
 from .multi_target import MULTI_TARGET_FILENAME, MultiTargetService
 from .target_snapshot import CampaignService
@@ -525,6 +526,7 @@ class CampaignExecutionService:
         return {
             "campaign_id": snapshot.state.campaign_id,
             "mission": snapshot.state.mission,
+            "capability_outcome": capability_outcome_projection(snapshot.state),
             "current_state": snapshot.state.current_state,
             "active_responsibility": (
                 canonicalize(responsibility) if responsibility is not None else None

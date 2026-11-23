@@ -91,6 +91,70 @@ jobs:
             tests/integration/test_external_golden_path_qualification.py \
             -q
 
+      - name: Capability outcome binding and continuation projection
+        shell: bash
+        run: |
+          WS="$RUNNER_TEMP/campaign-capability-outcome"
+          rm -rf "$WS"
+          sensemaking-skills campaign init \
+            --workspace "$WS" \
+            --campaign-id CMP-OUTCOME \
+            --mission "Verify capability outcome binding" \
+            --json >/dev/null
+          sensemaking-skills campaign advance \
+            --workspace "$WS" \
+            --decision "Advance to a bounded responsibility" \
+            --responsibility-id R-1 \
+            --responsibility-statement "Probe the binding surface" \
+            --decision-blocked "Whether the binding projects" \
+            --scope "Hosted mechanical contract check" \
+            --authority authorized_autonomously \
+            --success-condition "The binding projects through both consumers" \
+            --json >/dev/null
+          sensemaking-skills campaign capability-outcome bind \
+            --workspace "$WS" \
+            --decision "Bind the selected outcome" \
+            --possibility-id poss:test \
+            --desired-behavior "Recover the governing outcome" \
+            --completion-condition "A fresh consumer sees it" \
+            --selection-basis "Mechanical contract check" \
+            --source-ref "file:source.json" \
+            --assumption "It is a hypothesis" \
+            --counterevidence "It may be redundant" \
+            --required-capability cap:test \
+            --remaining-condition "Use it in a real decision" \
+            --json > "$RUNNER_TEMP/capability-outcome-bind.json"
+          sensemaking-skills campaign working-context \
+            --workspace "$WS" --json > "$RUNNER_TEMP/capability-outcome-working.json"
+          sensemaking-skills campaign resume-profile \
+            --workspace "$WS" --profile working --json > "$RUNNER_TEMP/capability-outcome-resume.json"
+          python - <<'PY'
+          import json
+          import os
+
+          root = os.environ["RUNNER_TEMP"]
+          with open(os.path.join(root, "capability-outcome-bind.json"), encoding="utf-8") as stream:
+              bound = json.load(stream)
+          with open(os.path.join(root, "capability-outcome-working.json"), encoding="utf-8") as stream:
+              working = json.load(stream)
+          with open(os.path.join(root, "capability-outcome-resume.json"), encoding="utf-8") as stream:
+              resumed = json.load(stream)
+
+          assert bound["code"] == "CAPABILITY_OUTCOME_BOUND"
+          outcome = bound["state"]["extensions"]["capability_outcome"]
+          assert outcome["possibility_id"] == "poss:test"
+          assert outcome["epistemic_status"] == "selected_hypothesis"
+          assert outcome["realization"] == "not_established"
+          assert bound["state"]["active_responsibility"]["id"] == "R-1"
+          assert working["capability_outcome"]["possibility_id"] == "poss:test"
+          assert working["capability_outcome"]["remaining_conditions"] == ["Use it in a real decision"]
+          assert resumed["capability_outcome"]["assumptions"] == ["It is a hypothesis"]
+          assert resumed["active_responsibility"]["id"] == "R-1"
+          assert resumed["semantic_recommendation_included"] is False
+          print("Capability outcome binding is durable and projected without selecting an action.")
+          PY
+          sensemaking-skills campaign validate --workspace "$WS" --json >/dev/null
+
       - name: Assert tests did not mutate tracked state
         shell: bash
         run: |

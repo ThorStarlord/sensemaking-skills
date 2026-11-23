@@ -12,6 +12,7 @@ sensemaking-skills campaign ingest
 sensemaking-skills campaign status
 sensemaking-skills campaign validate
 sensemaking-skills campaign advance
+sensemaking-skills campaign capability-outcome bind
 sensemaking-skills campaign defer
 sensemaking-skills campaign close
 sensemaking-skills campaign inspect
@@ -97,6 +98,45 @@ Transition IDs and target-state labels are optional; `advance` also generates a
 responsibility ID when omitted. Explicit values remain supported for stable
 external references.
 
+### `campaign capability-outcome bind`
+
+Binds one agent-selected opportunity as the Campaign's governing capability
+outcome. This is the durable seam between opportunity selection and
+multi-increment realization: the Campaign mission and active responsibility
+stay as they are, while the selected claim, desired behavior, completion
+condition, source references, assumptions, counterevidence, required
+capabilities and remaining realization conditions become recoverable from the
+Campaign itself.
+
+```bash
+sensemaking-skills campaign capability-outcome bind \
+  --workspace /path/to/campaign \
+  --decision "Bind the selected construction bridge before the next increment" \
+  --possibility-id poss:goal-family-construction-bridge \
+  --desired-behavior "Preserve the selected outcome across increments" \
+  --completion-condition "A later agent resumes and continues it without re-discovery" \
+  --selection-basis "Observed continuity gap in a fresh continuation" \
+  --source-ref file:.sensemaking/knowledge/possibility-synthesis.json \
+  --assumption "The selected possibility is hypothetical" \
+  --counterevidence "Repository search may already recover the context" \
+  --required-capability cap:adaptive-metareasoning \
+  --remaining-condition "A fresh agent must use the bound outcome"
+```
+
+The binding is a lifecycle transition that preserves the active
+responsibility. It is not a new responsibility, a completion claim, a
+selection performed by the tool, or proof that the opportunity is realized.
+A Campaign may hold one binding; a different governing outcome requires a new
+Campaign rather than silently rewriting the old commitment. The record is
+projected by `campaign working-context` and by `resume-profile` (full in
+`working` and `audit`, compact counts in `minimal`).
+
+```text
+agent-authored binding != opportunity verified
+bound outcome != realized capability
+source reference != admitted Campaign evidence
+```
+
 
 ## JSON output
 
@@ -109,6 +149,7 @@ The JSON surface is intended for coding agents and other deterministic consumers
 - `CAMPAIGN_VALID`
 - `CAMPAIGN_INVALID`
 - `CAMPAIGN_HISTORY`
+- `CAPABILITY_OUTCOME_BOUND`
 - `CAMPAIGN_ALREADY_EXISTS`
 - `CAMPAIGN_NOT_INITIALIZED`
 - `CAMPAIGN_IDENTITY_ERROR`

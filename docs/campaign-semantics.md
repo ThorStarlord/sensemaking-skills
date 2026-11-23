@@ -78,10 +78,13 @@ rather than dropping them. The canonical post-migration contract requires
 `schema_version` to be `"2"`; historical v1 representations are accepted only
 through the explicit one-way migration registry and are normalized in memory to
 v2, while unknown future versions fail closed. Missing or malformed known fields
-raise `ContractError` rather than a bare `KeyError` or `TypeError`. The only
-sanctioned extension is `owner_routing` on a campaign state, retained under
-`extensions`. A `Campaign Handoff`'s `campaign_id` must equal the
-`campaign_id` of its resolved current state. Campaign trace events and campaign
+raise `ContractError` rather than a bare `KeyError` or `TypeError`. Campaign
+state `extensions` is an opaque, consumer-owned map: the schema contract
+normalizes the historical `owner_routing` key, while agent-authored keys such
+as `strategy_handoff` and `capability_outcome` are read by their own consumers
+and do not change the typed state contract or grant authority. A `Campaign
+Handoff`'s `campaign_id` must equal the `campaign_id` of its resolved current
+state. Campaign trace events and campaign
 policy `known_transitions` entries are deliberately opaque maps.
 
 Run the bounded drift gate with:

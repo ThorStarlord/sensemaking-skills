@@ -543,6 +543,7 @@ _CAMPAIGN_VISIBLE_COMMANDS = frozenset({
     "status",
     "validate",
     "advance",
+    "capability-outcome",
     "defer",
     "close",
     "inspect",

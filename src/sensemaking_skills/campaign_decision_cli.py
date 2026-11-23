@@ -19,6 +19,7 @@ from .campaigns import CampaignService, CampaignSnapshot, CampaignWorkspaceError
 from .campaigns.decisions import (
     AdvanceDecision,
     CampaignDecisionService,
+    CapabilityOutcomeDecision,
     CloseDecision,
     DeferDecision,
 )
@@ -206,6 +207,135 @@ def register_campaign_decision_commands(
         _emit_decision_success(
             snapshot,
             code="CAMPAIGN_ADVANCED",
+            output_json=output_json,
+            status_payload=status_payload,
+            json_echo=json_echo,
+            echo_status=echo_status,
+        )
+
+    @campaign.group(name="capability-outcome")
+    def capability_outcome_group() -> None:
+        """Bind the selected capability outcome that governs this Campaign."""
+
+    @capability_outcome_group.command(name="bind")
+    @click.option(
+        "--workspace",
+        required=True,
+        type=click.Path(path_type=Path),
+        help="Existing campaign workspace",
+    )
+    @click.option("--transition-id", default=None, help="Optional transition identifier; generated deterministically when omitted")
+    @click.option(
+        "--to-state",
+        default="capability_outcome_bound",
+        help="Durable target-state label for the binding transition",
+    )
+    @click.option(
+        "--decision",
+        required=True,
+        help="Agent-authored rationale for binding this governing outcome",
+    )
+    @click.option(
+        "--possibility-id",
+        required=True,
+        help="Exact selected opportunity claim ID; never inferred",
+    )
+    @click.option(
+        "--desired-behavior",
+        required=True,
+        help="Intellectual behavior the selected capability should make possible",
+    )
+    @click.option(
+        "--completion-condition",
+        required=True,
+        help="Observable behavior that would establish the bounded capability as operational",
+    )
+    @click.option(
+        "--selection-basis",
+        required=True,
+        help="Why this outcome was selected over the alternatives that were considered",
+    )
+    @click.option(
+        "--source-ref",
+        "source_refs",
+        multiple=True,
+        help="Repository or artifact reference that grounds the selection; repeatable",
+    )
+    @click.option(
+        "--assumption",
+        "assumptions",
+        multiple=True,
+        help="Assumption that materially affects continuation; repeatable",
+    )
+    @click.option(
+        "--counterevidence",
+        "counterevidence",
+        multiple=True,
+        help="Evidence or argument against the selection; repeatable",
+    )
+    @click.option(
+        "--required-capability",
+        "required_capabilities",
+        multiple=True,
+        help="Explicit capability claim the selected outcome requires; repeatable",
+    )
+    @click.option(
+        "--remaining-condition",
+        "remaining_conditions",
+        multiple=True,
+        help="Realization condition that is not yet established; repeatable",
+    )
+    @click.option(
+        "--evidence",
+        multiple=True,
+        help="Admitted Campaign evidence ref supporting the binding decision; repeatable",
+    )
+    @click.option("--json", "output_json", is_flag=True, help="Emit JSON")
+    def capability_outcome_bind(
+        workspace: Path,
+        transition_id: str | None,
+        to_state: str,
+        decision: str,
+        possibility_id: str,
+        desired_behavior: str,
+        completion_condition: str,
+        selection_basis: str,
+        source_refs: tuple[str, ...],
+        assumptions: tuple[str, ...],
+        counterevidence: tuple[str, ...],
+        required_capabilities: tuple[str, ...],
+        remaining_conditions: tuple[str, ...],
+        evidence: tuple[str, ...],
+        output_json: bool,
+    ) -> None:
+        """Bind one agent-selected capability outcome; never select or verify it."""
+        try:
+            current = CampaignService(workspace).resume_for_transition()
+            resolved_transition_id = transition_id or _generated_transition_id(current)
+            authored = CapabilityOutcomeDecision(
+                transition_id=resolved_transition_id,
+                to_state=to_state,
+                decision=decision,
+                possibility_id=possibility_id,
+                desired_behavior=desired_behavior,
+                completion_condition=completion_condition,
+                selection_basis=selection_basis,
+                source_refs=tuple(source_refs),
+                assumptions=tuple(assumptions),
+                counterevidence=tuple(counterevidence),
+                required_capabilities=tuple(required_capabilities),
+                remaining_conditions=tuple(remaining_conditions),
+                evidence=tuple(evidence),
+            )
+            snapshot = CampaignDecisionService(
+                workspace
+            ).bind_capability_outcome(authored)
+        except (CampaignWorkspaceError, ContractError) as exc:
+            emit_error(exc, output_json=output_json)
+            return
+        _emit_decision_success(
+            snapshot,
+            code="CAPABILITY_OUTCOME_BOUND",
             output_json=output_json,
             status_payload=status_payload,
             json_echo=json_echo,

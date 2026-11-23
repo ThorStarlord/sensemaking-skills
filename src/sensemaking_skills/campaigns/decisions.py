@@ -26,6 +26,10 @@ from sensemaking_skills.campaign_semantics import (
     TransitionRecord,
 )
 
+from .capability_outcome import (
+    CAPABILITY_OUTCOME_EXTENSION,
+    build_capability_outcome,
+)
 from .errors import CampaignTransactionError
 from .lineage import CampaignLineageService
 from .service import CampaignSnapshot
@@ -40,6 +44,25 @@ class AdvanceDecision:
     to_state: str
     decision: str
     next_responsibility: Responsibility
+    evidence: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True)
+class CapabilityOutcomeDecision:
+    """Agent-authored binding of one selected capability outcome to a Campaign."""
+
+    transition_id: str
+    to_state: str
+    decision: str
+    possibility_id: str
+    desired_behavior: str
+    completion_condition: str
+    selection_basis: str
+    source_refs: tuple[str, ...] = ()
+    assumptions: tuple[str, ...] = ()
+    counterevidence: tuple[str, ...] = ()
+    required_capabilities: tuple[str, ...] = ()
+    remaining_conditions: tuple[str, ...] = ()
     evidence: tuple[str, ...] = ()
 
 
@@ -160,6 +183,75 @@ class CampaignDecisionService:
         # Append-only P8 intent is prepared before the P2 commit. If the later
         # lifecycle write fails, the uncommitted lineage intent is an auditable
         # orphan and is never treated as a consumed-evidence edge.
+        self.lineage.prepare_consumption(
+            transition_id=authored.transition_id,
+            evidence_refs=authored.evidence,
+        )
+        return self.lifecycle.record_transition(
+            new_state=new_state,
+            transition=transition,
+        )
+
+    def bind_capability_outcome(
+        self, authored: CapabilityOutcomeDecision
+    ) -> CampaignSnapshot:
+        """Persist one agent-authored governing capability outcome.
+
+        The binding is a lifecycle transition because the Campaign trace binds
+        the final state digest, including extensions. It preserves the active
+        responsibility and does not advance or complete it.
+        """
+
+        _require_text(authored.transition_id, field="transition_id")
+        _require_text(authored.to_state, field="to_state")
+        _require_text(authored.decision, field="decision")
+
+        snapshot = self.lifecycle.resume_for_transition()
+        current = snapshot.state
+        if CAPABILITY_OUTCOME_EXTENSION in current.extensions:
+            raise CampaignTransactionError(
+                "campaign already has a bound capability outcome; "
+                "a different governing outcome requires a new Campaign"
+            )
+        if authored.to_state == current.current_state:
+            raise CampaignTransactionError(
+                "capability-outcome binding must advance the durable state label"
+            )
+
+        outcome = build_capability_outcome(
+            possibility_id=authored.possibility_id,
+            desired_behavior=authored.desired_behavior,
+            completion_condition=authored.completion_condition,
+            selection_basis=authored.selection_basis,
+            bound_from_state=current.current_state,
+            source_refs=authored.source_refs,
+            assumptions=authored.assumptions,
+            counterevidence=authored.counterevidence,
+            required_capabilities=authored.required_capabilities,
+            remaining_conditions=authored.remaining_conditions,
+        )
+        responsibility = current.active_responsibility
+        new_state = replace(
+            current,
+            current_state=authored.to_state,
+            extensions={
+                **current.extensions,
+                CAPABILITY_OUTCOME_EXTENSION: outcome,
+            },
+        )
+        transition = TransitionRecord(
+            id=authored.transition_id,
+            from_state=current.current_state,
+            to_state=authored.to_state,
+            evidence=authored.evidence,
+            decision=authored.decision,
+            next_responsibility=(
+                responsibility.id if responsibility is not None else None
+            ),
+            terminal_state=None,
+            authority=current.authority,
+        )
+
         self.lineage.prepare_consumption(
             transition_id=authored.transition_id,
             evidence_refs=authored.evidence,
