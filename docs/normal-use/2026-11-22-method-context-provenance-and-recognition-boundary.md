@@ -26,6 +26,12 @@ It returned both current method lessons, each with its authored scope, condition
 
 The current consumer therefore supports discovery and source inspection. It does not perform recognition, applicability judgment or method selection; those remain agent-owned by design.
 
+### 2a. Isolated worker consultation
+
+A fresh general-purpose worker in an isolated worktree at `91dfc13b` received the real method-context completeness objective without a lesson ID or expected conclusion. It ran `semantic method context` at the base revision, then consulted `lesson:query-completeness-is-evidence` and `lesson:distinguish-provenance-content-and-meaning` after that base inspection and before choosing the correction. It reported that the code path and real graph data established the defect, not the lessons.
+
+This is fresh-worker **consultation** in one authentic engineering task. It is not independent later-agent use, a predecision applicability judgment, decision influence or benefit. The worker inherits ambient repository guidance.
+
 ## 3. Confirmed completeness defects
 
 ### 3.1 Empty visible records under truncation
