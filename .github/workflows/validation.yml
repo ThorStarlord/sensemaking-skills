@@ -124,6 +124,16 @@ jobs:
             --required-capability cap:test \
             --remaining-condition "Use it in a real decision" \
             --json > "$RUNNER_TEMP/capability-outcome-bind.json"
+          sensemaking-skills campaign advance \
+            --workspace "$WS" \
+            --decision "Continue under the bound outcome" \
+            --responsibility-id R-2 \
+            --responsibility-statement "Continue the bound capability" \
+            --decision-blocked "Whether the outcome survives the transition" \
+            --scope "Hosted mechanical contract check" \
+            --authority authorized_autonomously \
+            --success-condition "The bound outcome remains projected" \
+            --json >/dev/null
           sensemaking-skills campaign working-context \
             --workspace "$WS" --json > "$RUNNER_TEMP/capability-outcome-working.json"
           sensemaking-skills campaign resume-profile \
@@ -146,10 +156,11 @@ jobs:
           assert outcome["epistemic_status"] == "selected_hypothesis"
           assert outcome["realization"] == "not_established"
           assert bound["state"]["active_responsibility"]["id"] == "R-1"
+          assert working["active_responsibility"]["id"] == "R-2"
           assert working["capability_outcome"]["possibility_id"] == "poss:test"
           assert working["capability_outcome"]["remaining_conditions"] == ["Use it in a real decision"]
           assert resumed["capability_outcome"]["assumptions"] == ["It is a hypothesis"]
-          assert resumed["active_responsibility"]["id"] == "R-1"
+          assert resumed["active_responsibility"]["id"] == "R-2"
           assert resumed["semantic_recommendation_included"] is False
           print("Capability outcome binding is durable and projected without selecting an action.")
           PY
