@@ -298,6 +298,10 @@ goal-to-implementation routes
 authored assumptions could change the comparison, add
 `--operation possibility-ecology --subject <goal-or-opportunity-id>`; it projects
 only authored dimensions and one-hop relations, not a ranking or selection.
+When that ecology yields a genuinely new recombination or gap the agent decides
+to retain, the optional `semantic possibility record` producer can materialize
+the authored synthesis as an unreviewed hypothetical candidate; it does not
+generate, rank or select. See `references/possibility-synthesis-v1.md`.
 Inspect original sources and actual code; absent routes remain `NOT_ASSESSED`,
 not evidence of a missing capability. Use ordinary source
 inspection if the CLI is unavailable. This is not a mandatory query, a strategic
@@ -742,6 +746,7 @@ already stated above, so skipping a file never loses the rule.
 | `references/portable-construction-loop-v1.md` | authorized implementation, an explicit engineering task, coding outside the Sensemaking repository, or earlier-artifact reuse (section 1a) | reasoning-only work, or a clear local fix in a familiar repo | warranted direction != implementation authority |
 | `references/evidence-and-closure-v1.md` | validating, reconciling a claim, verifying a repair, reading a Brief, using a workflow | ordinary tests and diff review settle it | validated != closed |
 | `references/decision-review-v1.md` | reconsidering an earlier architecture option or provisional preference in light of consequences and method evidence | a narrow task or a first-time choice with no prior option | review evidence != automatic preference change or promotion; historical/current assessments stay distinct |
+| `references/possibility-synthesis-v1.md` | a goal-family ecology yields a genuinely new recombination or gap the agent decides to retain | routine retrieval or restating an existing candidate | synthesis support != automatic generation, validation, selection or authorization |
 | `references/session-receipt-v1.md` | every session using this Skill | never; follow the contract when a receipt can be written | receipt != authority |
 | `references/delegated-goal-patterns.md` | a delegated mission's scope, authority or stop is material | a bounded task | desired delegation != granted authority |
 | `references/experiment-economy-v1.md` | an experiment or isolation is actually under consideration | reversible construction can answer it | uncertainty != experiment |

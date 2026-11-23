@@ -736,6 +736,41 @@ explicit relationship hop is followed per candidate; use
 `knowledge-view-export`/`explain` for deeper traversal. Candidate, relationship
 and shared-link omission counts disclose the bound.
 
+### Possibility synthesis producer
+
+After an agent inspects a goal-family ecology and forms a genuinely new
+recombination or gap, the optional `semantic possibility record` producer can
+materialize its authored synthesis as an unreviewed `opportunity` proposal:
+
+```bash
+sensemaking-skills semantic possibility record \
+  --repo . --episode path/to/synthesis.json \
+  --output .sensemaking/knowledge/possibility-synthesis.json --json
+```
+
+The tracked episode must carry `possibility_id`, `actor`, exact
+`source_revision`, `origin_date`, title and statement, one to eight existing
+`goal:` refs, one to eight existing `poss:` source candidates, optional
+`cap:` refs, optional assumption and contradiction refs, the four
+ProductPossibility dimensions (`alignment`, `ambition`, `horizon`,
+`realization`), a synthesis basis, value hypothesis, revisit condition,
+counterevidence, claim ceiling and tracked evidence. The producer validates
+every cited claim at the exact source revision and creates:
+
+- a hypothetical `opportunity` claim with `candidate_opportunity_for` links to
+  the cited goals;
+- `derived_from` links to the source candidates;
+- optional `requires_capability`, `assumes` (`references`) and `contradicts`
+  links.
+
+A new synthesis must remain `HYPOTHETICAL` or `NOT_ASSESSED`; claiming
+implementation requires ordinary reconciliation. The producer does not generate
+a candidate, rank possibilities, choose a goal, claim value or authorize work.
+The output is an `UNREVIEWED_DRAFT`; ordinary `knowledge-proposal-check` and Git
+review remain necessary. After review, existing `product-outline` and
+`possibility-ecology` consumers expose the new candidate with its authored
+provenance.
+
 ### Source-linked capability-to-component routes
 
 The **default** `product-outline` response also groups
