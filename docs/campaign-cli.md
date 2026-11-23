@@ -13,6 +13,7 @@ sensemaking-skills campaign status
 sensemaking-skills campaign validate
 sensemaking-skills campaign advance
 sensemaking-skills campaign capability-outcome bind
+sensemaking-skills campaign capability-outcome bridge
 sensemaking-skills campaign defer
 sensemaking-skills campaign close
 sensemaking-skills campaign inspect
@@ -138,6 +139,42 @@ source reference != admitted Campaign evidence
 ```
 
 
+### `campaign capability-outcome bridge`
+
+Projects the compact construction bridge for the bound capability outcome. It
+joins the durable Campaign binding to the selected possibility's explicitly
+declared `requires_capability` and `implemented_by` routes at one committed
+revision, so continuation does not require manually cross-referencing Campaign
+state with a separate `semantic workspace-query` call.
+
+```bash
+sensemaking-skills campaign capability-outcome bridge \
+  --workspace /path/to/campaign \
+  --repo . \
+  --ref <commit> \
+  --json
+```
+
+The bridge carries the full bound outcome, the exact indexed possibility focus,
+each declared capability route and its reviewed components, a mechanical
+alignment check between the Campaign's required capability IDs and the
+repository's declared edges, and a source-reference overlap check. Routes keep
+`implementation_verified: false`; `campaign_only`, `knowledge_only`, truncation
+and missing component links remain explicit. A mismatch is reported, not
+repaired, ranked or turned into a recommendation.
+
+When the Campaign has a bound target, the queried checkout identity must match
+it; when several targets are bound, pass `--target-alias`. When the Campaign has
+no bound target, target binding is `NOT_ASSESSED` and the queried repository is
+recorded as an explicit knowledge source.
+
+```text
+projected bridge != verified implementation
+declared route != working consumer
+route alignment != readiness or recommendation
+```
+
+
 ## JSON output
 
 The normal inspection/status commands and secondary advanced projections preserve their existing `--json` contracts where supported.
@@ -150,6 +187,7 @@ The JSON surface is intended for coding agents and other deterministic consumers
 - `CAMPAIGN_INVALID`
 - `CAMPAIGN_HISTORY`
 - `CAPABILITY_OUTCOME_BOUND`
+- `CAPABILITY_OUTCOME_BRIDGE`
 - `CAMPAIGN_ALREADY_EXISTS`
 - `CAMPAIGN_NOT_INITIALIZED`
 - `CAMPAIGN_IDENTITY_ERROR`

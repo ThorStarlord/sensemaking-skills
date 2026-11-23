@@ -1,4 +1,5 @@
-"""Click command registration for explicit agent-authored campaign decisions."""
+"""Click command registration for explicit agent-authored campaign decisions and
+their read-only continuation projections."""
 
 from __future__ import annotations
 
@@ -8,6 +9,7 @@ from typing import Any
 
 import click
 
+from .campaign_capability_bridge import build_capability_bridge
 from .campaign_semantics import (
     Authority,
     ContractError,
@@ -70,6 +72,56 @@ def _emit_decision_success(
             click.echo("Not reopened by:")
             for condition in deferred.not_reopened_by:
                 click.echo(f"  - {condition}")
+
+
+def _echo_capability_bridge(payload: dict[str, Any]) -> None:
+    outcome = payload["capability_outcome"]
+    bridge = payload["bridge"]
+    source = payload["source_identity"]
+    alignment = bridge["route_alignment"]
+    total = bridge["required_capability_total"]
+    if total is None:
+        total = len(bridge["required_capability_routes"])
+    omitted = bridge["required_capability_omitted"]
+    if omitted is None:
+        omitted = 0
+
+    click.echo("CAPABILITY_OUTCOME_BRIDGE")
+    click.echo(f"Campaign: {payload['campaign_id']}")
+    click.echo(f"Possibility: {bridge['possibility_id']}")
+    click.echo(f"Desired behavior: {outcome['desired_behavior']}")
+    click.echo(f"Completion condition: {outcome['completion_condition']}")
+    click.echo(f"Repository: {source['repository']} @ {source['indexed_ref']}")
+    click.echo(f"Target binding: {payload['target_binding']['assessment']}")
+    click.echo(
+        f"Required-capability routes: {total} (omitted {omitted})"
+    )
+    for route in bridge["required_capability_routes"]:
+        click.echo(f"- {route['capability_claim_id']}")
+        components = route["implementation_components"]
+        if not components:
+            click.echo("    implementation route: NOT_ASSESSED")
+            continue
+        for component in components:
+            click.echo(
+                f"    {component['component_claim_id']} "
+                "[implementation_verified: false]"
+            )
+    click.echo(f"Route alignment: {alignment['assessment']}")
+    if alignment["campaign_only"]:
+        click.echo("Campaign-only: " + ", ".join(alignment["campaign_only"]))
+    if alignment["knowledge_only"]:
+        click.echo("Knowledge-only: " + ", ".join(alignment["knowledge_only"]))
+    click.echo(f"Source alignment: {bridge['source_alignment']['assessment']}")
+    if outcome["remaining_conditions"]:
+        click.echo("Remaining conditions:")
+        for condition in outcome["remaining_conditions"]:
+            click.echo(f"  - {condition}")
+    if payload["caveats"]:
+        click.echo("Caveats:")
+        for caveat in payload["caveats"]:
+            click.echo(f"  - {caveat['code']}")
+    click.echo(payload["explicit_limit"])
 
 
 def _next_generated_id(prefix: str, existing: set[str]) -> str:
@@ -341,6 +393,54 @@ def register_campaign_decision_commands(
             json_echo=json_echo,
             echo_status=echo_status,
         )
+
+    @capability_outcome_group.command(name="bridge")
+    @click.option(
+        "--workspace",
+        required=True,
+        type=click.Path(path_type=Path),
+        help="Existing campaign workspace with a bound capability outcome",
+    )
+    @click.option(
+        "--repo",
+        required=True,
+        type=click.Path(exists=True, file_okay=False, path_type=Path),
+        help="Git checkout containing the reviewed possibility and capability records",
+    )
+    @click.option(
+        "--ref",
+        default="HEAD",
+        show_default=True,
+        help="Committed revision whose exact derived index supplies the routes",
+    )
+    @click.option(
+        "--target-alias",
+        default=None,
+        help="Campaign target to verify against the checkout; required when several are bound",
+    )
+    @click.option("--json", "output_json", is_flag=True, help="Emit JSON")
+    def capability_outcome_bridge(
+        workspace: Path,
+        repo: Path,
+        ref: str,
+        target_alias: str | None,
+        output_json: bool,
+    ) -> None:
+        """Join the bound outcome to its declared required-capability routes."""
+        try:
+            payload = build_capability_bridge(
+                workspace=workspace,
+                repo=repo,
+                ref=ref,
+                target_alias=target_alias,
+            )
+        except (CampaignWorkspaceError, ContractError) as exc:
+            emit_error(exc, output_json=output_json)
+            return
+        if output_json:
+            json_echo(payload)
+            return
+        _echo_capability_bridge(payload)
 
     @campaign.command(name="defer")
     @click.option(

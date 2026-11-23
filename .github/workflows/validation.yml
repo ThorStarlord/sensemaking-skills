@@ -166,6 +166,67 @@ jobs:
           PY
           sensemaking-skills campaign validate --workspace "$WS" --json >/dev/null
 
+      - name: Capability outcome bridge projection
+        shell: bash
+        run: |
+          WS="$RUNNER_TEMP/campaign-capability-bridge"
+          rm -rf "$WS"
+          sensemaking-skills campaign init \
+            --workspace "$WS" \
+            --campaign-id CMP-BRIDGE \
+            --mission "Verify capability outcome bridge projection" \
+            --json >/dev/null
+          sensemaking-skills campaign capability-outcome bind \
+            --workspace "$WS" \
+            --decision "Bind the selected bridge for route projection" \
+            --possibility-id poss:goal-family-construction-bridge \
+            --desired-behavior "Project the bound outcome beside its declared routes" \
+            --completion-condition "The bridge reports the declared routes without claiming implementation" \
+            --selection-basis "Hosted mechanical contract check" \
+            --source-ref "file:.sensemaking/knowledge/possibility-synthesis.json" \
+            --required-capability cap:adaptive-metareasoning \
+            --required-capability cap:breadth-exploration-guidance \
+            --required-capability cap:experience-lesson-recall \
+            --required-capability cap:repository-only-discovery \
+            --remaining-condition "Use the bridge in a real continuation" \
+            --json >/dev/null
+          sensemaking-skills campaign capability-outcome bridge \
+            --workspace "$WS" --repo . --ref HEAD --json > "$RUNNER_TEMP/capability-bridge.json"
+          python - <<'PY'
+          import json
+          import os
+
+          with open(os.path.join(os.environ["RUNNER_TEMP"], "capability-bridge.json"), encoding="utf-8") as stream:
+              bridge = json.load(stream)
+
+          assert bridge["code"] == "CAPABILITY_OUTCOME_BRIDGE"
+          assert bridge["bridge"]["possibility_id"] == "poss:goal-family-construction-bridge"
+          route_ids = {
+              route["capability_claim_id"]
+              for route in bridge["bridge"]["required_capability_routes"]
+          }
+          assert {
+              "cap:adaptive-metareasoning",
+              "cap:breadth-exploration-guidance",
+              "cap:experience-lesson-recall",
+              "cap:repository-only-discovery",
+          } <= route_ids
+          assert bridge["bridge"]["route_alignment"]["assessment"] == "ALIGNED"
+          assert bridge["bridge"]["route_alignment"]["campaign_only"] == []
+          assert bridge["bridge"]["route_alignment"]["knowledge_only"] == []
+          assert bridge["bridge"]["source_alignment"]["assessment"] == "MATCH"
+          assert bridge["semantic_truth_established"] is False
+          assert bridge["action_authorized"] is False
+          assert bridge["selection_performed"] is False
+          assert bridge["recommendation_performed"] is False
+          assert bridge["implementation_verified"] is False
+          for route in bridge["bridge"]["required_capability_routes"]:
+              for component in route["implementation_components"]:
+                  assert component["implementation_verified"] is False
+          print("Capability outcome bridge joins the bound outcome to its declared routes without claiming implementation.")
+          PY
+          sensemaking-skills campaign validate --workspace "$WS" --json >/dev/null
+
       - name: Assert tests did not mutate tracked state
         shell: bash
         run: |
