@@ -650,15 +650,20 @@ conditions, claim ceiling, counterevidence, original outcome, later related
 records and `applicability_to_present_task: NOT_ESTABLISHED`. Later related
 records include linked later decisions as well as incidents, observations and
 lessons; a later decision shows attributed use or reconsideration, not
-validation. Each candidate also carries `source_records`: the lesson's outgoing
-`learned_from` source observation and any `references` prior lesson, with their
-authored statements, attributes and relation provenance. `procedure_change`
-exposes `method_before`, `prior_lesson_id` and `method_disposition`.
+validation. Each candidate also carries `source_records`: every outgoing
+`learned_from` record, whatever its target kind, plus any outgoing `references`
+to an observation or prior lesson, with their authored statements, attributes
+and relation provenance. A target absent from the indexed revision stays
+visible with `NOT_ASSESSED` rather than disappearing by ID prefix. Other
+`references` links are not source records. `procedure_change` exposes
+`method_before`, `prior_lesson_id` and `method_disposition`.
 `related_records_complete` covers both incoming later records and outgoing
-source records, so an omitted source makes it false rather than silently
-complete. A method episode written with `semantic method record` may name an
-authored `decision` claim at its source revision through `decision_ref`; the
-producer then links the episode observation to that decision. Existing
+source records and is false when the one-hop explain neighborhood is truncated
+or any listed record is not indexed. An empty list with the flag true means no
+such indexed record at this revision, not that the method was never used. A
+method episode written with `semantic method record` may name an authored
+`decision` claim at its source revision through `decision_ref`; the producer
+then links the episode observation to that decision. Existing
 `knowledge-query explain` on the decision and `method context` on the lesson
 expose the resulting method-decision chain without a new query surface. The
 link is attribution, not causal proof. The section does not rank, select or
