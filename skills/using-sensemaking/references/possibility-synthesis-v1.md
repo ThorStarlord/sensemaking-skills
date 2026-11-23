@@ -89,8 +89,12 @@ Git review remains necessary.
 
 After review, the new candidate appears in existing `product-outline` and
 `possibility-ecology` results under its cited goal(s), with authored dimensions,
-realization, relationships and shared links. It remains a possible future, not
-a selected strategy, shipped capability or proof of value.
+realization, relationships and shared links. When the candidate is inspected as
+an opportunity focus, `possibility-ecology` also shows its explicit
+`required_capability_routes` to reviewed components, so a later agent can
+reconstruct the construction bridge without a separate outline lookup. It
+remains a possible future, not a selected strategy, shipped capability or proof
+of value.
 
 ```text
 synthesis support != automatic generation

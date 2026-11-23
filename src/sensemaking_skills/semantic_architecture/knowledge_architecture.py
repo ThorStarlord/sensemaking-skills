@@ -1005,6 +1005,87 @@ def possibility_ecology(
     )
     shared_total = len(shared_links)
     shared_visible = shared_links[:10]
+
+    # A selected opportunity can name the capabilities it requires. Surface
+    # those explicit edges with each capability's explicitly implemented_by
+    # components, so a construction bridge does not have to cross-reference
+    # a separate product outline and lose required links to the relationship
+    # bound. This remains a documentary one-hop projection, not an
+    # implementation or readiness verdict.
+    required_capability_routes: list[dict] = []
+    required_capability_total = 0
+    required_capability_omitted = 0
+    if focus_kind == "opportunity":
+        requires_edges = sorted(
+            (
+                r for r in edges
+                if r["predicate"] == "requires_capability"
+                and r["subject"] == subject
+                and r["object"] in claims
+                and claims[r["object"]]["kind"] == "capability"
+            ),
+            key=lambda r: (r["object"], r["id"]),
+        )
+        required_capability_total = len(requires_edges)
+        visible_requires = requires_edges[:8]
+        required_capability_omitted = max(
+            0, required_capability_total - len(visible_requires)
+        )
+        for requires in visible_requires:
+            capability = claims[requires["object"]]
+            implementations = sorted(
+                (
+                    r for r in edges
+                    if r["predicate"] == "implemented_by"
+                    and r["subject"] == capability["id"]
+                    and r["object"] in claims
+                    and claims[r["object"]]["kind"] == "component"
+                ),
+                key=lambda r: (r["object"], r["id"]),
+            )
+            visible_implementations = implementations[:4]
+            implementation_components: list[dict] = []
+            for implementation in visible_implementations:
+                component = claims[implementation["object"]]
+                implementation_components.append({
+                    "component_claim_id": component["id"],
+                    "component_statement": component["statement"],
+                    "component_epistemic_status": component["epistemic_status"],
+                    "component_authority_kind": component["authority_kind"],
+                    "component_authority_ref": component["authority_ref"],
+                    "component_source_ref": component["source_ref"],
+                    "component_evidence_refs": list(component["evidence_refs"]),
+                    "component_owned_paths": list(
+                        component.get("attributes", {}).get("owned_paths", [])
+                    ),
+                    "implemented_by_relation_id": implementation["id"],
+                    "implemented_by_relation_epistemic_status": implementation["epistemic_status"],
+                    "implemented_by_relation_evidence_refs": list(implementation["evidence_refs"]),
+                    "implementation_verified": False,
+                })
+                selected_claims.append(component["id"])
+                selected_relations.append(implementation["id"])
+            required_capability_routes.append({
+                "capability_claim_id": capability["id"],
+                "capability_statement": capability["statement"],
+                "capability_epistemic_status": capability["epistemic_status"],
+                "capability_authority_kind": capability["authority_kind"],
+                "capability_authority_ref": capability["authority_ref"],
+                "capability_source_ref": capability["source_ref"],
+                "capability_evidence_refs": list(capability["evidence_refs"]),
+                "requires_capability_relation_id": requires["id"],
+                "requires_capability_relation_epistemic_status": requires["epistemic_status"],
+                "requires_capability_relation_evidence_refs": list(requires["evidence_refs"]),
+                "implementation_components": implementation_components,
+                "implementation_component_total": len(implementations),
+                "implementation_component_omitted": max(
+                    0, len(implementations) - len(visible_implementations)
+                ),
+                "implementation_link_not_assessed": not implementations,
+            })
+            selected_claims.append(capability["id"])
+            selected_relations.append(requires["id"])
+
     payload = {
         "focus_kind": focus_kind,
         "focus": candidate_record(focus) if focus_kind == "opportunity" else {
@@ -1032,7 +1113,10 @@ def possibility_ecology(
         "relationship_omitted": relationship_omitted,
         "coverage_complete": False,
         "truncated": bool(candidate_omitted or descendant_omitted or relationship_omitted
-                          or shared_total > len(shared_visible)),
+                          or shared_total > len(shared_visible)
+                          or required_capability_omitted
+                          or any(route["implementation_component_omitted"]
+                                 for route in required_capability_routes)),
         "explicit_limits": [
             "Projects only authored possibility dimensions, disposition history and explicit "
             "relations; it does not infer relationships, shared premises, feasibility, "
@@ -1051,8 +1135,20 @@ def possibility_ecology(
             "omitted by either candidate limit are not counted.",
             "The view follows one explicit relationship hop from each candidate; inspect "
             "original sources or explain/knowledge-view-export for deeper traversal.",
+            "required_capability_routes (opportunity focus only) follow explicit "
+            "requires_capability edges from the focused opportunity and explicit "
+            "implemented_by edges from each named capability to components. They do not "
+            "inspect code, establish a working consumer, sufficiency, applicability, "
+            "priority or readiness, and a missing route is NOT ASSESSED.",
         ],
     }
+    if focus_kind == "opportunity":
+        payload.update({
+            "required_capability_routes": required_capability_routes,
+            "required_capability_total": required_capability_total,
+            "required_capability_omitted": required_capability_omitted,
+            "required_capability_link_not_assessed": required_capability_total == 0,
+        })
     return payload, list(dict.fromkeys(selected_claims)), list(dict.fromkeys(selected_relations))
 
 

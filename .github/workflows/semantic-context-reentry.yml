@@ -1317,14 +1317,21 @@ jobs:
             --operation possibility-ecology \
             --subject goal:domain-general-cognitive-development --json \
             > "$RUNNER_TEMP/family-ecology.json"
+          sensemaking-skills semantic workspace-query --repo . --ref "$REF" \
+            --operation possibility-ecology \
+            --subject poss:goal-family-construction-bridge --json \
+            > "$RUNNER_TEMP/construction-bridge-ecology.json"
           ECOLOGY="$RUNNER_TEMP/possibility-ecology.json" \
-          FAMILY_ECOLOGY="$RUNNER_TEMP/family-ecology.json" python - <<'PY'
+          FAMILY_ECOLOGY="$RUNNER_TEMP/family-ecology.json" \
+          BRIDGE_ECOLOGY="$RUNNER_TEMP/construction-bridge-ecology.json" python - <<'PY'
           import json
           import os
           with open(os.environ["ECOLOGY"], encoding="utf-8") as stream:
               result = json.load(stream)
           with open(os.environ["FAMILY_ECOLOGY"], encoding="utf-8") as stream:
               family_result = json.load(stream)
+          with open(os.environ["BRIDGE_ECOLOGY"], encoding="utf-8") as stream:
+              bridge_result = json.load(stream)
           assert result["operation"] == "possibility-ecology"
           assert result["semantic_truth_established"] is False
           ecology = result["possibility_ecology"]
@@ -1367,7 +1374,31 @@ jobs:
                      for limit in family_ecology["explicit_limits"])
           assert family_result["semantic_truth_established"] is False
           assert family_result["action_authorized"] is False
-          print("Possibility ecology exposes direct and one-hop goal-family candidates; no selection.")
+
+          bridge_ecology = bridge_result["possibility_ecology"]
+          assert bridge_ecology["focus_kind"] == "opportunity"
+          assert bridge_ecology["focus"]["claim_id"] == "poss:goal-family-construction-bridge"
+          assert bridge_ecology["required_capability_total"] >= 4
+          routes = {
+              item["capability_claim_id"]: item
+              for item in bridge_ecology["required_capability_routes"]
+          }
+          assert {
+              "cap:adaptive-metareasoning",
+              "cap:breadth-exploration-guidance",
+              "cap:experience-lesson-recall",
+              "cap:repository-only-discovery",
+          } <= set(routes)
+          assert all(item["requires_capability_relation_id"] for item in routes.values())
+          assert any(item["implementation_components"] for item in routes.values())
+          assert all(
+              component["implementation_verified"] is False
+              for item in routes.values()
+              for component in item["implementation_components"]
+          )
+          assert bridge_result["semantic_truth_established"] is False
+          assert bridge_result["action_authorized"] is False
+          print("Opportunity ecology exposes required-capability routes; no selection or readiness claim.")
           PY
       - name: Exercise possibility synthesis producer contract (mechanics only)
         shell: bash
