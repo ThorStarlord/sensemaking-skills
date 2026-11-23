@@ -267,7 +267,7 @@ def register_campaign_decision_commands(
 
     @campaign.group(name="capability-outcome")
     def capability_outcome_group() -> None:
-        """Bind the selected capability outcome that governs this Campaign."""
+        """Bind or project the capability outcome that governs this Campaign."""
 
     @capability_outcome_group.command(name="bind")
     @click.option(
