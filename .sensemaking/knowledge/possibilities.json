@@ -1331,8 +1331,8 @@
           "realization": {
             "value": "PARTIALLY_IMPLEMENTED",
             "establishment": "observed",
-            "basis": "On 2026-11-23 product-outline and possibility-ecology added a one-hop goal-family candidate projection: the ratified top-level goal exposes descendant-goal candidates with via-goal provenance and shared authored links. This is partial: it surfaces authored family candidates and dimensions but does not generate assumptions, compare conflicting alternatives or establish value.",
-            "observation_ref": "docs/normal-use/2026-11-23-goal-family-opportunity-discovery.md",
+            "basis": "On 2026-11-23 the goal-family projection and semantic possibility record added (1) one-hop descendant-goal candidates with via-goal provenance and shared authored links, and (2) an agent-authored synthesis producer that validates existing goals, candidates, capabilities and assumptions at the exact source revision and materializes a new hypothetical candidate. This is partial: it does not generate candidates, compare value, establish independent use or prove the value hypothesis.",
+            "observation_ref": "docs/normal-use/2026-11-23-prospective-synthesis-capability.md",
             "history": [
               {
                 "value": "NOT_ASSESSED",
@@ -1359,7 +1359,7 @@
             "rationale": "Implemented the one-hop goal-family candidate projection in product-outline and possibility-ecology; it exposes descendant-goal candidates and shared authored links without generating new assumptions or claiming value."
           }
         ],
-        "assessed_ref": "bb77dac13fa4212d11f414176c9a37071dcc0a7f",
+        "assessed_ref": "48549a9288848142302e10d3b0912e7b777ed684",
         "value_hypothesis": "Future coding-agent explorations expose materially new, coherent option families by relating possibilities and their assumptions rather than merely recalling or ranking ideas.",
         "revisit_when": "A genuinely fresh coding agent uses the reviewed possibility and premise lineage in an authentic prospective product question; reassess the claimed distinctiveness and value against its actual output."
       }
