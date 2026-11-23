@@ -1,0 +1,61 @@
+{
+  "possibility_id": "goal-family-construction-bridge",
+  "actor": "Sensemaking construction agent",
+  "source_revision": "1f8a21fb8b053fef607422027f15394f18351fa9",
+  "origin_date": "2026-11-23",
+  "title": "Goal-family construction bridge",
+  "statement": "For a selected goal-family candidate, an agent can reconstruct a compact construction bridge that joins the candidate's authored assumptions, existing serving capabilities and implementation routes, and the current Campaign/strategy evidence, so it can choose a bounded next increment and preserve the remaining realization conditions across sessions.",
+  "goal_refs": [
+    "goal:compounding-product-knowledge",
+    "goal:longterm-stewardship"
+  ],
+  "source_candidate_refs": [
+    "poss:assumption-aware-opportunity-ecology",
+    "poss:construction-time-possibility-reconciliation",
+    "poss:cross-episode-possibility-synthesis",
+    "poss:repository-local-prospective-decision-memory"
+  ],
+  "capability_refs": [
+    "cap:adaptive-metareasoning",
+    "cap:breadth-exploration-guidance",
+    "cap:experience-lesson-recall",
+    "cap:repository-only-discovery"
+  ],
+  "assumption_refs": [
+    "hyp:cross-episode-synthesis-recurs",
+    "con:agent-owns-semantic-control"
+  ],
+  "contradicts_refs": [
+    "poss:automatic-strategic-planner"
+  ],
+  "dimensions": {
+    "alignment": {
+      "value": "ALIGNED",
+      "basis": "ADR 0037's domain-general cognitive development and the existing Campaign, strategy, possibility and receipt mechanisms support a construction bridge for a selected candidate."
+    },
+    "ambition": {
+      "value": "SUBSTANTIAL",
+      "basis": "Would let a later agent resume a selected capability and distinguish a capability-advancing increment from a local repair."
+    },
+    "horizon": {
+      "value": "FORESEEABLE",
+      "basis": "Existing possibility, Campaign, strategy, receipt and context records supply the pieces; no bridge implementation exists yet."
+    },
+    "realization": {
+      "value": "HYPOTHETICAL",
+      "establishment": "inferred",
+      "basis": "No construction-bridge implementation, independent later-agent use or benefit is observed."
+    }
+  },
+  "synthesis_basis": "Combines the one-hop goal-family candidate ecology with construction-time possibility reconciliation and prospective decision memory. It links a selected possibility to existing serving capabilities and current Campaign/strategy evidence while preserving the remaining realization conditions. It is distinct from automatic planning or ranking because the agent selects the candidate, the next increment and the continuation decision.",
+  "value_hypothesis": "A later agent can resume a selected capability without reconstructing the entire discovery context and can distinguish a capability-advancing increment from a local repair.",
+  "revisit_when": "A later agent uses the bridge in a real multi-increment construction and either completes the selected capability or finds it redundant with existing Campaign/strategy/handoff context.",
+  "counterevidence": "Existing Campaign/strategy/handoff surfaces already preserve much of this context; the bridge may be redundant. No independent later-agent use is observed.",
+  "claim_ceiling": "Proposed integration from one source-grounded synthesis; no implemented bridge, independent use, decision influence, value or authorization.",
+  "evidence_refs": [
+    "file:docs/normal-use/2026-11-23-goal-family-opportunity-discovery.md",
+    "file:src/sensemaking_skills/semantic_architecture/knowledge_architecture.py",
+    "file:.sensemaking/knowledge/possibilities.json",
+    "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+  ]
+}

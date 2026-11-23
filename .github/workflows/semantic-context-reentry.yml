@@ -1369,6 +1369,79 @@ jobs:
           assert family_result["action_authorized"] is False
           print("Possibility ecology exposes direct and one-hop goal-family candidates; no selection.")
           PY
+      - name: Exercise possibility synthesis producer contract (mechanics only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          REF="$(git rev-parse HEAD)"
+          test -z "$(git status --porcelain)"
+          EPISODE=".sensemaking/possibility-synthesis-ci-fixture.json"
+          PROPOSAL=".sensemaking/knowledge/possibility-synthesis-ci-fixture.json"
+          REF="$REF" EPISODE="$EPISODE" python - <<'PY'
+          import json
+          import os
+          payload = {
+              "possibility_id": "ci-synthesis-contract-fixture",
+              "actor": "CI mechanical contract fixture; not an autonomous synthesis agent",
+              "source_revision": os.environ["REF"],
+              "origin_date": "2026-11-23",
+              "title": "CI synthesis contract fixture",
+              "statement": "Mechanical fixture only; not a genuine product possibility.",
+              "goal_refs": ["goal:compounding-product-knowledge"],
+              "source_candidate_refs": ["poss:cross-episode-possibility-synthesis"],
+              "capability_refs": ["cap:possibility-records"],
+              "assumption_refs": ["hyp:cross-episode-synthesis-recurs"],
+              "contradicts_refs": ["poss:automatic-strategic-planner"],
+              "dimensions": {
+                  "alignment": {"value": "ALIGNED", "basis": "fixture"},
+                  "ambition": {"value": "INCREMENTAL", "basis": "fixture"},
+                  "horizon": {"value": "FORESEEABLE", "basis": "fixture"},
+                  "realization": {"value": "HYPOTHETICAL", "basis": "fixture"},
+              },
+              "synthesis_basis": "fixture",
+              "value_hypothesis": "fixture",
+              "revisit_when": "fixture",
+              "counterevidence": "NOT_ASSESSED",
+              "claim_ceiling": "No genuine synthesis or value.",
+              "evidence_refs": [
+                  "file:docs/normal-use/2026-11-23-goal-family-opportunity-discovery.md"
+              ],
+          }
+          with open(os.environ["EPISODE"], "w", encoding="utf-8") as stream:
+              json.dump(payload, stream)
+          PY
+          git add "$EPISODE"
+          sensemaking-skills semantic possibility record \
+            --repo . --episode "$EPISODE" --output "$PROPOSAL" --json \
+            > "$RUNNER_TEMP/possibility-record-output.json"
+          POSSIBILITY_RECORD="$RUNNER_TEMP/possibility-record-output.json" \
+          POSSIBILITY_PROPOSAL="$PROPOSAL" POSSIBILITY_EPISODE="$EPISODE" python - <<'PY'
+          import json
+          import os
+          with open(os.environ["POSSIBILITY_RECORD"], encoding="utf-8") as stream:
+              result = json.load(stream)
+          with open(os.environ["POSSIBILITY_PROPOSAL"], encoding="utf-8") as stream:
+              proposal = json.load(stream)
+          assert result["created"] is True
+          assert result["review_state"] == "UNREVIEWED_DRAFT"
+          assert result["semantic_truth_established"] is False
+          assert result["action_authorized"] is False
+          assert result["evidence_paths_not_in_source_revision"] == [os.environ["POSSIBILITY_EPISODE"]]
+          assert len(proposal["claims"]) == 1
+          claim = proposal["claims"][0]
+          assert claim["kind"] == "opportunity"
+          assert claim["epistemic_status"] == "hypothetical"
+          assert claim["attributes"]["dimensions"]["realization"]["value"] == "HYPOTHETICAL"
+          predicates = {row["predicate"] for row in proposal["relations"]}
+          assert {"candidate_opportunity_for", "derived_from", "requires_capability",
+                  "references", "contradicts"} <= predicates
+          PY
+          sensemaking-skills semantic knowledge-proposal-check \
+            --repo . --proposal "$PROPOSAL" --json > /dev/null
+          git reset -q -- "$EPISODE"
+          rm -- "$EPISODE" "$PROPOSAL"
+          test -z "$(git status --porcelain)"
+          echo "Temporary possibility synthesis proposal validated and discarded; no synthesis retained."
       - name: Review actual checkout changes before commit (mechanical consumer)
         if: github.event_name == 'pull_request'
         shell: bash
