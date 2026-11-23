@@ -1,0 +1,94 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-11-23-goal-family-opportunity-discovery
+state: final
+created_at: "2026-11-23T00:00:00Z"
+updated_at: "2026-11-23T00:00:00Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: ccebb54d87215c7a45b40d683b767779b2f017d8
+  end_ref: 3403cb9cbc135d6d41355a3a06cd1a1e56e7c2ed
+  worktree_clean_at_end: true
+skill_identity:
+  load_mode: harness_discovered
+  sensemaking_source_ref: ccebb54d87215c7a45b40d683b767779b2f017d8
+goal:
+  statement: "Investigate opportunity discovery and outcome-centered construction, then build a retained capability that makes the ratified goal's value-relevant candidate family visible and advances a selected possibility."
+  source: owner_message
+  source_ref: null
+delegation:
+  granted: [read, local_write, run_local_commands, commit, push, open_pr, merge, knowledge_edit]
+  withheld: [release, deploy, tracker_write, external_publication]
+continuity:
+  resumes: 2026-11-22-method-context-provenance
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: Reconstruct discovery and construction capabilities and test Local Warrant Dominance
+    capability: using-sensemaking
+    status: completed
+    reason: "Recent repairs were locally warranted, but the ratified top-level goal exposed zero direct candidates while its two subgoals exposed four each. Implementation routes already followed one goal hop; candidate opportunities did not. This is a concrete discovery blind spot, not proof of an AMS defect."
+    artifact_refs: [docs/explorations/2026-11-17-cognitive-construction-opportunity-landscape.md, docs/value-directed-continuous-construction.md, .sensemaking/knowledge/possibilities.json]
+    validation:
+      - command: Real product-outline and possibility-ecology at ccebb54d
+        result: PASS
+  - id: R-2
+    responsibility: Implement one-hop goal-family candidate discovery and reconcile a selected possibility
+    capability: ordinary_coding
+    status: completed
+    reason: "product-outline now adds indirect_candidate_opportunities and possibility-ecology adds descendant_goal_candidates under exactly one authored serves_goal hop. Direct candidate semantics are preserved. poss:assumption-aware-opportunity-ecology is partially realized with its prior assessment retained."
+    artifact_refs: [src/sensemaking_skills/semantic_architecture/knowledge_architecture.py, docs/semantic-architecture/persistent-knowledge-cli.md, docs/normal-use/2026-11-23-goal-family-opportunity-discovery.md]
+    validation:
+      - command: Real CLI before/after probes show 0 to 8 family candidates; direct subgoal candidates remain 4
+        result: PASS
+      - command: knowledge-proposal-check, knowledge-build and knowledge-audit at 22072d4b
+        result: PASS
+      - command: ruff, compileall, YAML parse and git diff --check
+        result: PASS
+  - id: R-3
+    responsibility: Preserve outcome continuity and the next evidence boundary
+    capability: using-sensemaking
+    status: completed
+    reason: "The selected possibility is partially implemented; generated assumptions, comparative judgment, independent agent use and value remain unestablished. The next responsibility is observation, not another selector or ranking engine."
+    artifact_refs: [docs/normal-use/2026-11-23-goal-family-opportunity-discovery.md]
+    validation:
+      - command: Review of direct, family and realization states through both CLI entrypoints
+        result: PASS
+findings:
+  - id: F-1
+    statement: "At ccebb54d the top-level goal had zero direct candidates while its subgoals had four each; implementation routes already followed one goal hop, so the candidate omission was a consumer asymmetry."
+    epistemic_status: OBSERVED
+    evidence_refs: [src/sensemaking_skills/semantic_architecture/knowledge_architecture.py, .sensemaking/knowledge/possibilities.json]
+    disposition: resolved
+  - id: F-2
+    statement: "The new family view exposes eight one-hop candidates with via-goal provenance and ten authored shared links at the top goal, without ranking, selection, inferred hierarchy or arbitrary transitive closure."
+    epistemic_status: OBSERVED
+    evidence_refs: [src/sensemaking_skills/semantic_architecture/knowledge_architecture.py]
+    disposition: resolved
+  - id: F-3
+    statement: "poss:assumption-aware-opportunity-ecology is partially implemented by the projection; its value hypothesis, generated assumptions, comparative use and benefit remain unestablished."
+    epistemic_status: OBSERVED
+    evidence_refs: [.sensemaking/knowledge/possibilities.json, docs/normal-use/2026-11-23-goal-family-opportunity-discovery.md]
+    disposition: no_action
+  - id: F-4
+    statement: "The recent local-repair sequence is consistent with Local Warrant Dominance but does not establish a systemic AMS defect. This episode selected a capability-building alternative with a concrete consumer gap."
+    epistemic_status: DERIVED
+    evidence_refs: [docs/normal-use/2026-11-23-goal-family-opportunity-discovery.md]
+    disposition: no_action
+open_questions:
+  - id: Q-1
+    question: "Will an authentic later agent use the goal-family candidate view in a consequential selection, and will it inspect candidate relationships or realization states before choosing a path?"
+    source: empirical
+    blocking: false
+    durable_ref: null
+stop:
+  disposition: NO_FURTHER_WARRANT
+  reason: "The concrete discovery gap is corrected and the selected possibility is honestly reconciled as partial. No evidence yet warrants generated assumptions, automatic comparison, a selector, or a new construction-continuity artifact."
+next:
+  warranted_responsibility: "Observe an authentic later agent using the goal-family view in a real selection; then decide whether comparative support or generated candidate combinations are warranted. Do not manufacture the episode."
+  blocked_on: []
+persistence: committed
+claim_ceiling: "Functional one-hop discovery projection and authored partial-realization update only. No independent agent use, decision influence, comparative benefit, generated assumptions or longitudinal development is established. #872/#874 remain open."
+action_authorized_by_receipt: false
+immutable: true
