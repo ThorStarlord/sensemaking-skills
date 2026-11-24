@@ -1058,6 +1058,10 @@ def possibility_ecology(
                     "component_owned_paths": list(
                         component.get("attributes", {}).get("owned_paths", [])
                     ),
+                    "component_claim_ceiling": component.get(
+                        "attributes", {}
+                    ).get("claim_ceiling"),
+                    "component_scope": component.get("attributes", {}).get("scope"),
                     "implemented_by_relation_id": implementation["id"],
                     "implemented_by_relation_epistemic_status": implementation["epistemic_status"],
                     "implemented_by_relation_evidence_refs": list(implementation["evidence_refs"]),
@@ -1073,6 +1077,10 @@ def possibility_ecology(
                 "capability_authority_ref": capability["authority_ref"],
                 "capability_source_ref": capability["source_ref"],
                 "capability_evidence_refs": list(capability["evidence_refs"]),
+                "capability_claim_ceiling": capability.get(
+                    "attributes", {}
+                ).get("claim_ceiling"),
+                "capability_scope": capability.get("attributes", {}).get("scope"),
                 "requires_capability_relation_id": requires["id"],
                 "requires_capability_relation_epistemic_status": requires["epistemic_status"],
                 "requires_capability_relation_evidence_refs": list(requires["evidence_refs"]),

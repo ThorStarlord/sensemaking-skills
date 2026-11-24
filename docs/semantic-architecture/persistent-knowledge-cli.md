@@ -732,8 +732,9 @@ For an opportunity focus, `required_capability_routes` surfaces the
 capabilities the selected possibility explicitly names through
 `requires_capability`, together with any explicit `implemented_by` component
 route for each capability. Each route keeps the capability and component
-statements, authority and source references, both relation IDs and evidence,
-the component's authored `owned_paths`, and `implementation_verified: false`.
+statements, authority, source references, authored `claim_ceiling` and
+`scope`, both relation IDs and evidence, the component's authored
+`owned_paths`, and `implementation_verified: false`.
 Up to eight required capabilities and four components per capability are shown;
 the corresponding total and omission counts disclose the bound. This is the
 construction-bridge view of a selected candidate: it joins the possibility's

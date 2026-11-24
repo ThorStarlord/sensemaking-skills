@@ -16,6 +16,11 @@ from .capability_outcome import (
     capability_outcome_projection,
     capability_outcome_summary,
 )
+from .capability_outcome_realization import (
+    realization_assessment_history,
+    realization_assessment_projection,
+    realization_assessment_summary,
+)
 from .preflight import CampaignPreflightService
 from .uncertainty_history import UncertaintyHistoryService
 
@@ -137,6 +142,11 @@ def _v1_capsule(
             if compact
             else capability_outcome_projection(state)
         ),
+        "capability_outcome_realization": (
+            realization_assessment_summary(state)
+            if compact
+            else realization_assessment_projection(state)
+        ),
         "status": state.status,
         "current_state": state.current_state,
         "authority": _enum(state.authority),
@@ -239,6 +249,7 @@ def build_resume_capsule(
         "campaign_id": state.campaign_id,
         "mission": state.mission,
         "capability_outcome": capability_outcome_projection(state),
+        "capability_outcome_realization": realization_assessment_projection(state),
         "status": state.status,
         "current_state": state.current_state,
         "authority": _enum(state.authority),
@@ -254,6 +265,7 @@ def build_resume_capsule(
     if profile == "minimal":
         latest = [_compact_transition(item) for item in recent[-1:]]
         base["capability_outcome"] = capability_outcome_summary(state)
+        base["capability_outcome_realization"] = realization_assessment_summary(state)
         base.update(
             {
                 "recent_transitions": latest,
@@ -308,6 +320,12 @@ def build_resume_capsule(
                         [canonicalize(item) for item in state.external_boundaries],
                         max_items,
                         "external_boundaries",
+                        omissions,
+                    ),
+                    "realization_assessment_history": _bounded(
+                        realization_assessment_history(state),
+                        max_items,
+                        "realization_assessments",
                         omissions,
                     ),
                     "semantic_companion": dict(semantic_summary),

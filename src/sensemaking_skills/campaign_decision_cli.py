@@ -3,6 +3,7 @@ their read-only continuation projections."""
 
 from __future__ import annotations
 
+import json
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
@@ -17,13 +18,19 @@ from .campaign_semantics import (
     TerminalState,
     canonicalize,
 )
-from .campaigns import CampaignService, CampaignSnapshot, CampaignWorkspaceError
+from .campaigns import (
+    CampaignService,
+    CampaignSnapshot,
+    CampaignTransactionError,
+    CampaignWorkspaceError,
+)
 from .campaigns.decisions import (
     AdvanceDecision,
     CampaignDecisionService,
     CapabilityOutcomeDecision,
     CloseDecision,
     DeferDecision,
+    RealizationAssessmentDecision,
 )
 
 
@@ -113,8 +120,37 @@ def _echo_capability_bridge(payload: dict[str, Any]) -> None:
     if alignment["knowledge_only"]:
         click.echo("Knowledge-only: " + ", ".join(alignment["knowledge_only"]))
     click.echo(f"Source alignment: {bridge['source_alignment']['assessment']}")
+    evidence = bridge["binding_source_evidence"]
+    click.echo(f"Binding source evidence: {evidence['assessment']}")
+    for entry in evidence["entries"]:
+        if entry["status"] != "RESOLVED":
+            click.echo(f"  - {entry['status']}: {entry['ref']}")
+    realization = payload.get("capability_outcome_realization")
+    if realization:
+        latest = realization.get("latest") or {}
+        click.echo(
+            f"Realization assessment: {latest.get('assessment_id')} "
+            f"@ {latest.get('source_revision')} "
+            f"[{bridge['realization_assessment_staleness']}]"
+        )
+        for condition in latest.get("conditions", []):
+            click.echo(
+                f"  - condition {condition.get('condition_index')}: "
+                f"{condition.get('status')}"
+            )
+        counts = bridge.get("condition_status_counts") or {}
+        click.echo(
+            "Condition evidence counts: "
+            + (", ".join(f"{key}={value}" for key, value in sorted(counts.items())) or "none")
+        )
+    else:
+        click.echo("Realization assessment: NOT_ASSESSED")
+    click.echo(
+        "Knowledge realization basis: "
+        + str(bridge["knowledge_realization"]["assessment"])
+    )
     if outcome["remaining_conditions"]:
-        click.echo("Remaining conditions:")
+        click.echo("Original conditions (immutable):")
         for condition in outcome["remaining_conditions"]:
             click.echo(f"  - {condition}")
     if payload["caveats"]:
@@ -388,6 +424,79 @@ def register_campaign_decision_commands(
         _emit_decision_success(
             snapshot,
             code="CAPABILITY_OUTCOME_BOUND",
+            output_json=output_json,
+            status_payload=status_payload,
+            json_echo=json_echo,
+            echo_status=echo_status,
+        )
+
+    @capability_outcome_group.command(name="assess")
+    @click.option(
+        "--workspace",
+        required=True,
+        type=click.Path(path_type=Path),
+        help="Existing campaign workspace with a bound capability outcome",
+    )
+    @click.option(
+        "--repo",
+        required=True,
+        type=click.Path(exists=True, file_okay=False, path_type=Path),
+        help="Git checkout used to validate the source revision and evidence refs",
+    )
+    @click.option(
+        "--assessment",
+        "assessment_path",
+        required=True,
+        type=click.Path(exists=True, dir_okay=False, path_type=Path),
+        help="JSON assessment file; see docs/campaign-realization-assessment.md",
+    )
+    @click.option(
+        "--decision",
+        required=True,
+        help="Agent-authored rationale for recording this assessment",
+    )
+    @click.option("--transition-id", default=None, help="Optional transition identifier; generated deterministically when omitted")
+    @click.option("--json", "output_json", is_flag=True, help="Emit JSON")
+    def capability_outcome_assess(
+        workspace: Path,
+        repo: Path,
+        assessment_path: Path,
+        decision: str,
+        transition_id: str | None,
+        output_json: bool,
+    ) -> None:
+        """Append evidence states for the bound conditions; never change the binding."""
+        try:
+            assessment = json.loads(
+                assessment_path.read_text(encoding="utf-8-sig")
+            )
+        except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+            emit_error(
+                CampaignTransactionError(
+                    f"assessment file could not be read as JSON: {exc}"
+                ),
+                output_json=output_json,
+            )
+            return
+        try:
+            current = CampaignService(workspace).resume_for_transition()
+            resolved_transition_id = transition_id or _generated_transition_id(current)
+            snapshot = CampaignDecisionService(
+                workspace
+            ).record_realization_assessment(
+                RealizationAssessmentDecision(
+                    transition_id=resolved_transition_id,
+                    decision=decision,
+                    assessment=assessment,
+                    repo=repo,
+                )
+            )
+        except (CampaignWorkspaceError, ContractError) as exc:
+            emit_error(exc, output_json=output_json)
+            return
+        _emit_decision_success(
+            snapshot,
+            code="REALIZATION_ASSESSED",
             output_json=output_json,
             status_payload=status_payload,
             json_echo=json_echo,

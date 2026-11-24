@@ -198,3 +198,20 @@ No further construction is warranted now. The next warranted responsibilities
 are independent qualification and evidence, which remain separate from this
 capability increment. The Campaign remains open and deferred, not closed, with
 the bound outcome and its five remaining conditions intact.
+
+## Addendum 2026-11-24
+
+The following mission established a durable copy of the Campaign at
+`H:\codex\campaigns\smk-bridge-continuity-probe` and added append-only,
+evidence-linked realization assessments alongside the immutable binding. The
+original conditions are unchanged; the latest assessments distinguish evidence
+present, partial evidence and unassessed conditions without claiming
+completion. A fresh continuation also added binding source-evidence resolution
+and reconciled the stale reviewed realization to `PARTIALLY_IMPLEMENTED` while
+preserving the original `HYPOTHETICAL` basis. See
+[`2026-11-24-realization-continuity.md`](2026-11-24-realization-continuity.md)
+and
+[`2026-11-24-construction-bridge-evidence-continuation.md`](2026-11-24-construction-bridge-evidence-continuation.md).
+The binding remains `realization: not_established`; the Campaign remains
+deferred, and independent use and component implementation evidence remain
+open.

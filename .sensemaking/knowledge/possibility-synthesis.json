@@ -12,7 +12,8 @@
         "file:docs/normal-use/2026-11-23-goal-family-opportunity-discovery.md",
         "file:src/sensemaking_skills/semantic_architecture/knowledge_architecture.py",
         "file:.sensemaking/knowledge/possibilities.json",
-        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:docs/normal-use/2026-11-24-construction-bridge-evidence-continuation.md"
       ],
       "epistemic_status": "hypothetical",
       "attributes": {
@@ -34,12 +35,21 @@
           },
           "horizon": {
             "value": "FORESEEABLE",
-            "basis": "Existing possibility, Campaign, strategy, receipt and context records supply the pieces; no bridge implementation exists yet."
+            "basis": "Existing possibility, Campaign, strategy, receipt and context records supply the pieces, and a partial route join, Campaign binding, bridge consumer and realization assessment exist; complete realization and independent use are still unobserved."
           },
           "realization": {
-            "value": "HYPOTHETICAL",
-            "basis": "No construction-bridge implementation, independent later-agent use or benefit is observed.",
-            "establishment": "inferred"
+            "value": "PARTIALLY_IMPLEMENTED",
+            "establishment": "observed",
+            "basis": "At 5e0fc0c7 the repository contains four construction-bridge surfaces: the possibility-ecology required-capability route join (4fe5a2aa), the Campaign capability-outcome binding (7df3a7d0), the joined bridge consumer (5e3a783a) and the evidence-linked realization assessment (5e0fc0c7). The 2026-11-24 continuation adds resolution of the binding's preserved source references at the queried revision. The capability remains partial: routes are documentary, component implementation is not verified, no strategy-context join exists, and independent later-agent use, decision influence and benefit are not observed.",
+            "observation_ref": "docs/normal-use/2026-11-24-construction-bridge-evidence-continuation.md",
+            "history": [
+              {
+                "value": "HYPOTHETICAL",
+                "establishment": "inferred",
+                "assessed_ref": "1f8a21fb8b053fef607422027f15394f18351fa9",
+                "basis": "No construction-bridge implementation, independent later-agent use or benefit is observed."
+              }
+            ]
           }
         },
         "disposition_history": [
@@ -49,14 +59,21 @@
             "authority": "agent-authored synthesis under current delegated mission",
             "source": "artifacts/history/2026-11-23-goal-family-construction-bridge-synthesis.json",
             "rationale": "Combines the one-hop goal-family candidate ecology with construction-time possibility reconciliation and prospective decision memory. It links a selected possibility to existing serving capabilities and current Campaign/strategy evidence while preserving the remaining realization conditions. It is distinct from automatic planning or ranking because the agent selects the candidate, the next increment and the continuation decision."
+          },
+          {
+            "value": "SELECTED",
+            "date": "2026-11-23",
+            "authority": "agent construction selection under the owner's 2026-11-23 continuity mission",
+            "source": "docs/normal-use/2026-11-23-capability-outcome-binding.md",
+            "rationale": "Bound the selected possibility to durable Campaign state and exercised the required-capability route join and joined consumer; the reviewed realization record is reconciled with the observed partial implementation on 2026-11-24."
           }
         ],
-        "assessed_ref": "1f8a21fb8b053fef607422027f15394f18351fa9",
+        "assessed_ref": "5e0fc0c7e2c4022efd01ef3219336a80f5699ecf",
         "synthesis_basis": "Combines the one-hop goal-family candidate ecology with construction-time possibility reconciliation and prospective decision memory. It links a selected possibility to existing serving capabilities and current Campaign/strategy evidence while preserving the remaining realization conditions. It is distinct from automatic planning or ranking because the agent selects the candidate, the next increment and the continuation decision.",
         "value_hypothesis": "A later agent can resume a selected capability without reconstructing the entire discovery context and can distinguish a capability-advancing increment from a local repair.",
         "revisit_when": "A later agent uses the bridge in a real multi-increment construction and either completes the selected capability or finds it redundant with existing Campaign/strategy/handoff context.",
-        "counterevidence": "Existing Campaign/strategy/handoff surfaces already preserve much of this context; the bridge may be redundant. No independent later-agent use is observed.",
-        "claim_ceiling": "Proposed integration from one source-grounded synthesis; no implemented bridge, independent use, decision influence, value or authorization.",
+        "counterevidence": "Existing Campaign/strategy/handoff surfaces already preserve much of this context, and the bridge still does not join a Campaign strategy artifact or verify component implementation. Independent later-agent use is not observed.",
+        "claim_ceiling": "Partial construction bridge implemented and exercised in same-mission Campaign continuations; component implementation, independent later-agent use, decision influence, comparative value and authorization are not established.",
         "agent_owned": true
       }
     }

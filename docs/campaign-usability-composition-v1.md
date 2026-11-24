@@ -48,7 +48,9 @@ projection of assumptions != assumptions established
 possibility's explicitly declared required-capability routes at one committed
 revision. It exposes the possibility focus and realization, each capability's
 reviewed components and relation evidence, mechanical Campaign/knowledge
-capability-set alignment, and documentary source-reference overlap.
+capability-set alignment, documentary source-reference overlap, and a
+`binding_source_evidence` presence check for each authored binding source
+reference at the indexed revision.
 
 ```text
 declared route != implemented capability
@@ -59,6 +61,31 @@ bridge projection != next-action recommendation
 The command is read-only. It does not rank routes, select an increment, inspect
 component code or establish that any declared component satisfies its
 capability.
+
+### Capability Outcome Realization v1
+
+`campaign capability-outcome assess` appends an evidence-linked assessment of
+the binding's original realization conditions. It preserves the immutable
+binding and the active responsibility, validates `file:` and `commit:`
+evidence at the exact source revision, and requires exactly one status per
+original condition. The binding continues to report
+`realization: not_established`; the assessment reports evidence state, not
+completion.
+
+`working-context`, `resume-profile` and `capability-outcome bridge` project the
+latest assessment. The bridge compares the assessment's source revision with
+the indexed revision and flags `REALIZATION_ASSESSMENT_STALE`; it also flags
+`KNOWLEDGE_REALIZATION_STALE` when the possibility's authored realization basis
+was assessed at a different revision. The bridge projects the knowledge
+graph's existing `claim_ceiling` and `scope`, so guidance-only and code-backed
+components are not flattened into one implementation flag.
+
+```text
+assessment != completion
+EVIDENCE_PRESENT != condition satisfied
+condition status count != score
+latest assessment != readiness verdict
+```
 
 ### Capability Context v1
 

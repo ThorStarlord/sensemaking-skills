@@ -19,6 +19,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, replace
 from pathlib import Path
+from typing import Any, Mapping
 
 from sensemaking_skills.campaign_semantics import (
     Responsibility,
@@ -29,6 +30,10 @@ from sensemaking_skills.campaign_semantics import (
 from .capability_outcome import (
     CAPABILITY_OUTCOME_EXTENSION,
     build_capability_outcome,
+)
+from .capability_outcome_realization import (
+    CAPABILITY_OUTCOME_REALIZATION_EXTENSION,
+    build_realization_assessment,
 )
 from .errors import CampaignTransactionError
 from .lineage import CampaignLineageService
@@ -64,6 +69,16 @@ class CapabilityOutcomeDecision:
     required_capabilities: tuple[str, ...] = ()
     remaining_conditions: tuple[str, ...] = ()
     evidence: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True)
+class RealizationAssessmentDecision:
+    """Agent-authored evidence assessment of a bound outcome's conditions."""
+
+    transition_id: str
+    decision: str
+    assessment: Mapping[str, Any]
+    repo: Path
 
 
 @dataclass(frozen=True)
@@ -255,6 +270,83 @@ class CampaignDecisionService:
         self.lineage.prepare_consumption(
             transition_id=authored.transition_id,
             evidence_refs=authored.evidence,
+        )
+        return self.lifecycle.record_transition(
+            new_state=new_state,
+            transition=transition,
+        )
+
+    def record_realization_assessment(
+        self, authored: RealizationAssessmentDecision
+    ) -> CampaignSnapshot:
+        """Append an evidence-linked assessment without changing the binding.
+
+        The assessment is a same-state lifecycle transition. It preserves the
+        active responsibility and the original capability outcome, while the
+        append-only extension carries the new per-condition evidence states.
+        """
+
+        _require_text(authored.transition_id, field="transition_id")
+        _require_text(authored.decision, field="decision")
+        snapshot = self.lifecycle.resume_for_transition()
+        current = snapshot.state
+        binding = current.extensions.get(CAPABILITY_OUTCOME_EXTENSION)
+        if not isinstance(binding, Mapping):
+            raise CampaignTransactionError(
+                "campaign has no bound capability outcome; bind one before "
+                "assessing realization"
+            )
+        container = current.extensions.get(
+            CAPABILITY_OUTCOME_REALIZATION_EXTENSION
+        )
+        prior: list[Mapping[str, Any]] = []
+        if isinstance(container, Mapping):
+            values = container.get("assessments")
+            if isinstance(values, list):
+                prior = [item for item in values if isinstance(item, Mapping)]
+        assessment_id = f"RA-AUTO-{len(prior) + 1:04d}"
+        target_repository_id = (
+            current.target_snapshot.repository_id
+            if current.target_snapshot is not None
+            else None
+        )
+        record = build_realization_assessment(
+            assessment_id=assessment_id,
+            transition_id=authored.transition_id,
+            binding=binding,
+            prior_assessments=prior,
+            authored=authored.assessment,
+            repo=authored.repo,
+            target_repository_id=target_repository_id,
+        )
+        new_state = replace(
+            current,
+            extensions={
+                **current.extensions,
+                CAPABILITY_OUTCOME_REALIZATION_EXTENSION: {
+                    "schema_version": "1",
+                    "possibility_id": binding.get("possibility_id"),
+                    "assessments": [*prior, record],
+                },
+            },
+        )
+        responsibility = current.active_responsibility
+        transition = TransitionRecord(
+            id=authored.transition_id,
+            from_state=current.current_state,
+            to_state=current.current_state,
+            evidence=(),
+            decision=authored.decision,
+            next_responsibility=(
+                responsibility.id if responsibility is not None else None
+            ),
+            terminal_state=None,
+            authority=current.authority,
+        )
+
+        self.lineage.prepare_consumption(
+            transition_id=authored.transition_id,
+            evidence_refs=(),
         )
         return self.lifecycle.record_transition(
             new_state=new_state,

@@ -13,6 +13,7 @@ sensemaking-skills campaign status
 sensemaking-skills campaign validate
 sensemaking-skills campaign advance
 sensemaking-skills campaign capability-outcome bind
+sensemaking-skills campaign capability-outcome assess
 sensemaking-skills campaign capability-outcome bridge
 sensemaking-skills campaign defer
 sensemaking-skills campaign close
@@ -139,6 +140,37 @@ source reference != admitted Campaign evidence
 ```
 
 
+### `campaign capability-outcome assess`
+
+Appends an evidence-linked realization assessment for the bound outcome's
+original conditions. It never changes the binding and never emits an aggregate
+completion verdict.
+
+```bash
+sensemaking-skills campaign capability-outcome assess \
+  --workspace /path/to/campaign \
+  --repo . \
+  --assessment assessment.json \
+  --decision "Record the current condition evidence" \
+  --json
+```
+
+Each original condition receives exactly one status:
+`EVIDENCE_PRESENT`, `PARTIAL_EVIDENCE`, `NO_EVIDENCE`,
+`CONTRADICTING_EVIDENCE` or `NOT_ASSESSED`. Evidence refs are validated as
+tracked `file:` paths or exact `commit:` refs at the cited source revision.
+`EVIDENCE_PRESENT` is evidence, not a satisfaction claim; the immutable binding
+continues to report `realization: not_established`. Assessments are append-only
+and preserve the active responsibility. `working-context` and `resume-profile`
+project the latest assessment; `audit` also exposes the history. See
+[`campaign-realization-assessment.md`](campaign-realization-assessment.md).
+
+```text
+assessment != completion
+EVIDENCE_PRESENT != condition satisfied
+condition status count != score
+```
+
 ### `campaign capability-outcome bridge`
 
 Projects the compact construction bridge for the bound capability outcome. It
@@ -158,10 +190,15 @@ sensemaking-skills campaign capability-outcome bridge \
 The bridge carries the full bound outcome, the exact indexed possibility focus,
 each declared capability route and its reviewed components, a mechanical
 alignment check between the Campaign's required capability IDs and the
-repository's declared edges, and a source-reference overlap check. Routes keep
-`implementation_verified: false`; `campaign_only`, `knowledge_only`, truncation
-and missing component links remain explicit. A mismatch is reported, not
-repaired, ranked or turned into a recommendation.
+repository's declared edges, a source-reference overlap check, and a
+`binding_source_evidence` resolution of each authored binding source reference
+at the indexed revision. The resolution reports `RESOLVED`, `MISSING`,
+`UNRESOLVED`, `UNSAFE`, `UNRECOGNIZED` or `NOT_ASSESSED` per reference, with an
+`ALL_RESOLVED` / `INCOMPLETE` / `NOT_ASSESSED` summary. It checks presence only:
+it does not inspect content, verify implementation or establish semantic truth.
+Routes keep `implementation_verified: false`; `campaign_only`, `knowledge_only`,
+truncation and missing component links remain explicit. A mismatch is reported,
+not repaired, ranked or turned into a recommendation.
 
 When the Campaign has a bound target, the queried checkout identity must match
 it; when several targets are bound, pass `--target-alias`. When the Campaign has
