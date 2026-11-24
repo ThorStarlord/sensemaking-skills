@@ -1,0 +1,232 @@
+{
+  "schema_version": 2,
+  "claims": [
+    {
+      "id": "poss:assumption-contrast-inquiry",
+      "kind": "opportunity",
+      "statement": "For a consequential product decision bounded by authored possibilities, an agent can express competing assumption scenarios, project which visible candidates depend on each assumption, identify unassessed candidates and shared-assumption groups, and use the contrast to discover or evaluate a materially different direction without automatic generation or ranking.",
+      "authority_kind": "hypothesis",
+      "authority_ref": "artifacts/history/2026-11-24-assumption-contrast-inquiry-synthesis.json",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-24-assumption-contrast-inquiry-synthesis.json",
+        "file:src/sensemaking_skills/possibility_contrast.py",
+        "file:skills/using-sensemaking/references/assumption-aware-prospective-reasoning-v1.md",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ],
+      "epistemic_status": "hypothetical",
+      "attributes": {
+        "concept": "ProductPossibility",
+        "title": "Assumption-contrast inquiry",
+        "origin": {
+          "ref": "artifacts/history/2026-11-24-assumption-contrast-inquiry-synthesis.json",
+          "date": "2026-11-24",
+          "author": "Sensemaking construction agent"
+        },
+        "dimensions": {
+          "alignment": {
+            "value": "ALIGNED",
+            "basis": "ADR 0037's domain-general cognitive development and the active agent's ownership of semantic judgment support assumption-aware prospective reasoning."
+          },
+          "ambition": {
+            "value": "SUBSTANTIAL",
+            "basis": "Would let an agent challenge the premises that bound its option set and discover an unrepresented direction, rather than only retrieve or recombine authored candidates."
+          },
+          "horizon": {
+            "value": "FORESEEABLE",
+            "basis": "Existing possibility records, one-hop ecology relationships, the new contrast operation and a portable procedure supply the pieces; independent use is unobserved."
+          },
+          "realization": {
+            "value": "HYPOTHETICAL",
+            "basis": "The underlying read-only contrast and procedure exist at 13bc8a2f, but this newly synthesized candidate has no independent later-agent use, decision outcome or comparative evidence. It remains hypothetical; no realization is claimed.",
+            "establishment": "inferred"
+          }
+        },
+        "disposition_history": [
+          {
+            "value": "EXPLORATORY",
+            "date": "2026-11-24",
+            "authority": "agent-authored synthesis under current delegated mission",
+            "source": "artifacts/history/2026-11-24-assumption-contrast-inquiry-synthesis.json",
+            "rationale": "Contrast of goal:compounding-product-knowledge and goal:domain-general-cognitive-development showed five direct candidates and nine descendant candidates with only three authored assumptions; five candidates were unassessed, two had partial relationship coverage, and shared assumptions lacked direct relations. The existing assumption-aware candidate itself had no authored assumptions. A focused scenario-conditioned contrast plus a portable procedure is distinct from a broad opportunity generator and reuses existing authored possibility records."
+          }
+        ],
+        "assessed_ref": "13bc8a2f9cdcac759778cc429dfdde1ef564ef9c",
+        "synthesis_basis": "Contrast of goal:compounding-product-knowledge and goal:domain-general-cognitive-development showed five direct candidates and nine descendant candidates with only three authored assumptions; five candidates were unassessed, two had partial relationship coverage, and shared assumptions lacked direct relations. The existing assumption-aware candidate itself had no authored assumptions. A focused scenario-conditioned contrast plus a portable procedure is distinct from a broad opportunity generator and reuses existing authored possibility records.",
+        "value_hypothesis": "A later agent can challenge the assumptions that bound its option set, discover unrepresented combinations, and avoid building on an unexamined premise without automatic generation or ranking.",
+        "revisit_when": "An authentic decision uses the contrast to change or confirm a construction direction, and a later agent evaluates whether it reduced missed alternatives or false assumptions.",
+        "counterevidence": "The existing possibility-ecology already exposes one-hop assumptions, so the contrast may be a procedure and presentation layer rather than a new capability. The visible candidate set is small, two candidates have partial relationship coverage, and one same-agent use does not establish benefit.",
+        "claim_ceiling": "Agent-authored hypothesis with an implemented read-only contrast and portable procedure. No independent later-agent use, decision benefit, comparative advantage or authorization is established.",
+        "agent_owned": true
+      }
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel:possibility-assumption-contrast-inquiry-candidate-for-1",
+      "subject": "poss:assumption-contrast-inquiry",
+      "predicate": "candidate_opportunity_for",
+      "object": "goal:domain-general-cognitive-development",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-24-assumption-contrast-inquiry-synthesis.json",
+        "file:src/sensemaking_skills/possibility_contrast.py",
+        "file:skills/using-sensemaking/references/assumption-aware-prospective-reasoning-v1.md",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ],
+      "epistemic_status": "hypothetical"
+    },
+    {
+      "id": "rel:possibility-assumption-contrast-inquiry-candidate-for-2",
+      "subject": "poss:assumption-contrast-inquiry",
+      "predicate": "candidate_opportunity_for",
+      "object": "goal:compounding-product-knowledge",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-24-assumption-contrast-inquiry-synthesis.json",
+        "file:src/sensemaking_skills/possibility_contrast.py",
+        "file:skills/using-sensemaking/references/assumption-aware-prospective-reasoning-v1.md",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ],
+      "epistemic_status": "hypothetical"
+    },
+    {
+      "id": "rel:possibility-assumption-contrast-inquiry-derived-from-1",
+      "subject": "poss:assumption-contrast-inquiry",
+      "predicate": "derived_from",
+      "object": "poss:assumption-aware-opportunity-ecology",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-24-assumption-contrast-inquiry-synthesis.json",
+        "file:src/sensemaking_skills/possibility_contrast.py",
+        "file:skills/using-sensemaking/references/assumption-aware-prospective-reasoning-v1.md",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ],
+      "epistemic_status": "hypothetical",
+      "attributes": {
+        "conceptual_relation": "combines",
+        "establishment": "authored"
+      }
+    },
+    {
+      "id": "rel:possibility-assumption-contrast-inquiry-derived-from-2",
+      "subject": "poss:assumption-contrast-inquiry",
+      "predicate": "derived_from",
+      "object": "poss:cross-episode-possibility-synthesis",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-24-assumption-contrast-inquiry-synthesis.json",
+        "file:src/sensemaking_skills/possibility_contrast.py",
+        "file:skills/using-sensemaking/references/assumption-aware-prospective-reasoning-v1.md",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ],
+      "epistemic_status": "hypothetical",
+      "attributes": {
+        "conceptual_relation": "combines",
+        "establishment": "authored"
+      }
+    },
+    {
+      "id": "rel:possibility-assumption-contrast-inquiry-requires-1",
+      "subject": "poss:assumption-contrast-inquiry",
+      "predicate": "requires_capability",
+      "object": "cap:possibility-records",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-24-assumption-contrast-inquiry-synthesis.json",
+        "file:src/sensemaking_skills/possibility_contrast.py",
+        "file:skills/using-sensemaking/references/assumption-aware-prospective-reasoning-v1.md",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ],
+      "epistemic_status": "hypothetical"
+    },
+    {
+      "id": "rel:possibility-assumption-contrast-inquiry-requires-2",
+      "subject": "poss:assumption-contrast-inquiry",
+      "predicate": "requires_capability",
+      "object": "cap:adaptive-metareasoning",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-24-assumption-contrast-inquiry-synthesis.json",
+        "file:src/sensemaking_skills/possibility_contrast.py",
+        "file:skills/using-sensemaking/references/assumption-aware-prospective-reasoning-v1.md",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ],
+      "epistemic_status": "hypothetical"
+    },
+    {
+      "id": "rel:possibility-assumption-contrast-inquiry-requires-3",
+      "subject": "poss:assumption-contrast-inquiry",
+      "predicate": "requires_capability",
+      "object": "cap:breadth-exploration-guidance",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-24-assumption-contrast-inquiry-synthesis.json",
+        "file:src/sensemaking_skills/possibility_contrast.py",
+        "file:skills/using-sensemaking/references/assumption-aware-prospective-reasoning-v1.md",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ],
+      "epistemic_status": "hypothetical"
+    },
+    {
+      "id": "rel:possibility-assumption-contrast-inquiry-assumes-1",
+      "subject": "poss:assumption-contrast-inquiry",
+      "predicate": "references",
+      "object": "con:agent-owns-semantic-control",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-24-assumption-contrast-inquiry-synthesis.json",
+        "file:src/sensemaking_skills/possibility_contrast.py",
+        "file:skills/using-sensemaking/references/assumption-aware-prospective-reasoning-v1.md",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ],
+      "epistemic_status": "hypothetical",
+      "attributes": {
+        "conceptual_relation": "assumes",
+        "establishment": "authored"
+      }
+    },
+    {
+      "id": "rel:possibility-assumption-contrast-inquiry-assumes-2",
+      "subject": "poss:assumption-contrast-inquiry",
+      "predicate": "references",
+      "object": "hyp:cross-episode-synthesis-recurs",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-24-assumption-contrast-inquiry-synthesis.json",
+        "file:src/sensemaking_skills/possibility_contrast.py",
+        "file:skills/using-sensemaking/references/assumption-aware-prospective-reasoning-v1.md",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ],
+      "epistemic_status": "hypothetical",
+      "attributes": {
+        "conceptual_relation": "assumes",
+        "establishment": "authored"
+      }
+    },
+    {
+      "id": "rel:possibility-assumption-contrast-inquiry-contradicts-1",
+      "subject": "poss:assumption-contrast-inquiry",
+      "predicate": "contradicts",
+      "object": "poss:automatic-strategic-planner",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-24-assumption-contrast-inquiry-synthesis.json",
+        "file:src/sensemaking_skills/possibility_contrast.py",
+        "file:skills/using-sensemaking/references/assumption-aware-prospective-reasoning-v1.md",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ],
+      "epistemic_status": "hypothetical",
+      "attributes": {
+        "conceptual_relation": "conflicts_with",
+        "establishment": "authored"
+      }
+    },
+    {
+      "id": "rel:possibility-assumption-contrast-inquiry-contradicts-2",
+      "subject": "poss:assumption-contrast-inquiry",
+      "predicate": "contradicts",
+      "object": "poss:ranked-possibility-backlog",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-24-assumption-contrast-inquiry-synthesis.json",
+        "file:src/sensemaking_skills/possibility_contrast.py",
+        "file:skills/using-sensemaking/references/assumption-aware-prospective-reasoning-v1.md",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ],
+      "epistemic_status": "hypothetical",
+      "attributes": {
+        "conceptual_relation": "conflicts_with",
+        "establishment": "authored"
+      }
+    }
+  ]
+}
