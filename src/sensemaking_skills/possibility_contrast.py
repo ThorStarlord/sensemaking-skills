@@ -193,6 +193,8 @@ def build_possibility_contrast(
         raise ValueError("ecology must be an object")
     scenario_list = _scenarios(document)
     candidate_records = _candidate_records(ecology)
+    candidate_omitted = int(ecology.get("candidate_omitted") or 0)
+    descendant_omitted = int(ecology.get("descendant_candidate_omitted") or 0)
     if not candidate_records:
         return {
             "focus_kind": ecology.get("focus_kind"),
@@ -205,6 +207,8 @@ def build_possibility_contrast(
             "scenario_results": [],
             "coverage": {
                 "candidate_total": 0,
+                "candidate_omitted": candidate_omitted,
+                "descendant_candidate_omitted": descendant_omitted,
                 "assumption_total": 0,
                 "unassessed_candidate_total": 0,
                 "relationship_omitted_candidate_total": 0,
@@ -345,6 +349,28 @@ def build_possibility_contrast(
         item["claim_id"] for item in candidates
         if (item["relationship_omitted"] or 0) > 0
     ]
+    explicit_limits = [
+        "Reads only visible one-hop candidate relationships. A candidate with "
+        "relationship_omitted > 0 has PARTIAL assumption coverage; use explain "
+        "on that claim before relying on an absence.",
+        "Assumptions are authored references with conceptual_relation assumes "
+        "or sharesAssumptionWith. Other premises are NOT_ASSESSED, not absent.",
+        "A scenario is a hypothetical retention or negation, not evidence that "
+        "an assumption is true or false.",
+        "Shared assumptions and missing direct relations are questions for the "
+        "agent, not recommendations or combinations the tool endorses.",
+        "The tool does not generate, rank, select or recommend a possibility, "
+        "and it does not authorize construction.",
+    ]
+    if candidate_omitted or descendant_omitted:
+        explicit_limits.insert(
+            0,
+            f"The candidate projection omitted {candidate_omitted} direct and "
+            f"{descendant_omitted} descendant candidate(s) by the query limit; "
+            "omitted candidates were not contrasted. The affected, unaffected, "
+            "unassessed and shared-assumption results are PARTIAL, not the "
+            "complete candidate set.",
+        )
     return {
         "focus_kind": ecology.get("focus_kind"),
         "focus": ecology.get("focus"),
@@ -357,6 +383,8 @@ def build_possibility_contrast(
         "scenario_results": scenario_results,
         "coverage": {
             "candidate_total": len(candidates),
+            "candidate_omitted": candidate_omitted,
+            "descendant_candidate_omitted": descendant_omitted,
             "assumption_total": len(assumption_list),
             "unassessed_candidate_total": len(unassessed_candidates),
             "relationship_omitted_candidate_total": len(relationship_omitted),
@@ -366,18 +394,6 @@ def build_possibility_contrast(
         "recommendation_performed": False,
         "semantic_truth_established": False,
         "action_authorized": False,
-        "explicit_limits": [
-            "Reads only visible one-hop candidate relationships. A candidate with "
-            "relationship_omitted > 0 has PARTIAL assumption coverage; use explain "
-            "on that claim before relying on an absence.",
-            "Assumptions are authored references with conceptual_relation assumes "
-            "or sharesAssumptionWith. Other premises are NOT_ASSESSED, not absent.",
-            "A scenario is a hypothetical retention or negation, not evidence that "
-            "an assumption is true or false.",
-            "Shared assumptions and missing direct relations are questions for the "
-            "agent, not recommendations or combinations the tool endorses.",
-            "The tool does not generate, rank, select or recommend a possibility, "
-            "and it does not authorize construction.",
-        ],
+        "explicit_limits": explicit_limits,
         "scenario_count": len(scenario_results),
     }

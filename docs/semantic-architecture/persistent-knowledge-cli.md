@@ -781,8 +781,15 @@ Assumptions are authored `references` relations whose `conceptual_relation` is
 `assumes` or `sharesAssumptionWith`. Each scenario marks every visible
 candidate `AFFECTED` (it assumes a negated claim), `UNAFFECTED` (it has visible
 assumptions, none negated), or `NOT_ASSESSED` (no visible assumption relation).
+`held` is used only to report a visible candidate that contradicts a held claim
+under `conflicts`; holding an assumption otherwise does not change a
+candidate's `AFFECTED`/`UNAFFECTED` classification.
 A candidate whose one-hop relationship projection was truncated is marked
 `PARTIAL`; use `explain` on that claim before treating an absence as complete.
+`coverage.candidate_omitted` and `descendant_candidate_omitted` disclose
+candidates cut by the query limit; omitted candidates were not contrasted, so
+the candidate set and the scenario result are partial even when every visible
+candidate has complete relationship coverage.
 `shared_assumptions` groups candidates that share an authored assumption and
 reports pairs without a direct relation; those pairs are questions for the
 agent, not endorsed combinations.

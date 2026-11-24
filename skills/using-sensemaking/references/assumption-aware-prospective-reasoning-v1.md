@@ -65,6 +65,13 @@ scenario contrast      != selection or ranking
      the candidate has no assumptions.
    - `PARTIAL`: the one-hop relation projection was truncated; use `explain` on
      that claim before relying on an absence.
+   - `candidate_omitted` / `descendant_candidate_omitted`: candidates were cut by
+     the query limit and were not contrasted. The scenario result is partial even
+     when every visible candidate has complete relationship coverage.
+   - `conflicts`: a visible candidate contradicts a held claim. `held` is used
+     only for this conflict check and otherwise does not change a candidate's
+     `AFFECTED`/`UNAFFECTED` classification; a conflict is a question, not a
+     recommendation.
    - `shared_assumptions`: candidates sharing an assumption but lacking a direct
      relation are questions for the agent, not an endorsed combination.
 7. **Interpret.** Ask:
