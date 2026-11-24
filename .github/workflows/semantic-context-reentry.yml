@@ -809,9 +809,15 @@ jobs:
               item for item in future["product_outline"]["goals"]
               if item["claim_id"] == "goal:domain-general-cognitive-development"
           )
-          assert top["candidate_total"] == 0
+          assert top["candidate_total"] >= 1
+          assert any(
+              item["claim_id"] == "poss:assumption-contrast-inquiry"
+              for item in top["candidate_opportunities"]
+          )
           assert top["indirect_candidate_total"] >= 8
-          assert top["family_candidate_total"] == top["indirect_candidate_total"]
+          assert top["family_candidate_total"] == (
+              top["candidate_total"] + top["indirect_candidate_total"]
+          )
           assert any(
               item["claim_id"] == "poss:assumption-aware-opportunity-ecology"
               and item["via_goal_claim_id"] == "goal:compounding-product-knowledge"
