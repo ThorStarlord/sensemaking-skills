@@ -1359,7 +1359,11 @@ jobs:
 
           family_ecology = family_result["possibility_ecology"]
           assert family_ecology["focus_kind"] == "goal"
-          assert family_ecology["candidate_total"] == 0
+          assert family_ecology["candidate_total"] >= 1
+          assert any(
+              item["claim_id"] == "poss:assumption-contrast-inquiry"
+              for item in family_ecology["candidates"]
+          )
           assert family_ecology["descendant_candidate_total"] >= 8
           assert family_ecology["family_candidate_total"] == (
               family_ecology["candidate_total"] + family_ecology["descendant_candidate_total"]
