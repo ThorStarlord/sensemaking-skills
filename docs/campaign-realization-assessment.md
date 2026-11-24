@@ -101,6 +101,9 @@ assessment beside the binding:
 `campaign capability-outcome bridge` adds:
 
 - the latest assessment and its condition status counts;
+- `binding_source_evidence`, which resolves each authored binding `file:` or
+  `commit:` reference at the queried `indexed_ref` and reports missing, unsafe,
+  unresolved or unrecognized references; presence is not content verification;
 - `realization_assessment_staleness` compared with the queried
   `indexed_ref`;
 - `knowledge_realization` comparing the possibility's authored

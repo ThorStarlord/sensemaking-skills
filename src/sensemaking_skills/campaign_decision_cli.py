@@ -120,6 +120,11 @@ def _echo_capability_bridge(payload: dict[str, Any]) -> None:
     if alignment["knowledge_only"]:
         click.echo("Knowledge-only: " + ", ".join(alignment["knowledge_only"]))
     click.echo(f"Source alignment: {bridge['source_alignment']['assessment']}")
+    evidence = bridge["binding_source_evidence"]
+    click.echo(f"Binding source evidence: {evidence['assessment']}")
+    for entry in evidence["entries"]:
+        if entry["status"] != "RESOLVED":
+            click.echo(f"  - {entry['status']}: {entry['ref']}")
     realization = payload.get("capability_outcome_realization")
     if realization:
         latest = realization.get("latest") or {}

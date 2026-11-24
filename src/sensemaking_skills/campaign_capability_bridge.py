@@ -2,14 +2,16 @@
 
 The bridge joins the agent-authored ``extensions.capability_outcome`` record to
 the explicitly declared ``requires_capability`` and ``implemented_by`` routes
-for the same possibility at one committed repository revision. It removes the
-manual cross-reference between Campaign state and the reviewed knowledge index;
-it does not select the possibility, inspect component code, establish
-implementation, sufficiency or readiness, or recommend an increment.
+for the same possibility at one committed repository revision. It also resolves
+the binding's authored source references at that revision. It removes the manual
+cross-reference between Campaign state and the reviewed knowledge index; it does
+not select the possibility, inspect component code, verify source content,
+establish implementation, sufficiency or readiness, or recommend an increment.
 """
 
 from __future__ import annotations
 
+import re
 import sqlite3
 from collections.abc import Mapping, Sequence
 from pathlib import Path
@@ -19,20 +21,33 @@ from .campaign_knowledge_context import CampaignKnowledgeError, select_campaign_
 from .campaigns import CampaignWorkspaceError
 from .campaigns.execution import CampaignExecutionService
 from .campaigns.target_snapshot import repository_identity
+from .semantic_architecture.worktree_context import guarded_git_text
 from .workspace_knowledge import run_workspace_query
 
 CAPABILITY_OUTCOME_BRIDGE = "CAPABILITY_OUTCOME_BRIDGE"
 ROUTE_ALIGNMENT_ALIGNED = "ALIGNED"
 ROUTE_ALIGNMENT_MISMATCHED = "MISMATCHED"
 ROUTE_ALIGNMENT_NOT_ASSESSED = "NOT_ASSESSED"
+BINDING_EVIDENCE_RESOLVED = "RESOLVED"
+BINDING_EVIDENCE_MISSING = "MISSING"
+BINDING_EVIDENCE_UNRESOLVED = "UNRESOLVED"
+BINDING_EVIDENCE_UNSAFE = "UNSAFE"
+BINDING_EVIDENCE_UNRECOGNIZED = "UNRECOGNIZED"
+BINDING_EVIDENCE_NOT_ASSESSED = "NOT_ASSESSED"
+BINDING_EVIDENCE_ALL_RESOLVED = "ALL_RESOLVED"
+BINDING_EVIDENCE_INCOMPLETE = "INCOMPLETE"
+
+_COMMIT = re.compile(r"[0-9a-f]{40}\Z")
 
 _EXPLICIT_LIMIT = (
     "The capability-outcome bridge joins an agent-authored Campaign binding to "
-    "documentary required-capability routes at one committed revision. It does "
-    "not select or rank an increment, inspect component code, establish "
-    "implementation, sufficiency, readiness or semantic truth, and it does not "
-    "authorize action. The realization assessment is agent-authored condition "
-    "evidence, not verification."
+    "documentary required-capability routes at one committed revision. It also "
+    "checks whether each cited binding source ref resolves as a tracked file or "
+    "exact local commit at that revision; that is presence, not content "
+    "verification. It does not select or rank an increment, inspect component "
+    "code, establish implementation, sufficiency, readiness or semantic truth, "
+    "and it does not authorize action. The realization assessment is "
+    "agent-authored condition evidence, not verification."
 )
 
 
@@ -81,6 +96,11 @@ def build_capability_bridge(
     workspace_context = route_query.get("workspace_context") or {}
     workspace_index = route_query.get("workspace_index") or {}
     indexed_ref = workspace_index.get("indexed_ref")
+    binding_source_evidence = _binding_source_evidence(
+        outcome.get("source_refs") or (),
+        repo=Path(repo),
+        indexed_ref=indexed_ref,
+    )
     realization = context.get("capability_outcome_realization")
     realization = realization if isinstance(realization, Mapping) else None
     latest_assessment = (
@@ -140,6 +160,7 @@ def build_capability_bridge(
             ),
             "route_alignment": alignment,
             "source_alignment": source_alignment,
+            "binding_source_evidence": binding_source_evidence,
             "route_truncated": route_truncated,
             "realization_assessment_staleness": assessment_staleness,
             "condition_status_counts": (
@@ -158,6 +179,7 @@ def build_capability_bridge(
             workspace_context=workspace_context,
             alignment=alignment,
             source_alignment=source_alignment,
+            binding_source_evidence=binding_source_evidence,
             ecology=ecology,
             route_truncated=route_truncated,
             latest_assessment=latest_assessment,
@@ -283,6 +305,133 @@ def _route_alignment(
     }
 
 
+def _safe_repo_path(raw: str) -> bool:
+    """Reject references that are not plain repository-relative file paths."""
+    return (
+        isinstance(raw, str)
+        and bool(raw)
+        and "\\" not in raw
+        and not raw.startswith("/")
+        and ":" not in raw
+        and all(part not in ("", ".", "..") for part in raw.split("/"))
+    )
+
+
+def _git_text(root: Path, *args: str) -> str:
+    try:
+        return guarded_git_text(root, *args).strip()
+    except (ValueError, OSError) as exc:
+        raise CampaignKnowledgeError(
+            f"binding source evidence could not be checked: {exc}"
+        ) from exc
+
+
+def _binding_source_evidence(
+    refs: Sequence[str], *, repo: Path, indexed_ref: str | None
+) -> dict[str, Any]:
+    """Resolve each binding source reference at one committed revision.
+
+    The binding's ``source_refs`` are authored pointers, not admitted Campaign
+    evidence and not semantic truth. This check only reports whether a cited
+    path is tracked or a cited commit exists locally at the queried revision.
+    A missing reference is a provenance signal, not proof that the source was
+    wrong or that the bound outcome is invalid.
+    """
+
+    entries: list[dict[str, str]] = []
+    for raw in refs:
+        value = str(raw)
+        if value.startswith("file:"):
+            path = value[len("file:"):]
+            if not _safe_repo_path(path):
+                entries.append({"ref": value, "status": BINDING_EVIDENCE_UNSAFE})
+                continue
+            if not indexed_ref:
+                entries.append(
+                    {"ref": value, "status": BINDING_EVIDENCE_NOT_ASSESSED}
+                )
+                continue
+            listing = _git_text(
+                repo, "ls-tree", "-r", "-z", "--name-only", indexed_ref, "--", path
+            ).split(chr(0))
+            entries.append({
+                "ref": value,
+                "status": (
+                    BINDING_EVIDENCE_RESOLVED
+                    if path in listing
+                    else BINDING_EVIDENCE_MISSING
+                ),
+            })
+        elif value.startswith("commit:"):
+            sha = value[len("commit:"):]
+            if not _COMMIT.fullmatch(sha):
+                entries.append({"ref": value, "status": BINDING_EVIDENCE_UNSAFE})
+                continue
+            if not indexed_ref:
+                entries.append(
+                    {"ref": value, "status": BINDING_EVIDENCE_NOT_ASSESSED}
+                )
+                continue
+            try:
+                resolved = _git_text(
+                    repo, "rev-parse", "--verify", "--quiet", f"{sha}^{{commit}}"
+                )
+            except CampaignKnowledgeError:
+                entries.append(
+                    {"ref": value, "status": BINDING_EVIDENCE_UNRESOLVED}
+                )
+                continue
+            entries.append({
+                "ref": value,
+                "status": (
+                    BINDING_EVIDENCE_RESOLVED
+                    if resolved == sha
+                    else BINDING_EVIDENCE_MISSING
+                ),
+            })
+        else:
+            entries.append({
+                "ref": value,
+                "status": BINDING_EVIDENCE_UNRECOGNIZED,
+            })
+
+    counts: dict[str, int] = {}
+    for entry in entries:
+        status = entry["status"]
+        counts[status] = counts.get(status, 0) + 1
+
+    if not entries or all(
+        entry["status"] == BINDING_EVIDENCE_NOT_ASSESSED for entry in entries
+    ):
+        assessment = BINDING_EVIDENCE_NOT_ASSESSED
+        detail = (
+            "No binding source reference was available to check, or the indexed "
+            "revision was not known."
+        )
+    elif all(entry["status"] == BINDING_EVIDENCE_RESOLVED for entry in entries):
+        assessment = BINDING_EVIDENCE_ALL_RESOLVED
+        detail = (
+            "Every cited binding source reference resolves as a tracked file or "
+            "exact local commit at the indexed revision."
+        )
+    else:
+        assessment = BINDING_EVIDENCE_INCOMPLETE
+        detail = (
+            "At least one cited binding source reference does not resolve at the "
+            "indexed revision; this is a provenance signal, not proof that the "
+            "source was wrong or that the bound outcome is invalid."
+        )
+
+    return {
+        "assessment": assessment,
+        "counts": dict(sorted(counts.items())),
+        "indexed_ref": indexed_ref,
+        "entries": entries,
+        "detail": detail,
+        "semantic_truth_established": False,
+    }
+
+
 def _source_alignment(
     campaign_refs: Sequence[str], focus: Mapping[str, Any]
 ) -> dict[str, Any]:
@@ -328,6 +477,7 @@ def _caveats(
     workspace_context: Mapping[str, Any],
     alignment: Mapping[str, Any],
     source_alignment: Mapping[str, Any],
+    binding_source_evidence: Mapping[str, Any],
     ecology: Mapping[str, Any],
     route_truncated: bool,
     latest_assessment: Mapping[str, Any] | None,
@@ -367,6 +517,19 @@ def _caveats(
         caveats.append({
             "code": "SOURCE_REF_NOT_JOINED",
             "detail": str(source_alignment.get("detail") or ""),
+        })
+    if binding_source_evidence.get("assessment") == BINDING_EVIDENCE_INCOMPLETE:
+        unresolved = [
+            str(entry.get("ref"))
+            for entry in binding_source_evidence.get("entries", ())
+            if entry.get("status") != BINDING_EVIDENCE_RESOLVED
+        ]
+        caveats.append({
+            "code": "BINDING_SOURCE_EVIDENCE_INCOMPLETE",
+            "detail": (
+                "Not every cited binding source reference resolves at the indexed "
+                "revision: " + ", ".join(unresolved)
+            ),
         })
     if ecology.get("required_capability_link_not_assessed"):
         caveats.append({

@@ -48,7 +48,9 @@ projection of assumptions != assumptions established
 possibility's explicitly declared required-capability routes at one committed
 revision. It exposes the possibility focus and realization, each capability's
 reviewed components and relation evidence, mechanical Campaign/knowledge
-capability-set alignment, and documentary source-reference overlap.
+capability-set alignment, documentary source-reference overlap, and a
+`binding_source_evidence` presence check for each authored binding source
+reference at the indexed revision.
 
 ```text
 declared route != implemented capability

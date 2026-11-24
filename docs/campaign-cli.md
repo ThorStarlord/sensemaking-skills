@@ -190,10 +190,15 @@ sensemaking-skills campaign capability-outcome bridge \
 The bridge carries the full bound outcome, the exact indexed possibility focus,
 each declared capability route and its reviewed components, a mechanical
 alignment check between the Campaign's required capability IDs and the
-repository's declared edges, and a source-reference overlap check. Routes keep
-`implementation_verified: false`; `campaign_only`, `knowledge_only`, truncation
-and missing component links remain explicit. A mismatch is reported, not
-repaired, ranked or turned into a recommendation.
+repository's declared edges, a source-reference overlap check, and a
+`binding_source_evidence` resolution of each authored binding source reference
+at the indexed revision. The resolution reports `RESOLVED`, `MISSING`,
+`UNRESOLVED`, `UNSAFE`, `UNRECOGNIZED` or `NOT_ASSESSED` per reference, with an
+`ALL_RESOLVED` / `INCOMPLETE` / `NOT_ASSESSED` summary. It checks presence only:
+it does not inspect content, verify implementation or establish semantic truth.
+Routes keep `implementation_verified: false`; `campaign_only`, `knowledge_only`,
+truncation and missing component links remain explicit. A mismatch is reported,
+not repaired, ranked or turned into a recommendation.
 
 When the Campaign has a bound target, the queried checkout identity must match
 it; when several targets are bound, pass `--target-alias`. When the Campaign has

@@ -336,6 +336,7 @@ jobs:
           assert resumed["capability_outcome_realization"]["latest"]["assessment_id"] == latest["assessment_id"]
           assert resumed["capability_outcome_realization"]["binding_realization"] == "not_established"
           assert bridge["bridge"]["realization_assessment_staleness"] == "CURRENT"
+          assert bridge["bridge"]["binding_source_evidence"]["assessment"] == "ALL_RESOLVED"
           assert bridge["bridge"]["condition_status_counts"] == {
               "EVIDENCE_PRESENT": 1,
               "NO_EVIDENCE": 1,
