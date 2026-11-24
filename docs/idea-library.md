@@ -269,6 +269,12 @@ These grew from the typed records and queries described in section 6. Each is a 
 - **Dimensions:** ALIGNED with ADR 0034; SUBSTANTIAL ambition; FORESEEABLE with current authored memory and guidance; realization NOT_ASSESSED (independent user-facing application unavailable). All are judgments with the case's bounded source evidence, not empirical success.
 - **Value hypothesis:** related possibilities and changing shared premises could help later agents discover coherent, materially distinct product futures that a linear list or backlog would hide.
 - **Disposition:** EXPLORATORY agent proposal; no owner selection, mandatory planner, authorized implementation or endorsed strategic frontier.
+
+- **2026-11-24 evaluation variant:** `poss:assumption-contrast-inquiry` is an
+  incremental, read-only evaluation variant over this same assumption-aware
+  family. A fresh evaluation found it too narrow and overlapping with this
+  candidate; it is not a separate substantial direction. See
+  [the fresh-use record](normal-use/2026-11-24-assumption-contrast-fresh-use.md).
 - **Revisit when:** a fresh agent attempts the relational view on an open prospective question and demonstrates or refutes actual value. Its result may show this is merely an extension of existing synthesis, in which case revise or supersede the concept without rewriting its history.
 
 ## 4. Construction paths and evidence prerequisites (not possibilities)

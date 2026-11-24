@@ -4,7 +4,7 @@
     {
       "id": "poss:assumption-contrast-inquiry",
       "kind": "opportunity",
-      "statement": "For a consequential product decision bounded by authored possibilities, an agent can express competing assumption scenarios, project which visible candidates depend on each assumption, identify unassessed candidates and shared-assumption groups, and use the contrast to discover or evaluate a materially different direction without automatic generation or ranking.",
+      "statement": "For a consequential product decision bounded by authored possibilities, an agent can use a scenario-conditioned evaluation view within the assumption-aware opportunity ecology to project which visible candidates depend on each assumption, identify unassessed candidates and shared-assumption groups, and decide whether the contrast warrants a new direction; the view does not generate, rank, select or authorize.",
       "authority_kind": "hypothesis",
       "authority_ref": "artifacts/history/2026-11-24-assumption-contrast-inquiry-synthesis.json",
       "evidence_refs": [
@@ -28,8 +28,8 @@
             "basis": "ADR 0037's domain-general cognitive development and the active agent's ownership of semantic judgment support assumption-aware prospective reasoning."
           },
           "ambition": {
-            "value": "SUBSTANTIAL",
-            "basis": "Would let an agent challenge the premises that bound its option set and discover an unrepresented direction, rather than only retrieve or recombine authored candidates."
+            "value": "INCREMENTAL",
+            "basis": "A read-only evaluation variant within the existing assumption-aware ecology, not a distinct generative direction; a fresh evaluation found it too narrow to be substantial."
           },
           "horizon": {
             "value": "FORESEEABLE",
@@ -37,7 +37,7 @@
           },
           "realization": {
             "value": "HYPOTHETICAL",
-            "basis": "The underlying read-only contrast and procedure exist at 13bc8a2f, but this newly synthesized candidate has no independent later-agent use, decision outcome or comparative evidence. It remains hypothetical; no realization is claimed.",
+            "basis": "The read-only contrast and portable procedure exist at 13bc8a2f, but a fresh evaluation at bafa004b judged this candidate too narrow and overlapping with poss:assumption-aware-opportunity-ecology. It was narrowed and remains hypothetical; no independent use or benefit is established.",
             "establishment": "inferred"
           }
         },
@@ -48,14 +48,21 @@
             "authority": "agent-authored synthesis under current delegated mission",
             "source": "artifacts/history/2026-11-24-assumption-contrast-inquiry-synthesis.json",
             "rationale": "Contrast of goal:compounding-product-knowledge and goal:domain-general-cognitive-development showed five direct candidates and nine descendant candidates with only three authored assumptions; five candidates were unassessed, two had partial relationship coverage, and shared assumptions lacked direct relations. The existing assumption-aware candidate itself had no authored assumptions. A focused scenario-conditioned contrast plus a portable procedure is distinct from a broad opportunity generator and reuses existing authored possibility records."
+          },
+          {
+            "value": "NARROWED",
+            "date": "2026-11-24",
+            "authority": "agent reconciliation under delegated mission",
+            "source": "docs/normal-use/2026-11-24-assumption-contrast-fresh-use.md",
+            "rationale": "Fresh evaluation at bafa004b found the candidate too narrow and overlapping poss:assumption-aware-opportunity-ecology; retained as an incremental evaluation variant, with the non-load-bearing cross-episode assumption removed. The contrast operation and procedure remain."
           }
         ],
         "assessed_ref": "13bc8a2f9cdcac759778cc429dfdde1ef564ef9c",
-        "synthesis_basis": "Contrast of goal:compounding-product-knowledge and goal:domain-general-cognitive-development showed five direct candidates and nine descendant candidates with only three authored assumptions; five candidates were unassessed, two had partial relationship coverage, and shared assumptions lacked direct relations. The existing assumption-aware candidate itself had no authored assumptions. A focused scenario-conditioned contrast plus a portable procedure is distinct from a broad opportunity generator and reuses existing authored possibility records.",
-        "value_hypothesis": "A later agent can challenge the assumptions that bound its option set, discover unrepresented combinations, and avoid building on an unexamined premise without automatic generation or ranking.",
+        "synthesis_basis": "At 13bc8a2f, goal:compounding-product-knowledge had five direct candidates (one unassessed, two partial); goal:domain-general-cognitive-development had nine inherited candidates (five unassessed, two partial). Shared assumptions lacked direct relations and the existing assumption-aware candidate had no authored assumptions. A fresh evaluation at bafa004b judged this candidate too narrow and overlapping; it is retained as an incremental evaluation variant, not a distinct substantial direction.",
+        "value_hypothesis": "A later agent can use a compact scenario-conditioned view to inspect whether its option set is bounded by authored assumptions and to decide whether to continue, reframe, author a candidate or stop.",
         "revisit_when": "An authentic decision uses the contrast to change or confirm a construction direction, and a later agent evaluates whether it reduced missed alternatives or false assumptions.",
-        "counterevidence": "The existing possibility-ecology already exposes one-hop assumptions, so the contrast may be a procedure and presentation layer rather than a new capability. The visible candidate set is small, two candidates have partial relationship coverage, and one same-agent use does not establish benefit.",
-        "claim_ceiling": "Agent-authored hypothesis with an implemented read-only contrast and portable procedure. No independent later-agent use, decision benefit, comparative advantage or authorization is established.",
+        "counterevidence": "Existing possibility-ecology exposes one-hop assumptions; a fresh evaluation at bafa004b judged this candidate a too-narrow variant of poss:assumption-aware-opportunity-ecology, noted that the cross-episode assumption was not load-bearing, and found no decision-changing use. The read-only contrast is useful as a compact view, not new semantic information; one same-agent use does not establish benefit.",
+        "claim_ceiling": "Incremental evaluation variant of the assumption-aware opportunity ecology; read-only contrast and procedure implemented; no distinct product direction, independent later-agent use, decision benefit, comparative advantage or authorization.",
         "agent_owned": true
       }
     }
@@ -165,23 +172,6 @@
       "subject": "poss:assumption-contrast-inquiry",
       "predicate": "references",
       "object": "con:agent-owns-semantic-control",
-      "evidence_refs": [
-        "file:artifacts/history/2026-11-24-assumption-contrast-inquiry-synthesis.json",
-        "file:src/sensemaking_skills/possibility_contrast.py",
-        "file:skills/using-sensemaking/references/assumption-aware-prospective-reasoning-v1.md",
-        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
-      ],
-      "epistemic_status": "hypothetical",
-      "attributes": {
-        "conceptual_relation": "assumes",
-        "establishment": "authored"
-      }
-    },
-    {
-      "id": "rel:possibility-assumption-contrast-inquiry-assumes-2",
-      "subject": "poss:assumption-contrast-inquiry",
-      "predicate": "references",
-      "object": "hyp:cross-episode-synthesis-recurs",
       "evidence_refs": [
         "file:artifacts/history/2026-11-24-assumption-contrast-inquiry-synthesis.json",
         "file:src/sensemaking_skills/possibility_contrast.py",
