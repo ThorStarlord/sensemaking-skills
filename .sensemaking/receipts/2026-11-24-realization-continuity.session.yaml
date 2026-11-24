@@ -1,0 +1,120 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-11-24-realization-continuity
+state: final
+created_at: "2026-11-24T00:00:00Z"
+updated_at: "2026-11-24T00:00:00Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: 0e64430c83ca861b8e9ac2eaf5c842464c6891b3
+  end_ref: fc7a845cfcef6df634f8539b9567f31fba133996
+  worktree_clean_at_end: true
+skill_identity:
+  load_mode: manual_explicit_load
+  sensemaking_source_ref: 0e64430c83ca861b8e9ac2eaf5c842464c6891b3
+goal:
+  statement: "Develop a valuable cognitive capability through durable multi-increment construction: preserve the selected outcome, distinguish original, current and remaining realization, and continue from actual implementation evidence."
+  source: owner_message
+  source_ref: null
+delegation:
+  granted: [read, local_write, run_local_commands, commit, push, open_pr, merge, knowledge_edit]
+  withheld: [release, deploy, tracker_write, external_publication]
+continuity:
+  resumes: 2026-11-23-capability-outcome-realization
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: Establish a durable Campaign continuation
+    capability: using-sensemaking
+    status: completed
+    reason: "The prior Campaign was copied without history edits to a durable location outside the checkout, validated, and resumed with its binding intact. The temporary original remains evidence."
+    artifact_refs: [docs/normal-use/2026-11-24-realization-continuity.md]
+    validation:
+      - command: campaign validate and working-context on the durable copy
+        result: PASS
+  - id: R-2
+    responsibility: Verify required-capability implementation reality
+    capability: using-sensemaking
+    status: completed
+    reason: "Source and real consumers showed three guidance-only capabilities and one code-backed capability; uniform implementation_verified false conflated guidance, absence and unverified code."
+    artifact_refs: [docs/normal-use/2026-11-24-realization-continuity.md, skills/using-sensemaking/SKILL.md]
+    validation:
+      - command: semantic method context, workspace-orient and source inspection
+        result: PASS
+  - id: R-3
+    responsibility: Implement evidence-linked realization assessment
+    capability: ordinary_coding
+    status: completed
+    reason: "Append-only per-condition evidence states preserve the immutable binding, validate source and evidence at an exact revision, and project through the normal Campaign consumers without a completion score."
+    artifact_refs: [src/sensemaking_skills/campaigns/capability_outcome_realization.py, docs/campaign-realization-assessment.md]
+    validation:
+      - command: Real assess, working-context, resume-profile, bridge, stale-reference and invalid-input probes
+        result: PASS
+  - id: R-4
+    responsibility: Exercise fresh-context continuation
+    capability: using-sensemaking
+    status: completed
+    reason: "A fresh agent recovered the binding and first assessment, added binding source-evidence resolution, reconciled the stale reviewed realization with history, and appended RA-AUTO-0002."
+    artifact_refs: [docs/normal-use/2026-11-24-construction-bridge-evidence-continuation.md]
+    validation:
+      - command: Real bridge source-evidence resolution, knowledge proposal check and Campaign validation
+        result: PASS
+      - command: Hosted CI for the new assessment step
+        result: NOT_RUN
+  - id: R-5
+    responsibility: Preserve completion and evidence ceiling
+    capability: using-sensemaking
+    status: completed
+    reason: "The bounded realization-continuity capability is operational and durable. Independent use and component implementation evidence remain separate, so no completion or benefit claim is made."
+    artifact_refs: [docs/normal-use/2026-11-24-realization-continuity.md]
+    validation:
+      - command: Review of binding, assessments, reconciled knowledge and remaining conditions
+        result: PASS
+findings:
+  - id: F-1
+    statement: "The immutable binding preserved original conditions but Campaign consumers had no per-condition evidence state; six transitions carried no admitted evidence or established facts."
+    epistemic_status: OBSERVED
+    evidence_refs: [src/sensemaking_skills/campaigns/execution.py, src/sensemaking_skills/campaigns/resume_capsule.py]
+    disposition: resolved
+  - id: F-2
+    statement: "Three of four required capabilities are guidance-only and one is code-backed; the bridge's uniform implementation_verified false erased that distinction."
+    epistemic_status: OBSERVED
+    evidence_refs: [skills/using-sensemaking/SKILL.md, src/sensemaking_skills/method_adaptation.py]
+    disposition: resolved
+  - id: F-3
+    statement: "The assessment command validates condition coverage and file/commit evidence at the exact source revision, preserves the binding, and projects original plus current evidence states."
+    epistemic_status: OBSERVED
+    evidence_refs: [src/sensemaking_skills/campaigns/capability_outcome_realization.py, docs/campaign-realization-assessment.md]
+    disposition: resolved
+  - id: F-4
+    statement: "The fresh continuation resolved all six binding source references and reconciled the reviewed realization to PARTIALLY_IMPLEMENTED with the original HYPOTHETICAL basis retained."
+    epistemic_status: OBSERVED
+    evidence_refs: [.sensemaking/knowledge/possibility-synthesis.json, docs/normal-use/2026-11-24-construction-bridge-evidence-continuation.md]
+    disposition: no_action
+  - id: F-5
+    statement: "Independent later-agent use, decision influence, component implementation evidence and comparative benefit are not established by same-mission continuations."
+    epistemic_status: DERIVED
+    evidence_refs: [docs/normal-use/2026-11-24-realization-continuity.md]
+    disposition: handed_off
+open_questions:
+  - id: Q-1
+    question: "Will an independent later agent use the durable binding, assessment and source-evidence resolution in a consequential decision and change or confirm its chosen increment?"
+    source: empirical
+    blocking: false
+    durable_ref: null
+  - id: Q-2
+    question: "Do the declared components implement their capabilities sufficiently, and is the partial construction bridge worth its maintenance surface?"
+    source: repository_evidence
+    blocking: false
+    durable_ref: null
+stop:
+  disposition: NO_FURTHER_WARRANT
+  reason: "The realization-continuity capability is operational and durable; independent use and component implementation evidence are separate responsibilities, and further projection surface is unwarranted without observed failure."
+next:
+  warranted_responsibility: "Independent later-agent use and component implementation evidence; keep #872/#874 separate and add no planner, ranker or readiness surface."
+  blocked_on: ["Q-1", "Q-2"]
+persistence: committed
+claim_ceiling: "One durable Campaign and repository; same-mission fresh continuations only. No independent later-agent qualification, component implementation proof, decision benefit or longitudinal development. #872/#874 remain open."
+action_authorized_by_receipt: false
+immutable: true
