@@ -31,7 +31,8 @@ _EXPLICIT_LIMIT = (
     "documentary required-capability routes at one committed revision. It does "
     "not select or rank an increment, inspect component code, establish "
     "implementation, sufficiency, readiness or semantic truth, and it does not "
-    "authorize action."
+    "authorize action. The realization assessment is agent-authored condition "
+    "evidence, not verification."
 )
 
 
@@ -79,6 +80,25 @@ def build_capability_bridge(
     )
     workspace_context = route_query.get("workspace_context") or {}
     workspace_index = route_query.get("workspace_index") or {}
+    indexed_ref = workspace_index.get("indexed_ref")
+    realization = context.get("capability_outcome_realization")
+    realization = realization if isinstance(realization, Mapping) else None
+    latest_assessment = (
+        realization.get("latest") if isinstance(realization, Mapping) else None
+    )
+    if not isinstance(latest_assessment, Mapping):
+        assessment_staleness = ROUTE_ALIGNMENT_NOT_ASSESSED
+    elif indexed_ref and latest_assessment.get("source_revision") == indexed_ref:
+        assessment_staleness = "CURRENT"
+    else:
+        assessment_staleness = "STALE"
+    assessed_ref = focus.get("assessed_ref")
+    if not assessed_ref or not indexed_ref:
+        knowledge_realization = ROUTE_ALIGNMENT_NOT_ASSESSED
+    elif assessed_ref == indexed_ref:
+        knowledge_realization = "CURRENT"
+    else:
+        knowledge_realization = "STALE"
     route_truncated = bool(
         ecology.get("required_capability_omitted")
         or any(
@@ -92,6 +112,7 @@ def build_capability_bridge(
         "code": CAPABILITY_OUTCOME_BRIDGE,
         "campaign_id": context.get("campaign_id"),
         "capability_outcome": outcome,
+        "capability_outcome_realization": realization,
         "target_binding": target_binding,
         "source_identity": {
             "repository": route_query.get("repository"),
@@ -120,6 +141,17 @@ def build_capability_bridge(
             "route_alignment": alignment,
             "source_alignment": source_alignment,
             "route_truncated": route_truncated,
+            "realization_assessment_staleness": assessment_staleness,
+            "condition_status_counts": (
+                realization.get("condition_status_counts")
+                if isinstance(realization, Mapping)
+                else None
+            ),
+            "knowledge_realization": {
+                "assessed_ref": assessed_ref,
+                "indexed_ref": indexed_ref,
+                "assessment": knowledge_realization,
+            },
         },
         "caveats": _caveats(
             target_binding=target_binding,
@@ -128,6 +160,11 @@ def build_capability_bridge(
             source_alignment=source_alignment,
             ecology=ecology,
             route_truncated=route_truncated,
+            latest_assessment=latest_assessment,
+            assessment_staleness=assessment_staleness,
+            knowledge_realization=knowledge_realization,
+            assessed_ref=assessed_ref,
+            indexed_ref=indexed_ref,
         ),
         "selection_performed": False,
         "recommendation_performed": False,
@@ -293,6 +330,11 @@ def _caveats(
     source_alignment: Mapping[str, Any],
     ecology: Mapping[str, Any],
     route_truncated: bool,
+    latest_assessment: Mapping[str, Any] | None,
+    assessment_staleness: str,
+    knowledge_realization: str,
+    assessed_ref: Any,
+    indexed_ref: Any,
 ) -> list[dict[str, str]]:
     caveats: list[dict[str, str]] = []
     if target_binding.get("assessment") == ROUTE_ALIGNMENT_NOT_ASSESSED:
@@ -340,6 +382,36 @@ def _caveats(
             "detail": (
                 "The bounded route projection omitted capabilities or implementation "
                 "components; see the total and omission counts."
+            ),
+        })
+    if assessment_staleness == ROUTE_ALIGNMENT_NOT_ASSESSED:
+        caveats.append({
+            "code": "REALIZATION_ASSESSMENT_NOT_PRESENT",
+            "detail": (
+                "The binding has no realization assessment; the original conditions "
+                "remain unassessed rather than satisfied or failed."
+            ),
+        })
+    elif assessment_staleness == "STALE":
+        source = (
+            latest_assessment.get("source_revision")
+            if isinstance(latest_assessment, Mapping)
+            else "UNKNOWN"
+        )
+        caveats.append({
+            "code": "REALIZATION_ASSESSMENT_STALE",
+            "detail": (
+                f"The latest assessment is pinned to {source}, not the indexed "
+                f"revision {indexed_ref}; re-assess at the revision being inspected."
+            ),
+        })
+    if knowledge_realization == "STALE":
+        caveats.append({
+            "code": "KNOWLEDGE_REALIZATION_STALE",
+            "detail": (
+                f"The possibility realization basis was assessed at {assessed_ref}, "
+                f"not the indexed revision {indexed_ref}; re-read the original "
+                "sources before treating it as current."
             ),
         })
     caveats.append({

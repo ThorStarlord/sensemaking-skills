@@ -227,6 +227,126 @@ jobs:
           PY
           sensemaking-skills campaign validate --workspace "$WS" --json >/dev/null
 
+      - name: Capability outcome realization assessment
+        shell: bash
+        run: |
+          WS="$RUNNER_TEMP/campaign-realization-assessment"
+          rm -rf "$WS"
+          sensemaking-skills campaign init \
+            --workspace "$WS" \
+            --campaign-id CMP-REALIZATION \
+            --mission "Verify realization assessment projection" \
+            --json >/dev/null
+          sensemaking-skills campaign advance \
+            --workspace "$WS" \
+            --decision "Advance to a bounded responsibility" \
+            --responsibility-id R-1 \
+            --responsibility-statement "Probe the realization assessment surface" \
+            --decision-blocked "Whether the assessment projects" \
+            --scope "Hosted mechanical contract check" \
+            --authority authorized_autonomously \
+            --success-condition "The assessment projects and preserves the binding" \
+            --json >/dev/null
+          sensemaking-skills campaign capability-outcome bind \
+            --workspace "$WS" \
+            --decision "Bind the test outcome" \
+            --possibility-id poss:goal-family-construction-bridge \
+            --desired-behavior "Project evidence states for the bound conditions" \
+            --completion-condition "A normal consumer sees the original conditions and the latest evidence states" \
+            --selection-basis "Hosted mechanical contract check" \
+            --source-ref "file:.sensemaking/knowledge/possibility-synthesis.json" \
+            --required-capability cap:adaptive-metareasoning \
+            --required-capability cap:breadth-exploration-guidance \
+            --required-capability cap:experience-lesson-recall \
+            --required-capability cap:repository-only-discovery \
+            --remaining-condition "The assessment is projected by the normal Campaign consumers." \
+            --remaining-condition "The binding is preserved across a later advance." \
+            --json >/dev/null
+          SOURCE_REV="$(git rev-parse HEAD)"
+          ASSESSMENT="$RUNNER_TEMP/realization-assessment.json"
+          cat > "$ASSESSMENT" <<JSON
+          {
+            "possibility_id": "poss:goal-family-construction-bridge",
+            "source_revision": "$SOURCE_REV",
+            "conditions": [
+              {
+                "condition_index": 1,
+                "status": "EVIDENCE_PRESENT",
+                "evidence_refs": ["file:README.md"],
+                "basis": "README.md is tracked at the cited source revision."
+              },
+              {
+                "condition_index": 2,
+                "status": "NO_EVIDENCE",
+                "evidence_refs": [],
+                "basis": "The preservation check has not been recorded yet."
+              }
+            ]
+          }
+          JSON
+          sensemaking-skills campaign capability-outcome assess \
+            --workspace "$WS" \
+            --repo . \
+            --assessment "$ASSESSMENT" \
+            --decision "Record the hosted assessment" \
+            --json > "$RUNNER_TEMP/realization-assess.json"
+          sensemaking-skills campaign working-context \
+            --workspace "$WS" --json > "$RUNNER_TEMP/realization-working.json"
+          sensemaking-skills campaign resume-profile \
+            --workspace "$WS" --profile working --json > "$RUNNER_TEMP/realization-resume.json"
+          sensemaking-skills campaign capability-outcome bridge \
+            --workspace "$WS" --repo . --ref HEAD --json > "$RUNNER_TEMP/realization-bridge.json"
+          sensemaking-skills campaign advance \
+            --workspace "$WS" \
+            --decision "Continue under the assessed binding" \
+            --responsibility-id R-2 \
+            --responsibility-statement "Continue the bound capability" \
+            --decision-blocked "Whether the binding survives" \
+            --scope "Hosted mechanical contract check" \
+            --authority authorized_autonomously \
+            --success-condition "The assessment and binding remain visible" \
+            --json >/dev/null
+          sensemaking-skills campaign working-context \
+            --workspace "$WS" --json > "$RUNNER_TEMP/realization-after-advance.json"
+          python - <<'PY'
+          import json
+          import os
+
+          root = os.environ["RUNNER_TEMP"]
+          def load(name):
+              with open(os.path.join(root, name), encoding="utf-8") as stream:
+                  return json.load(stream)
+
+          assessed = load("realization-assess.json")
+          working = load("realization-working.json")
+          resumed = load("realization-resume.json")
+          bridge = load("realization-bridge.json")
+          after = load("realization-after-advance.json")
+
+          assert assessed["code"] == "REALIZATION_ASSESSED"
+          state = assessed["state"]
+          binding = state["extensions"]["capability_outcome"]
+          realization = state["extensions"]["capability_outcome_realization"]
+          latest = realization["assessments"][-1]
+          assert binding["realization"] == "not_established"
+          assert latest["conditions"][0]["status"] == "EVIDENCE_PRESENT"
+          assert latest["conditions"][0]["condition"] == binding["remaining_conditions"][0]
+          assert latest["conditions"][1]["status"] == "NO_EVIDENCE"
+          assert working["capability_outcome_realization"]["latest"]["assessment_id"] == latest["assessment_id"]
+          assert resumed["capability_outcome_realization"]["latest"]["assessment_id"] == latest["assessment_id"]
+          assert resumed["capability_outcome_realization"]["binding_realization"] == "not_established"
+          assert bridge["bridge"]["realization_assessment_staleness"] == "CURRENT"
+          assert bridge["bridge"]["condition_status_counts"] == {
+              "EVIDENCE_PRESENT": 1,
+              "NO_EVIDENCE": 1,
+          }
+          assert after["capability_outcome_realization"]["latest"]["assessment_id"] == latest["assessment_id"]
+          assert after["active_responsibility"]["id"] == "R-2"
+          assert after["capability_outcome"]["realization"] == "not_established"
+          print("Realization assessment is evidence-linked, projected, and preserved without changing the binding.")
+          PY
+          sensemaking-skills campaign validate --workspace "$WS" --json >/dev/null
+
       - name: Assert tests did not mutate tracked state
         shell: bash
         run: |

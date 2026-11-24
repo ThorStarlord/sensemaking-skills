@@ -13,6 +13,7 @@ sensemaking-skills campaign status
 sensemaking-skills campaign validate
 sensemaking-skills campaign advance
 sensemaking-skills campaign capability-outcome bind
+sensemaking-skills campaign capability-outcome assess
 sensemaking-skills campaign capability-outcome bridge
 sensemaking-skills campaign defer
 sensemaking-skills campaign close
@@ -138,6 +139,37 @@ bound outcome != realized capability
 source reference != admitted Campaign evidence
 ```
 
+
+### `campaign capability-outcome assess`
+
+Appends an evidence-linked realization assessment for the bound outcome's
+original conditions. It never changes the binding and never emits an aggregate
+completion verdict.
+
+```bash
+sensemaking-skills campaign capability-outcome assess \
+  --workspace /path/to/campaign \
+  --repo . \
+  --assessment assessment.json \
+  --decision "Record the current condition evidence" \
+  --json
+```
+
+Each original condition receives exactly one status:
+`EVIDENCE_PRESENT`, `PARTIAL_EVIDENCE`, `NO_EVIDENCE`,
+`CONTRADICTING_EVIDENCE` or `NOT_ASSESSED`. Evidence refs are validated as
+tracked `file:` paths or exact `commit:` refs at the cited source revision.
+`EVIDENCE_PRESENT` is evidence, not a satisfaction claim; the immutable binding
+continues to report `realization: not_established`. Assessments are append-only
+and preserve the active responsibility. `working-context` and `resume-profile`
+project the latest assessment; `audit` also exposes the history. See
+[`campaign-realization-assessment.md`](campaign-realization-assessment.md).
+
+```text
+assessment != completion
+EVIDENCE_PRESENT != condition satisfied
+condition status count != score
+```
 
 ### `campaign capability-outcome bridge`
 

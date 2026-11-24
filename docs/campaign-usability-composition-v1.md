@@ -60,6 +60,31 @@ The command is read-only. It does not rank routes, select an increment, inspect
 component code or establish that any declared component satisfies its
 capability.
 
+### Capability Outcome Realization v1
+
+`campaign capability-outcome assess` appends an evidence-linked assessment of
+the binding's original realization conditions. It preserves the immutable
+binding and the active responsibility, validates `file:` and `commit:`
+evidence at the exact source revision, and requires exactly one status per
+original condition. The binding continues to report
+`realization: not_established`; the assessment reports evidence state, not
+completion.
+
+`working-context`, `resume-profile` and `capability-outcome bridge` project the
+latest assessment. The bridge compares the assessment's source revision with
+the indexed revision and flags `REALIZATION_ASSESSMENT_STALE`; it also flags
+`KNOWLEDGE_REALIZATION_STALE` when the possibility's authored realization basis
+was assessed at a different revision. The bridge projects the knowledge
+graph's existing `claim_ceiling` and `scope`, so guidance-only and code-backed
+components are not flattened into one implementation flag.
+
+```text
+assessment != completion
+EVIDENCE_PRESENT != condition satisfied
+condition status count != score
+latest assessment != readiness verdict
+```
+
 ### Capability Context v1
 
 `campaign capability-context --responsibility-type <explicit-type>` enumerates compatible declared capabilities only after the active agent supplies the responsibility classification.

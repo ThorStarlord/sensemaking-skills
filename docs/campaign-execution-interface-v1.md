@@ -107,6 +107,8 @@ release, or another protected transition.
 - the agent-authored capability outcome when one is bound, including its
   possibility ID, desired behavior, completion condition, assumptions,
   counterevidence, required capabilities and remaining realization conditions;
+- the latest evidence-linked realization assessment when one is appended,
+  including per-condition status, evidence refs, basis and source revision;
 - active responsibility and decision blocked;
 - authority;
 - active uncertainty;
