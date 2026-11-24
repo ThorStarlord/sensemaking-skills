@@ -1,7 +1,7 @@
 # Fresh evaluation: assumption-contrast candidate (2026-11-24)
 
 **Status:** fresh-context evaluation and correction. **Base:** `6fd3d765`.
-**Fresh evaluation revision:** `bafa004b35b6f933d249608e9d0b9670ca015419`.
+**Fresh evaluation revision:** `bafa004b35b6f933d249608e9d0b9670ca015419` (cherry-picked into this branch as `03c3c7cb`).
 **Subject:** `poss:assumption-contrast-inquiry` and the new
 `semantic possibility contrast` operation.
 

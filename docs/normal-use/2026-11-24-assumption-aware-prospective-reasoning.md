@@ -175,7 +175,7 @@ A fresh agent evaluated the retained candidate at `6fd3d765` and
 `bafa004b`. It judged `poss:assumption-contrast-inquiry` a **too-narrow
 variant** of `poss:assumption-aware-opportunity-ecology`, not a distinct
 substantial direction. It also found a real omission-disclosure defect when
-`--limit` reduced the candidate set, which was fixed in `bafa004b`.
+`--limit` reduced the candidate set, which was fixed in `bafa004b` and integrated as `03c3c7cb`.
 
 The parent accepted the judgment: the candidate was narrowed to `INCREMENTAL`
 ambition, its non-load-bearing `hyp:cross-episode-synthesis-recurs` assumption
