@@ -1154,3 +1154,50 @@ def register_semantic_commands(root_cli: click.Group) -> None:
         except (ValueError, OSError, UnicodeError, KeyError, TypeError) as exc:
             raise click.ClickException(str(exc)) from exc
         _emit(payload, output_json=output_json)
+
+    @semantic_possibility.command(name="contrast")
+    @click.option("--repo", "repo_dir", default=Path("."),
+                  type=click.Path(exists=True, file_okay=False, path_type=Path))
+    @click.option("--ref", required=True,
+                  help="Exact committed revision whose derived index supplies the ecology")
+    @click.option("--subject", required=True,
+                  help="Goal or opportunity claim id whose authored candidates are contrasted")
+    @click.option("--scenarios", "scenarios_path", required=True,
+                  type=click.Path(exists=True, dir_okay=False, path_type=Path),
+                  help="JSON scenario document with agent-authored held/negated assumptions")
+    @click.option("--limit", default=25, type=click.IntRange(1, 100))
+    @click.option("--json", "output_json", is_flag=True)
+    def semantic_possibility_contrast(
+        repo_dir: Path, ref: str, subject: str, scenarios_path: Path,
+        limit: int, output_json: bool,
+    ) -> None:
+        """Contrast authored possibilities under agent-authored assumption scenarios.
+
+        Does not infer assumptions, generate possibilities, rank scenarios,
+        select a direction or authorize action.
+        """
+        from .possibility_contrast import build_possibility_contrast
+        from .workspace_knowledge import run_workspace_query
+
+        try:
+            query = run_workspace_query(
+                repo=repo_dir, ref=ref, operation="possibility-ecology",
+                subject=subject, limit=limit,
+            )
+            document = json.loads(scenarios_path.read_text(encoding="utf-8-sig"))
+            contrast = build_possibility_contrast(
+                query["possibility_ecology"], document
+            )
+        except (ValueError, OSError, UnicodeError, KeyError, TypeError,
+                json.JSONDecodeError) as exc:
+            raise click.ClickException(str(exc)) from exc
+        payload = {
+            "code": "SEMANTIC_POSSIBILITY_CONTRAST",
+            "repository": query.get("repository"),
+            "target_ref": query.get("target_ref"),
+            "workspace_context": query.get("workspace_context", {}),
+            "workspace_index": query.get("workspace_index", {}),
+            "source_scope": query.get("source_scope", []),
+            **contrast,
+        }
+        _emit(payload, output_json=output_json)

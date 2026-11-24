@@ -1,0 +1,57 @@
+{
+  "possibility_id": "assumption-contrast-inquiry",
+  "actor": "Sensemaking construction agent",
+  "source_revision": "13bc8a2f9cdcac759778cc429dfdde1ef564ef9c",
+  "origin_date": "2026-11-24",
+  "title": "Assumption-contrast inquiry",
+  "statement": "For a consequential product decision bounded by authored possibilities, an agent can use a scenario-conditioned evaluation view within the assumption-aware opportunity ecology to project which visible candidates depend on each assumption, identify unassessed candidates and shared-assumption groups, and decide whether the contrast warrants a new direction; the view does not generate, rank, select or authorize.",
+  "goal_refs": [
+    "goal:domain-general-cognitive-development",
+    "goal:compounding-product-knowledge"
+  ],
+  "source_candidate_refs": [
+    "poss:assumption-aware-opportunity-ecology",
+    "poss:cross-episode-possibility-synthesis"
+  ],
+  "capability_refs": [
+    "cap:possibility-records",
+    "cap:adaptive-metareasoning",
+    "cap:breadth-exploration-guidance"
+  ],
+  "assumption_refs": [
+    "con:agent-owns-semantic-control"
+  ],
+  "contradicts_refs": [
+    "poss:automatic-strategic-planner",
+    "poss:ranked-possibility-backlog"
+  ],
+  "dimensions": {
+    "alignment": {
+      "value": "ALIGNED",
+      "basis": "ADR 0037's domain-general cognitive development and the active agent's ownership of semantic judgment support assumption-aware prospective reasoning."
+    },
+    "ambition": {
+      "value": "INCREMENTAL",
+      "basis": "A read-only evaluation variant within the existing assumption-aware ecology, not a distinct generative direction; a fresh evaluation found it too narrow to be substantial."
+    },
+    "horizon": {
+      "value": "FORESEEABLE",
+      "basis": "Existing possibility records, one-hop ecology relationships, the new contrast operation and a portable procedure supply the pieces; independent use is unobserved."
+    },
+    "realization": {
+      "value": "HYPOTHETICAL",
+      "establishment": "inferred",
+      "basis": "The read-only contrast and portable procedure exist at 13bc8a2f, but a fresh evaluation at bafa004b judged this candidate too narrow and overlapping with poss:assumption-aware-opportunity-ecology. It was narrowed and remains hypothetical; no independent use or benefit is established."
+    }
+  },
+  "synthesis_basis": "At 13bc8a2f, goal:compounding-product-knowledge had five direct candidates (one unassessed, two partial); goal:domain-general-cognitive-development had nine inherited candidates (five unassessed, two partial). Shared assumptions lacked direct relations and the existing assumption-aware candidate had no authored assumptions. A fresh evaluation at bafa004b judged this candidate too narrow and overlapping; it is retained as an incremental evaluation variant, not a distinct substantial direction.",
+  "value_hypothesis": "A later agent can use a compact scenario-conditioned view to inspect whether its option set is bounded by authored assumptions and to decide whether to continue, reframe, author a candidate or stop.",
+  "revisit_when": "An authentic decision uses the contrast to change or confirm a construction direction, and a later agent evaluates whether it reduced missed alternatives or false assumptions.",
+  "counterevidence": "Existing possibility-ecology exposes one-hop assumptions; a fresh evaluation at bafa004b judged this candidate a too-narrow variant of poss:assumption-aware-opportunity-ecology, noted that the cross-episode assumption was not load-bearing, and found no decision-changing use. The read-only contrast is useful as a compact view, not new semantic information; one same-agent use does not establish benefit.",
+  "claim_ceiling": "Incremental evaluation variant of the assumption-aware opportunity ecology; read-only contrast and procedure implemented; no distinct product direction, independent later-agent use, decision benefit, comparative advantage or authorization.",
+  "evidence_refs": [
+    "file:src/sensemaking_skills/possibility_contrast.py",
+    "file:skills/using-sensemaking/references/assumption-aware-prospective-reasoning-v1.md",
+    "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+  ]
+}
