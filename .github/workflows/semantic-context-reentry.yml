@@ -1400,6 +1400,52 @@ jobs:
           assert bridge_result["action_authorized"] is False
           print("Opportunity ecology exposes required-capability routes; no selection or readiness claim.")
           PY
+      - name: Exercise possibility assumption contrast (mechanics only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          REF="$(git rev-parse HEAD)"
+          SCENARIOS="$RUNNER_TEMP/assumption-contrast.json"
+          cat > "$SCENARIOS" <<'JSON'
+          {
+            "scenarios": [
+              {"id": "base", "negated": [], "held": []},
+              {"id": "no-cross-episode",
+               "negated": ["hyp:cross-episode-synthesis-recurs"]}
+            ]
+          }
+          JSON
+          sensemaking-skills semantic possibility contrast \
+            --repo . --ref "$REF" \
+            --subject goal:compounding-product-knowledge \
+            --scenarios "$SCENARIOS" --json > "$RUNNER_TEMP/contrast.json"
+          python - <<'PY'
+          import json
+          import os
+
+          with open(os.path.join(os.environ["RUNNER_TEMP"], "contrast.json"), encoding="utf-8") as stream:
+              result = json.load(stream)
+
+          assert result["code"] == "SEMANTIC_POSSIBILITY_CONTRAST"
+          assert result["candidate_count"] >= 5
+          assert result["assumption_count"] >= 3
+          unassessed = {item["claim_id"] for item in result["unassessed_candidates"]}
+          assert "poss:assumption-aware-opportunity-ecology" in unassessed
+          scenarios = {item["id"]: item for item in result["scenario_results"]}
+          affected = {item["claim_id"] for item in scenarios["no-cross-episode"]["affected"]}
+          assert "poss:goal-family-construction-bridge" in affected
+          assert "poss:cross-episode-possibility-synthesis" in affected
+          shared = {
+              item["assumption_id"]: item for item in result["shared_assumptions"]
+          }
+          assert shared["hyp:cross-episode-synthesis-recurs"]["assessment"] == "UNREPRESENTED_COMBINATION"
+          assert result["selection_performed"] is False
+          assert result["recommendation_performed"] is False
+          assert result["semantic_truth_established"] is False
+          assert result["action_authorized"] is False
+          print("Possibility contrast projects assumptions and scenarios without selecting or ranking.")
+          PY
+
       - name: Exercise possibility synthesis producer contract (mechanics only)
         shell: bash
         run: |

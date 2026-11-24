@@ -752,6 +752,46 @@ explicit relationship hop is followed per candidate; use
 `knowledge-view-export`/`explain` for deeper traversal. Candidate, relationship
 and shared-link omission counts disclose the bound.
 
+### Possibility contrast (`possibility contrast`)
+
+When a consequential choice may be bounded by assumptions, the optional
+`semantic possibility contrast` operation projects agent-authored scenarios
+over the visible candidate ecology:
+
+```bash
+sensemaking-skills semantic possibility contrast --repo . --ref HEAD \
+  --subject goal:compounding-product-knowledge \
+  --scenarios scenarios.json --json
+```
+
+The scenario document carries one or more named scenarios with `held` and
+`negated` assumption claim ids:
+
+```json
+{
+  "scenarios": [
+    {"id": "base", "negated": [], "held": []},
+    {"id": "no-cross-episode",
+     "negated": ["hyp:cross-episode-synthesis-recurs"]}
+  ]
+}
+```
+
+Assumptions are authored `references` relations whose `conceptual_relation` is
+`assumes` or `sharesAssumptionWith`. Each scenario marks every visible
+candidate `AFFECTED` (it assumes a negated claim), `UNAFFECTED` (it has visible
+assumptions, none negated), or `NOT_ASSESSED` (no visible assumption relation).
+A candidate whose one-hop relationship projection was truncated is marked
+`PARTIAL`; use `explain` on that claim before treating an absence as complete.
+`shared_assumptions` groups candidates that share an authored assumption and
+reports pairs without a direct relation; those pairs are questions for the
+agent, not endorsed combinations.
+
+The operation does not infer assumptions, generate possibilities, rank
+scenarios, select a direction or authorize construction. A scenario is a
+hypothetical retention or negation, not evidence that an assumption is true or
+false. The agent authors scenarios and interprets the result.
+
 ### Possibility synthesis producer
 
 After an agent inspects a goal-family ecology and forms a genuinely new
