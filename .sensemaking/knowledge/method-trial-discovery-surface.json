@@ -1,0 +1,33 @@
+{
+  "schema_version": 2,
+  "claims": [
+    {
+      "id": "decision:method-trial-discovery-surface",
+      "kind": "decision",
+      "statement": "Method trial discovery-surface: Should the method-trial capability add a list command, or is exact-ID show sufficient? Selected method: Prefer the smallest consumer surface: use exact-ID show and the open proposal plus commit as the discovery path; add a list only if a real discovery failure is observed. Expected observation: The trial can be opened, committed, shown by exact id, and closed; no missing discovery path is observed; no list command is warranted.",
+      "authority_kind": "delegated",
+      "authority_ref": "artifacts/history/2026-11-24-method-trial-discovery-surface.json",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-24-method-trial-discovery-surface.json",
+        "file:src/sensemaking_skills/method_trial.py",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:skills/using-sensemaking/references/method-trial-v1.md"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "trial_id": "discovery-surface",
+        "trial_status": "OPEN",
+        "question": "Should the method-trial capability add a list command, or is exact-ID show sufficient?",
+        "method": "Prefer the smallest consumer surface: use exact-ID show and the open proposal plus commit as the discovery path; add a list only if a real discovery failure is observed.",
+        "assumptions": "The open proposal output names the trial decision id and path; a reviewer can commit it and show it by exact id; no list is needed for the bounded capability.",
+        "expected_observation": "The trial can be opened, committed, shown by exact id, and closed; no missing discovery path is observed; no list command is warranted.",
+        "prior_lesson_id": "NONE",
+        "actor": "Sensemaking construction agent",
+        "source_revision": "8018f07c7792148bbfc3b77df38576327e4f7d41",
+        "opened_date": "2026-11-24",
+        "claim_ceiling": "This trial records a design decision about the trial's own discovery surface; it is not independent use or method-effect evidence."
+      }
+    }
+  ],
+  "relations": []
+}

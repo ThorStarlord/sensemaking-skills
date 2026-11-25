@@ -1,0 +1,108 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-11-24-method-trial
+state: final
+created_at: "2026-11-24T00:00:00Z"
+updated_at: "2026-11-24T00:00:00Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: 8018f07c7792148bbfc3b77df38576327e4f7d41
+  end_ref: 1cda54961a6a40476dd3f73c23857590411a5835
+  worktree_clean_at_end: true
+skill_identity:
+  load_mode: manual_explicit_load
+  sensemaking_source_ref: 8018f07c7792148bbfc3b77df38576327e4f7d41
+goal:
+  statement: "Develop a substantive intellectual capability by closing the predecision/outcome gap in Sensemaking's method-learning path and exercising it on a real design decision."
+  source: owner_message
+  source_ref: null
+delegation:
+  granted: [read, local_write, run_local_commands, commit, push, open_pr, merge, knowledge_edit]
+  withheld: [release, deploy, tracker_write, external_publication]
+continuity:
+  resumes: 2026-11-24-assumption-aware-prospective-reasoning
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: Reconstruct the actual state and select the method-trial gap
+    capability: using-sensemaking
+    status: completed
+    reason: "The prior contrast path was evaluated and narrowed; the method context/record already support retrieval and post-episode learning but not a predecision commitment and later observed result."
+    artifact_refs: [docs/normal-use/2026-11-24-method-trial-capability.md]
+    validation:
+      - command: Source and prior method/SCL evidence inspection at 8018f07c
+        result: PASS
+  - id: R-2
+    responsibility: Implement predecision method trial open/close/show
+    capability: ordinary_coding
+    status: completed
+    reason: "Added an optional workflow using existing decision and observation claims: an OPEN predecision record, a linked later result with disposition, and an exact-ID show surface. No new claim kind or controller."
+    artifact_refs: [src/sensemaking_skills/method_trial.py, skills/using-sensemaking/references/method-trial-v1.md]
+    validation:
+      - command: Open, show-open, close, show-closed, duplicate-close and unknown-trial probes
+        result: PASS
+  - id: R-3
+    responsibility: Exercise the trial on a real design decision
+    capability: using-sensemaking
+    status: completed
+    reason: "The trial asked whether a list command was needed for discovery. The predecision decision was committed before the result; exact-ID show was sufficient, the result was CONFIRMED, and no list was built."
+    artifact_refs: [.sensemaking/knowledge/method-trial-discovery-surface.json, .sensemaking/knowledge/method-trial-discovery-surface-result.json, docs/normal-use/2026-11-24-method-trial-capability.md]
+    validation:
+      - command: Committed trial decision and result shown with the real CLI
+        result: PASS
+  - id: R-4
+    responsibility: Verify the workflow and hosted surface
+    capability: ordinary_coding
+    status: completed
+    reason: "Added a hosted open-contract check and a retained-trial show check; validated proposal shape, duplicate closure, YAML, ruff, compileall and docs currentness."
+    artifact_refs: [.github/workflows/semantic-context-reentry.yml, docs/semantic-architecture/persistent-knowledge-cli.md]
+    validation:
+      - command: Hosted check added; local source/CLI checks pass; hosted CI not run
+        result: NOT_RUN
+  - id: R-5
+    responsibility: Preserve the evidence ceiling
+    capability: using-sensemaking
+    status: completed
+    reason: "The first trial is a same-agent design decision about the trial's own discovery surface. It demonstrates the predecision/outcome machinery but not independent use or method effect."
+    artifact_refs: [docs/normal-use/2026-11-24-method-trial-capability.md]
+    validation:
+      - command: Review of trial pair, duplicate-close behavior and claim ceiling
+        result: PASS
+findings:
+  - id: F-1
+    statement: "Method context and method record existed, but no durable predecision/outcome pair distinguished a committed method and expected observation from a later result."
+    epistemic_status: OBSERVED
+    evidence_refs: [src/sensemaking_skills/method_adaptation.py, docs/normal-use/2026-11-21-method-context-applicability.md]
+    disposition: resolved
+  - id: F-2
+    statement: "The trial workflow records an OPEN decision, appends a linked closing observation, rejects duplicate closure and shows both without claiming method effect."
+    epistemic_status: OBSERVED
+    evidence_refs: [src/sensemaking_skills/method_trial.py, docs/semantic-architecture/persistent-knowledge-cli.md]
+    disposition: resolved
+  - id: F-3
+    statement: "The first trial concerned whether a list command was needed; exact-ID show was sufficient, the CONFIRMED result was recorded, and no list was built."
+    epistemic_status: OBSERVED
+    evidence_refs: [.sensemaking/knowledge/method-trial-discovery-surface.json, .sensemaking/knowledge/method-trial-discovery-surface-result.json]
+    disposition: no_action
+  - id: F-4
+    statement: "The trial's first use is self-referential and same-agent. Independent later-agent use, method effect, decision benefit and comparative benefit are not established."
+    epistemic_status: DERIVED
+    evidence_refs: [docs/normal-use/2026-11-24-method-trial-capability.md]
+    disposition: handed_off
+open_questions:
+  - id: Q-1
+    question: "Will an independent later agent open a trial before a consequential method choice, close it with observed evidence, and record whether the predecision commitment changed or confirmed its approach?"
+    source: empirical
+    blocking: false
+    durable_ref: null
+stop:
+  disposition: NO_FURTHER_WARRANT
+  reason: "The predecision/outcome support is functional and exercised once. No further producer, selector or mandatory stage is warranted without an independent later-agent trial."
+next:
+  warranted_responsibility: "An independent later-agent trial on a real consequential method choice with an observable expected result; no more trial producers or mandatory reflection stages."
+  blocked_on: ["Q-1"]
+persistence: committed
+claim_ceiling: "One implemented predecision/outcome workflow and one self-referential design trial. No independent later-agent use, method effect, decision benefit or comparative benefit is established. #872/#874 remain separate."
+action_authorized_by_receipt: false
+immutable: true

@@ -1,0 +1,12 @@
+{
+  "trial_id": "discovery-surface",
+  "actor": "Sensemaking construction agent",
+  "source_revision": "67b3db447eaa5b336e17ed12ed85bb2ae767fad1",
+  "observed_outcome": "The open proposal output named the trial decision id and path. The committed decision was shown by exact id through the explain-backed show consumer; no list command was needed to find or inspect the trial. The trial is being closed through the appended result record.",
+  "disposition": "CONFIRMED",
+  "evidence_refs": [
+    "file:src/sensemaking_skills/method_trial.py",
+    "file:skills/using-sensemaking/references/method-trial-v1.md"
+  ],
+  "claim_ceiling": "Same-agent design review of the trial's discovery surface; it does not establish independent use, method effect or comparative benefit."
+}

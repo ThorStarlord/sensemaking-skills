@@ -322,7 +322,10 @@ same method section can be requested alongside `product-outline` with
 `--method-question "<current decision>"` when comparing proposed futures. Its
 `applicability_to_present_task` is `NOT_ESTABLISHED`; inspect the original
 sources, current authority and contrary evidence before applying, adapting or
-rejecting a candidate. A miss is `NOT_ASSESSED`. This is not a mandatory
+rejecting a candidate. Where the method choice has an observable expected
+result, the optional `semantic method trial` workflow can preserve the
+predecision commitment and a later result; it does not select the method or
+prove causation. See `references/method-trial-v1.md`. A miss is `NOT_ASSESSED`. This is not a mandatory
 lookup, a method ranking or a selection mechanism.
 
 **Consequence-informed reconsideration.** When revisiting an earlier option or
@@ -753,6 +756,7 @@ already stated above, so skipping a file never loses the rule.
 | `references/decision-review-v1.md` | reconsidering an earlier architecture option or provisional preference in light of consequences and method evidence | a narrow task or a first-time choice with no prior option | review evidence != automatic preference change or promotion; historical/current assessments stay distinct |
 | `references/possibility-synthesis-v1.md` | a goal-family ecology yields a genuinely new recombination or gap the agent decides to retain | routine retrieval or restating an existing candidate | synthesis support != automatic generation, validation, selection or authorization |
 | `references/assumption-aware-prospective-reasoning-v1.md` | a consequential possibility or construction choice may be bounded by unexamined assumptions | a narrow task or a decision whose assumptions are already stable | assumption visible != true; scenario contrast != selection or ranking |
+| `references/method-trial-v1.md` | a consequential method choice has an observable expected result and a predecision commitment would preserve accountability | trivial or already-fixed work | predecision commitment != causal proof; trial != qualification |
 | `references/session-receipt-v1.md` | every session using this Skill | never; follow the contract when a receipt can be written | receipt != authority |
 | `references/delegated-goal-patterns.md` | a delegated mission's scope, authority or stop is material | a bounded task | desired delegation != granted authority |
 | `references/experiment-economy-v1.md` | an experiment or isolation is actually under consideration | reversible construction can answer it | uncertainty != experiment |
