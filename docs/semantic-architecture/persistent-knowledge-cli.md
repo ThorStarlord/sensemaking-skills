@@ -1812,3 +1812,23 @@ group. A partially staged file belongs to both the staged and unstaged groups;
 its first listed group wins the slot. This ordering is a context-budget
 policy, not a claim that untracked files are unimportant, and
 `omitted_path_sample` reports what the budget excluded.
+
+## Refactor rename preview (patch-only)
+
+`sensemaking-skills semantic refactor-rename --repo . --path FILE --symbol OLD
+--to NEW [--patch-out FILE] [--json]` reads one committed revision and computes
+a unified patch for renaming one tracked top-level Python function or class. It
+rewrites the definition, direct `from module import OLD` imports, unaliased
+name loads, module-alias attribute loads and literal `__all__` entries. The
+patch is applied in a disposable checkout, every changed file must parse, the
+AST delta must contain only the intended identifier/string changes, and a
+rescan must find no direct old-name references.
+
+The command is patch-only: it never edits the active checkout. It fails closed
+on ambiguous definitions, star imports, rebinding, new-name collisions, dynamic
+`getattr`/import sites and exact string constants in related Python files.
+`READY` means the generated patch passed those mechanics; it does not establish
+runtime behavior, test coverage, API compatibility, generated-code safety,
+re-export completeness or repository-wide renaming. `not_rewritten` separately
+lists non-module attribute mentions and non-Python file mentions that were not
+modified.

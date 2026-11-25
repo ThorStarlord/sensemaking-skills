@@ -113,6 +113,16 @@ and a source-level `symbol_behavior_comparison` (signature, decorators,
 docstring hash, direct raises/asserts, source-body hash). This does not infer
 semantic behavior, coverage or impact.
 
+When a rename is the change, `sensemaking-skills semantic refactor-rename
+--repo . --path FILE --symbol OLD --to NEW [--patch-out FILE]` previews a
+fail-closed unified patch for one tracked top-level Python function or class.
+It rewrites direct imports, unaliased name references, module-alias attributes
+and literal `__all__` entries, applies the patch in a disposable checkout,
+checks that the AST delta is identifiers only and reports unresolved dynamic
+sites. A `READY` result is not runtime correctness, test coverage, API
+compatibility or complete repository-wide renaming; star imports, rebinding,
+dynamic strings/calls and name collisions block the patch.
+
 For changes **still being edited** in the checkout, add `--include-worktree`
 with `--ref HEAD` (or an exact revision equal to the checkout's HEAD).
 For example:

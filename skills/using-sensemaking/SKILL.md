@@ -335,6 +335,14 @@ definition hash) and guard-derived verification scenario candidates. Scenario
 hints are not executable tests or coverage. It reads an exact
 committed revision and is syntactic only: importers are not runtime callers,
 test candidates are not coverage, and absent entries are `NOT_ASSESSED`. See
+When the change is a rename, `semantic refactor-rename --repo . --path <file>
+--symbol <old> --to <new> [--patch-out <file>]` previews a verified unified
+patch for one top-level function or class: direct imports, unaliased name
+references, module-alias attributes and literal `__all__` entries are rewritten
+and the patch is applied in a disposable checkout. It fails closed on star
+imports, rebinding, dynamic strings/calls and name collisions; `READY` is not
+runtime completeness.
+
 `references/change-context-v1.md`. This is not a mandatory pre-edit stage or a
 change authorization.
 

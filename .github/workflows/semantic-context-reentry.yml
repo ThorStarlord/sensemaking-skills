@@ -1559,6 +1559,65 @@ jobs:
             exit 1
           fi
 
+      - name: Preview a fail-closed rename patch (mechanics only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          REF="$(git rev-parse HEAD)"
+          sensemaking-skills semantic refactor-rename \
+            --repo . --ref "$REF" \
+            --path src/sensemaking_skills/semantic_architecture/verification_scenarios.py \
+            --symbol build_guard_scenarios \
+            --to build_guard_scenario_candidates \
+            --patch-out "$RUNNER_TEMP/rename.patch" --json \
+            > "$RUNNER_TEMP/refactor-ready.json"
+          sensemaking-skills semantic refactor-rename \
+            --repo . --ref "$REF" \
+            --path src/sensemaking_skills/semantic_architecture/verification_scenarios.py \
+            --symbol build_guard_scenarios \
+            --to build_source_relationships --json \
+            > "$RUNNER_TEMP/refactor-blocked.json"
+          python - <<'PY'
+          import json
+          import os
+          def load(name):
+              path = os.path.join(os.environ["RUNNER_TEMP"], name)
+              with open(path, encoding="utf-8") as stream:
+                  return json.load(stream)
+          ready = load("refactor-ready.json")
+          assert ready["artifact"] == "refactor_rename_preview"
+          assert ready["status"] == "READY"
+          assert ready["coverage_status"].startswith("COMPLETE_FOR_DIRECT_PYTHON_REFERENCES")
+          assert ready["counts"]["edits"] >= 3
+          assert ready["counts"]["unresolved_sites"] == 0
+          assert ready["unresolved_sites"] == []
+          assert ready["application"]["git_apply_check"] == "PASS"
+          assert ready["application"]["applied_in_temporary_checkout"] is True
+          assert ready["application"]["files_parse"] == "PASS"
+          assert ready["application"]["ast_delta"] == "IDENTIFIERS_ONLY"
+          assert ready["application"]["old_reference_residue"] == 0
+          assert ready["patch"].startswith("diff --git ")
+          assert ready["patch_out"].endswith("rename.patch")
+          with open(os.path.join(os.environ["RUNNER_TEMP"], "rename.patch"), encoding="utf-8") as stream:
+              assert stream.readline().startswith("diff --git ")
+          blocked = load("refactor-blocked.json")
+          assert blocked["status"] == "BLOCKED"
+          assert blocked["patch"] is None
+          assert blocked["proposed_patch"]
+          assert any(
+              site["reason"] == "NEW_NAME_ALREADY_BOUND"
+              for site in blocked["unresolved_sites"]
+          )
+          print("Refactor rename previews a verified patch and fails closed on a name collision.")
+          PY
+          if sensemaking-skills semantic refactor-rename \
+            --repo . --ref "$REF" --path README.md \
+            --symbol build_guard_scenarios --to renamed_symbol --json \
+            > /dev/null 2>&1; then
+            echo "non-Python refactor target unexpectedly accepted"
+            exit 1
+          fi
+
       - name: Compare committed Python source relationships in review context (mechanics only)
         shell: bash
         run: |
