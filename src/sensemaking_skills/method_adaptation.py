@@ -129,7 +129,7 @@ def method_context(
                 continue
             subject = relation.get("subject")
             source = indexed.get(subject)
-            if subject in seen or not source:
+            if not source:
                 continue
             kind = source.get("kind")
             conceptual = (relation.get("attributes") or {}).get("conceptual_relation")
@@ -138,6 +138,19 @@ def method_context(
             elif kind == "observation" and conceptual == "trial_result_for":
                 pass
             else:
+                continue
+            if subject in seen:
+                for item in history:
+                    if item.get("id") != subject:
+                        continue
+                    if not item.get("conceptual_relation"):
+                        item["conceptual_relation"] = (
+                            conceptual if isinstance(conceptual, str)
+                            else "NOT_RECORDED"
+                        )
+                    if not item.get("relation"):
+                        item["relation"] = relation.get("id")
+                    break
                 continue
             scope = (relation.get("attributes") or {}).get("scope")
             history.append({
