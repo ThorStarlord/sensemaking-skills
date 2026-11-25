@@ -1566,9 +1566,9 @@ jobs:
           REF="$(git rev-parse HEAD)"
           sensemaking-skills semantic refactor-rename \
             --repo . --ref "$REF" \
-            --path src/sensemaking_skills/semantic_architecture/verification_scenarios.py \
-            --symbol build_guard_scenarios \
-            --to build_guard_scenario_candidates \
+            --path src/sensemaking_skills/semantic_architecture/source_relationships.py \
+            --symbol _import_from_base \
+            --to _resolve_import_from_base \
             --patch-out "$RUNNER_TEMP/rename.patch" --json \
             > "$RUNNER_TEMP/refactor-ready.json"
           sensemaking-skills semantic refactor-rename \
@@ -1612,7 +1612,7 @@ jobs:
           PY
           if sensemaking-skills semantic refactor-rename \
             --repo . --ref "$REF" --path README.md \
-            --symbol build_guard_scenarios --to renamed_symbol --json \
+            --symbol _import_from_base --to renamed_symbol --json \
             > /dev/null 2>&1; then
             echo "non-Python refactor target unexpectedly accepted"
             exit 1

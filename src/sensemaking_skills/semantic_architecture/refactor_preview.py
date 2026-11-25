@@ -193,7 +193,9 @@ def _dynamic_all(tree: ast.AST) -> int | None:
     return None
 
 
-def _dynamic_references(tree: ast.AST, symbol: str, target_module: str) -> list[tuple[int, str, str]]:
+def _dynamic_references(
+    tree: ast.AST, symbol: str, target_module: str, module_aliases: set[str],
+) -> list[tuple[int, str, str]]:
     """Return call sites that could reference the symbol dynamically."""
 
     found: list[tuple[int, str, str]] = []
@@ -204,8 +206,12 @@ def _dynamic_references(tree: ast.AST, symbol: str, target_module: str) -> list[
                 attribute = node.args[1]
                 if isinstance(attribute, ast.Constant) and attribute.value == symbol:
                     found.append((node.lineno, "DYNAMIC_ATTRIBUTE", f"{name}(..., {symbol!r})"))
-                elif not isinstance(attribute, ast.Constant):
-                    found.append((node.lineno, "DYNAMIC_ATTRIBUTE", f"{name}(..., <computed>)"))
+                elif (
+                    not isinstance(attribute, ast.Constant)
+                    and isinstance(node.args[0], ast.Name)
+                    and node.args[0].id in module_aliases
+                ):
+                    found.append((node.lineno, "DYNAMIC_ATTRIBUTE", f"{name}(module_alias, <computed>)"))
             if name == "__import__" or name.endswith(".import_module"):
                 if node.args and isinstance(node.args[0], ast.Constant) and isinstance(node.args[0].value, str):
                     imported = node.args[0].value
@@ -437,7 +443,7 @@ def _plan_file(
         ):
             flag(node.lineno, "STRING_CONSTANT", "exact symbol string may be a dynamic reference")
 
-    for line, reason, detail in _dynamic_references(tree, symbol, target_module):
+    for line, reason, detail in _dynamic_references(tree, symbol, target_module, module_aliases):
         flag(line, reason, detail)
 
     if not is_target:
