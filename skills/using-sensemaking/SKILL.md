@@ -329,9 +329,10 @@ cross-cutting Python file, the optional `semantic workspace-query --operation
 context-for <path> --include-source-relationships --json` adds committed Python
 importers, test references and top-level symbols beside the authored ownership,
 rules, decisions and verification. Add `--symbol <name>` for direct references,
-test functions that mention one top-level symbol and a source-level behavioral
+test functions that mention one top-level symbol, a source-level behavioral
 surface (signature, decorators, docstring summary, direct raises/asserts and
-definition hash). It reads an exact
+definition hash) and guard-derived verification scenario candidates. Scenario
+hints are not executable tests or coverage. It reads an exact
 committed revision and is syntactic only: importers are not runtime callers,
 test candidates are not coverage, and absent entries are `NOT_ASSESSED`. See
 `references/change-context-v1.md`. This is not a mandatory pre-edit stage or a

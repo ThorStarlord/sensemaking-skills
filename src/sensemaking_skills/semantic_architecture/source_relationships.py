@@ -2,8 +2,10 @@
 
 This module answers a bounded pre-change question: which tracked Python files
 import the target, which tests reference it, what public symbols does it
-define, and which repository files does it import? It reads a clean temporary
-checkout of one exact Git revision and parses bytes with ``ast``.
+define, and which repository files does it import? A selected symbol can also
+carry a behavioral surface and direct guard-derived verification scenarios. It
+reads a clean temporary checkout of one exact Git revision and parses bytes
+with ``ast``.
 
 It does not establish runtime dependency, call order, test coverage, semantic
 impact or change authorization. Dynamic imports, reflection, non-Python
