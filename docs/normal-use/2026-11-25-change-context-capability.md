@@ -1,8 +1,10 @@
 # Pre-change source context (2026-11-25)
 
-**Status:** product-capability increment and one authentic use.
+**Status:** product-capability increment, one authentic use and one
+fresh-consumer revision.
 **Source baseline:** `f780bfad2bc542fcba438b320b12ef8cb5b448c7`.
 **Implementation:** `bf29c4753ce7f9cea175a0266a538aaa93c2bbf6`.
+**Fresh-consumer revision:** `e3f0986ea47473a734c9569fbee9aa6277c15f32`.
 
 The capability adds committed Python source relationships to the existing
 `context-for` path consumer. It does not establish runtime dependency, test
@@ -109,7 +111,7 @@ No intrinsic cognitive improvement or comparative benefit is claimed.
 | Level | Status |
 | --- | --- |
 | Exact-revision source relationships | Observed through the real CLI |
-| Direct importer and public-surface extraction | Observed on three real modules |
+| Direct importer and top-level-surface extraction | Observed on four real modules |
 | Clean-commit byte identity | Observed through the temporary checkout and SHA-256 |
 | Parse-failure and truncation disclosure | Observed with a one-item limit |
 | Test reference detection | Observed as syntax/path mention only; empty means NOT_ASSESSED |
@@ -118,7 +120,52 @@ No intrinsic cognitive improvement or comparative benefit is claimed.
 | Change safety or impact verdict | NOT ESTABLISHED |
 | Independent later-agent reuse or better decisions | NOT ESTABLISHED |
 
-## 6. Continuation
+## 6. Fresh-consumer revision
+
+A separate fresh-context consumer was asked to evaluate the capability on an
+unfamiliar module without a predetermined favorable result. It chose
+`src/sensemaking_skills/semantic_architecture/knowledge_sources.py`.
+
+The authored context already gave a strong architectural picture: ownership,
+three rules, three constraints, three decisions, history and verification
+references. The source section added six direct importers, eight test
+references, seventeen top-level symbols and exact revision identity. An
+independent AST scan reproduced the same importer and test sets, with no false
+positives or missed importers for that module.
+
+The consumer also found material ambiguity:
+
+- `public: true` could be read as exported or stable API, although the authored
+  rule only promises `__all__` names.
+- Four leading-underscore helpers were imported across modules; `public: false`
+  could be read as safe-to-rename.
+- Test references are file-level, not symbol-level coverage.
+- An importer line is the first match; other matching lines exist only in
+  `evidence_refs`.
+- `resolved_path: null` did not distinguish external from unresolved tracked
+  imports.
+- Re-exports through a package `__init__.py` are not resolved to the defining
+  module.
+- A target syntax error aborted the whole query, losing the authored context.
+
+The bounded revision:
+
+- replaced `public` with `leading_underscore` and `in_module_all` (a literal
+  module `__all__` marker, `null` when absent/dynamic);
+- added `leading_underscore_imports` with importer, line and test/non-test
+  marker;
+- added `direct_imports[].resolution` (`TRACKED` / `EXTERNAL_OR_UNRESOLVED`);
+- added `test_reference_scope: FILE_LEVEL`;
+- degraded a target parse error to `target_parse_error` plus `PARTIAL` coverage,
+  preserving authored context;
+- documented the re-export blind spot and first-match line behavior.
+
+The fresh consumer would expand verification for a change to
+`build_knowledge_snapshot` or the leading-underscore helpers. That is
+decision-relevant use, but it remains a same-session fresh context, not
+independent longitudinal qualification.
+
+## 7. Continuation
 
 The next warranted use is an independent agent applying the consumer to an
 unfamiliar subsystem before a real change, then recording whether the
