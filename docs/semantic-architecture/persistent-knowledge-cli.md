@@ -1307,8 +1307,10 @@ The opt-in `source_relationships` section reads a clean temporary checkout of
 the selected revision and adds direct imports, direct importers, test
 references, top-level symbols, leading-underscore cross-module imports, parse
 failures and a coverage status. Add `--symbol NAME` for one top-level function
-or class to receive direct syntactic references and test functions/methods that
-mention it. If the target cannot be parsed, the authored context and
+or class to receive direct syntactic references, test functions/methods that
+mention it and a source-level behavioral surface (signature, decorators,
+docstring summary/hash, direct raises/asserts and definition hash). If the
+target cannot be parsed, the authored context and
 file-level importer evidence remain available with `PARTIAL` coverage,
 `target_parse_error` and `symbol_context: null`; the symbol is not assessed.
 Symbol-list truncation also marks the enclosing source relationship and
