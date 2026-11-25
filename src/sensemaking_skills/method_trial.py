@@ -9,6 +9,7 @@ caused the result or that either record is correct.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 from datetime import date
@@ -35,6 +36,20 @@ _MAX_REFS = 20
 
 def _tracked_paths(root: Path) -> set[str]:
     return set(filter(None, _git(root, "ls-files", "-z").split(chr(0))))
+
+
+def _trial_digest(attributes: Mapping[str, Any]) -> str:
+    payload = {
+        key: attributes.get(key)
+        for key in (
+            "trial_id", "question", "method", "assumptions",
+            "expected_observation", "prior_lesson_id", "source_revision",
+        )
+    }
+    encoded = json.dumps(
+        payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+    )
+    return hashlib.sha256(encoded.encode("utf-8")).hexdigest()
 
 
 def _date(value: str, field: str) -> str:
@@ -155,6 +170,11 @@ def open_method_trial(
         if path not in tracked:
             raise ValueError(f"evidence file is not staged or committed: {path}")
 
+    source_paths = set(_git(
+        root, "ls-tree", "-r", "-z", "--name-only", source_revision, "--"
+    ).split(chr(0)))
+    missing_at_source = sorted(path for path in refs if path not in source_paths)
+
     decision_id = "decision:method-trial-" + trial_id
     known = _known_claim_ids(root, tracked)
     if decision_id in known or decision_id in reviewed:
@@ -166,6 +186,22 @@ def open_method_trial(
         " Expected observation: " + expected
     )
 
+    trial_attributes = {
+        "trial_id": trial_id,
+        "trial_status": "OPEN",
+        "question": question,
+        "method": method,
+        "assumptions": assumptions,
+        "expected_observation": expected,
+        "prior_lesson_id": prior or "NONE",
+        "actor": actor,
+        "source_revision": source_revision,
+        "opened_date": origin_date,
+        "claim_ceiling": ceiling,
+        "evidence_paths_not_in_source_revision": missing_at_source,
+    }
+    trial_attributes["trial_digest"] = _trial_digest(trial_attributes)
+
     decision = {
         "id": decision_id,
         "kind": "decision",
@@ -174,19 +210,7 @@ def open_method_trial(
         "authority_ref": episode_relative,
         "evidence_refs": references,
         "epistemic_status": "declared",
-        "attributes": {
-            "trial_id": trial_id,
-            "trial_status": "OPEN",
-            "question": question,
-            "method": method,
-            "assumptions": assumptions,
-            "expected_observation": expected,
-            "prior_lesson_id": prior or "NONE",
-            "actor": actor,
-            "source_revision": source_revision,
-            "opened_date": origin_date,
-            "claim_ceiling": ceiling,
-        },
+        "attributes": trial_attributes,
     }
     relations = []
     if prior:
@@ -220,6 +244,8 @@ def open_method_trial(
         "review_state": "UNREVIEWED_DRAFT",
         "prior_lesson_id": prior or "NONE",
         "source_revision": source_revision,
+        "trial_digest": trial_attributes["trial_digest"],
+        "evidence_paths_not_in_source_revision": missing_at_source,
         "method_effect_established": False,
         "semantic_truth_established": False,
         "action_authorized": False,
