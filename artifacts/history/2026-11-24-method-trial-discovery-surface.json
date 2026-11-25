@@ -1,0 +1,16 @@
+{
+  "trial_id": "discovery-surface",
+  "actor": "Sensemaking construction agent",
+  "source_revision": "8018f07c7792148bbfc3b77df38576327e4f7d41",
+  "origin_date": "2026-11-24",
+  "question": "Should the method-trial capability add a list command, or is exact-ID show sufficient?",
+  "method": "Prefer the smallest consumer surface: use exact-ID show and the open proposal plus commit as the discovery path; add a list only if a real discovery failure is observed.",
+  "assumptions": "The open proposal output names the trial decision id and path; a reviewer can commit it and show it by exact id; no list is needed for the bounded capability.",
+  "expected_observation": "The trial can be opened, committed, shown by exact id, and closed; no missing discovery path is observed; no list command is warranted.",
+  "evidence_refs": [
+    "file:src/sensemaking_skills/method_trial.py",
+    "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+    "file:skills/using-sensemaking/references/method-trial-v1.md"
+  ],
+  "claim_ceiling": "This trial records a design decision about the trial's own discovery surface; it is not independent use or method-effect evidence."
+}

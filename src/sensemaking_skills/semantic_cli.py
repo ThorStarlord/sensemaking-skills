@@ -1099,6 +1099,82 @@ def register_semantic_commands(root_cli: click.Group) -> None:
             raise click.ClickException(str(exc)) from exc
         _emit(payload, output_json=output_json)
 
+    @semantic_method.group(name="trial")
+    def semantic_method_trial() -> None:
+        """Optional predecision method trials with later observed results."""
+
+    @semantic_method_trial.command(name="open")
+    @click.option("--repo", "repo_dir", default=Path("."),
+                  type=click.Path(exists=True, file_okay=False, path_type=Path))
+    @click.option("--episode", "episode_path", required=True,
+                  help="Tracked predecision trial episode JSON authored by the active agent")
+    @click.option("--output", "output_path", required=True,
+                  help="New exclusive .sensemaking/knowledge/*.json proposal; never overwrites")
+    @click.option("--json", "output_json", is_flag=True)
+    def semantic_method_trial_open(
+        repo_dir: Path, episode_path: str, output_path: str, output_json: bool,
+    ) -> None:
+        """Materialize an OPEN trial decision before the work; never select a method."""
+        from .method_trial import open_method_trial
+
+        try:
+            payload = open_method_trial(repo_dir, episode_path, output_path)
+        except (ValueError, OSError, UnicodeError, KeyError, TypeError) as exc:
+            raise click.ClickException(str(exc)) from exc
+        _emit(payload, output_json=output_json)
+
+    @semantic_method_trial.command(name="close")
+    @click.option("--repo", "repo_dir", default=Path("."),
+                  type=click.Path(exists=True, file_okay=False, path_type=Path))
+    @click.option("--episode", "episode_path", required=True,
+                  help="Tracked observed-result episode JSON authored by the active agent")
+    @click.option("--output", "output_path", required=True,
+                  help="New exclusive .sensemaking/knowledge/*.json proposal; never overwrites")
+    @click.option("--json", "output_json", is_flag=True)
+    def semantic_method_trial_close(
+        repo_dir: Path, episode_path: str, output_path: str, output_json: bool,
+    ) -> None:
+        """Append an observed result to a committed, open trial; never infer effectiveness."""
+        from .method_trial import close_method_trial
+
+        try:
+            payload = close_method_trial(repo_dir, episode_path, output_path)
+        except (ValueError, OSError, UnicodeError, KeyError, TypeError) as exc:
+            raise click.ClickException(str(exc)) from exc
+        _emit(payload, output_json=output_json)
+
+    @semantic_method_trial.command(name="show")
+    @click.option("--repo", "repo_dir", default=Path("."),
+                  type=click.Path(exists=True, file_okay=False, path_type=Path))
+    @click.option("--ref", required=True,
+                  help="Exact committed revision whose derived index supplies the trial")
+    @click.option("--trial", "trial_id", required=True,
+                  help="Exact method-trial decision claim id")
+    @click.option("--json", "output_json", is_flag=True)
+    def semantic_method_trial_show(
+        repo_dir: Path, ref: str, trial_id: str, output_json: bool,
+    ) -> None:
+        """Show the predecision commitment and its optional observed result."""
+        from .method_trial import build_method_trial_view
+        from .workspace_knowledge import run_workspace_query
+
+        try:
+            payload = run_workspace_query(
+                repo=repo_dir, ref=ref, operation="explain", subject=trial_id
+            )
+            view = build_method_trial_view(
+                trial_id, payload.get("claims", []), payload.get("relations", [])
+            )
+        except (ValueError, OSError, UnicodeError, KeyError, TypeError) as exc:
+            raise click.ClickException(str(exc)) from exc
+        view.update({
+            "repository": payload.get("repository"),
+            "target_ref": payload.get("target_ref"),
+            "workspace_context": payload.get("workspace_context", {}),
+            "workspace_index": payload.get("workspace_index", {}),
+        })
+        _emit(view, output_json=output_json)
+
     @semantic_group.group(name="decision")
     def semantic_decision() -> None:
         """Optional consequence-informed decision reviews over architecture options."""

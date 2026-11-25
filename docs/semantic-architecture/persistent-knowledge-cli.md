@@ -687,6 +687,44 @@ Each visible goal/non-goal carries its statement, source reference and
 authority/epistemic labels. Each linked record carries its actual declared
 relation ID and claim kind; an opportunity is **not** a shipped capability.
 
+### Method trial (`method trial`)
+
+When a method choice has an observable expected result, an optional trial
+preserves the predecision commitment and the later result using existing
+`decision` and `observation` claims:
+
+```bash
+sensemaking-skills semantic method trial open --repo . \
+  --episode artifacts/history/<trial>.json \
+  --output .sensemaking/knowledge/method-trial-<id>.json --json
+
+sensemaking-skills semantic method trial close --repo . \
+  --episode artifacts/history/<trial>-result.json \
+  --output .sensemaking/knowledge/method-trial-<id>-result.json --json
+
+sensemaking-skills semantic method trial show --repo . --ref HEAD \
+  --trial decision:method-trial-<id> --json
+```
+
+The open episode requires a slug, actor, exact source revision, date, method
+question, selected method, assumptions, an observable expected result, tracked
+evidence and a claim ceiling. It may name a reviewed `prior_lesson_id`; the
+producer links the trial decision to that lesson. The decision is committed
+before the work and carries `trial_status: OPEN`.
+
+The close episode requires the same trial slug, a later exact source revision,
+the observed outcome, a disposition (`CONFIRMED`, `ADAPTED`, `REJECTED`,
+`NO_CHANGE` or `INCONCLUSIVE`), tracked evidence and a claim ceiling. It
+appends a separate `observation` linked by `closes_trial`; it does not rewrite
+the predecision decision. A duplicate result identifier is rejected.
+
+`show` reconstructs the predecision method, assumptions, expected observation
+and lesson beside the later result. `predecision_commitment_preserved` is true
+when the pair is reconstructible; `method_effect_established` remains false.
+The disposition is agent-authored and does not prove that the method caused
+the outcome. A trial is not a ranking, method selector, mandatory stage or
+independent qualification.
+
 ### Possibility ecology (`possibility-ecology`)
 
 Goal-level direct candidates remain a flat list. For prospective reasoning
