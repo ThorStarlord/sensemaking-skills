@@ -112,6 +112,17 @@ def _is_ancestor(root: Path, ancestor: str, descendant: str) -> bool:
         return False
 
 
+def _ancestry_status(root: Path, ancestor: str, descendant: str) -> str:
+    """Return ANCESTOR, NOT_ANCESTOR or UNAVAILABLE for two commits."""
+
+    for revision in (ancestor, descendant):
+        try:
+            _git(root, "cat-file", "-e", f"{revision}^{{commit}}")
+        except ValueError:
+            return "UNAVAILABLE"
+    return "ANCESTOR" if _is_ancestor(root, ancestor, descendant) else "NOT_ANCESTOR"
+
+
 def _lesson_at(
     claims: Mapping[str, Mapping[str, Any]], lesson_id: str
 ) -> Mapping[str, Any]:
@@ -435,11 +446,11 @@ def close_method_trial(
         "next": "Review and commit the result; the trial decision remains the predecision record.",
     }
 
-def trial_ancestry(repo: Path) -> Callable[[str, str], bool]:
-    """Return a local Git ancestry predicate for one repository."""
+def trial_ancestry(repo: Path) -> Callable[[str, str], str]:
+    """Return a local Git ancestry status function for one repository."""
 
     root = Path(_git(repo, "rev-parse", "--show-toplevel")).resolve()
-    return lambda ancestor, descendant: _is_ancestor(root, ancestor, descendant)
+    return lambda ancestor, descendant: _ancestry_status(root, ancestor, descendant)
 
 
 def build_method_trial_view(
@@ -447,7 +458,7 @@ def build_method_trial_view(
     claims: list[Mapping[str, Any]],
     relations: list[Mapping[str, Any]],
     *,
-    ancestry: Callable[[str, str], bool] | None = None,
+    ancestry: Callable[[str, str], str] | None = None,
 ) -> dict[str, Any]:
     """Project a trial decision and its optional closing observation.
 
@@ -514,10 +525,16 @@ def build_method_trial_view(
                 and _COMMIT.fullmatch(str(result_revision or ""))):
             if decision_commit == result_revision:
                 chronology = "FAILED"
-            elif ancestry is not None and not ancestry(decision_commit, result_revision):
-                chronology = "FAILED"
+            elif ancestry is not None:
+                status = ancestry(decision_commit, result_revision)
+                if status == "ANCESTOR":
+                    chronology = "VERIFIED"
+                elif status == "NOT_ANCESTOR":
+                    chronology = "FAILED"
+                else:
+                    chronology = "NOT_ASSESSED"
             else:
-                chronology = "VERIFIED" if ancestry is not None else "NOT_VERIFIED"
+                chronology = "NOT_ASSESSED"
         if chronology == "FAILED":
             raise ValueError("closing result is not at a later descendant revision")
         result = {
