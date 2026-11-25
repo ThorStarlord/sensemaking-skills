@@ -1484,6 +1484,11 @@ jobs:
             src/sensemaking_skills/semantic_architecture/knowledge_sources.py \
             --include-source-relationships --symbol temporary_commit_checkout --json \
             > "$RUNNER_TEMP/change-context-symbol-empty.json"
+          sensemaking-skills semantic workspace-query \
+            --repo . --ref "$REF" --operation context-for \
+            src/sensemaking_skills/semantic_architecture/source_relationships.py \
+            --include-source-relationships --symbol build_source_relationships --json \
+            > "$RUNNER_TEMP/change-context-scenarios.json"
           python - <<'PY'
           import json
           import os
@@ -1524,8 +1529,35 @@ jobs:
           assert empty["defined_in_target"] is True
           assert empty["direct_references"]
           assert empty["test_candidates"] == []
-          print("Committed source relationships expose importers, top-level symbols, hidden cross-module names, direct references and test candidates.")
+          scenario_side = load("change-context-scenarios.json")["source_relationships"]["symbol_context"]
+          scenarios = scenario_side["verification_scenarios"]
+          assert scenarios["counts"]["guards"] >= 5
+          assert scenarios["counts"]["scenarios"] == scenarios["counts"]["guards"]
+          assert scenarios["coverage_status"] == "COMPLETE_FOR_DIRECT_GUARDS"
+          conditions = {item["condition"] for item in scenarios["scenarios"]}
+          assert any("limit" in condition for condition in conditions)
+          assert any("target_path.endswith" in condition for condition in conditions)
+          assert all(item["expected"] == "ValueError" for item in scenarios["scenarios"])
+          hints = {hint for item in scenarios["scenarios"] for hint in item["suggested_inputs"]}
+          assert {"limit=0", "limit=251"} <= hints
+          assert all(item["evidence_ref"].endswith("source_relationships.py:" + str(item["line"])) for item in scenarios["scenarios"])
+          print("Committed source relationships expose importers, symbols, direct references, guard scenarios and explicit limits.")
           PY
+          if sensemaking-skills semantic workspace-query \
+            --repo . --ref "$REF" --operation context-for README.md \
+            --include-source-relationships --symbol build_source_relationships --json \
+            > /dev/null 2>&1; then
+            echo "non-Python source-context target unexpectedly accepted"
+            exit 1
+          fi
+          if sensemaking-skills semantic workspace-query \
+            --repo . --ref "$REF" --operation context-for \
+            src/sensemaking_skills/semantic_architecture/ci-untracked.py \
+            --include-source-relationships --symbol build_source_relationships --json \
+            > /dev/null 2>&1; then
+            echo "untracked source-context target unexpectedly accepted"
+            exit 1
+          fi
 
       - name: Compare committed Python source relationships in review context (mechanics only)
         shell: bash

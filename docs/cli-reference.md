@@ -86,8 +86,9 @@ when topology itself is decision-relevant.
 optionally adds committed Python AST importers, direct imports, test
 references, top-level symbols and leading-underscore cross-module imports to the authored path context; it is syntactic,
 not a runtime call graph or coverage result. Add `--symbol NAME` for direct
-references and test functions/methods that mention one top-level symbol; test
-candidates are not coverage.
+references, test functions/methods, a source-level behavior surface and
+guard-derived verification scenario candidates; test candidates are not
+coverage and scenario hints are not executable tests.
 `workspace-query --operation context-for|workspace-impact --repo .` compares
 tracked changed file names and Git's untracked entries, not every file inside a
 wholly untracked directory; `change_scope` discloses the granularity and

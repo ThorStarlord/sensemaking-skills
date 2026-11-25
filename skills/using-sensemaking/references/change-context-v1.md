@@ -94,9 +94,10 @@ When `--symbol` is provided and the target parses, `symbol_context` contains:
 | --- | --- |
 | `definitions` | Top-level definitions with that name in the target file. Each carries a `behavior` surface. |
 | `behavior` | Source-level signature, decorators, docstring summary/hash, direct raise/assert statements, exact definition source hash, line range and truncation. |
+| `verification_scenarios` | Candidate scenarios derived from direct `raise`/`assert` guards: condition, expected exception/assertion, heuristic input hints, evidence and truncation. |
 | `direct_references` | Direct syntactic name/attribute references outside test files, with path, line, kind and target-file flag. |
 | `test_candidates` | Test functions or `Test*` methods whose own body directly mentions the symbol, with reference lines. |
-| `counts` | Definitions, direct references, test candidates, parse failures and behavior truncation. |
+| `counts` | Definitions, direct references, test candidates, parse failures, behavior truncation and verification scenarios. |
 | `star_import_observed` | Whether a scanned file star-imported the target module. |
 | `test_candidate_scope` | `TEST_FUNCTION_LEVEL`. |
 | `truncated` | Whether a symbol list exceeded the limit; also propagates to the enclosing source and workspace response. |
@@ -128,9 +129,11 @@ source hash changes for any body text edit.
    `null` when there is none or it is dynamic. Neither establishes exported or
    stable API.
 5. When changing one symbol and `symbol_context` is available, inspect
-   `symbol_context.direct_references` for
-   code that must be updated and `test_candidates` for tests that directly
-   mention it. Confirm helper/fixture and re-export paths separately.
+   `symbol_context.direct_references` for code that must be updated and
+   `test_candidates` for tests that directly mention it. Read
+   `symbol_context.verification_scenarios` for direct guard conditions and
+   expected exceptions; suggested inputs are heuristic hints, not tests.
+   Confirm helper/fixture and re-export paths separately.
 6. Compare the code-level view with the authored verification and rules, then
    choose the actual verification. The view never authorizes the change.
 
@@ -153,6 +156,10 @@ source hash changes for any body text edit.
   signature, decorator, docstring, raise/assert or source-hash difference is
   not automatically a semantic behavior change, and an unchanged surface is not
   proof of unchanged runtime behavior.
+- `verification_scenarios` covers direct `raise`/`assert` guards only; helper
+  validation, decorators, nested functions, local state and runtime behavior are
+  not assessed. Suggested inputs are heuristic boundary hints, not proven
+  counterexamples or executable tests.
 - A target syntax or decoding error is reported as `target_parse_error` and
   `PARTIAL`; target-derived imports/symbols are empty, while the authored
   context remains available.
@@ -165,5 +172,6 @@ source hash changes for any body text edit.
 ## Evidence ceiling
 
 The consumer establishes that specific tracked Python files contain import
-syntax or path mentions at the selected revision. It does not establish
-runtime dependency, test coverage, change safety or improved agent decisions.
+syntax, path mentions or direct guard conditions at the selected revision. It
+does not establish runtime dependency, reachability, test coverage, test
+correctness, change safety or improved agent decisions.

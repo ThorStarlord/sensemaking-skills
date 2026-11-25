@@ -1308,8 +1308,9 @@ the selected revision and adds direct imports, direct importers, test
 references, top-level symbols, leading-underscore cross-module imports, parse
 failures and a coverage status. Add `--symbol NAME` for one top-level function
 or class to receive direct syntactic references, test functions/methods that
-mention it and a source-level behavioral surface (signature, decorators,
-docstring summary/hash, direct raises/asserts and definition hash). If the
+mention it, a source-level behavioral surface (signature, decorators,
+docstring summary/hash, direct raises/asserts and definition hash), and
+guard-derived verification scenario candidates. If the
 target cannot be parsed, the authored context and
 file-level importer evidence remain available with `PARTIAL` coverage,
 `target_parse_error` and `symbol_context: null`; the symbol is not assessed.
