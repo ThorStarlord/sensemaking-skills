@@ -1,0 +1,46 @@
+{
+  "schema_version": 2,
+  "claims": [
+    {
+      "id": "observation:method-trial-discovery-surface-result",
+      "kind": "observation",
+      "statement": "Method trial result discovery-surface: The open proposal output named the trial decision id and path. The committed decision was shown by exact id through the explain-backed show consumer; no list command was needed to find or inspect the trial. The trial is being closed through the appended result record. Disposition: CONFIRMED.",
+      "authority_kind": "delegated",
+      "authority_ref": "artifacts/history/2026-11-24-method-trial-discovery-surface-result.json",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-24-method-trial-discovery-surface-result.json",
+        "file:src/sensemaking_skills/method_trial.py",
+        "file:skills/using-sensemaking/references/method-trial-v1.md"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "trial_id": "discovery-surface",
+        "trial_decision_ref": "decision:method-trial-discovery-surface",
+        "trial_status": "CLOSED",
+        "observed_outcome": "The open proposal output named the trial decision id and path. The committed decision was shown by exact id through the explain-backed show consumer; no list command was needed to find or inspect the trial. The trial is being closed through the appended result record.",
+        "disposition": "CONFIRMED",
+        "actor": "Sensemaking construction agent",
+        "source_revision": "67b3db447eaa5b336e17ed12ed85bb2ae767fad1",
+        "claim_ceiling": "Same-agent design review of the trial's discovery surface; it does not establish independent use, method effect or comparative benefit."
+      }
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel:method-trial-discovery-surface-closed-by",
+      "subject": "observation:method-trial-discovery-surface-result",
+      "predicate": "references",
+      "object": "decision:method-trial-discovery-surface",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-24-method-trial-discovery-surface-result.json",
+        "file:src/sensemaking_skills/method_trial.py",
+        "file:skills/using-sensemaking/references/method-trial-v1.md"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "conceptual_relation": "closes_trial",
+        "establishment": "authored"
+      }
+    }
+  ]
+}
