@@ -1,0 +1,99 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-11-25-prospective-decision-rehearsal-fresh-review
+state: final
+created_at: "2026-11-25T00:00:00Z"
+updated_at: "2026-11-25T00:00:00Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: a40ec5e5ed31ceba8b45539bbffa076710cbf614
+  end_ref: c43cfb840fd710774d7bc47406cf6478d6436396
+  worktree_clean_at_end: true
+skill_identity:
+  load_mode: manual_explicit_load
+  sensemaking_source_ref: a40ec5e5ed31ceba8b45539bbffa076710cbf614
+goal:
+  statement: "Apply the prospective decision rehearsal to a fourth candidate, challenge the procedure, and revise it from fresh-context evidence."
+  source: owner_message
+  source_ref: null
+delegation:
+  granted: [read, local_write, run_local_commands, commit, push, open_pr, merge]
+  withheld: [release, deploy, tracker_write, external_publication]
+continuity:
+  resumes: 2026-11-25-prospective-decision-rehearsal
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: Apply the procedure to a different real candidate without a predetermined result
+    capability: using-sensemaking
+    status: completed
+    reason: "The reviewer selected poss:possibility-reconsideration-from-change, reconstructed a real 2026-11-05 premise-qualification episode, and compared the current decision with the candidate-induced assessment."
+    artifact_refs: [docs/normal-use/2026-11-25-prospective-decision-rehearsal.md]
+    validation:
+      - command: Fresh-context rehearsal at the then-current worktree
+        result: PASS
+  - id: R-2
+    responsibility: Distinguish a data/shape limitation from candidate rejection
+    capability: using-sensemaking
+    status: completed
+    reason: "The candidate's trigger is free-text revisit_when with no typed claim/source; workspace-changes showed supporting-source churn and no poss: change. The reviewer returned DEFER with NO_DELTA as a data/shape limitation, not a rejection."
+    artifact_refs: [docs/normal-use/2026-11-25-prospective-decision-rehearsal.md]
+    validation:
+      - command: possibility-ecology, method context and workspace-changes
+        result: PASS
+  - id: R-3
+    responsibility: Revise the procedure from the fresh-context finding
+    capability: ordinary_coding
+    status: completed
+    reason: "Added a mechanism-to-data check: run the existing consumer on a real revision pair and verify the trigger fields are populated and matchable; an unpopulated trigger yields NO_DELTA/DEFER, not a rejection."
+    artifact_refs: [skills/using-sensemaking/references/prospective-decision-rehearsal-v1.md]
+    validation:
+      - command: Updated reference and normal-use record; docs currentness
+        result: PASS
+  - id: R-4
+    responsibility: Preserve the independent-use evidence ceiling
+    capability: using-sensemaking
+    status: completed
+    reason: "The fresh-context reviewer was a separate subagent in the same session, not an independent longitudinal later agent. Its critique changed the procedure, but comparative benefit and longitudinal development remain unestablished."
+    artifact_refs: [docs/normal-use/2026-11-25-prospective-decision-rehearsal.md]
+    validation:
+      - command: Review of the fresh report against the revised procedure
+        result: PASS
+findings:
+  - id: F-1
+    statement: "The fresh reviewer found that the candidate's free-text revisit_when values could not fire from the authored data; the trigger was unrepresented."
+    epistemic_status: OBSERVED
+    evidence_refs: [docs/normal-use/2026-11-25-prospective-decision-rehearsal.md]
+    disposition: resolved
+  - id: F-2
+    statement: "The procedure was useful as a stop rule but partly ceremonial as an evidence procedure; the decisive work was reading the idea library, counting conditions, reading the episode and running workspace-changes."
+    epistemic_status: OBSERVED
+    evidence_refs: [skills/using-sensemaking/references/prospective-decision-rehearsal-v1.md]
+    disposition: resolved
+  - id: F-3
+    statement: "The mechanism-to-data check now prevents a missing trigger from being read as evidence against the candidate's value."
+    epistemic_status: DERIVED
+    evidence_refs: [skills/using-sensemaking/references/prospective-decision-rehearsal-v1.md]
+    disposition: no_action
+  - id: F-4
+    statement: "The fresh review is same-session evidence, not independent later-agent reuse or comparative benefit."
+    epistemic_status: DERIVED
+    evidence_refs: [docs/normal-use/2026-11-25-prospective-decision-rehearsal.md]
+    disposition: handed_off
+open_questions:
+  - id: Q-1
+    question: "Will a genuinely independent later agent apply the revised procedure to a candidate with a typed trigger and a real beneficiary episode, and will the result change its selection or produce a justified NO_DELTA?"
+    source: empirical
+    blocking: false
+    durable_ref: null
+stop:
+  disposition: NO_FURTHER_WARRANT
+  reason: "The fresh-context finding was incorporated and the procedure is clearer. No further locator, schema or mandatory stage is warranted without independent later use."
+next:
+  warranted_responsibility: "Independent later-agent rehearsal on a typed-trigger candidate with a real beneficiary episode; no new mechanism."
+  blocked_on: ["Q-1"]
+persistence: committed
+claim_ceiling: "One fresh-context rehearsal and one procedure revision. Later independent use, changed beneficiary outcome, comparative benefit and longitudinal development remain unestablished."
+action_authorized_by_receipt: false
+immutable: true
