@@ -24,6 +24,7 @@ from .semantic_architecture.knowledge_sources import (
 from .semantic_architecture.knowledge_store import query_context_paths, query_knowledge, store_snapshot
 from .semantic_architecture.knowledge_architecture import is_repository_file_path
 from .semantic_architecture.repository_bootstrap import orient_repository
+from .semantic_architecture.source_relationships import build_source_relationships
 from .semantic_architecture.worktree_context import changed_paths_since_indexed_ref, inspect_worktree_context
 
 OPERATIONS = (
@@ -339,6 +340,7 @@ def run_workspace_query(
     search_terms: tuple[str, ...] = (), expected_kinds: tuple[str, ...] = (),
     query_text: str | None = None, search_kinds: tuple[str, ...] = (),
     include_candidates: bool = False,
+    include_source_relationships: bool = False,
     include_js_module_imports: bool = False, max_js_imports: int = 1000,
     limit: int = 50, depth: int = 2, repository: str | None = None,
     index_dir: str | Path | None = None, refresh: bool = False,
@@ -354,6 +356,10 @@ def run_workspace_query(
         raise ValueError("--search-kind is supported only for search")
     if include_candidates and operation != "product-outline":
         raise ValueError("--include-candidates is supported only for product-outline")
+    if include_source_relationships and operation != "context-for":
+        raise ValueError(
+            "--include-source-relationships is supported only for context-for"
+        )
     if operation == "possibility-ecology" and subject is None:
         raise ValueError("possibility-ecology requires --subject <goal claim id or opportunity claim id>")
     if not 0 <= max_js_imports <= 10000:
@@ -368,6 +374,10 @@ def run_workspace_query(
         query_paths = tuple(_normalize_path(item) for item in (paths or (subject,)))
         if len(query_paths) > _MAX_PATHS:
             raise ValueError("context-for accepts 1..8 repository-relative paths")
+        if include_source_relationships and len(query_paths) != 1:
+            raise ValueError(
+                "--include-source-relationships requires exactly one context-for path"
+            )
     else:
         if paths:
             raise ValueError("positional PATHS are supported only for context-for")
@@ -423,6 +433,18 @@ def run_workspace_query(
             )
     except sqlite3.Error as exc:
         raise ValueError(f"cannot read cache file {database}: {exc}; retry with --refresh") from exc
+    if include_source_relationships:
+        source_relationships = build_source_relationships(
+            root, sha, query_paths[0], limit=limit,
+        )
+        payload["source_relationships"] = source_relationships
+        payload["explicit_limits"] = [
+            *payload.get("explicit_limits", []),
+            *source_relationships["limits"],
+        ]
+        payload["truncated"] = bool(
+            payload.get("truncated") or source_relationships["truncated"]
+        )
     payload["workspace_context"] = inspect_worktree_context(root, sha)
     payload["code"] = "SEMANTIC_KNOWLEDGE_QUERY"
     payload["workspace_index"] = {
@@ -439,6 +461,8 @@ def run_workspace_query(
     if include_js_module_imports:
         payload["workspace_index"]["observation_profile"] = "js-module-imports-v1"
         payload["workspace_index"]["max_js_imports"] = max_js_imports
+    if include_source_relationships:
+        payload["workspace_index"]["source_relationships_profile"] = "python-ast-v1"
     return payload
 
 
