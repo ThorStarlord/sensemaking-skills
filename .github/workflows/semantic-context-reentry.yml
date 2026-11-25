@@ -1578,7 +1578,7 @@ jobs:
           fixtures.append(same)
           result = cli(
               "semantic", "method", "trial", "close", "--repo", ".",
-              "--episode", str(same), "--output", ".sensemaking/knowledge/ci-trial-same.json",
+              "--episode", same.as_posix(), "--output", ".sensemaking/knowledge/ci-trial-same.json",
           )
           assert result.returncode != 0
           assert "must be later" in (result.stdout + result.stderr)
@@ -1588,7 +1588,7 @@ jobs:
           fixtures.append(older)
           result = cli(
               "semantic", "method", "trial", "close", "--repo", ".",
-              "--episode", str(older), "--output", ".sensemaking/knowledge/ci-trial-older.json",
+              "--episode", older.as_posix(), "--output", ".sensemaking/knowledge/ci-trial-older.json",
           )
           assert result.returncode != 0
           assert "must descend" in (result.stdout + result.stderr)
@@ -1599,13 +1599,13 @@ jobs:
           fixtures.append(adapted)
           result = cli(
               "semantic", "method", "trial", "close", "--repo", ".",
-              "--episode", str(adapted), "--output", ".sensemaking/knowledge/ci-trial-adapted.json",
+              "--episode", adapted.as_posix(), "--output", ".sensemaking/knowledge/ci-trial-adapted.json",
           )
           assert result.returncode != 0
           assert "method_after" in (result.stdout + result.stderr)
 
           for path in fixtures:
-              subprocess.run(["git", "reset", "-q", "--", str(path)], check=True)
+              subprocess.run(["git", "reset", "-q", "--", path.as_posix()], check=True)
               path.unlink()
           for name in (
               "ci-trial-duplicate.json",
