@@ -2,8 +2,10 @@
 
 This module answers a bounded pre-change question: which tracked Python files
 import the target, which tests reference it, what public symbols does it
-define, and which repository files does it import? It reads a clean temporary
-checkout of one exact Git revision and parses bytes with ``ast``.
+define, and which repository files does it import? A selected symbol can also
+carry a behavioral surface and direct guard-derived verification scenarios. It
+reads a clean temporary checkout of one exact Git revision and parses bytes
+with ``ast``.
 
 It does not establish runtime dependency, call order, test coverage, semantic
 impact or change authorization. Dynamic imports, reflection, non-Python
@@ -19,6 +21,7 @@ from pathlib import Path, PurePosixPath
 from typing import Any, Callable, Iterable, Mapping
 
 from .knowledge_sources import _git, _source, temporary_commit_checkout, verified_tracked_sources
+from .verification_scenarios import build_verification_scenarios
 
 _MAX_LIMIT = 250
 _SYMBOL = re.compile(r"[A-Za-z_][A-Za-z0-9_]*\Z")
@@ -477,11 +480,15 @@ def _symbol_context(
     behavior_truncated = any(
         item["behavior"].get("truncated") for item in definitions
     )
+    scenario_context = build_verification_scenarios(
+        target_tree, target_source, target_path, symbol, limit=limit,
+    )
     truncated = (
         definitions_total > len(definitions)
         or direct_total > len(direct_references)
         or test_total > len(test_candidates)
         or behavior_truncated
+        or scenario_context["truncated"]
     )
     return {
         "symbol": symbol,
@@ -495,11 +502,14 @@ def _symbol_context(
             "test_candidates": test_total,
             "parse_failures": len(parse_failures),
             "behavior_truncated": behavior_truncated,
+            "verification_scenarios": scenario_context["counts"]["scenarios"],
         },
         "star_import_observed": star_import,
         "test_candidate_scope": "TEST_FUNCTION_LEVEL",
+        "verification_scenarios": scenario_context,
         "truncated": truncated,
         "limits": [
+            *scenario_context["limits"],
             "Symbol references are direct syntactic names/attributes only; dotted import chains without an alias, star imports, dynamic dispatch, inheritance and runtime calls are NOT ASSESSED.",
             "Test candidates are test functions/methods that directly mention the symbol in their own body; fixture, helper and indirect coverage is NOT ASSESSED.",
             "Aliases are collected across each file; lexical scope and rebinding are NOT ASSESSED.",
