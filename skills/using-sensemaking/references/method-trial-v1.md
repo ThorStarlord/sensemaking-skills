@@ -57,7 +57,8 @@ observed result        != a new shared method
    any evidence path that did not exist at `source_revision`.
 4. **Do the work.** Collect the evidence named in the expected observation.
 5. **Author the close episode.** Record:
-   - `decision_commit`: the commit that introduced the trial decision;
+   - `decision_commit`: the commit that introduced the trial decision and must
+     still contain the same anchored decision;
    - `source_revision`: a later descendant commit;
    - `observed_outcome`, tracked evidence and a claim ceiling;
    - `disposition`;

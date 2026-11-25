@@ -347,6 +347,11 @@ def close_method_trial(
     stored_digest = attributes.get("trial_digest")
     if not isinstance(stored_digest, str) or stored_digest != _trial_digest(attributes):
         raise ValueError("trial decision content is not anchored by a matching trial_digest")
+    at_decision_commit = _reviewed_claims(root, decision_commit).get(decision_id)
+    if not at_decision_commit:
+        raise ValueError("decision_commit does not contain the trial decision")
+    if _trial_digest(at_decision_commit.get("attributes") or {}) != stored_digest:
+        raise ValueError("the trial decision changed after decision_commit")
     prior = attributes.get("prior_lesson_id")
     prior = prior if isinstance(prior, str) and prior not in ("", "NONE") else None
     if prior:

@@ -717,7 +717,8 @@ before the work; committing them with the implementation only proves that the
 decision preceded the result.
 
 The close episode requires the same trial slug, the `decision_commit` that
-introduced it, a later descendant `source_revision`, the observed outcome, a
+introduced it (and still contains the same anchored decision), a later
+descendant `source_revision`, the observed outcome, a
 disposition (`CONFIRMED`, `ADAPTED`, `REJECTED`, `NO_CHANGE` or
 `INCONCLUSIVE`), tracked evidence and a claim ceiling. `ADAPTED` also requires
 `method_after`. The producer rejects a close at the decision commit, a
