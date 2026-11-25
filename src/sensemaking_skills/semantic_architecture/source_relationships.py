@@ -14,12 +14,14 @@ from __future__ import annotations
 
 import ast
 import hashlib
+import re
 from pathlib import Path, PurePosixPath
 from typing import Any, Iterable, Mapping
 
 from .knowledge_sources import temporary_commit_checkout
 
 _MAX_LIMIT = 250
+_SYMBOL = re.compile(r"[A-Za-z_][A-Za-z0-9_]*\Z")
 _LIMITS = (
     "Python AST import syntax and top-level definitions only; runtime imports, "
     "reflection and call order are NOT ASSESSED.",
@@ -59,6 +61,19 @@ def _package_for_path(path: str) -> list[str]:
     return _module_for_path(path).split(".")[:-1]
 
 
+def _import_from_base(path: str, node: ast.ImportFrom) -> str | None:
+    """Resolve an ImportFrom base to an absolute module, or None if impossible."""
+
+    package = _package_for_path(path)
+    level = node.level or 0
+    if level:
+        if level - 1 > len(package):
+            return None
+        package = package[: len(package) - (level - 1)]
+        return ".".join(filter(None, [*package, *(node.module or "").split(".")]))
+    return node.module or ""
+
+
 def _import_candidates(path: str, node: ast.AST) -> list[tuple[str, int, tuple[str, ...]]]:
     """Return absolute module candidates, line and imported names for an import node."""
 
@@ -67,15 +82,9 @@ def _import_candidates(path: str, node: ast.AST) -> list[tuple[str, int, tuple[s
         for alias in node.names:
             candidates.append((alias.name, node.lineno, ()))
     elif isinstance(node, ast.ImportFrom):
-        package = _package_for_path(path)
-        level = node.level or 0
-        if level:
-            if level - 1 > len(package):
-                return []
-            package = package[: len(package) - (level - 1)]
-            base = ".".join(filter(None, [*package, *(node.module or "").split(".")]))
-        else:
-            base = node.module or ""
+        base = _import_from_base(path, node)
+        if base is None:
+            return []
         if not node.module:
             for alias in node.names:
                 if alias.name != "*":
@@ -181,16 +190,10 @@ def _direct_imports(
                         "evidence_ref": f"file:{path}:line:{node.lineno}",
                     })
         elif isinstance(node, ast.ImportFrom):
-            package = _package_for_path(path)
-            level = node.level or 0
-            if level:
-                if level - 1 > len(package):
-                    total += 1
-                    continue
-                package = package[: len(package) - (level - 1)]
-                base = ".".join(filter(None, [*package, *(node.module or "").split(".")]))
-            else:
-                base = node.module or ""
+            base = _import_from_base(path, node)
+            if base is None:
+                total += 1
+                continue
             total += 1
             if len(items) < limit:
                 resolved = module_paths.get(base)
@@ -205,8 +208,215 @@ def _direct_imports(
     return items, total
 
 
+def _import_bindings(
+    path: str, tree: ast.AST, target_module: str, symbol: str,
+) -> tuple[set[str], set[str], bool]:
+    """Return local symbol aliases, local module aliases and star-import status."""
+
+    symbol_aliases: set[str] = set()
+    module_aliases: set[str] = set()
+    star_import = False
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                if alias.name != target_module:
+                    continue
+                if alias.asname:
+                    module_aliases.add(alias.asname)
+                elif "." not in alias.name:
+                    module_aliases.add(alias.name)
+        elif isinstance(node, ast.ImportFrom):
+            base = _import_from_base(path, node)
+            if base is None:
+                continue
+            if base == target_module:
+                for alias in node.names:
+                    if alias.name == "*":
+                        star_import = True
+                    elif alias.name == symbol:
+                        symbol_aliases.add(alias.asname or alias.name)
+            else:
+                for alias in node.names:
+                    if alias.name == "*":
+                        continue
+                    candidate = f"{base}.{alias.name}" if base else alias.name
+                    if candidate == target_module:
+                        module_aliases.add(alias.asname or alias.name)
+    return symbol_aliases, module_aliases, star_import
+
+
+def _reference_nodes(
+    tree: ast.AST, symbol: str, symbol_aliases: set[str], module_aliases: set[str],
+) -> list[tuple[int, int, str]]:
+    parents: dict[ast.AST, ast.AST] = {}
+    for parent in ast.walk(tree):
+        for child in ast.iter_child_nodes(parent):
+            parents[child] = parent
+    references: list[tuple[int, int, str]] = []
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Name) and node.id in symbol_aliases and isinstance(node.ctx, ast.Load):
+            parent = parents.get(node)
+            kind = "CALL" if isinstance(parent, ast.Call) and parent.func is node else "NAME"
+            references.append((node.lineno, node.col_offset, kind))
+        elif (
+            isinstance(node, ast.Attribute) and node.attr == symbol
+            and isinstance(node.ctx, ast.Load)
+            and isinstance(node.value, ast.Name) and node.value.id in module_aliases
+        ):
+            parent = parents.get(node)
+            kind = "CALL" if isinstance(parent, ast.Call) and parent.func is node else "ATTRIBUTE"
+            references.append((node.lineno, node.col_offset, kind))
+    return references
+
+
+def _test_scopes(tree: ast.AST) -> list[tuple[str, str, int, int]]:
+    scopes: list[tuple[str, str, int, int]] = []
+    for node in tree.body:
+        if isinstance(node, ast.FunctionDef) and node.name.startswith("test_"):
+            scopes.append(("FUNCTION", node.name, node.lineno, node.end_lineno or node.lineno))
+        elif isinstance(node, ast.ClassDef) and node.name.startswith("Test"):
+            for child in node.body:
+                if isinstance(child, ast.FunctionDef) and child.name.startswith("test_"):
+                    scopes.append((
+                        "METHOD", f"{node.name}::{child.name}",
+                        child.lineno, child.end_lineno or child.lineno,
+                    ))
+    return scopes
+
+
+def _symbol_context(
+    target_path: str, target_tree: ast.AST, target_module: str,
+    target_exported: set[str] | None, tracked: set[str], checkout: Path,
+    symbol: str, limit: int,
+) -> dict[str, Any]:
+    if not _SYMBOL.fullmatch(symbol):
+        raise ValueError("--symbol must be one Python identifier")
+    definitions: list[dict[str, Any]] = []
+    definitions_total = 0
+    for node in target_tree.body:
+        if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            continue
+        if node.name != symbol:
+            continue
+        definitions_total += 1
+        if len(definitions) < limit:
+            definitions.append({
+                "path": target_path,
+                "line": node.lineno,
+                "kind": "class" if isinstance(node, ast.ClassDef) else "function",
+                "leading_underscore": node.name.startswith("_"),
+                "in_module_all": node.name in target_exported if target_exported is not None else None,
+                "evidence_ref": f"file:{target_path}:line:{node.lineno}",
+            })
+
+    direct_references: list[dict[str, Any]] = []
+    test_candidates: list[dict[str, Any]] = []
+    direct_total = 0
+    test_total = 0
+    star_import = False
+    parse_failures: list[str] = []
+
+    target_refs = _reference_nodes(target_tree, symbol, {symbol}, set())
+    for line, column, kind in target_refs:
+        direct_total += 1
+        if len(direct_references) < limit:
+            direct_references.append({
+                "path": target_path,
+                "line": line,
+                "column": column,
+                "kind": kind,
+                "is_target_file": True,
+                "evidence_ref": f"file:{target_path}:line:{line}",
+            })
+
+    for candidate in sorted(tracked):
+        if not candidate.endswith(".py") or candidate == target_path:
+            continue
+        tree, _, _, error = _parse(checkout / candidate, candidate)
+        if error or tree is None:
+            parse_failures.append(error or f"{candidate}: source could not be parsed")
+            continue
+        symbol_aliases, module_aliases, candidate_star = _import_bindings(
+            candidate, tree, target_module, symbol,
+        )
+        star_import = star_import or candidate_star
+        references = _reference_nodes(tree, symbol, symbol_aliases, module_aliases)
+        if not references:
+            continue
+        if candidate.startswith("tests/"):
+            scopes = _test_scopes(tree)
+            by_scope: dict[str, dict[str, Any]] = {}
+            for line, column, kind in references:
+                containing = [
+                    scope for scope in scopes if scope[2] <= line <= scope[3]
+                ]
+                if not containing:
+                    continue
+                scope = min(containing, key=lambda item: item[3] - item[2])
+                key = scope[1]
+                item = by_scope.setdefault(key, {
+                    "path": candidate,
+                    "test_name": scope[1],
+                    "test_kind": scope[0],
+                    "line": scope[2],
+                    "reference_lines": [],
+                    "kinds": [],
+                    "evidence_refs": [],
+                })
+                if line not in item["reference_lines"]:
+                    item["reference_lines"].append(line)
+                if kind not in item["kinds"]:
+                    item["kinds"].append(kind)
+                item["evidence_refs"].append(f"file:{candidate}:line:{line}")
+            for item in by_scope.values():
+                test_total += 1
+                if len(test_candidates) < limit:
+                    test_candidates.append(item)
+        else:
+            for line, column, kind in references:
+                direct_total += 1
+                if len(direct_references) < limit:
+                    direct_references.append({
+                        "path": candidate,
+                        "line": line,
+                        "column": column,
+                        "kind": kind,
+                        "is_target_file": False,
+                        "evidence_ref": f"file:{candidate}:line:{line}",
+                    })
+
+    truncated = (
+        definitions_total > len(definitions)
+        or direct_total > len(direct_references)
+        or test_total > len(test_candidates)
+    )
+    return {
+        "symbol": symbol,
+        "defined_in_target": definitions_total > 0,
+        "definitions": definitions,
+        "direct_references": direct_references,
+        "test_candidates": test_candidates,
+        "counts": {
+            "definitions": definitions_total,
+            "direct_references": direct_total,
+            "test_candidates": test_total,
+            "parse_failures": len(parse_failures),
+        },
+        "star_import_observed": star_import,
+        "test_candidate_scope": "TEST_FUNCTION_LEVEL",
+        "truncated": truncated,
+        "limits": [
+            "Symbol references are direct syntactic names/attributes only; dotted import chains without an alias, star imports, dynamic dispatch, inheritance and runtime calls are NOT ASSESSED.",
+            "Test candidates are test functions/methods that directly mention the symbol in their own body; fixture, helper and indirect coverage is NOT ASSESSED.",
+            "A reference is not proof of execution, and a test candidate is not proof that the test covers the symbol.",
+            "No transitive closure or impact verdict is produced.",
+        ],
+    }
+
+
 def build_source_relationships(
     root: str | Path, target_ref: str, path: str, *, limit: int = 50,
+    symbol: str | None = None,
 ) -> dict[str, Any]:
     """Build a bounded source-relationship view for one committed Python file."""
 
@@ -244,6 +454,13 @@ def build_source_relationships(
             )
             top_level_symbols, top_level_symbols_total = _top_level_symbols(
                 target_tree, limit, exported,
+            )
+
+        symbol_context = None
+        if symbol is not None:
+            symbol_context = _symbol_context(
+                target_path, target_tree, target_module,
+                exported, tracked, checkout, symbol, limit,
             )
 
         importers: list[dict[str, Any]] = []
@@ -347,6 +564,7 @@ def build_source_relationships(
         "test_reference_scope": "FILE_LEVEL",
         "top_level_symbols": top_level_symbols,
         "leading_underscore_imports": leading_underscore_imports,
+        "symbol_context": symbol_context,
         "target_parse_error": target_error,
         "parse_failures": parse_failures[:limit],
         "coverage_status": coverage_status,

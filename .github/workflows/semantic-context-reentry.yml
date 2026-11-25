@@ -1474,6 +1474,16 @@ jobs:
             src/sensemaking_skills/semantic_architecture/knowledge_sources.py \
             --include-source-relationships --json \
             > "$RUNNER_TEMP/change-context-private.json"
+          sensemaking-skills semantic workspace-query \
+            --repo . --ref "$REF" --operation context-for \
+            src/sensemaking_skills/semantic_architecture/knowledge_sources.py \
+            --include-source-relationships --symbol build_knowledge_snapshot --json \
+            > "$RUNNER_TEMP/change-context-symbol.json"
+          sensemaking-skills semantic workspace-query \
+            --repo . --ref "$REF" --operation context-for \
+            src/sensemaking_skills/semantic_architecture/knowledge_sources.py \
+            --include-source-relationships --symbol temporary_commit_checkout --json \
+            > "$RUNNER_TEMP/change-context-symbol-empty.json"
           python - <<'PY'
           import json
           import os
@@ -1504,7 +1514,17 @@ jobs:
           assert {"_source", "_local_evidence_path"} <= private_names
           assert private["test_reference_scope"] == "FILE_LEVEL"
           assert private["target_parse_error"] is None
-          print("Committed source relationships expose importers, top-level symbols, hidden cross-module names and explicit limits.")
+          symbol = load("change-context-symbol.json")["source_relationships"]["symbol_context"]
+          assert symbol["defined_in_target"] is True
+          assert symbol["test_candidate_scope"] == "TEST_FUNCTION_LEVEL"
+          assert symbol["counts"]["test_candidates"] > 0
+          assert any(reference["path"].endswith("semantic_cli.py") for reference in symbol["direct_references"])
+          assert any(candidate["path"].endswith("test_repository_semantic_steward.py") for candidate in symbol["test_candidates"])
+          empty = load("change-context-symbol-empty.json")["source_relationships"]["symbol_context"]
+          assert empty["defined_in_target"] is True
+          assert empty["direct_references"]
+          assert empty["test_candidates"] == []
+          print("Committed source relationships expose importers, top-level symbols, hidden cross-module names, direct references and test candidates.")
           PY
 
       - name: Exercise method-trial anchoring and retention (mechanics only)
