@@ -43,7 +43,30 @@ Read the authored dimensions, `value_hypothesis`, assumptions, related
 capabilities, evidence, counterevidence and `revisit_when`. A missing field is
 `NOT_ASSESSED`, not permission to invent one.
 
-### 2. Recover a real beneficiary episode and current decision
+### 2. Check whether the candidate's trigger can fire
+
+Identify the existing consumer or data shape the candidate says it would use or
+extend. Run that consumer on a real revision pair or authored record set before
+imagining the future behavior. For example:
+
+```bash
+sensemaking-skills semantic workspace-changes --repo . \
+  --base-ref BASE --ref HEAD --json
+sensemaking-skills semantic workspace-query --operation possibility-ecology \
+  --subject <goal-or-possibility-id> --json
+```
+
+Check whether the fields the candidate depends on are populated and matchable.
+A `revisit_when` sentence is not a typed claim/source reference. A changed
+supporting-file fingerprint is not a semantic consequence. An unpopulated or
+unmatchable trigger cannot fire.
+
+If the trigger cannot fire, stop with `NO_DELTA` or `DEFER` and label the result
+as a **data/shape limitation**. Do not treat it as evidence that the idea is
+valueless; it may become testable when the required fields are authored. A
+candidate whose trigger is unrepresented is not yet a buildable capability.
+
+### 3. Recover a real beneficiary episode and current decision
 
 Name a real person, agent, session or observed workflow and the decision it
 actually faces now. A prior receipt, normal-use record or concrete current
@@ -54,7 +77,7 @@ imagined user for missing evidence; if no real episode exists, stop with
 State the **current decision** in behavioral terms: what the beneficiary
 actually does or chooses without the candidate.
 
-### 3. Consult relevant experience when it could change the rehearsal
+### 4. Consult relevant experience when it could change the rehearsal
 
 Use the existing consumers only when the candidate turns on an intellectual
 procedure or a prior precedent:
@@ -73,7 +96,7 @@ normal-use record directly, or use the optional `summarize-receipts.py` reader
 as a pointer; do not treat a receipt summary as the precedent. Record this in
 the existing decision note or rehearsal note, not in a new schema field.
 
-### 4. State the candidate decision and the delta
+### 5. State the candidate decision and the delta
 
 State the **candidate decision**: what the beneficiary would do differently
 with the candidate. Then state the delta for that beneficiary in observable
@@ -84,7 +107,7 @@ a new view, label, explanation or internal representation with no changed
 beneficiary action, record `NO_DELTA` and stop. A `NO_DELTA` is a successful
 outcome; it prevents low-value construction.
 
-### 5. State the expected observation and failure condition
+### 6. State the expected observation and failure condition
 
 Name what would be observed, by whom, and how: a command, artifact, user
 action, review decision or other bounded observation. State what would count
@@ -93,7 +116,7 @@ against the candidate and what cost or risk the rehearsal itself adds.
 If no observation could distinguish the candidate from the current state, mark
 `UNOBSERVABLE`; do not promote a prediction into evidence.
 
-### 6. Decide and retain only what is useful
+### 7. Decide and retain only what is useful
 
 Choose one:
 
@@ -120,6 +143,7 @@ enough when the decision or its `NO_DELTA` should survive.
 | Candidate decision | Query the view and choose from its candidates. |
 | Expected delta | The view surfaces a prior precedent that changes the choice. |
 | Failure condition | The same precedent was already available; the view only adds another surface. |
+| Data check | The existing consumer's trigger fields are populated and matchable. |
 | Disposition | `NO_DELTA` / `DEFER` / `BUILD`. |
 
 The example is a shape, not a recommendation.
@@ -136,6 +160,9 @@ The example is a shape, not a recommendation.
   observation.
 - **Precedent citation ritual:** naming a lesson without checking its source,
   conditions or contrary evidence.
+- **Unpopulated trigger read as rejection:** treating a free-text or missing
+  field as evidence that the candidate is worthless, rather than as a
+  data/shape limitation.
 - **Retrofit:** writing the rehearsal after the build and presenting it as the
   original decision.
 - **Mandatory ceremony:** requiring a rehearsal for narrow or clear work.
