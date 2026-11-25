@@ -635,6 +635,8 @@ def build_source_review_comparison(
 
     if not 1 <= limit <= _MAX_LIMIT:
         raise ValueError("source relationship limit must be 1..250")
+    if any(not re.fullmatch(r"[0-9a-f]{40}", ref) for ref in (base_ref, target_ref)):
+        raise ValueError("source review requires two full 40-character Git SHAs")
     if symbol is not None and not _SYMBOL.fullmatch(symbol):
         raise ValueError("--source-symbol must be one Python identifier")
     path = _safe_path(path)
