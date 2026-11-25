@@ -4,6 +4,7 @@
 rehearsal. No new executable consumer or record type was retained.
 **Source baseline:** `a40ec5e5ed31ceba8b45539bbffa076710cbf614`.
 **Implementation:** `1cc0bdcd43b0d539d4a2a9542862c6d7a3781047`.
+**Fresh-review revision:** `cae8d2c60a01fc3e3b4b20a48ad4418e5d6f69e8`.
 
 The capability is a bounded reasoning procedure: before selecting or building a
 possibility because it is coherent, test whether it would change a real
@@ -60,6 +61,7 @@ normal-use record or PR decision note is enough when the decision matters.
 | A question-relevant precedent locator over receipts, normal-use notes and explorations | This fifth-episode selection; 128 receipts, 75 normal-use notes and 31 explorations available | Inspect prior work manually and ask two read-only explorers | Query the locator, then inspect its top candidates | A prior precedent not already visible changes the selection | **REJECT — `NO_DELTA`** |
 | A short precedent/applicability check in the existing decision note | A reviewer choosing a local increment with retained method experience | Decision note names consulted knowledge, not whether it applied | Name precedent, source revision, conditions checked and apply/adapt/reject/ignore | A real decision note shows a precedent disposition that changes or confirms the choice | **DEFER** — no observed episode of a missed precedent; existing guidance is already extensive |
 | A product-possibility outcome loop joining value hypotheses to later observed evidence | An agent selecting product possibilities across episodes | Possibilities carry value hypotheses but no outcome link | Review later evidence and revise/reaffirm/reject the value hypothesis | A selected possibility has a real later outcome that changes a future selection | **DEFER** — too few selected possibilities have observable outcomes now |
+| Reconsideration from indexed change (`poss:possibility-reconsideration-from-change`) | The 2026-11-05 premise-qualification episode; current decision qualified the retrieval premise, kept PATH-1 and made no automatic reassessment | Two target-repository possibilities whose value hypotheses depend on later-session consultation remain unreassessed | Inspect the affected possibilities and append a qualified/reaffirmed assessment linked to the episode | A new dated assessment entry that changes a later selection | **DEFER — `NO_DELTA`**; the trigger is free-text `revisit_when`, no typed claim/source is cited, and `workspace-changes` returned supporting-source churn with no `poss:` change. Data/shape limitation, not rejection |
 
 For candidate A, the relevant prior work was already available: the
 [2026-11-13 construction-versus-product-outcomes retrospective](../explorations/2026-11-13-construction-vs-product-outcomes-retrospective.md)
@@ -74,7 +76,34 @@ rejected.
 An untracked 12 KB prototype (`precedent_context.py`) was removed before this
 record was committed. No executable consumer was merged.
 
-## 4. Why this is a capability, not a plan
+## 4. Fresh-context review and revision
+
+A separate fresh-context reviewer applied the procedure to
+`poss:possibility-reconsideration-from-change` without a predetermined result.
+It selected a real 2026-11-05 premise-qualification episode, inspected the two
+target-repository possibilities, ran `workspace-changes` between `a40ec5e5` and
+its then-current head, and found:
+
+- the decisive `revisit_when` values are free text, not typed claim/source
+  references;
+- no typed claim or source in the two possibilities matched the 2026-11-05
+  premise;
+- `workspace-changes` reported supporting-source fingerprint churn and no
+  `poss:` claim change;
+- the candidate's trigger therefore could not fire in that episode.
+
+It returned `DEFER` with `NO_DELTA` as a **data/shape limitation**, not a
+rejection of the idea. It also judged the procedure useful as a stop rule but
+partly ceremonial as an evidence procedure: the decisive work was reading the
+idea library, counting the free-text conditions, reading the episode, and
+running `workspace-changes`, which the first version did not name.
+
+The revision adds a **mechanism-to-data check** after candidate recovery: run
+the existing consumer on a real revision pair and record whether the trigger
+fields are populated and matchable. If not, stop with `NO_DELTA`/`DEFER` as a
+data/shape limitation. This directly addresses the fresh reviewer's finding.
+
+## 5. Why this is a capability, not a plan
 
 The procedure was exercised on real candidates and changed a real selection:
 it rejected the precedent locator and deferred two premature loops. It leaves a
@@ -83,7 +112,7 @@ portable method that a later agent can apply to another candidate, and it makes
 artifacts are the procedure and this source-linked rehearsal, not a new record
 schema or a roadmap.
 
-## 5. Product versus model
+## 6. Product versus model
 
 **Product:** possibility and method consumers, authored candidate evidence,
 receipts, normal-use records, existing hypothesis/experiment/trial carriers,
@@ -96,18 +125,19 @@ choose the dispositions.
 
 No intrinsic cognitive improvement or comparative benefit is claimed.
 
-## 6. Claim ceiling
+## 7. Claim ceiling
 
 | Level | Status |
 | --- | --- |
 | Procedure documented and applied to real candidates | Observed |
 | Rejection of the precedent locator | Observed decision in this episode |
 | Deferral of the other two candidates | Observed |
-| Later independent use of the procedure | NOT ASSESSED; the explorer reports are same-session evidence |
+| Fresh-context use of the procedure | Observed; same-session review, not longitudinal independence |
+| Later independent use of the procedure | NOT ASSESSED |
 | Changed beneficiary outcome or comparative benefit | NOT ESTABLISHED |
 | Longitudinal cognitive development | NOT ESTABLISHED |
 
-## 7. Continuation
+## 8. Continuation
 
 The next warranted use is an independent later agent applying the rehearsal to
 a candidate that has a real beneficiary episode and a plausible observable
