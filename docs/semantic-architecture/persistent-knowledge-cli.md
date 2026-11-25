@@ -1308,7 +1308,11 @@ the selected revision and adds direct imports, direct importers, test
 references, top-level symbols, leading-underscore cross-module imports, parse
 failures and a coverage status. Add `--symbol NAME` for one top-level function
 or class to receive direct syntactic references and test functions/methods that
-mention it. It is not a
+mention it. If the target cannot be parsed, the authored context and
+file-level importer evidence remain available with `PARTIAL` coverage,
+`target_parse_error` and `symbol_context: null`; the symbol is not assessed.
+Symbol-list truncation also marks the enclosing source relationship and
+workspace response as truncated. It is not a
 call graph: dynamic imports, runtime dispatch, test coverage and non-Python
 references are not assessed. `test_references` is empty when no test directly
 imports or mentions the path, not when no test exercises the behavior. The

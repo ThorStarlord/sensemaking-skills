@@ -54,12 +54,12 @@ and knowledge gaps. The top-level `source_relationships` section adds:
 | `parse_failures` | Other files that could not be parsed; coverage becomes `PARTIAL`. |
 | `coverage_status` | `COMPLETE_FOR_PYTHON_AST` or `PARTIAL`. |
 | `truncated` | Whether a list or category exceeded the limit. |
-| `symbol_context` | Optional direct references and test candidates for one requested top-level symbol. |
+| `symbol_context` | Optional direct references and test candidates for one requested top-level symbol; `null` if not requested or the target could not be parsed. |
 | `limits` | Explicit source and claim boundaries. |
 
 `counts` reports totals; the lists are bounded by `--limit` (default 50).
 
-When `--symbol` is provided, `symbol_context` contains:
+When `--symbol` is provided and the target parses, `symbol_context` contains:
 
 | Field | Meaning |
 | --- | --- |
@@ -69,9 +69,12 @@ When `--symbol` is provided, `symbol_context` contains:
 | `counts` | Definitions, direct references, test candidates and parse failures. |
 | `star_import_observed` | Whether a scanned file star-imported the target module. |
 | `test_candidate_scope` | `TEST_FUNCTION_LEVEL`. |
+| `truncated` | Whether a symbol list exceeded the limit; also propagates to the enclosing source and workspace response. |
 
+If `target_parse_error` is present, a null `symbol_context` means the
+requested symbol was not assessed, not that it was absent.
 `definitions` is not a stable-API list. `direct_references` is not a runtime
-call graph. `test_candidates` is not coverage: a test may exercise the symbol
+call graph. File-wide alias matching does not resolve lexical scope or rebinding. `test_candidates` is not coverage: a test may exercise the symbol
 through a fixture, helper, parameterization or another module without a direct
 mention.
 
@@ -91,7 +94,8 @@ mention.
    name convention; `in_module_all` reflects a literal module `__all__` and is
    `null` when there is none or it is dynamic. Neither establishes exported or
    stable API.
-5. When changing one symbol, inspect `symbol_context.direct_references` for
+5. When changing one symbol and `symbol_context` is available, inspect
+   `symbol_context.direct_references` for
    code that must be updated and `test_candidates` for tests that directly
    mention it. Confirm helper/fixture and re-export paths separately.
 6. Compare the code-level view with the authored verification and rules, then
