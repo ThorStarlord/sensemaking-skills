@@ -289,8 +289,6 @@ def _symbol_context(
     target_exported: set[str] | None, tracked: set[str], checkout: Path,
     symbol: str, limit: int,
 ) -> dict[str, Any]:
-    if not _SYMBOL.fullmatch(symbol):
-        raise ValueError("--symbol must be one Python identifier")
     definitions: list[dict[str, Any]] = []
     definitions_total = 0
     for node in target_tree.body:
@@ -408,6 +406,7 @@ def _symbol_context(
         "limits": [
             "Symbol references are direct syntactic names/attributes only; dotted import chains without an alias, star imports, dynamic dispatch, inheritance and runtime calls are NOT ASSESSED.",
             "Test candidates are test functions/methods that directly mention the symbol in their own body; fixture, helper and indirect coverage is NOT ASSESSED.",
+            "Aliases are collected across each file; lexical scope and rebinding are NOT ASSESSED.",
             "A reference is not proof of execution, and a test candidate is not proof that the test covers the symbol.",
             "No transitive closure or impact verdict is produced.",
         ],
@@ -422,6 +421,8 @@ def build_source_relationships(
 
     if not 1 <= limit <= _MAX_LIMIT:
         raise ValueError("source relationship limit must be 1..250")
+    if symbol is not None and not _SYMBOL.fullmatch(symbol):
+        raise ValueError("--symbol must be one Python identifier")
     target_path = _safe_path(path)
     if not target_path.endswith(".py"):
         raise ValueError("source relationships currently support one tracked .py file")
@@ -457,7 +458,9 @@ def build_source_relationships(
             )
 
         symbol_context = None
-        if symbol is not None:
+        # A malformed target must not suppress authored context or imply that
+        # the requested symbol is absent. Preserve the target parse disclosure.
+        if symbol is not None and target_tree is not None:
             symbol_context = _symbol_context(
                 target_path, target_tree, target_module,
                 exported, tracked, checkout, symbol, limit,
@@ -539,6 +542,7 @@ def build_source_relationships(
         or top_level_symbols_total > len(top_level_symbols)
         or importers_total > len(importers) or tests_total > len(test_references)
         or leading_underscore_imports_total > len(leading_underscore_imports)
+        or (symbol_context is not None and symbol_context["truncated"])
     )
     coverage_status = (
         "PARTIAL" if parse_failures or truncated or target_error
