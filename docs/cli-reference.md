@@ -85,7 +85,9 @@ when topology itself is decision-relevant.
 `workspace-query --operation context-for PATH --include-source-relationships`
 optionally adds committed Python AST importers, direct imports, test
 references, top-level symbols and leading-underscore cross-module imports to the authored path context; it is syntactic,
-not a runtime call graph or coverage result.
+not a runtime call graph or coverage result. Add `--symbol NAME` for direct
+references and test functions/methods that mention one top-level symbol; test
+candidates are not coverage.
 `workspace-query --operation context-for|workspace-impact --repo .` compares
 tracked changed file names and Git's untracked entries, not every file inside a
 wholly untracked directory; `change_scope` discloses the granularity and

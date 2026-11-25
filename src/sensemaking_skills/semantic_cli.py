@@ -467,6 +467,8 @@ def register_semantic_commands(root_cli: click.Group) -> None:
                   help="Include goal-linked possible futures in product-outline only")
     @click.option("--include-source-relationships", is_flag=True,
                   help="Include committed Python importers, tests and top-level symbols for one context-for path")
+    @click.option("--symbol", default=None,
+                  help="Optional top-level Python symbol for direct references and test candidates (requires --include-source-relationships)")
     @click.option("--method-question", default=None,
                   help="Optional decision question; include authored method precedents in product-outline only")
     @click.option("--method-limit", type=click.IntRange(1, 25), default=8,
@@ -490,7 +492,7 @@ def register_semantic_commands(root_cli: click.Group) -> None:
         paths: tuple[str, ...], operation: str, subject: str | None, search_terms: tuple[str, ...],
         query_text: str | None, search_kinds: tuple[str, ...], expected_kinds: tuple[str, ...],
         include_candidates: bool, method_question: str | None, method_limit: int,
-        include_source_relationships: bool,
+        include_source_relationships: bool, symbol: str | None,
         include_js_module_imports: bool, max_js_imports: int,
         limit: int, depth: int, repo_dir: Path, ref: str,
         repository_label: str | None, index_dir: Path | None, refresh: bool, output_json: bool,
@@ -514,6 +516,7 @@ def register_semantic_commands(root_cli: click.Group) -> None:
                 query_text=query_text, search_kinds=search_kinds,
                 include_candidates=include_candidates,
                 include_source_relationships=include_source_relationships,
+                symbol=symbol,
                 include_js_module_imports=include_js_module_imports, max_js_imports=max_js_imports,
                 limit=limit, depth=depth,
                 repository=repository_label, index_dir=index_dir, refresh=refresh,

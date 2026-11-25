@@ -341,6 +341,7 @@ def run_workspace_query(
     query_text: str | None = None, search_kinds: tuple[str, ...] = (),
     include_candidates: bool = False,
     include_source_relationships: bool = False,
+    symbol: str | None = None,
     include_js_module_imports: bool = False, max_js_imports: int = 1000,
     limit: int = 50, depth: int = 2, repository: str | None = None,
     index_dir: str | Path | None = None, refresh: bool = False,
@@ -360,6 +361,8 @@ def run_workspace_query(
         raise ValueError(
             "--include-source-relationships is supported only for context-for"
         )
+    if symbol is not None and not include_source_relationships:
+        raise ValueError("--symbol requires --include-source-relationships")
     if operation == "possibility-ecology" and subject is None:
         raise ValueError("possibility-ecology requires --subject <goal claim id or opportunity claim id>")
     if not 0 <= max_js_imports <= 10000:
@@ -435,7 +438,7 @@ def run_workspace_query(
         raise ValueError(f"cannot read cache file {database}: {exc}; retry with --refresh") from exc
     if include_source_relationships:
         source_relationships = build_source_relationships(
-            root, sha, query_paths[0], limit=limit,
+            root, sha, query_paths[0], limit=limit, symbol=symbol,
         )
         payload["source_relationships"] = source_relationships
         payload["explicit_limits"] = [

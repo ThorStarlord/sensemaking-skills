@@ -27,7 +27,14 @@ sensemaking-skills semantic workspace-query --repo . --ref HEAD \
 
 The flag is opt-in and currently accepts exactly one tracked `.py` path. It
 reads a clean temporary checkout of the exact committed revision, not
-uncommitted bytes.
+uncommitted bytes. Add `--symbol <name>` to inspect one top-level function or
+class in that file:
+
+```bash
+sensemaking-skills semantic workspace-query --repo . --ref HEAD \
+  --operation context-for src/sensemaking_skills/<module>.py \
+  --include-source-relationships --symbol <name> --json
+```
 
 ## What the output adds
 
@@ -47,9 +54,26 @@ and knowledge gaps. The top-level `source_relationships` section adds:
 | `parse_failures` | Other files that could not be parsed; coverage becomes `PARTIAL`. |
 | `coverage_status` | `COMPLETE_FOR_PYTHON_AST` or `PARTIAL`. |
 | `truncated` | Whether a list or category exceeded the limit. |
+| `symbol_context` | Optional direct references and test candidates for one requested top-level symbol. |
 | `limits` | Explicit source and claim boundaries. |
 
 `counts` reports totals; the lists are bounded by `--limit` (default 50).
+
+When `--symbol` is provided, `symbol_context` contains:
+
+| Field | Meaning |
+| --- | --- |
+| `definitions` | Top-level definitions with that name in the target file. |
+| `direct_references` | Direct syntactic name/attribute references outside test files, with path, line, kind and target-file flag. |
+| `test_candidates` | Test functions or `Test*` methods whose own body directly mentions the symbol, with reference lines. |
+| `counts` | Definitions, direct references, test candidates and parse failures. |
+| `star_import_observed` | Whether a scanned file star-imported the target module. |
+| `test_candidate_scope` | `TEST_FUNCTION_LEVEL`. |
+
+`definitions` is not a stable-API list. `direct_references` is not a runtime
+call graph. `test_candidates` is not coverage: a test may exercise the symbol
+through a fixture, helper, parameterization or another module without a direct
+mention.
 
 ## How to use it in a change
 
@@ -67,7 +91,10 @@ and knowledge gaps. The top-level `source_relationships` section adds:
    name convention; `in_module_all` reflects a literal module `__all__` and is
    `null` when there is none or it is dynamic. Neither establishes exported or
    stable API.
-5. Compare the code-level view with the authored verification and rules, then
+5. When changing one symbol, inspect `symbol_context.direct_references` for
+   code that must be updated and `test_candidates` for tests that directly
+   mention it. Confirm helper/fixture and re-export paths separately.
+6. Compare the code-level view with the authored verification and rules, then
    choose the actual verification. The view never authorizes the change.
 
 ## Limits
@@ -79,6 +106,12 @@ and knowledge gaps. The top-level `source_relationships` section adds:
 - Re-exports through a package `__init__.py` are not resolved to the defining
   module; an importer of the package may be missing from the target's direct
   importers.
+- Symbol references are direct names/attributes. Dotted import chains without
+  an alias, star imports, dynamic dispatch, inheritance and runtime calls are
+  not assessed. Test helpers, fixtures and indirect parameterized coverage are
+  not mapped to test candidates.
+- `direct_references` and `test_candidates` are syntactic evidence, not proof of
+  execution, coverage, impact or change safety.
 - A target syntax or decoding error is reported as `target_parse_error` and
   `PARTIAL`; target-derived imports/symbols are empty, while the authored
   context remains available.

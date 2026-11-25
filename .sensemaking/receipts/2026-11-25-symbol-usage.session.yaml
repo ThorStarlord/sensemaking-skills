@@ -1,0 +1,101 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-11-25-symbol-usage
+state: final
+created_at: "2026-11-25T00:00:00Z"
+updated_at: "2026-11-25T00:00:00Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: e920a6e90d40959c7412c8068c728917fab596f9
+  end_ref: 38ed4c1a2468bb051b30d443e38a42ce85d80fc7
+  worktree_clean_at_end: true
+skill_identity:
+  load_mode: manual_explicit_load
+  sensemaking_source_ref: e920a6e90d40959c7412c8068c728917fab596f9
+goal:
+  statement: "Add a direct symbol usage and test-candidate capability to the existing path context so an agent can plan a symbol change and verification set without manual test-body inspection."
+  source: owner_message
+  source_ref: null
+delegation:
+  granted: [read, local_write, run_local_commands, commit, push, open_pr, merge]
+  withheld: [release, deploy, tracker_write, external_publication]
+continuity:
+  resumes: 2026-11-25-change-context-revision
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: Extend the observed path-context gap to direct symbol usage and test selection
+    capability: using-sensemaking
+    status: completed
+    reason: "The fresh consumer's file-level importer and test lists could not show which test functions mention a symbol or which call sites use it. That is a concrete verification and change-completeness gap, not a request for a transitive graph."
+    artifact_refs: [docs/normal-use/2026-11-25-symbol-usage-context.md]
+    validation:
+      - command: Review of the fresh-consumer report against the current source relationships
+        result: PASS
+  - id: R-2
+    responsibility: Implement direct symbol references and test-function candidates
+    capability: ordinary_coding
+    status: completed
+    reason: "Added --symbol to context-for source relationships with import-alias resolution, direct Name/Attribute references, test function/Test-method association and explicit syntactic limits."
+    artifact_refs: [src/sensemaking_skills/semantic_architecture/source_relationships.py, src/sensemaking_skills/workspace_knowledge.py, src/sensemaking_skills/semantic_cli.py]
+    validation:
+      - command: Real symbol queries on knowledge_sources.py and method_trial.py
+        result: PASS
+  - id: R-3
+    responsibility: Update the agent-facing procedure, CLI docs and hosted check
+    capability: ordinary_coding
+    status: completed
+    reason: "The reference now explains symbol context and its non-runtime limits. The hosted check asserts build_knowledge_snapshot has direct references and test candidates, while temporary_commit_checkout has references and no direct test candidates."
+    artifact_refs: [skills/using-sensemaking/references/change-context-v1.md, .github/workflows/semantic-context-reentry.yml]
+    validation:
+      - command: Local hosted-equivalent assertions; ruff, compileall, docs currentness, YAML parse and diff check
+        result: PASS
+      - command: Hosted CI on the PR
+        result: NOT_RUN
+  - id: R-4
+    responsibility: Record the authentic use and claim ceiling
+    capability: using-sensemaking
+    status: completed
+    reason: "The observed use distinguishes three production call sites and six test candidates for build_knowledge_snapshot from five references and no test candidate for temporary_commit_checkout. This is verification-relevant but not coverage or runtime evidence."
+    artifact_refs: [docs/normal-use/2026-11-25-symbol-usage-context.md]
+    validation:
+      - command: Source spot-checks and real CLI output
+        result: PASS
+findings:
+  - id: F-1
+    statement: "File-level importers and test references were insufficient for a symbol change; direct references and test-function candidates add decision-relevant detail."
+    epistemic_status: OBSERVED
+    evidence_refs: [docs/normal-use/2026-11-25-symbol-usage-context.md]
+    disposition: resolved
+  - id: F-2
+    statement: "build_knowledge_snapshot has three production references and six direct test candidates; temporary_commit_checkout has five production references and no direct test candidate."
+    epistemic_status: OBSERVED
+    evidence_refs: [src/sensemaking_skills/semantic_architecture/knowledge_sources.py]
+    disposition: resolved
+  - id: F-3
+    statement: "The symbol view is a direct syntactic reference and test-mention projection. It is not a runtime call graph, test coverage, transitive impact or change-safety verdict."
+    epistemic_status: DERIVED
+    evidence_refs: [skills/using-sensemaking/references/change-context-v1.md]
+    disposition: no_action
+  - id: F-4
+    statement: "Independent later-agent reuse and decision benefit remain unestablished."
+    epistemic_status: DERIVED
+    evidence_refs: [docs/normal-use/2026-11-25-symbol-usage-context.md]
+    disposition: handed_off
+open_questions:
+  - id: Q-1
+    question: "Will an independent agent use direct references and test candidates on a real refactor or signature change and change its implementation or verification because of them?"
+    source: empirical
+    blocking: false
+    durable_ref: null
+stop:
+  disposition: NO_FURTHER_WARRANT
+  reason: "The selected direct symbol usage capability is operational and exercised on real modules. Further graph traversal or runtime analysis is not warranted without independent use."
+next:
+  warranted_responsibility: "Independent later-agent use on a real symbol refactor or signature change; no new transitive graph, runtime call graph or impact engine."
+  blocked_on: ["Q-1"]
+persistence: committed
+claim_ceiling: "One direct symbol reference and test-candidate consumer, exercised on real modules. Runtime dependency, transitive impact, test coverage, change safety, independent reuse and comparative benefit are not established."
+action_authorized_by_receipt: false
+immutable: true
