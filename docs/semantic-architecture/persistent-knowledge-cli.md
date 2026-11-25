@@ -1678,6 +1678,32 @@ This computes a Git comparison scope, **not** the identity of a GitHub PR or
 a check against its authoritative file set. A caller reviewing a PR should
 still reconcile the returned changed paths with the PR's actual files.
 
+For a focused Python source review, add `--source-path PATH` and optionally
+`--source-symbol NAME`. The path must be in the selected review contexts:
+increase `--max-paths` or explicitly repeat `--path` as needed. For example:
+
+```bash
+sensemaking-skills semantic workspace-review-context --repo . \
+  --base-ref BASE --ref HEAD --source-path src/sensemaking_skills/workspace_knowledge.py \
+  --source-symbol run_workspace_review_context --json
+```
+
+The opt-in `source_relationship_comparison` pairs existing committed Python
+source views at the effective BASE and TARGET, with each side's exact ref,
+tree-entry status and source evidence. Authored product intent stays BASE-only.
+It compares bounded identities of direct-import modules, importer/test files,
+top-level symbols (kind:name) and optionally direct symbol reference files
+and test candidates (path::test-name). Each identity comparison discloses
+`base_only`, `target_only`, `both`, each side's list completeness and
+`comparison_status`. Read `VISIBLE_ONLY` differences as returned-list
+differences, not established additions or removals; even complete identities
+remain limited to the syntactic scanner. A shared identity is not proof of
+unchanged code or behavior. Missing/non-regular tree entries and unavailable
+symbol contexts are not compared as empty inventories. Per-side source
+truncation propagates to the review packet. The comparison reads committed
+bytes only, including when `--include-worktree` is enabled. No new dependency
+resolution, runtime call graph, semantic diff or impact verdict is produced.
+
 For **prospective** review, opt in to the already reviewed goal-linked candidate
 opportunities without promoting them to existing capabilities or selected work:
 

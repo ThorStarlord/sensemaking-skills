@@ -599,12 +599,17 @@ def register_semantic_commands(root_cli: click.Group) -> None:
     @click.option("--include-worktree", is_flag=True,
                   help="Also inspect staged, unstaged and untracked path names from --ref=HEAD; "
                        "uncommitted source bytes are never indexed")
+    @click.option("--source-path", default=None, metavar="PATH",
+                  help="Pair committed Python source relationships for one selected review path")
+    @click.option("--source-symbol", default=None, metavar="NAME",
+                  help="Compare direct symbol reference and test identities (requires --source-path)")
     @click.option("--json", "output_json", is_flag=True)
     def semantic_workspace_review_context(
         base_ref: str, ref: str, repo_dir: Path, repository_label: str | None,
         index_dir: Path | None, refresh: bool, limit: int, depth: int,
         max_paths: int, explicit_paths: tuple[str, ...], pr_merge_base: bool,
-        include_candidates: bool, include_worktree: bool, output_json: bool,
+        include_candidates: bool, include_worktree: bool, source_path: str | None,
+        source_symbol: str | None, output_json: bool,
     ) -> None:
         """Prepare BASE context for committed diffs and optional working changes."""
         from .workspace_knowledge import run_workspace_review_context
@@ -616,6 +621,7 @@ def register_semantic_commands(root_cli: click.Group) -> None:
                 refresh=refresh, limit=limit, depth=depth, max_paths=max_paths,
                 pr_merge_base=pr_merge_base, include_candidates=include_candidates,
                 include_worktree=include_worktree, explicit_paths=explicit_paths,
+                source_path=source_path, source_symbol=source_symbol,
             )
         except (ValueError, OSError, UnicodeError) as exc:
             raise click.ClickException(str(exc)) from exc

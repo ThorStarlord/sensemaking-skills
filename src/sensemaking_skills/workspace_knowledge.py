@@ -24,7 +24,7 @@ from .semantic_architecture.knowledge_sources import (
 from .semantic_architecture.knowledge_store import query_context_paths, query_knowledge, store_snapshot
 from .semantic_architecture.knowledge_architecture import is_repository_file_path
 from .semantic_architecture.repository_bootstrap import orient_repository
-from .semantic_architecture.source_relationships import build_source_relationships
+from .semantic_architecture.source_relationships import build_source_relationships, build_source_review_comparison
 from .semantic_architecture.worktree_context import changed_paths_since_indexed_ref, inspect_worktree_context
 
 OPERATIONS = (
@@ -594,6 +594,7 @@ def run_workspace_review_context(
     refresh: bool = False, limit: int = 25, depth: int = 2, max_paths: int = 8,
     pr_merge_base: bool = False, include_candidates: bool = False,
     include_worktree: bool = False, explicit_paths: tuple[str, ...] = (),
+    source_path: str | None = None, source_symbol: str | None = None,
 ) -> dict[str, Any]:
     """Review committed changes and optional working changes against BASE knowledge.
 
@@ -620,6 +621,12 @@ def run_workspace_review_context(
         if any(not is_repository_file_path(path) for path in requested):
             raise ValueError("explicit review paths must be repository-relative file paths")
     explicit_scope = bool(requested)
+    if source_symbol is not None and source_path is None:
+        raise ValueError("--source-symbol requires --source-path")
+    if source_path is not None:
+        source_path = _normalize_path(source_path)
+        if not is_repository_file_path(source_path) or not source_path.endswith(".py"):
+            raise ValueError("--source-path requires a repository-relative .py file")
     _validate_ref_text(base_ref)
     _validate_ref_text(ref)
     repo_dir = Path(repo).expanduser().resolve()
@@ -721,6 +728,8 @@ def run_workspace_review_context(
         all_paths = list(dict.fromkeys([*paths, *working_paths]))
         selected = all_paths[:max_paths]
     working_unrepresentable_count = len(raw_working_paths) - len(working_paths)
+    if source_path is not None and source_path not in selected:
+        raise ValueError("--source-path must be in the selected review paths; use --path or increase --max-paths")
 
     clone_dir, database = _cache_paths(root, index_dir, base_sha)
     state, build_source = _ensure_snapshot(
@@ -894,6 +903,14 @@ def run_workspace_review_context(
         },
         "semantic_truth_established": False, "action_authorized": False,
     }
+    if source_path is not None:
+        source_comparison = build_source_review_comparison(
+            root, base_sha, sha, source_path, limit=limit, symbol=source_symbol,
+        )
+        packet["source_relationship_comparison"] = source_comparison
+        packet["review_scope"]["source_relationship_path"] = source_path
+        packet["explicit_limits"].extend(source_comparison["limits"])
+        packet["truncated"] = bool(packet["truncated"] or source_comparison["truncated"])
     if explicit_scope:
         packet["review_scope"].update({
             "requested_paths": list(requested),
@@ -956,6 +973,11 @@ def run_workspace_review_context(
         packet["workspace_context"]["target_head_matches"] = True
     if explicit_scope and not include_worktree:
         packet["review_scope"]["review_mode"] = "explicit_paths"
+    if source_path is not None:
+        packet["review_scope"]["note"] += (
+            " The opt-in source comparison reads only committed Python relationships "
+            "for the focal path at BASE and TARGET; authored intent remains BASE-only."
+        )
     if include_candidates:
         packet["review_scope"]["candidate_source_overlap_assessed"] = True
         packet["explicit_limits"].append(

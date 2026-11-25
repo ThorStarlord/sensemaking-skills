@@ -105,7 +105,10 @@ target-branch tip to select the unique Git merge base; the default remains the
 explicit two-commit comparison. Missing or ambiguous merge bases fail closed.
 The review also exposes path-level overlaps with BASE cited evidence and
 uncited changed-path gaps, without inferring semantic staleness.
-This is review evidence, not a drift/violation verdict.
+This is review evidence, not a drift/violation verdict. Add `--source-path PATH`
+for paired BASE/TARGET committed Python relationships for one selected review
+path; optionally add `--source-symbol NAME` for direct symbol reference and
+test-candidate identities. This does not infer behavior, coverage or impact.
 
 For changes **still being edited** in the checkout, add `--include-worktree`
 with `--ref HEAD` (or an exact revision equal to the checkout's HEAD).
