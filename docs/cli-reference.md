@@ -84,7 +84,7 @@ when topology itself is decision-relevant.
 `--pr-merge-base` for PR-scoped semantic knowledge changes).
 `workspace-query --operation context-for PATH --include-source-relationships`
 optionally adds committed Python AST importers, direct imports, test
-references and top-level symbols to the authored path context; it is syntactic,
+references, top-level symbols and leading-underscore cross-module imports to the authored path context; it is syntactic,
 not a runtime call graph or coverage result.
 `workspace-query --operation context-for|workspace-impact --repo .` compares
 tracked changed file names and Git's untracked entries, not every file inside a

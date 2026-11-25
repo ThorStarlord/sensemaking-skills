@@ -1469,24 +1469,42 @@ jobs:
             src/sensemaking_skills/method_trial.py \
             --include-source-relationships --json \
             > "$RUNNER_TEMP/change-context.json"
+          sensemaking-skills semantic workspace-query \
+            --repo . --ref "$REF" --operation context-for \
+            src/sensemaking_skills/semantic_architecture/knowledge_sources.py \
+            --include-source-relationships --json \
+            > "$RUNNER_TEMP/change-context-private.json"
           python - <<'PY'
           import json
           import os
-          path = os.path.join(os.environ["RUNNER_TEMP"], "change-context.json")
-          with open(path, encoding="utf-8") as stream:
-              result = json.load(stream)
+          def load(name):
+              path = os.path.join(os.environ["RUNNER_TEMP"], name)
+              with open(path, encoding="utf-8") as stream:
+                  return json.load(stream)
+          result = load("change-context.json")
           relationships = result["source_relationships"]
           assert result["code"] == "SEMANTIC_KNOWLEDGE_QUERY"
           assert relationships["target"]["path"] == "src/sensemaking_skills/method_trial.py"
           assert len(relationships["target"]["sha256"]) == 64
           assert relationships["coverage_status"] in {"COMPLETE_FOR_PYTHON_AST", "PARTIAL"}
+          assert relationships["test_reference_scope"] == "FILE_LEVEL"
           importers = {item["path"] for item in relationships["direct_importers"]}
           assert "src/sensemaking_skills/semantic_cli.py" in importers
           symbols = {item["name"] for item in relationships["top_level_symbols"]}
           assert {"open_method_trial", "close_method_trial", "build_method_trial_view"} <= symbols
+          assert all(
+              "leading_underscore" in item and "in_module_all" in item
+              for item in relationships["top_level_symbols"]
+          )
+          assert all("resolution" in item for item in relationships["direct_imports"])
           assert relationships["limits"]
           assert result["action_authorized"] is False
-          print("Committed source relationships expose the direct importer, public surface and explicit limits.")
+          private = load("change-context-private.json")["source_relationships"]
+          private_names = {item["name"] for item in private["leading_underscore_imports"]}
+          assert {"_source", "_local_evidence_path"} <= private_names
+          assert private["test_reference_scope"] == "FILE_LEVEL"
+          assert private["target_parse_error"] is None
+          print("Committed source relationships expose importers, top-level symbols, hidden cross-module names and explicit limits.")
           PY
 
       - name: Exercise method-trial anchoring and retention (mechanics only)
