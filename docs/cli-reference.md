@@ -82,6 +82,10 @@ when topology itself is decision-relevant.
 (one-revision knowledge retrieval), and `workspace-changes --base-ref REV`
 (two-commit semantic delta without manual index preparation; optional
 `--pr-merge-base` for PR-scoped semantic knowledge changes).
+`workspace-query --operation context-for PATH --include-source-relationships`
+optionally adds committed Python AST importers, direct imports, test
+references and top-level symbols to the authored path context; it is syntactic,
+not a runtime call graph or coverage result.
 `workspace-query --operation context-for|workspace-impact --repo .` compares
 tracked changed file names and Git's untracked entries, not every file inside a
 wholly untracked directory; `change_scope` discloses the granularity and

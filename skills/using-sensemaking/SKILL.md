@@ -313,6 +313,16 @@ inspection if the CLI is unavailable. This is not a mandatory query, a strategic
 ranking mechanism or a step for narrow repairs. See
 `references/ontology-first-entry-v1.md` section 2.
 
+**Pre-change source context (when material).** Before changing an unfamiliar or
+cross-cutting Python file, the optional `semantic workspace-query --operation
+context-for <path> --include-source-relationships --json` adds committed Python
+importers, test references and public symbols beside the authored ownership,
+rules, decisions and verification. It reads an exact committed revision and is
+syntactic only: importers are not runtime callers, test references are not
+coverage, and absent entries are `NOT_ASSESSED`. See
+`references/change-context-v1.md`. This is not a mandatory pre-edit stage or a
+change authorization.
+
 **Decision-time method precedent (when procedural).** When the choice turns on
 an intellectual procedure, or a retained lesson could change the decision, the
 existing optional `semantic method context --question "<current decision>"
@@ -757,6 +767,7 @@ already stated above, so skipping a file never loses the rule.
 | `references/possibility-synthesis-v1.md` | a goal-family ecology yields a genuinely new recombination or gap the agent decides to retain | routine retrieval or restating an existing candidate | synthesis support != automatic generation, validation, selection or authorization |
 | `references/assumption-aware-prospective-reasoning-v1.md` | a consequential possibility or construction choice may be bounded by unexamined assumptions | a narrow task or a decision whose assumptions are already stable | assumption visible != true; scenario contrast != selection or ranking |
 | `references/method-trial-v1.md` | a consequential method choice has an observable expected result and a predecision commitment would preserve accountability | trivial or already-fixed work | predecision commitment != causal proof; trial != qualification |
+| `references/change-context-v1.md` | an unfamiliar or cross-cutting Python file is about to change and code-level consumers/tests could affect verification | a trivial local edit already settled by direct inspection | syntactic importer != runtime caller; test reference != coverage; context != authorization |
 | `references/session-receipt-v1.md` | every session using this Skill | never; follow the contract when a receipt can be written | receipt != authority |
 | `references/delegated-goal-patterns.md` | a delegated mission's scope, authority or stop is material | a bounded task | desired delegation != granted authority |
 | `references/experiment-economy-v1.md` | an experiment or isolation is actually under consideration | reversible construction can answer it | uncertainty != experiment |

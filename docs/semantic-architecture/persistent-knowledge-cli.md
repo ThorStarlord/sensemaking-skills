@@ -1294,6 +1294,25 @@ limited. A `truncated: false` category does not imply the global envelope
 contained all referenced claim/relationship records. Raise the limit or inspect
 original cited sources when the omitted reference affects the decision.
 
+For a single Python path, the zero-setup consumer can add committed
+code-level relationships to the same authored context:
+
+```bash
+sensemaking-skills semantic workspace-query --repo . --ref HEAD \
+  --operation context-for src/sensemaking_skills/semantic_cli.py \
+  --include-source-relationships --json
+```
+
+The opt-in `source_relationships` section reads a clean temporary checkout of
+the selected revision and adds direct imports, direct importers, test
+references, top-level symbols, parse failures and a coverage status. It is not a
+call graph: dynamic imports, runtime dispatch, test coverage and non-Python
+references are not assessed. `test_references` is empty when no test directly
+imports or mentions the path, not when no test exercises the behavior. The
+flag accepts exactly one tracked `.py` path and is available on
+`workspace-query`, not on the lower-level `knowledge-query` operation. See
+[Change Context v1](../../skills/using-sensemaking/references/change-context-v1.md).
+
 Each contract, decision, linked alternative, history, verification and rule
 item keeps its
 `epistemic_status`, `authority_kind`, `authority_ref`, evidence references and
