@@ -28,7 +28,7 @@ from .semantic_architecture import (
 )
 from .semantic_architecture.impact import build_impact_preview
 from .semantic_architecture.knowledge_sources import (
-    build_knowledge_snapshot, temporary_commit_checkout, verified_tracked_sources,
+    _git, build_knowledge_snapshot, temporary_commit_checkout, verified_tracked_sources,
 )
 from .semantic_architecture.repository_bootstrap import orient_repository
 from .semantic_architecture.worktree_context import changed_paths_since_indexed_ref, inspect_worktree_context
@@ -626,6 +626,41 @@ def register_semantic_commands(root_cli: click.Group) -> None:
         except (ValueError, OSError, UnicodeError) as exc:
             raise click.ClickException(str(exc)) from exc
         _emit(payload, output_json=output_json)
+
+    @semantic_group.command(name="refactor-rename")
+    @click.option("--repo", "repo_dir", type=click.Path(exists=True, file_okay=False, path_type=Path),
+                  default=Path("."), show_default=True, help="Any directory inside the Git worktree")
+    @click.option("--ref", "ref", default="HEAD", show_default=True,
+                  help="Committed revision whose source is previewed")
+    @click.option("--path", "path", required=True,
+                  help="Repository-relative Python file defining the symbol")
+    @click.option("--symbol", required=True, help="Existing top-level function or class name")
+    @click.option("--to", "new", required=True, help="New Python identifier")
+    @click.option("--patch-out", type=click.Path(path_type=Path), default=None,
+                  help="Write the verified unified patch to this path")
+    @click.option("--json", "output_json", is_flag=True)
+    def semantic_refactor_rename(
+        repo_dir: Path, ref: str, path: str, symbol: str, new: str,
+        patch_out: Path | None, output_json: bool,
+    ) -> None:
+        """Preview a fail-closed rename patch for one committed Python symbol."""
+        from .semantic_architecture.refactor_preview import build_refactor_rename_preview
+
+        try:
+            root = repo_dir.resolve()
+            target_ref = _git(root, "rev-parse", "--verify", f"{ref}^{{commit}}")
+            payload = build_refactor_rename_preview(root, target_ref, path, symbol, new)
+        except (ValueError, OSError, UnicodeError) as exc:
+            raise click.ClickException(str(exc)) from exc
+        if patch_out is not None:
+            if payload.get("patch"):
+                patch_out.parent.mkdir(parents=True, exist_ok=True)
+                patch_out.write_text(payload["patch"], encoding="utf-8", newline="\n")
+                payload["patch_out"] = str(patch_out)
+            else:
+                payload["patch_out"] = None
+        _emit(payload, output_json=output_json)
+
 
     @semantic_group.command(name="knowledge-view-export")
     @click.option("--db", "db_path", required=True, type=click.Path(exists=True, dir_okay=False, path_type=Path))

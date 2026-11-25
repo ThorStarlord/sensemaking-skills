@@ -21,7 +21,7 @@ from pathlib import Path, PurePosixPath
 from typing import Any, Callable, Iterable, Mapping
 
 from .knowledge_sources import _git, _source, temporary_commit_checkout, verified_tracked_sources
-from .verification_scenarios import build_verification_scenarios
+from .verification_scenarios import build_guard_scenarios
 
 _MAX_LIMIT = 250
 _SYMBOL = re.compile(r"[A-Za-z_][A-Za-z0-9_]*\Z")
@@ -480,7 +480,7 @@ def _symbol_context(
     behavior_truncated = any(
         item["behavior"].get("truncated") for item in definitions
     )
-    scenario_context = build_verification_scenarios(
+    scenario_context = build_guard_scenarios(
         target_tree, target_source, target_path, symbol, limit=limit,
     )
     truncated = (

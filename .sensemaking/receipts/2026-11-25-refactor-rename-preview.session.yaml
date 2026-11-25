@@ -1,0 +1,120 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-11-25-refactor-rename-preview
+state: final
+created_at: "2026-11-25T00:00:00Z"
+updated_at: "2026-11-25T00:00:00Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: c08a498bd2163fe90b8869bc2ebe46990b69ea69
+  end_ref: 6774bc63fc2deb4a06e3ea1aa7ddca3e805216c7
+  worktree_clean_at_end: true
+skill_identity:
+  load_mode: manual_explicit_load
+  sensemaking_source_ref: c08a498bd2163fe90b8869bc2ebe46990b69ea69
+goal:
+  statement: "Discover and realize a substantive generative capability that turns existing Python reference knowledge into a verified implementation artifact."
+  source: owner_message
+  source_ref: null
+delegation:
+  granted: [read, local_write, run_local_commands, commit, push, open_pr, merge]
+  withheld: [release, deploy, tracker_write, external_publication]
+continuity:
+  resumes: 2026-11-25-verification-scenarios
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: Compare developed generative candidates and select a buildable responsibility
+    capability: using-sensemaking
+    status: completed
+    reason: "The possibility-crucible candidate would mostly emit DATA_GAP ceremony over a thin authored assumption graph and risked another planner surface. The refactor rename preview produces a patch and a verification result, so it changes what an agent can accomplish."
+    artifact_refs: [docs/normal-use/2026-11-25-refactor-rename-preview.md]
+    validation:
+      - command: Independent explorer reports and source inspection
+        result: PASS
+  - id: R-2
+    responsibility: Implement a patch-only fail-closed rename preview
+    capability: ordinary_coding
+    status: completed
+    reason: "Added semantic refactor-rename with exact-revision scanning, import and binding resolution, identifier-span edits, unified patch output and disposable-checkout verification."
+    artifact_refs: [src/sensemaking_skills/semantic_architecture/refactor_preview.py, src/sensemaking_skills/semantic_cli.py]
+    validation:
+      - command: Ruff, compileall and real CLI previews
+        result: PASS
+  - id: R-3
+    responsibility: Use the capability on a real rename and apply its verified patch
+    capability: ordinary_coding
+    status: completed
+    reason: "build_verification_scenarios -> build_guard_scenarios produced 3 edits across 2 files; the patch applied, the AST delta was identifiers only and old-name residue was zero. The narrower name matches the builder's direct-guard scope."
+    artifact_refs: [src/sensemaking_skills/semantic_architecture/source_relationships.py, src/sensemaking_skills/semantic_architecture/verification_scenarios.py]
+    validation:
+      - command: git apply and git grep -w residue check
+        result: PASS
+  - id: R-4
+    responsibility: Exercise refusal paths and integrate a hosted consumer
+    capability: ordinary_coding
+    status: completed
+    reason: "A name collision returns BLOCKED with NEW_NAME_ALREADY_BOUND and no patch. The hosted workflow now checks a READY cross-file patch, the collision block and a non-Python refusal."
+    artifact_refs: [.github/workflows/semantic-context-reentry.yml]
+    validation:
+      - command: Local hosted-equivalent assertions
+        result: PASS
+      - command: Hosted CI on the PR
+        result: NOT_RUN
+  - id: R-5
+    responsibility: Preserve the evidence ceiling and authentic findings
+    capability: using-sensemaking
+    status: completed
+    reason: "The record separates patch mechanics from runtime correctness, coverage and API compatibility. It retains the Windows stdin encoding, definition span, dynamic blocking scope and non-Python disclosure findings."
+    artifact_refs: [docs/normal-use/2026-11-25-refactor-rename-preview.md]
+    validation:
+      - command: Docs currentness and diff review
+        result: PASS
+findings:
+  - id: F-1
+    statement: "The existing CLI exposed references and behavior surfaces but no operation that computes and verifies a source transformation; an agent still had to perform every rename edit manually."
+    epistemic_status: OBSERVED
+    evidence_refs: [src/sensemaking_skills/semantic_architecture/source_relationships.py, src/sensemaking_skills/semantic_cli.py]
+    disposition: resolved
+  - id: F-2
+    statement: "The preview produced a READY patch for a real two-file rename, applied it in a disposable checkout, found no old-name residue and kept the AST delta to identifiers."
+    epistemic_status: OBSERVED
+    evidence_refs: [docs/normal-use/2026-11-25-refactor-rename-preview.md]
+    disposition: resolved
+  - id: F-3
+    statement: "A new-name collision was refused with no applicable patch; the proposed edits remained visible only for inspection."
+    epistemic_status: OBSERVED
+    evidence_refs: [src/sensemaking_skills/semantic_architecture/refactor_preview.py]
+    disposition: resolved
+  - id: F-4
+    statement: "Windows text-mode stdin converted LF patch lines to CRLF and broke git apply; bytes are now passed. Multi-line definition spans and over-broad computed-getattr blocking were also corrected."
+    epistemic_status: OBSERVED
+    evidence_refs: [src/sensemaking_skills/semantic_architecture/refactor_preview.py]
+    disposition: resolved
+  - id: F-5
+    statement: "A rename whose old name appears in non-Python files remains READY for Python references but lists the unmodified mentions and downgrades coverage; the tool does not rewrite docs, YAML or configuration."
+    epistemic_status: DERIVED
+    evidence_refs: [docs/normal-use/2026-11-25-refactor-rename-preview.md]
+    disposition: handed_off
+open_questions:
+  - id: Q-1
+    question: "Will an independent agent apply a rename preview to a change with downstream tests and record whether it changed the verification set?"
+    source: empirical
+    blocking: false
+    durable_ref: null
+  - id: Q-2
+    question: "Do symbol moves, method/variable renames or string-registry rewriting become warranted after independent use of patch-only renames?"
+    source: empirical
+    blocking: false
+    durable_ref: null
+stop:
+  disposition: NO_FURTHER_WARRANT
+  reason: "The selected capability is implemented, integrated into the hosted consumer and exercised on a real cross-file rename. Broader transformations and runtime proof require independent use evidence."
+next:
+  warranted_responsibility: "Hosted CI verification; independent use of the rename preview on a change with downstream tests."
+  blocked_on: ["Q-1"]
+persistence: committed
+claim_ceiling: "One patch-only rename preview, one applied two-file rename and local fail-closed checks. Hosted CI, runtime correctness, test coverage, API compatibility and independent reuse are not established."
+action_authorized_by_receipt: false
+immutable: true
