@@ -286,8 +286,96 @@ def _test_scopes(tree: ast.AST) -> list[tuple[str, str, int, int]]:
     return scopes
 
 
+def _direct_behavior_nodes(node: ast.AST) -> Iterable[ast.AST]:
+    """Yield nodes inside one definition without entering nested functions/classes."""
+
+    stack = list(ast.iter_child_nodes(node))
+    while stack:
+        child = stack.pop()
+        yield child
+        if isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef, ast.Lambda)):
+            continue
+        stack.extend(ast.iter_child_nodes(child))
+
+
+def _signature(node: ast.AST) -> str:
+    if isinstance(node, ast.ClassDef):
+        parts = [ast.unparse(base) for base in node.bases]
+        parts.extend(f"{keyword.arg}={ast.unparse(keyword.value)}" for keyword in node.keywords)
+        return "class " + node.name + "(" + ", ".join(parts) + ")"
+    prefix = "async " if isinstance(node, ast.AsyncFunctionDef) else ""
+    result = prefix + "(" + ast.unparse(node.args) + ")"
+    if getattr(node, "returns", None) is not None:
+        result += " -> " + ast.unparse(node.returns)
+    return result
+
+
+def _behavior_surface(
+    node: ast.AST, source: str, path: str, limit: int,
+) -> dict[str, Any]:
+    """Return a source-level behavioral surface for one definition.
+
+    This is a bounded reading aid: signature, decorators, docstring summary,
+    direct raise/assert statements and an exact source-body hash. It is not a
+    semantic behavior model or a runtime contract.
+    """
+
+    docstring = ast.get_docstring(node, clean=True) if isinstance(
+        node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)
+    ) else None
+    summary = None
+    if docstring:
+        summary = " ".join(docstring.strip().split("\n\n", 1)[0].split())
+        summary = summary[:400]
+    raises: list[dict[str, Any]] = []
+    assertions: list[dict[str, Any]] = []
+    raises_total = 0
+    assertions_total = 0
+    if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+        for child in _direct_behavior_nodes(node):
+            if isinstance(child, ast.Raise):
+                raises_total += 1
+                if len(raises) < limit:
+                    if child.exc is None:
+                        name = "bare raise"
+                    elif isinstance(child.exc, ast.Call):
+                        name = ast.unparse(child.exc.func)
+                    else:
+                        name = ast.unparse(child.exc)
+                    raises.append({"type": name, "line": child.lineno})
+            elif isinstance(child, ast.Assert):
+                assertions_total += 1
+                if len(assertions) < limit:
+                    assertions.append({"test": ast.unparse(child.test)[:240], "line": child.lineno})
+    segment = ast.get_source_segment(source, node)
+    if segment is None:
+        segment = ast.unparse(node)
+    return {
+        "kind": (
+            "class" if isinstance(node, ast.ClassDef)
+            else "async_function" if isinstance(node, ast.AsyncFunctionDef)
+            else "function"
+        ),
+        "signature": _signature(node),
+        "decorators": [ast.unparse(item) for item in node.decorator_list][:limit],
+        "docstring_summary": summary,
+        "docstring_sha256": hashlib.sha256(docstring.encode("utf-8")).hexdigest() if docstring else None,
+        "raises": raises,
+        "assertions": assertions,
+        "source_sha256": hashlib.sha256(segment.encode("utf-8")).hexdigest(),
+        "line": node.lineno,
+        "end_line": node.end_lineno or node.lineno,
+        "path": path,
+        "truncated": (
+            raises_total > len(raises)
+            or assertions_total > len(assertions)
+            or len(node.decorator_list) > limit
+        ),
+    }
+
+
 def _symbol_context(
-    target_path: str, target_tree: ast.AST, target_module: str,
+    target_path: str, target_tree: ast.AST, target_source: str, target_module: str,
     target_exported: set[str] | None, tracked: set[str], checkout: Path,
     symbol: str, limit: int,
 ) -> dict[str, Any]:
@@ -307,6 +395,7 @@ def _symbol_context(
                 "leading_underscore": node.name.startswith("_"),
                 "in_module_all": node.name in target_exported if target_exported is not None else None,
                 "evidence_ref": f"file:{target_path}:line:{node.lineno}",
+                "behavior": _behavior_surface(node, target_source, target_path, limit),
             })
 
     direct_references: list[dict[str, Any]] = []
@@ -385,10 +474,14 @@ def _symbol_context(
                         "evidence_ref": f"file:{candidate}:line:{line}",
                     })
 
+    behavior_truncated = any(
+        item["behavior"].get("truncated") for item in definitions
+    )
     truncated = (
         definitions_total > len(definitions)
         or direct_total > len(direct_references)
         or test_total > len(test_candidates)
+        or behavior_truncated
     )
     return {
         "symbol": symbol,
@@ -401,6 +494,7 @@ def _symbol_context(
             "direct_references": direct_total,
             "test_candidates": test_total,
             "parse_failures": len(parse_failures),
+            "behavior_truncated": behavior_truncated,
         },
         "star_import_observed": star_import,
         "test_candidate_scope": "TEST_FUNCTION_LEVEL",
@@ -460,7 +554,7 @@ def build_source_relationships(
         # the requested symbol is absent. Preserve the target parse disclosure.
         if symbol is not None and target_tree is not None:
             symbol_context = _symbol_context(
-                target_path, target_tree, target_module,
+                target_path, target_tree, target_source or "", target_module,
                 exported, tracked, checkout, symbol, limit,
             )
 
@@ -622,15 +716,91 @@ def _compare_identities(
     }
 
 
+def _behavior_comparison(
+    base_symbol: Mapping[str, Any] | None,
+    target_symbol: Mapping[str, Any] | None,
+) -> dict[str, Any]:
+    """Compare reported behavioral surfaces for one selected symbol."""
+
+    if base_symbol is None or target_symbol is None:
+        return {
+            "comparison_status": "NOT_COMPARABLE",
+            "reason": "SYMBOL_CONTEXT_UNAVAILABLE",
+            "presence": "UNKNOWN",
+            "changed_fields": [],
+            "source_changed": None,
+            "base": None,
+            "target": None,
+        }
+    base_definitions = [
+        item for item in base_symbol.get("definitions", []) if item.get("behavior")
+    ]
+    target_definitions = [
+        item for item in target_symbol.get("definitions", []) if item.get("behavior")
+    ]
+    if len(base_definitions) != 1 or len(target_definitions) != 1:
+        return {
+            "comparison_status": "NOT_COMPARABLE",
+            "reason": "EXPECTED_ONE_DEFINITION_WITH_BEHAVIOR",
+            "presence": (
+                "BOTH" if base_definitions and target_definitions
+                else "BASE_ONLY" if base_definitions
+                else "TARGET_ONLY" if target_definitions
+                else "NEITHER"
+            ),
+            "changed_fields": [],
+            "source_changed": None,
+            "base": base_definitions[0]["behavior"] if len(base_definitions) == 1 else None,
+            "target": target_definitions[0]["behavior"] if len(target_definitions) == 1 else None,
+        }
+    base, target = base_definitions[0]["behavior"], target_definitions[0]["behavior"]
+    checks = (
+        ("kind", base["kind"], target["kind"]),
+        ("signature", base["signature"], target["signature"]),
+        ("decorators", base["decorators"], target["decorators"]),
+        ("docstring_summary", base["docstring_summary"], target["docstring_summary"]),
+        ("docstring_sha256", base["docstring_sha256"], target["docstring_sha256"]),
+        (
+            "raises",
+            sorted(item["type"] for item in base["raises"]),
+            sorted(item["type"] for item in target["raises"]),
+        ),
+        (
+            "assertions",
+            sorted(item["test"] for item in base["assertions"]),
+            sorted(item["test"] for item in target["assertions"]),
+        ),
+        ("source_sha256", base["source_sha256"], target["source_sha256"]),
+    )
+    changed = [name for name, left, right in checks if left != right]
+    truncated = bool(
+        base_symbol.get("truncated") or target_symbol.get("truncated")
+        or base.get("truncated") or target.get("truncated")
+    )
+    return {
+        "comparison_status": (
+            "PARTIAL" if truncated else "COMPLETE_FOR_REPORTED_BEHAVIOR"
+        ),
+        "reason": None,
+        "presence": "BOTH",
+        "changed_fields": changed,
+        "source_changed": base["source_sha256"] != target["source_sha256"],
+        "base": base,
+        "target": target,
+    }
+
+
 def build_source_review_comparison(
     root: Path, base_ref: str, target_ref: str, path: str, *,
     limit: int = 25, symbol: str | None = None,
 ) -> dict[str, Any]:
     """Pair existing exact-commit source views for one focal review path.
 
-    No comparison of source semantics, signatures, runtime behavior or tests
-    executed is implied. Missing or non-regular entries never become invented
-    empty source inventories.
+    Identity membership is not behavioral equivalence. When a symbol is
+    selected, an additional source-level behavior surface may be compared;
+    semantic behavior, runtime execution and test coverage are still not
+    inferred. Missing or non-regular entries never become invented empty
+    source inventories.
     """
 
     if not 1 <= limit <= _MAX_LIMIT:
@@ -649,6 +819,7 @@ def build_source_review_comparison(
     )
     base, target = base_side["relationships"], target_side["relationships"]
     comparisons: dict[str, Any] = {}
+    behavior_comparison = None
     if base is not None and target is not None:
         base_target_parsed = base["target_parse_error"] is None
         target_target_parsed = target["target_parse_error"] is None
@@ -676,10 +847,19 @@ def build_source_review_comparison(
                     base_parsed=base_symbol["counts"]["parse_failures"] == 0,
                     target_parsed=target_symbol["counts"]["parse_failures"] == 0,
                 )
+            if symbol is not None:
+                behavior_comparison = _behavior_comparison(base_symbol, target_symbol)
     return {
         "path": path, "symbol": symbol, "base": base_side, "target": target_side,
         "identity_comparisons": comparisons,
-        "truncated": any(side is not None and side["truncated"] for side in (base, target)),
+        "symbol_behavior_comparison": behavior_comparison,
+        "truncated": (
+            any(side is not None and side["truncated"] for side in (base, target))
+            or (
+                behavior_comparison is not None
+                and behavior_comparison["comparison_status"] == "PARTIAL"
+            )
+        ),
         "limits": [
             "Only this focal path receives paired committed source context. Other paths are not compared.",
             "Membership compares returned module, file, kind:name or test identities, not line positions, signatures or full source bodies.",
@@ -687,6 +867,8 @@ def build_source_review_comparison(
             "VISIBLE_ONLY differences are returned-list differences, not established additions or removals.",
             "Even complete identity lists are limited to the underlying syntactic scanner; missing runtime or semantic relationships are NOT ASSESSED.",
             "Absent or non-regular tree entries and unavailable symbol contexts are not compared as empty inventories.",
+            "Symbol behavior compares source-level signature, decorators, docstring summary/hash, direct raises/asserts and exact definition source hash; semantic or runtime behavioral equivalence is NOT ASSESSED.",
+            "A source-hash difference can be formatting, comments or any body edit; inspect the reported fields and original source.",
             "No uncommitted bytes, test coverage, change safety, transitive impact or authorization are established.",
         ],
     }

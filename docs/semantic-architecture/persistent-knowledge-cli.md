@@ -1695,10 +1695,15 @@ It compares bounded identities of direct-import modules, importer/test files,
 top-level symbols (kind:name) and optionally direct symbol reference files
 and test candidates (path::test-name). Each identity comparison discloses
 `base_only`, `target_only`, `both`, each side's list completeness and
-`comparison_status`. Read `VISIBLE_ONLY` differences as returned-list
-differences, not established additions or removals; even complete identities
-remain limited to the syntactic scanner. A shared identity is not proof of
-unchanged code or behavior. Missing/non-regular tree entries and unavailable
+`comparison_status`. When `--source-symbol` is present, the optional
+`symbol_behavior_comparison` also pairs source-level signature, decorators,
+docstring summary/hash, direct raises/asserts and exact definition source hash,
+and reports `changed_fields`, `presence` and `source_changed`. Read
+`VISIBLE_ONLY` differences as returned-list differences, not established
+additions or removals; even complete identities remain limited to the
+syntactic scanner. A shared identity is not proof of unchanged code or
+behavior; a behavior-surface difference is not proof of semantic change.
+Missing/non-regular tree entries and unavailable
 symbol contexts are not compared as empty inventories. Per-side source
 truncation propagates to the review packet. The comparison reads committed
 bytes only, including when `--include-worktree` is enabled. No new dependency

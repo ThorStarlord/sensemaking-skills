@@ -1559,6 +1559,51 @@ jobs:
           print("BASE intent and paired exact-commit source evidence remain separate.")
           PY
 
+      - name: Compare symbol behavioral surfaces across revisions (mechanics only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          sensemaking-skills semantic workspace-review-context \
+            --repo . --base-ref e920a6e9 --ref 97ac8bc5 \
+            --source-path src/sensemaking_skills/semantic_architecture/source_relationships.py \
+            --source-symbol build_source_relationships --json \
+            > "$RUNNER_TEMP/behavior-changed.json"
+          sensemaking-skills semantic workspace-review-context \
+            --repo . --base-ref e920a6e9 --ref 97ac8bc5 \
+            --source-path src/sensemaking_skills/semantic_architecture/source_relationships.py \
+            --source-symbol _safe_path --json \
+            > "$RUNNER_TEMP/behavior-stable.json"
+          if sensemaking-skills semantic workspace-query \
+            --repo . --ref "$(git rev-parse HEAD)" --operation context-for \
+            src/sensemaking_skills/semantic_architecture/knowledge_sources.py \
+            --include-source-relationships --symbol 'not-valid!' --json \
+            > /dev/null 2>&1; then
+            echo "malformed --symbol unexpectedly accepted"
+            exit 1
+          fi
+          python - <<'PY'
+          import json
+          import os
+          def load(name):
+              with open(os.path.join(os.environ["RUNNER_TEMP"], name), encoding="utf-8") as stream:
+                  return json.load(stream)
+          changed = load("behavior-changed.json")["source_relationship_comparison"]
+          stable = load("behavior-stable.json")["source_relationship_comparison"]
+          changed_behavior = changed["symbol_behavior_comparison"]
+          stable_behavior = stable["symbol_behavior_comparison"]
+          assert changed["identity_comparisons"]["top_level_symbols"]["both"]
+          assert "function:build_source_relationships" in changed["identity_comparisons"]["top_level_symbols"]["both"]
+          assert changed_behavior["comparison_status"] == "COMPLETE_FOR_REPORTED_BEHAVIOR"
+          assert {"signature", "raises", "source_sha256"} <= set(changed_behavior["changed_fields"])
+          assert "symbol:" not in changed_behavior["base"]["signature"]
+          assert "symbol:" in changed_behavior["target"]["signature"]
+          assert changed_behavior["source_changed"] is True
+          assert stable_behavior["comparison_status"] == "COMPLETE_FOR_REPORTED_BEHAVIOR"
+          assert stable_behavior["changed_fields"] == []
+          assert stable_behavior["source_changed"] is False
+          print("Behavioral surface comparison distinguishes a signature/raise change from an unchanged helper despite shared identity.")
+          PY
+
       - name: Exercise method-trial anchoring and retention (mechanics only)
         shell: bash
         run: |
