@@ -1305,7 +1305,8 @@ sensemaking-skills semantic workspace-query --repo . --ref HEAD \
 
 The opt-in `source_relationships` section reads a clean temporary checkout of
 the selected revision and adds direct imports, direct importers, test
-references, top-level symbols, parse failures and a coverage status. It is not a
+references, top-level symbols, leading-underscore cross-module imports, parse
+failures and a coverage status. It is not a
 call graph: dynamic imports, runtime dispatch, test coverage and non-Python
 references are not assessed. `test_references` is empty when no test directly
 imports or mentions the path, not when no test exercises the behavior. The

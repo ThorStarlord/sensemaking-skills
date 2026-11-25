@@ -28,6 +28,11 @@ _LIMITS = (
     "Only tracked Python files at the exact revision are inspected; non-Python "
     "references and untracked bytes are not represented.",
     "A missing relationship is NOT ASSESSED, not evidence that no relationship exists.",
+    "The top-level-symbol leading_underscore and in_module_all markers are syntax "
+    "and name conventions only; they are not export or stable-API claims.",
+    "Test references are file-level and do not show which symbol or behavior is exercised.",
+    "Re-exports through a package __init__ are not resolved to the defining module.",
+    "An importer line is the first matching import; evidence_refs lists the matching lines.",
 )
 
 
@@ -113,7 +118,34 @@ def _parse(path: Path, relative: str) -> tuple[ast.AST | None, str | None, bytes
         return None, source, raw, f"{relative}: Python syntax error at line {exc.lineno}"
 
 
-def _top_level_symbols(tree: ast.AST, limit: int) -> tuple[list[dict[str, Any]], int]:
+def _module_all(tree: ast.AST) -> set[str] | None:
+    """Return a literal module-level __all__ set, or None when absent/dynamic."""
+
+    for node in tree.body:
+        value = None
+        if isinstance(node, ast.Assign) and any(
+            isinstance(target, ast.Name) and target.id == "__all__"
+            for target in node.targets
+        ):
+            value = node.value
+        elif isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name) and node.target.id == "__all__":
+            value = node.value
+        if value is None:
+            continue
+        if isinstance(value, (ast.List, ast.Tuple, ast.Set)):
+            names = {
+                element.value for element in value.elts
+                if isinstance(element, ast.Constant) and isinstance(element.value, str)
+            }
+            if len(names) == len(value.elts):
+                return names
+        return None
+    return None
+
+
+def _top_level_symbols(
+    tree: ast.AST, limit: int, exported: set[str] | None,
+) -> tuple[list[dict[str, Any]], int]:
     symbols: list[dict[str, Any]] = []
     for node in tree.body:
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
@@ -121,7 +153,10 @@ def _top_level_symbols(tree: ast.AST, limit: int) -> tuple[list[dict[str, Any]],
                 "name": node.name,
                 "kind": "class" if isinstance(node, ast.ClassDef) else "function",
                 "line": node.lineno,
-                "public": not node.name.startswith("_"),
+                "leading_underscore": node.name.startswith("_"),
+                "in_module_all": (
+                    node.name in exported if exported is not None else None
+                ),
             })
     return symbols[:limit], len(symbols)
 
@@ -136,10 +171,12 @@ def _direct_imports(
             for alias in node.names:
                 total += 1
                 if len(items) < limit:
+                    resolved = module_paths.get(alias.name)
                     items.append({
                         "module": alias.name,
                         "line": node.lineno,
-                        "resolved_path": module_paths.get(alias.name),
+                        "resolved_path": resolved,
+                        "resolution": "TRACKED" if resolved else "EXTERNAL_OR_UNRESOLVED",
                         "imported_names": [],
                         "evidence_ref": f"file:{path}:line:{node.lineno}",
                     })
@@ -156,10 +193,12 @@ def _direct_imports(
                 base = node.module or ""
             total += 1
             if len(items) < limit:
+                resolved = module_paths.get(base)
                 items.append({
                     "module": base,
                     "line": node.lineno,
-                    "resolved_path": module_paths.get(base),
+                    "resolved_path": resolved,
+                    "resolution": "TRACKED" if resolved else "EXTERNAL_OR_UNRESOLVED",
                     "imported_names": [a.name for a in node.names if a.name != "*"],
                     "evidence_ref": f"file:{path}:line:{node.lineno}",
                 })
@@ -186,23 +225,34 @@ def build_source_relationships(
             raise ValueError("target path is not a tracked file at the selected revision")
         target_file = checkout / target_path
         target_tree, target_source, target_raw, target_error = _parse(target_file, target_path)
-        if target_error or target_tree is None or target_source is None or target_raw is None:
-            raise ValueError(f"target source could not be parsed: {target_error or target_path}")
+        if target_raw is None:
+            raise ValueError(f"target source could not be read: {target_error or target_path}")
         module_paths = _module_index(tracked)
         target_module = _module_for_path(target_path)
         target_is_package = target_path.endswith("/__init__.py") or target_path == "__init__.py"
         target_sha256 = hashlib.sha256(target_raw).hexdigest()
+        exported = _module_all(target_tree) if target_tree is not None else None
 
-        direct_imports, direct_imports_total = _direct_imports(
-            target_tree, target_path, module_paths, limit,
-        )
-        top_level_symbols, top_level_symbols_total = _top_level_symbols(target_tree, limit)
+        if target_tree is None:
+            direct_imports: list[dict[str, Any]] = []
+            direct_imports_total = 0
+            top_level_symbols: list[dict[str, Any]] = []
+            top_level_symbols_total = 0
+        else:
+            direct_imports, direct_imports_total = _direct_imports(
+                target_tree, target_path, module_paths, limit,
+            )
+            top_level_symbols, top_level_symbols_total = _top_level_symbols(
+                target_tree, limit, exported,
+            )
 
         importers: list[dict[str, Any]] = []
         test_references: list[dict[str, Any]] = []
+        leading_underscore_imports: list[dict[str, Any]] = []
         parse_failures: list[str] = []
         importers_total = 0
         tests_total = 0
+        leading_underscore_imports_total = 0
         for candidate in sorted(tracked):
             if not candidate.endswith(".py") or candidate == target_path:
                 continue
@@ -220,6 +270,21 @@ def build_source_relationships(
             is_test = candidate.startswith("tests/")
             if matches:
                 first = matches[0]
+                name_lines: dict[str, int] = {}
+                for _, line, names in matches:
+                    for name in names:
+                        if name.startswith("_"):
+                            name_lines.setdefault(name, line)
+                for name, line in sorted(name_lines.items()):
+                    leading_underscore_imports_total += 1
+                    if len(leading_underscore_imports) < limit:
+                        leading_underscore_imports.append({
+                            "name": name,
+                            "importer": candidate,
+                            "line": line,
+                            "is_test": is_test,
+                            "evidence_ref": f"file:{candidate}:line:{line}",
+                        })
                 item = {
                     "path": candidate,
                     "line": first[1],
@@ -253,10 +318,15 @@ def build_source_relationships(
                     })
 
     truncated = (
-        direct_imports_total > len(direct_imports) or top_level_symbols_total > len(top_level_symbols)
+        direct_imports_total > len(direct_imports)
+        or top_level_symbols_total > len(top_level_symbols)
         or importers_total > len(importers) or tests_total > len(test_references)
+        or leading_underscore_imports_total > len(leading_underscore_imports)
     )
-    coverage_status = "PARTIAL" if parse_failures or truncated else "COMPLETE_FOR_PYTHON_AST"
+    coverage_status = (
+        "PARTIAL" if parse_failures or truncated or target_error
+        else "COMPLETE_FOR_PYTHON_AST"
+    )
     return {
         "target": {
             "path": target_path,
@@ -268,11 +338,16 @@ def build_source_relationships(
             "direct_importers": importers_total,
             "test_references": tests_total,
             "top_level_symbols": top_level_symbols_total,
+            "leading_underscore_imports": leading_underscore_imports_total,
+            "parse_failures": len(parse_failures),
         },
         "direct_imports": direct_imports,
         "direct_importers": importers,
         "test_references": test_references,
+        "test_reference_scope": "FILE_LEVEL",
         "top_level_symbols": top_level_symbols,
+        "leading_underscore_imports": leading_underscore_imports,
+        "target_parse_error": target_error,
         "parse_failures": parse_failures[:limit],
         "coverage_status": coverage_status,
         "truncated": truncated,

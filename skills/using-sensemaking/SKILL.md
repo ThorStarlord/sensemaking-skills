@@ -316,7 +316,7 @@ ranking mechanism or a step for narrow repairs. See
 **Pre-change source context (when material).** Before changing an unfamiliar or
 cross-cutting Python file, the optional `semantic workspace-query --operation
 context-for <path> --include-source-relationships --json` adds committed Python
-importers, test references and public symbols beside the authored ownership,
+importers, test references and top-level symbols beside the authored ownership,
 rules, decisions and verification. It reads an exact committed revision and is
 syntactic only: importers are not runtime callers, test references are not
 coverage, and absent entries are `NOT_ASSESSED`. See
