@@ -36,6 +36,30 @@ sensemaking-skills semantic workspace-query --repo . --ref HEAD \
   --include-source-relationships --symbol <name> --json
 ```
 
+## Committed-change review
+
+When reviewing an actual change rather than planning one, reuse the same
+source evidence alongside the existing BASE product and architecture packet:
+
+```bash
+sensemaking-skills semantic workspace-review-context --repo . \
+  --base-ref BASE --ref HEAD --source-path src/sensemaking_skills/<module>.py \
+  --source-symbol <name> --json
+```
+
+The focal path must be among the selected review paths; use `--path` for
+explicit scope or increase `--max-paths` if it was omitted. The optional
+symbol may be omitted. `source_relationship_comparison` pairs exact committed
+BASE/TARGET snapshots and reports bounded identity membership (`base_only`,
+`target_only`, `both`) for modules, importer/test files, top-level symbols
+and, when available, symbol reference files and test candidates. Read each
+side's original line evidence before judging consequences. `VISIBLE_ONLY`
+means a list was incomplete; differences do not establish actual additions
+or removals. `both` means observed at both revisions, not unchanged behavior.
+Absent/non-regular entries and unavailable symbol contexts are not compared
+as empty inventories. Authored intent remains BASE-only. No worktree source
+bytes, runtime dependency, coverage, change safety or semantic impact is inferred.
+
 ## What the output adds
 
 The existing `context` section remains the authored view: ownership,
@@ -119,8 +143,8 @@ mention.
 - A target syntax or decoding error is reported as `target_parse_error` and
   `PARTIAL`; target-derived imports/symbols are empty, while the authored
   context remains available.
-- Only tracked Python files at the exact revision are inspected; non-Python
-  references and untracked bytes are not represented.
+- Only tracked Python files at the exact revision are inspected; symlink
+  sources are refused, and non-Python references and untracked bytes are not represented.
 - A missing relationship is `NOT_ASSESSED`, not absence.
 - Source relationships do not establish architectural correctness, semantic
   impact or release readiness.

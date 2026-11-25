@@ -16,9 +16,9 @@ import ast
 import hashlib
 import re
 from pathlib import Path, PurePosixPath
-from typing import Any, Iterable, Mapping
+from typing import Any, Callable, Iterable, Mapping
 
-from .knowledge_sources import temporary_commit_checkout
+from .knowledge_sources import _git, _source, temporary_commit_checkout, verified_tracked_sources
 
 _MAX_LIMIT = 250
 _SYMBOL = re.compile(r"[A-Za-z_][A-Za-z0-9_]*\Z")
@@ -27,8 +27,8 @@ _LIMITS = (
     "reflection and call order are NOT ASSESSED.",
     "Importer and test entries are syntactic references, not proof of runtime use "
     "or test coverage.",
-    "Only tracked Python files at the exact revision are inspected; non-Python "
-    "references and untracked bytes are not represented.",
+    "Only tracked Python files at the exact revision are inspected; symlink "
+    "sources are refused, and non-Python references and untracked bytes are not represented.",
     "A missing relationship is NOT ASSESSED, not evidence that no relationship exists.",
     "The top-level-symbol leading_underscore and in_module_all markers are syntax "
     "and name conventions only; they are not export or stable-API claims.",
@@ -112,10 +112,12 @@ def _matches_target(module: str, target_module: str, target_is_package: bool) ->
     )
 
 
-def _parse(path: Path, relative: str) -> tuple[ast.AST | None, str | None, bytes | None, str | None]:
+def _parse(
+    checkout: Path, tracked: set[str], relative: str,
+) -> tuple[ast.AST | None, str | None, bytes | None, str | None]:
     try:
-        raw = path.read_bytes()
-    except OSError as exc:
+        raw = _source(checkout, tracked, relative).read_bytes()
+    except (OSError, ValueError, RuntimeError) as exc:
         return None, None, None, f"{relative}: source could not be read: {exc}"
     try:
         source = raw.decode("utf-8-sig")
@@ -330,7 +332,7 @@ def _symbol_context(
     for candidate in sorted(tracked):
         if not candidate.endswith(".py") or candidate == target_path:
             continue
-        tree, _, _, error = _parse(checkout / candidate, candidate)
+        tree, _, _, error = _parse(checkout, tracked, candidate)
         if error or tree is None:
             parse_failures.append(error or f"{candidate}: source could not be parsed")
             continue
@@ -428,14 +430,10 @@ def build_source_relationships(
         raise ValueError("source relationships currently support one tracked .py file")
     root_dir = Path(root).resolve()
     with temporary_commit_checkout(root_dir, target_ref) as checkout:
-        tracked = {
-            item.relative_to(checkout).as_posix()
-            for item in checkout.rglob("*") if item.is_file()
-        }
+        checkout, tracked = verified_tracked_sources(checkout, target_ref)
         if target_path not in tracked:
             raise ValueError("target path is not a tracked file at the selected revision")
-        target_file = checkout / target_path
-        target_tree, target_source, target_raw, target_error = _parse(target_file, target_path)
+        target_tree, target_source, target_raw, target_error = _parse(checkout, tracked, target_path)
         if target_raw is None:
             raise ValueError(f"target source could not be read: {target_error or target_path}")
         module_paths = _module_index(tracked)
@@ -476,7 +474,7 @@ def build_source_relationships(
         for candidate in sorted(tracked):
             if not candidate.endswith(".py") or candidate == target_path:
                 continue
-            tree, source, _, error = _parse(checkout / candidate, candidate)
+            tree, source, _, error = _parse(checkout, tracked, candidate)
             if error or tree is None or source is None:
                 parse_failures.append(error or f"{candidate}: source could not be parsed")
                 continue
@@ -574,4 +572,121 @@ def build_source_relationships(
         "coverage_status": coverage_status,
         "truncated": truncated,
         "limits": list(_LIMITS),
+    }
+
+
+def _review_side(
+    root: Path, ref: str, path: str, limit: int, symbol: str | None,
+) -> dict[str, Any]:
+    """Classify the exact committed tree entry before inspecting its source."""
+
+    entry = _git(root, "--literal-pathspecs", "ls-tree", "-z", "--full-tree", ref, "--", path)
+    if not entry:
+        return {"ref": ref, "status": "ABSENT_FROM_TREE", "relationships": None}
+    metadata, separator, name = entry.rstrip("\0").partition("\t")
+    if not separator or name != path or len(metadata.split()) != 3:
+        raise ValueError("cannot establish the exact committed source review entry")
+    mode, kind, _ = metadata.split()
+    if kind != "blob" or mode not in {"100644", "100755"}:
+        return {"ref": ref, "status": "NOT_REGULAR_FILE", "relationships": None}
+    return {
+        "ref": ref, "status": "REGULAR_FILE",
+        "relationships": build_source_relationships(
+            root, ref, path, limit=limit, symbol=symbol,
+        ),
+    }
+
+
+def _compare_identities(
+    base: Mapping[str, Any], target: Mapping[str, Any], field: str,
+    identity: Callable[[Mapping[str, Any]], str], *,
+    base_parsed: bool, target_parsed: bool,
+) -> dict[str, Any]:
+    """Compare only identities returned by the bounded syntactic consumer."""
+
+    base_rows, target_rows = base[field], target[field]
+    left = {identity(row) for row in base_rows}
+    right = {identity(row) for row in target_rows}
+    base_complete = base_parsed and base["counts"][field] == len(base_rows)
+    target_complete = target_parsed and target["counts"][field] == len(target_rows)
+    return {
+        "base_only": sorted(left - right),
+        "target_only": sorted(right - left),
+        "both": sorted(left & right),
+        "base_list_complete": base_complete,
+        "target_list_complete": target_complete,
+        "comparison_status": (
+            "COMPLETE_FOR_REPORTED_IDENTITIES" if base_complete and target_complete
+            else "VISIBLE_ONLY"
+        ),
+    }
+
+
+def build_source_review_comparison(
+    root: Path, base_ref: str, target_ref: str, path: str, *,
+    limit: int = 25, symbol: str | None = None,
+) -> dict[str, Any]:
+    """Pair existing exact-commit source views for one focal review path.
+
+    No comparison of source semantics, signatures, runtime behavior or tests
+    executed is implied. Missing or non-regular entries never become invented
+    empty source inventories.
+    """
+
+    if not 1 <= limit <= _MAX_LIMIT:
+        raise ValueError("source relationship limit must be 1..250")
+    if any(not re.fullmatch(r"[0-9a-f]{40}", ref) for ref in (base_ref, target_ref)):
+        raise ValueError("source review requires two full 40-character Git SHAs")
+    if symbol is not None and not _SYMBOL.fullmatch(symbol):
+        raise ValueError("--source-symbol must be one Python identifier")
+    path = _safe_path(path)
+    if not path.endswith(".py"):
+        raise ValueError("--source-path requires a repository-relative .py file")
+    base_side = _review_side(root, base_ref, path, limit, symbol)
+    target_side = (
+        base_side if target_ref == base_ref
+        else _review_side(root, target_ref, path, limit, symbol)
+    )
+    base, target = base_side["relationships"], target_side["relationships"]
+    comparisons: dict[str, Any] = {}
+    if base is not None and target is not None:
+        base_target_parsed = base["target_parse_error"] is None
+        target_target_parsed = target["target_parse_error"] is None
+        base_repo_parsed = base_target_parsed and base["counts"]["parse_failures"] == 0
+        target_repo_parsed = target_target_parsed and target["counts"]["parse_failures"] == 0
+        for field, identity, entire_repo in (
+            ("direct_imports", lambda row: row["module"], False),
+            ("direct_importers", lambda row: row["path"], True),
+            ("test_references", lambda row: row["path"], True),
+            ("top_level_symbols", lambda row: f'{row["kind"]}:{row["name"]}', False),
+        ):
+            comparisons[field] = _compare_identities(
+                base, target, field, identity,
+                base_parsed=base_repo_parsed if entire_repo else base_target_parsed,
+                target_parsed=target_repo_parsed if entire_repo else target_target_parsed,
+            )
+        base_symbol, target_symbol = base["symbol_context"], target["symbol_context"]
+        if base_symbol is not None and target_symbol is not None:
+            for field, identity in (
+                ("direct_references", lambda row: row["path"]),
+                ("test_candidates", lambda row: f'{row["path"]}::{row["test_name"]}'),
+            ):
+                comparisons[f"symbol_{field}"] = _compare_identities(
+                    base_symbol, target_symbol, field, identity,
+                    base_parsed=base_symbol["counts"]["parse_failures"] == 0,
+                    target_parsed=target_symbol["counts"]["parse_failures"] == 0,
+                )
+    return {
+        "path": path, "symbol": symbol, "base": base_side, "target": target_side,
+        "identity_comparisons": comparisons,
+        "truncated": any(side is not None and side["truncated"] for side in (base, target)),
+        "limits": [
+            "Only this focal path receives paired committed source context. Other paths are not compared.",
+            "Membership compares returned module, file, kind:name or test identities, not line positions, signatures or full source bodies.",
+            "Both means visible at both revisions, not unchanged behavior or identical source.",
+            "VISIBLE_ONLY differences are returned-list differences, not established additions or removals.",
+            "Even complete identity lists are limited to the underlying syntactic scanner; missing runtime or semantic relationships are NOT ASSESSED.",
+            "Absent or non-regular tree entries and unavailable symbol contexts are not compared as empty inventories.",
+            "No uncommitted bytes, test coverage, change safety, transitive impact or authorization are established.",
+        ],
     }

@@ -1527,6 +1527,38 @@ jobs:
           print("Committed source relationships expose importers, top-level symbols, hidden cross-module names, direct references and test candidates.")
           PY
 
+      - name: Compare committed Python source relationships in review context (mechanics only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="e920a6e90d40959c7412c8068c728917fab596f9"
+          REF="$(git rev-parse HEAD)"
+          FOCUS="src/sensemaking_skills/semantic_architecture/source_relationships.py"
+          sensemaking-skills semantic workspace-review-context \
+            --repo . --base-ref "$BASE" --ref "$REF" --path "$FOCUS" \
+            --source-path "$FOCUS" --source-symbol _symbol_context --limit 100 --json \
+            > "$RUNNER_TEMP/source-review-comparison.json"
+          REVIEW_BASE="$BASE" REVIEW_REF="$REF" REVIEW_FOCUS="$FOCUS" python - <<'PY'
+          import json
+          import os
+          with open(os.path.join(os.environ["RUNNER_TEMP"], "source-review-comparison.json"), encoding="utf-8") as stream:
+              packet = json.load(stream)
+          review = packet["source_relationship_comparison"]
+          assert packet["base_ref"] == review["base"]["ref"] == os.environ["REVIEW_BASE"]
+          assert packet["target_ref"] == review["target"]["ref"] == os.environ["REVIEW_REF"]
+          assert packet["review_scope"]["source_intent_revision"] == packet["base_ref"]
+          assert review["path"] == os.environ["REVIEW_FOCUS"]
+          assert review["base"]["status"] == review["target"]["status"] == "REGULAR_FILE"
+          assert review["base"]["relationships"]["symbol_context"]["defined_in_target"] is False
+          assert review["target"]["relationships"]["symbol_context"]["defined_in_target"] is True
+          assert "function:_symbol_context" in review["identity_comparisons"]["top_level_symbols"]["target_only"]
+          assert review["path"] in review["identity_comparisons"]["symbol_direct_references"]["target_only"]
+          assert packet["semantic_truth_established"] is False
+          assert packet["action_authorized"] is False
+          assert packet["review_scope"]["source_diff_semantics_assessed"] is False
+          print("BASE intent and paired exact-commit source evidence remain separate.")
+          PY
+
       - name: Exercise method-trial anchoring and retention (mechanics only)
         shell: bash
         run: |
