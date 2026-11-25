@@ -68,7 +68,7 @@ def _boundary_hints(
     return ordered[:8], "BOUNDARY_CONSTANTS" if ordered else "NOT_ASSESSED"
 
 
-def build_verification_scenarios(
+def build_guard_scenarios(
     tree: ast.AST, source: str, path: str, symbol: str, *, limit: int = 50,
 ) -> dict[str, Any]:
     """Return direct guard-derived scenario candidates for one top-level symbol."""
