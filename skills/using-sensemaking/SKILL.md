@@ -313,6 +313,17 @@ inspection if the CLI is unavailable. This is not a mandatory query, a strategic
 ranking mechanism or a step for narrow repairs. See
 `references/ontology-first-entry-v1.md` section 2.
 
+**Prospective decision rehearsal (when selecting a possibility).** Before
+retaining or building a possibility because it is coherent, easy to justify or
+well connected, the optional `references/prospective-decision-rehearsal-v1.md`
+procedure tests whether it would change a real beneficiary decision. It
+requires a real episode and current decision, a candidate decision, an expected
+observation, a failure condition and the added cost; `NO_DELTA` is a successful
+outcome. It composes `product-outline`, `possibility-ecology`, `method context`
+and the existing hypothesis/experiment/method-trial carriers. It creates no new
+record, planner or mandatory stage. A narrow, already-grounded task does not
+need it.
+
 **Pre-change source context (when material).** Before changing an unfamiliar or
 cross-cutting Python file, the optional `semantic workspace-query --operation
 context-for <path> --include-source-relationships --json` adds committed Python
@@ -770,6 +781,7 @@ already stated above, so skipping a file never loses the rule.
 | `references/possibility-synthesis-v1.md` | a goal-family ecology yields a genuinely new recombination or gap the agent decides to retain | routine retrieval or restating an existing candidate | synthesis support != automatic generation, validation, selection or authorization |
 | `references/assumption-aware-prospective-reasoning-v1.md` | a consequential possibility or construction choice may be bounded by unexamined assumptions | a narrow task or a decision whose assumptions are already stable | assumption visible != true; scenario contrast != selection or ranking |
 | `references/method-trial-v1.md` | a consequential method choice has an observable expected result and a predecision commitment would preserve accountability | trivial or already-fixed work | predecision commitment != causal proof; trial != qualification |
+| `references/prospective-decision-rehearsal-v1.md` | a candidate possibility is coherent but its beneficiary decision delta is unclear, or materially different possibilities compete | narrow, already-grounded work | coherent candidate != beneficiary value; predicted delta != observed benefit; NO_DELTA is valid |
 | `references/change-context-v1.md` | an unfamiliar or cross-cutting Python file is about to change and code-level consumers/tests could affect verification | a trivial local edit already settled by direct inspection | syntactic importer != runtime caller; test reference != coverage; context != authorization |
 | `references/session-receipt-v1.md` | every session using this Skill | never; follow the contract when a receipt can be written | receipt != authority |
 | `references/delegated-goal-patterns.md` | a delegated mission's scope, authority or stop is material | a bounded task | desired delegation != granted authority |
