@@ -41,45 +41,83 @@ observed result        != a new shared method
    - `question`: the method decision, not the implementation task;
    - `method`: the approach being tried;
    - `assumptions`: what must hold for the trial to be meaningful;
-   - `expected_observation`: what observable result would count for or against
-     the method;
+   - `expected_observation`: a result that named commands, tests or artifacts
+     can show;
    - `prior_lesson_id` if a reviewed lesson is being applied;
    - tracked `evidence_refs` and a `claim_ceiling`.
-3. **Open and commit the trial before doing the work.**
+3. **Open and commit the decision before the work it trials.**
    ```bash
    sensemaking-skills semantic method trial open --repo . \
      --episode artifacts/history/<trial>.json \
      --output .sensemaking/knowledge/method-trial-<id>.json --json
    ```
-   Review the proposal and commit it. The decision is the predecision record.
+   Review the proposal and commit the decision and episode. Do not put the
+   implementation in that commit; otherwise the record only precedes the
+   result, not the work. The decision carries a `trial_digest` and discloses
+   any evidence path that did not exist at `source_revision`.
 4. **Do the work.** Collect the evidence named in the expected observation.
-5. **Author the close episode.** Record the actual outcome, a disposition
-   (`CONFIRMED`, `ADAPTED`, `REJECTED`, `NO_CHANGE` or `INCONCLUSIVE`), tracked
-   evidence and a claim ceiling.
+5. **Author the close episode.** Record:
+   - `decision_commit`: the commit that introduced the trial decision;
+   - `source_revision`: a later descendant commit;
+   - `observed_outcome`, tracked evidence and a claim ceiling;
+   - `disposition`;
+   - `method_after` when the disposition is `ADAPTED`.
    ```bash
    sensemaking-skills semantic method trial close --repo . \
      --episode artifacts/history/<trial>-result.json \
      --output .sensemaking/knowledge/method-trial-<id>-result.json --json
    ```
-   Commit the result proposal.
+   The producer rejects a close at the decision commit, a non-descendant
+   revision, a mismatched trial digest, a second closing observation and an
+   `ADAPTED` result without `method_after`. Commit the result proposal.
 6. **Inspect the pair.**
    ```bash
    sensemaking-skills semantic method trial show --repo . --ref HEAD \
      --trial decision:method-trial-<id> --json
    ```
-   The output shows the predecision method, assumptions and expected
-   observation beside the later result. `method_effect_established` remains
-   false.
+   `show` refuses a truncated explain envelope; raise `--limit` (default 50)
+   rather than treating missing records as absence. It also refuses ambiguous
+   or mismatched closure. `predecision_commitment_preserved` is true only when
+   the decision digest matches, the result digest matches and Git ancestry
+   confirms a later descendant. Legacy trials without anchors report
+   `NOT_ASSESSED` and `false`. `method_effect_established` remains false.
 7. **Reconcile only if warranted.** If the result supports a reusable
    adaptation, use the existing method-record producer. A one-off trial and a
    justified `NO_MODEL_CHANGE` are valid.
+
+## Dispositions
+
+| Value | Meaning |
+| --- | --- |
+| `CONFIRMED` | The named expected observation was seen. It does not confirm the method's general effectiveness. |
+| `ADAPTED` | The method was changed during the work; `method_after` records what replaced it. |
+| `REJECTED` | The method was abandoned because the expected observation was not seen or contrary evidence appeared; say which. |
+| `NO_CHANGE` | The trial completed and no method change is warranted. |
+| `INCONCLUSIVE` | Evidence is insufficient, confounded or incomplete; no method judgment. |
+
+These values describe the trial, not a promoted lesson. They are not the same
+vocabulary as `method record`'s `develop|adapt|apply|reject|no_change`; a
+trial result becomes a reusable method only through that separate producer.
+
+When a trial names a prior lesson, closing the trial also writes a
+`trial_result_for` relation from the result to that lesson. `method context`
+then shows the result as a later record beside the decision, so a future
+retrieval does not stop at the predecision half.
 
 ## Failure modes
 
 - **Retrospective trial:** opening after the outcome is not a predecision
   record.
-- **Unfalsifiable expectation:** "it works better" is not an observable
-  result.
+- **Decision committed with its implementation:** the decision then precedes
+  only the result. Commit the decision alone.
+- **Same-revision close:** closing at the decision commit is rejected; a later
+  descendant is required.
+- **Unanchored legacy trial:** a trial without `trial_digest`/`decision_commit`
+  is reported `NOT_ASSESSED`, not treated as preserved.
+- **Truncated inspection:** a truncated `show` is an error, not evidence that
+  the trial is open or unclosed.
+- **Self-fulfilling expectation:** an expected observation that can only be
+  confirmed by the act of closing does not test the method.
 - **Disposition without evidence:** do not close a trial on a feeling.
 - **Causal overclaim:** `CONFIRMED` means the expected observation was seen,
   not that the method caused it.
@@ -91,7 +129,8 @@ observed result        != a new shared method
 ## Evidence ceiling
 
 A trial establishes that an agent authored a predecision commitment and a
-later observed result at pinned revisions. It does not establish that the
-method was applicable, that the observation is complete, that the method
-caused the outcome, or that another agent would benefit. Those remain separate
-claims and, where comparative, separate qualification.
+later observed result at pinned revisions, with the decision content anchored
+against later edits. It does not establish that the method was applicable,
+that the observation is complete, that the method caused the outcome, or that
+another agent would benefit. Those remain separate claims and, where
+comparative, separate qualification.

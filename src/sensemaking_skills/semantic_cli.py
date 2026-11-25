@@ -1150,20 +1150,30 @@ def register_semantic_commands(root_cli: click.Group) -> None:
                   help="Exact committed revision whose derived index supplies the trial")
     @click.option("--trial", "trial_id", required=True,
                   help="Exact method-trial decision claim id")
+    @click.option("--limit", type=click.IntRange(1, 250), default=50,
+                  show_default=True,
+                  help="Explain envelope record limit; truncation fails closed")
     @click.option("--json", "output_json", is_flag=True)
     def semantic_method_trial_show(
-        repo_dir: Path, ref: str, trial_id: str, output_json: bool,
+        repo_dir: Path, ref: str, trial_id: str, limit: int, output_json: bool,
     ) -> None:
         """Show the predecision commitment and its optional observed result."""
-        from .method_trial import build_method_trial_view
+        from .method_trial import build_method_trial_view, trial_ancestry
         from .workspace_knowledge import run_workspace_query
 
         try:
             payload = run_workspace_query(
-                repo=repo_dir, ref=ref, operation="explain", subject=trial_id
+                repo=repo_dir, ref=ref, operation="explain", subject=trial_id,
+                limit=limit,
             )
+            if payload.get("truncated"):
+                raise click.ClickException(
+                    "the explain envelope is truncated at limit "
+                    f"{limit}; raise --limit before inspecting the trial"
+                )
             view = build_method_trial_view(
-                trial_id, payload.get("claims", []), payload.get("relations", [])
+                trial_id, payload.get("claims", []), payload.get("relations", []),
+                ancestry=trial_ancestry(repo_dir),
             )
         except (ValueError, OSError, UnicodeError, KeyError, TypeError) as exc:
             raise click.ClickException(str(exc)) from exc

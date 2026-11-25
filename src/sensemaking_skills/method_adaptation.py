@@ -119,20 +119,33 @@ def method_context(
             })
             seen.add(item.get("id"))
         # A later decision can show how a method was actually used or rejected.
-        # Generic context history stays limited to incident/lesson/observation;
-        # the method consumer adds linked decisions explicitly.
+        # A closing method-trial observation can show the result obtained when
+        # the lesson informed a predecision trial. Generic context history stays
+        # limited to incident/lesson/observation; the method consumer adds these
+        # linked later records explicitly.
         for relation in neighbors.get("relations", []):
             if (relation.get("object") != identifier
                     or relation.get("predicate") not in {"references", "learned_from", "contradicts"}):
                 continue
             subject = relation.get("subject")
             source = indexed.get(subject)
-            if subject in seen or not source or source.get("kind") != "decision":
+            if subject in seen or not source:
+                continue
+            kind = source.get("kind")
+            conceptual = (relation.get("attributes") or {}).get("conceptual_relation")
+            if kind == "decision":
+                pass
+            elif kind == "observation" and conceptual == "trial_result_for":
+                pass
+            else:
                 continue
             scope = (relation.get("attributes") or {}).get("scope")
             history.append({
                 "id": subject,
-                "kind": "decision",
+                "kind": kind,
+                "conceptual_relation": (
+                    conceptual if isinstance(conceptual, str) else "NOT_RECORDED"
+                ),
                 "predicate": relation.get("predicate"),
                 "relation": relation.get("id"),
                 "relation_scope": scope if scope not in (None, "", []) else "NOT_RECORDED",
@@ -235,7 +248,7 @@ def method_context(
             "Methods are explicit authored lesson.attributes.method strings, not inferred from technical lessons.",
             "Candidate discovery uses literal question words or explicit authored evidence/context-for path routes; neither establishes method applicability.",
             "The reviewed lesson corpus is bounded at 250 records. A miss or truncated source is NOT_ASSESSED, not absence.",
-            "Later related records are incoming citing records; source_records are every outgoing learned_from target plus outgoing references to an observation or prior lesson, kept as NOT_ASSESSED when that target is absent from this indexed revision. Other references are not source records. Both are indexed evidence, not verified support/refutation or Git chronology.",
+            "Later related records are incoming citing records plus directly linked later decisions and method-trial results; source_records are every outgoing learned_from target plus outgoing references to an observation or prior lesson, kept as NOT_ASSESSED when that target is absent from this indexed revision. Other references are not source records. Both are indexed evidence, not verified support/refutation or Git chronology.",
             "related_records_complete is false when the one-hop explain neighborhood is truncated or any listed source/later record is not indexed. An empty list with the flag true means no such indexed record at this revision, not that the method was never used.",
             "Inspect original sources, changed conditions, current authority and counterevidence before selecting a method.",
             "This tool does not choose, adapt, learn, validate or authorize an intellectual procedure.",
