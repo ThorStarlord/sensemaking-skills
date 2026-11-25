@@ -1,0 +1,108 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-11-25-prospective-decision-rehearsal
+state: final
+created_at: "2026-11-25T00:00:00Z"
+updated_at: "2026-11-25T00:00:00Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: a40ec5e5ed31ceba8b45539bbffa076710cbf614
+  end_ref: 08a6361e76eac7081535e85c1d2f287a6ffed364
+  worktree_clean_at_end: true
+skill_identity:
+  load_mode: manual_explicit_load
+  sensemaking_source_ref: a40ec5e5ed31ceba8b45539bbffa076710cbf614
+goal:
+  statement: "Discover and realize the next substantive Sensemaking product capability beyond source analysis by composing strategic possibility discovery and experience-driven adaptation."
+  source: owner_message
+  source_ref: null
+delegation:
+  granted: [read, local_write, run_local_commands, commit, push, open_pr, merge]
+  withheld: [release, deploy, tracker_write, external_publication]
+continuity:
+  resumes: 2026-11-25-symbol-behavior
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: Verify the merged state, PR #972 checks and current Skill copies
+    capability: using-sensemaking
+    status: completed
+    reason: "origin/main was a40ec5e5; PR #972's eight checks passed. The user-level using-sensemaking copy was one revision behind and was not mutated before selection; the repository copy was used explicitly. Repository and other governing Skill copies matched their sources."
+    artifact_refs: [skills/using-sensemaking/SKILL.md]
+    validation:
+      - command: git rev-parse origin/main and gh pr checks 972
+        result: PASS
+  - id: R-2
+    responsibility: Explore opportunity directions outside the recent source-analysis frontier
+    capability: using-sensemaking
+    status: completed
+    reason: "Two read-only explorers found retrieval breadth was not the binding limit; the gap was a real beneficiary decision delta and applicability. The top goal had one direct candidate; 7/19 opportunity claims had value hypotheses; method context exposed 2/13 lessons."
+    artifact_refs: [docs/normal-use/2026-11-25-prospective-decision-rehearsal.md]
+    validation:
+      - command: Read-only explorer reports against a40ec5e5
+        result: PASS
+  - id: R-3
+    responsibility: Select and construct a capability that addresses the decision-delta gap
+    capability: using-sensemaking
+    status: completed
+    reason: "Selected Prospective Decision Rehearsal v1, an optional procedure composing product-outline, possibility-ecology, method context and hypothesis/experiment/trial. Rejected a precedent locator as another context layer; deferred a decision-note check and an outcome loop."
+    artifact_refs: [skills/using-sensemaking/references/prospective-decision-rehearsal-v1.md, skills/using-sensemaking/SKILL.md]
+    validation:
+      - command: Procedure applied to three real candidates
+        result: PASS
+  - id: R-4
+    responsibility: Exercise the procedure on a real selection and retain the evidence ceiling
+    capability: using-sensemaking
+    status: completed
+    reason: "The locator produced NO_DELTA because the relevant explorations were already visible and the prototype added cost; it was removed. The other candidates lacked a real episode or observable outcomes. The procedure changed the selection and is retained."
+    artifact_refs: [docs/normal-use/2026-11-25-prospective-decision-rehearsal.md]
+    validation:
+      - command: Real candidate/source inspection and two explorer reports
+        result: PASS
+  - id: R-5
+    responsibility: Obtain fresh-context use if available
+    capability: using-sensemaking
+    status: completed
+    reason: "A fresh-context reviewer was launched to apply the procedure to a fourth candidate without a predetermined result. It had not returned a report at closure, so independent later-agent reuse is NOT_ASSESSED."
+    artifact_refs: [skills/using-sensemaking/references/prospective-decision-rehearsal-v1.md]
+    validation:
+      - command: Fresh-context reviewer report
+        result: NOT_RUN
+findings:
+  - id: F-1
+    statement: "Recent possibility and contrast views often added explanation without changing the next decision; the binding gap is beneficiary decision delta and applicability judgment, not retrieval breadth."
+    epistemic_status: OBSERVED
+    evidence_refs: [docs/normal-use/2026-11-24-assumption-contrast-fresh-use.md, docs/normal-use/2026-11-23-goal-family-opportunity-discovery.md]
+    disposition: resolved
+  - id: F-2
+    statement: "A question-relevant precedent locator was rejected as NO_DELTA for the current selection; the relevant prior explorations were already visible, and the prototype added another context layer and per-artifact Git cost."
+    epistemic_status: OBSERVED
+    evidence_refs: [docs/normal-use/2026-11-25-prospective-decision-rehearsal.md]
+    disposition: resolved
+  - id: F-3
+    statement: "A decision-note precedent check and a product-possibility outcome loop were deferred for lack of a real missed-precedent episode or observable outcomes."
+    epistemic_status: DERIVED
+    evidence_refs: [docs/normal-use/2026-11-25-prospective-decision-rehearsal.md]
+    disposition: handed_off
+  - id: F-4
+    statement: "The retained capability is an agent-facing reasoning procedure, not an executable consumer or record schema; it composes existing capabilities and makes NO_DELTA a successful outcome."
+    epistemic_status: DERIVED
+    evidence_refs: [skills/using-sensemaking/references/prospective-decision-rehearsal-v1.md]
+    disposition: no_action
+open_questions:
+  - id: Q-1
+    question: "Will an independent later agent apply the rehearsal to a candidate with a real beneficiary episode and a plausible delta, and will the rehearsal change its selection or produce a justified NO_DELTA?"
+    source: empirical
+    blocking: false
+    durable_ref: null
+stop:
+  disposition: NO_FURTHER_WARRANT
+  reason: "The selected procedure is operational, applied to real candidates and changed a selection. No further retrieval, CLI, outcome schema or mandatory stage is warranted without an independent later use."
+next:
+  warranted_responsibility: "Independent later-agent rehearsal on a candidate with a real beneficiary episode and an observable delta; no new locator, planner or mandatory workflow."
+  blocked_on: ["Q-1"]
+persistence: committed
+claim_ceiling: "One optional reasoning procedure and one same-session selection rehearsal. Later independent use, changed beneficiary outcome, comparative benefit and longitudinal development are not established."
+action_authorized_by_receipt: false
+immutable: true
