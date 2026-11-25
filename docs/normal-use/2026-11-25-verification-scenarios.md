@@ -36,7 +36,8 @@ An agent had to read the function and design those scenarios manually.
 
 The output is a scenario candidate list for the agent to inspect and turn into
 tests or probes. It is not a test generator and does not claim that a scenario
-is reachable, necessary or correct.
+is reachable, necessary or correct. The list is capped at 50 even when the
+enclosing context limit is larger; a larger guard count is marked truncated.
 
 ## 3. Selection rehearsal and authentic use
 
@@ -64,6 +65,12 @@ Observed after implementation on `build_source_relationships`:
 
 The capability changed a real verification decision: two previously unchecked
 guards are now covered by the hosted consumer.
+
+The first hosted review ran with `--limit 100` and exposed a limit mismatch:
+the scenario list initially rejected any limit above 50, failing the enclosing
+review before its evidence was read. The implementation now caps the scenario
+list at 50 and sets `truncated` only when the guard count exceeds the returned
+list; the review limit remains intact.
 
 ## 4. Product versus model
 

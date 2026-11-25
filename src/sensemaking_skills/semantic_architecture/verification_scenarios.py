@@ -11,6 +11,7 @@ import ast
 from typing import Any, Iterable
 
 _MAX_LIMIT = 50
+_MAX_REQUESTED = 250
 _LIMITS = (
     "Direct raise/assert guards only; helper validation, decorators, nested functions, "
     "runtime dispatch and exception behavior are NOT ASSESSED.",
@@ -72,8 +73,9 @@ def build_verification_scenarios(
 ) -> dict[str, Any]:
     """Return direct guard-derived scenario candidates for one top-level symbol."""
 
-    if not 1 <= limit <= _MAX_LIMIT:
-        raise ValueError("verification scenario limit must be 1..50")
+    if not 1 <= limit <= _MAX_REQUESTED:
+        raise ValueError("verification scenario limit must be 1..250")
+    effective_limit = min(limit, _MAX_LIMIT)
     definitions = [
         node for node in tree.body
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
@@ -146,7 +148,7 @@ def build_verification_scenarios(
             if hints:
                 with_hints += 1
             condition = " and ".join(ast.unparse(test) for test in conditions) or "unconditional"
-            if len(scenarios) < limit:
+            if len(scenarios) < effective_limit:
                 scenarios.append({
                     "kind": kind,
                     "condition": condition[:500],
