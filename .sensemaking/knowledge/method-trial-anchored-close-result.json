@@ -1,0 +1,74 @@
+{
+  "schema_version": 2,
+  "claims": [
+    {
+      "id": "observation:method-trial-anchored-close-result",
+      "kind": "observation",
+      "statement": "Method trial result anchored-close: At the decision commit, show reported the trial OPEN with decision digest MATCH and preservation false. A close at decision_commit exited non-zero ('must be later'), a close at an ancestor revision exited non-zero ('must descend'), and show --limit 1 exited non-zero on a truncated envelope. The legacy discovery-surface trial reported digest NOT_ASSESSED with preservation false. On a disposable descendant of the enforcement revision, close succeeded, show reported decision digest MATCH, result digest MATCH, chronology VERIFIED and preservation true, and method context listed the trial result beside the trial decision. Disposition: CONFIRMED.",
+      "authority_kind": "delegated",
+      "authority_ref": "artifacts/history/2026-11-24-method-trial-anchored-close-result.json",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-24-method-trial-anchored-close-result.json",
+        "file:src/sensemaking_skills/method_trial.py",
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:src/sensemaking_skills/method_adaptation.py",
+        "file:skills/using-sensemaking/references/method-trial-v1.md"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "trial_id": "anchored-close",
+        "trial_decision_ref": "decision:method-trial-anchored-close",
+        "trial_status": "CLOSED",
+        "decision_commit": "fc297357f4978d0bcde1413a9347f18a6a557467",
+        "trial_digest": "3a72dca159c1fb60957d4bfcc8fd417240fab0728d08f70f0a0323495834cbdf",
+        "observed_outcome": "At the decision commit, show reported the trial OPEN with decision digest MATCH and preservation false. A close at decision_commit exited non-zero ('must be later'), a close at an ancestor revision exited non-zero ('must descend'), and show --limit 1 exited non-zero on a truncated envelope. The legacy discovery-surface trial reported digest NOT_ASSESSED with preservation false. On a disposable descendant of the enforcement revision, close succeeded, show reported decision digest MATCH, result digest MATCH, chronology VERIFIED and preservation true, and method context listed the trial result beside the trial decision.",
+        "disposition": "CONFIRMED",
+        "method_after": "NOT_RECORDED",
+        "actor": "Sensemaking repair agent",
+        "source_revision": "5db217e8ac3cc385bb4bd4954b8603adca743dad",
+        "claim_ceiling": "Same-agent trial of an enforcement mechanism. The end-to-end close/show/context path was observed on a disposable descendant revision; this retained result is the durable pair. No independent use, method effect or comparative benefit is established.",
+        "evidence_paths_not_in_source_revision": [
+          "artifacts/history/2026-11-24-method-trial-anchored-close-result.json"
+        ]
+      }
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel:method-trial-anchored-close-closed-by",
+      "subject": "observation:method-trial-anchored-close-result",
+      "predicate": "references",
+      "object": "decision:method-trial-anchored-close",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-24-method-trial-anchored-close-result.json",
+        "file:src/sensemaking_skills/method_trial.py",
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:src/sensemaking_skills/method_adaptation.py",
+        "file:skills/using-sensemaking/references/method-trial-v1.md"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "conceptual_relation": "closes_trial",
+        "establishment": "authored"
+      }
+    },
+    {
+      "id": "rel:method-trial-anchored-close-result-for-lesson",
+      "subject": "observation:method-trial-anchored-close-result",
+      "predicate": "references",
+      "object": "lesson:method-adaptation-check-procedure-not-only-outcome",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-24-method-trial-anchored-close-result.json",
+        "file:src/sensemaking_skills/method_trial.py",
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:src/sensemaking_skills/method_adaptation.py",
+        "file:skills/using-sensemaking/references/method-trial-v1.md"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "conceptual_relation": "trial_result_for",
+        "establishment": "authored"
+      }
+    }
+  ]
+}

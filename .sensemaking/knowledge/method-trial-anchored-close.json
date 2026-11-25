@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "claims": [
+    {
+      "id": "decision:method-trial-anchored-close",
+      "kind": "decision",
+      "statement": "Method trial anchored-close: Should the method-trial repair enforce close chronology, decision-content anchoring and fail-closed inspection in the producer, instead of relying on the documented convention? Selected method: Enforce the contract structurally: require the exact decision commit, reject a close at that commit or at a non-descendant revision, recompute the trial digest, reject a second closing observation, fail closed when the explain envelope is truncated, and surface a lesson-informed result to method context through a direct relation. Expected observation: After the change, each named command behaves as specified: a close whose source_revision equals decision_commit exits non-zero; a second close of the same trial exits non-zero; show --limit 1 exits non-zero; show at the later result revision reports trial_digest_match MATCH and predecision_commitment_preserved true; the legacy unanchored trial reports trial_digest_match NOT_ASSESSED and preserved false; method context on the prior lesson lists the trial result.",
+      "authority_kind": "delegated",
+      "authority_ref": "artifacts/history/2026-11-24-method-trial-anchored-close.json",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-24-method-trial-anchored-close.json",
+        "file:src/sensemaking_skills/method_trial.py",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:skills/using-sensemaking/references/method-trial-v1.md"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "trial_id": "anchored-close",
+        "trial_status": "OPEN",
+        "question": "Should the method-trial repair enforce close chronology, decision-content anchoring and fail-closed inspection in the producer, instead of relying on the documented convention?",
+        "method": "Enforce the contract structurally: require the exact decision commit, reject a close at that commit or at a non-descendant revision, recompute the trial digest, reject a second closing observation, fail closed when the explain envelope is truncated, and surface a lesson-informed result to method context through a direct relation.",
+        "assumptions": "The committed decision carries a trial_digest; the close episode can name the decision commit; git merge-base is available locally; explain reports truncation explicitly in its envelope.",
+        "expected_observation": "After the change, each named command behaves as specified: a close whose source_revision equals decision_commit exits non-zero; a second close of the same trial exits non-zero; show --limit 1 exits non-zero; show at the later result revision reports trial_digest_match MATCH and predecision_commitment_preserved true; the legacy unanchored trial reports trial_digest_match NOT_ASSESSED and preserved false; method context on the prior lesson lists the trial result.",
+        "prior_lesson_id": "lesson:method-adaptation-check-procedure-not-only-outcome",
+        "actor": "Sensemaking repair agent",
+        "source_revision": "80bd0a7eac39910330a620e0bdb80958c76fe16b",
+        "opened_date": "2026-11-24",
+        "claim_ceiling": "One same-agent implementation trial of an enforcement mechanism. It does not establish that the enforcement was needed, that the method caused a better outcome, or that another agent benefits.",
+        "evidence_paths_not_in_source_revision": [
+          "artifacts/history/2026-11-24-method-trial-anchored-close.json"
+        ],
+        "trial_digest": "3a72dca159c1fb60957d4bfcc8fd417240fab0728d08f70f0a0323495834cbdf"
+      }
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel:method-trial-anchored-close-applies-precedent",
+      "subject": "decision:method-trial-anchored-close",
+      "predicate": "references",
+      "object": "lesson:method-adaptation-check-procedure-not-only-outcome",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-24-method-trial-anchored-close.json",
+        "file:src/sensemaking_skills/method_trial.py",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:skills/using-sensemaking/references/method-trial-v1.md"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "conceptual_relation": "applies_precedent",
+        "establishment": "authored"
+      }
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "trial_id": "anchored-close",
+  "actor": "Sensemaking repair agent",
+  "source_revision": "80bd0a7eac39910330a620e0bdb80958c76fe16b",
+  "origin_date": "2026-11-24",
+  "question": "Should the method-trial repair enforce close chronology, decision-content anchoring and fail-closed inspection in the producer, instead of relying on the documented convention?",
+  "method": "Enforce the contract structurally: require the exact decision commit, reject a close at that commit or at a non-descendant revision, recompute the trial digest, reject a second closing observation, fail closed when the explain envelope is truncated, and surface a lesson-informed result to method context through a direct relation.",
+  "assumptions": "The committed decision carries a trial_digest; the close episode can name the decision commit; git merge-base is available locally; explain reports truncation explicitly in its envelope.",
+  "expected_observation": "After the change, each named command behaves as specified: a close whose source_revision equals decision_commit exits non-zero; a second close of the same trial exits non-zero; show --limit 1 exits non-zero; show at the later result revision reports trial_digest_match MATCH and predecision_commitment_preserved true; the legacy unanchored trial reports trial_digest_match NOT_ASSESSED and preserved false; method context on the prior lesson lists the trial result.",
+  "prior_lesson_id": "lesson:method-adaptation-check-procedure-not-only-outcome",
+  "evidence_refs": [
+    "file:src/sensemaking_skills/method_trial.py",
+    "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+    "file:skills/using-sensemaking/references/method-trial-v1.md"
+  ],
+  "claim_ceiling": "One same-agent implementation trial of an enforcement mechanism. It does not establish that the enforcement was needed, that the method caused a better outcome, or that another agent benefits."
+}

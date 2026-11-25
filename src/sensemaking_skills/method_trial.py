@@ -9,11 +9,12 @@ caused the result or that either record is correct.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 from datetime import date
 from pathlib import Path
-from typing import Any, Mapping
+from typing import Any, Callable, Mapping
 
 from .method_adaptation import (
     _git,
@@ -35,6 +36,20 @@ _MAX_REFS = 20
 
 def _tracked_paths(root: Path) -> set[str]:
     return set(filter(None, _git(root, "ls-files", "-z").split(chr(0))))
+
+
+def _trial_digest(attributes: Mapping[str, Any]) -> str:
+    payload = {
+        key: attributes.get(key)
+        for key in (
+            "trial_id", "question", "method", "assumptions",
+            "expected_observation", "prior_lesson_id", "source_revision",
+        )
+    }
+    encoded = json.dumps(
+        payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+    )
+    return hashlib.sha256(encoded.encode("utf-8")).hexdigest()
 
 
 def _date(value: str, field: str) -> str:
@@ -87,6 +102,25 @@ def _source_revision(root: Path, data: Mapping[str, Any]) -> str:
     if _git(root, "rev-parse", "--verify", "--quiet", f"{revision}^{{commit}}") != revision:
         raise ValueError("source_revision is not an available exact local commit")
     return revision
+
+
+def _is_ancestor(root: Path, ancestor: str, descendant: str) -> bool:
+    try:
+        _git(root, "merge-base", "--is-ancestor", ancestor, descendant)
+        return True
+    except ValueError:
+        return False
+
+
+def _ancestry_status(root: Path, ancestor: str, descendant: str) -> str:
+    """Return ANCESTOR, NOT_ANCESTOR or UNAVAILABLE for two commits."""
+
+    for revision in (ancestor, descendant):
+        try:
+            _git(root, "cat-file", "-e", f"{revision}^{{commit}}")
+        except ValueError:
+            return "UNAVAILABLE"
+    return "ANCESTOR" if _is_ancestor(root, ancestor, descendant) else "NOT_ANCESTOR"
 
 
 def _lesson_at(
@@ -155,6 +189,11 @@ def open_method_trial(
         if path not in tracked:
             raise ValueError(f"evidence file is not staged or committed: {path}")
 
+    source_paths = set(_git(
+        root, "ls-tree", "-r", "-z", "--name-only", source_revision, "--"
+    ).split(chr(0)))
+    missing_at_source = sorted(path for path in refs if path not in source_paths)
+
     decision_id = "decision:method-trial-" + trial_id
     known = _known_claim_ids(root, tracked)
     if decision_id in known or decision_id in reviewed:
@@ -166,6 +205,22 @@ def open_method_trial(
         " Expected observation: " + expected
     )
 
+    trial_attributes = {
+        "trial_id": trial_id,
+        "trial_status": "OPEN",
+        "question": question,
+        "method": method,
+        "assumptions": assumptions,
+        "expected_observation": expected,
+        "prior_lesson_id": prior or "NONE",
+        "actor": actor,
+        "source_revision": source_revision,
+        "opened_date": origin_date,
+        "claim_ceiling": ceiling,
+        "evidence_paths_not_in_source_revision": missing_at_source,
+    }
+    trial_attributes["trial_digest"] = _trial_digest(trial_attributes)
+
     decision = {
         "id": decision_id,
         "kind": "decision",
@@ -174,19 +229,7 @@ def open_method_trial(
         "authority_ref": episode_relative,
         "evidence_refs": references,
         "epistemic_status": "declared",
-        "attributes": {
-            "trial_id": trial_id,
-            "trial_status": "OPEN",
-            "question": question,
-            "method": method,
-            "assumptions": assumptions,
-            "expected_observation": expected,
-            "prior_lesson_id": prior or "NONE",
-            "actor": actor,
-            "source_revision": source_revision,
-            "opened_date": origin_date,
-            "claim_ceiling": ceiling,
-        },
+        "attributes": trial_attributes,
     }
     relations = []
     if prior:
@@ -220,6 +263,8 @@ def open_method_trial(
         "review_state": "UNREVIEWED_DRAFT",
         "prior_lesson_id": prior or "NONE",
         "source_revision": source_revision,
+        "trial_digest": trial_attributes["trial_digest"],
+        "evidence_paths_not_in_source_revision": missing_at_source,
         "method_effect_established": False,
         "semantic_truth_established": False,
         "action_authorized": False,
@@ -248,8 +293,9 @@ def close_method_trial(
     if not isinstance(data, dict):
         raise ValueError("episode input must be a JSON object")
     accepted = {
-        "trial_id", "actor", "source_revision", "observed_outcome",
-        "disposition", "evidence_refs", "claim_ceiling",
+        "trial_id", "actor", "source_revision", "decision_commit",
+        "observed_outcome", "disposition", "method_after",
+        "evidence_refs", "claim_ceiling",
     }
     unknown = set(data) - accepted
     if unknown:
@@ -264,6 +310,18 @@ def close_method_trial(
     if disposition not in _DISPOSITIONS:
         raise ValueError(f"disposition must be one of {sorted(_DISPOSITIONS)}")
     ceiling = _string(data, "claim_ceiling")
+    decision_commit = _string(data, "decision_commit", maximum=40)
+    if not _COMMIT.fullmatch(decision_commit):
+        raise ValueError("decision_commit must be the exact 40-character commit SHA")
+    if _git(root, "rev-parse", "--verify", "--quiet", f"{decision_commit}^{{commit}}") != decision_commit:
+        raise ValueError("decision_commit is not an available exact local commit")
+    if decision_commit == source_revision:
+        raise ValueError("source_revision must be later than decision_commit")
+    if not _is_ancestor(root, decision_commit, source_revision):
+        raise ValueError("source_revision must descend from decision_commit")
+    method_after = _string(data, "method_after", required=False)
+    if disposition == "ADAPTED" and not method_after:
+        raise ValueError("ADAPTED requires an explicit method_after")
     tracked = _tracked_paths(root)
     if episode_relative not in tracked:
         raise ValueError("stage or commit the result episode file before preparing a proposal")
@@ -273,6 +331,10 @@ def close_method_trial(
     for path in refs[1:]:
         if path not in tracked:
             raise ValueError(f"evidence file is not staged or committed: {path}")
+    source_paths = set(_git(
+        root, "ls-tree", "-r", "-z", "--name-only", source_revision, "--"
+    ).split(chr(0)))
+    missing_at_source = sorted(path for path in refs if path not in source_paths)
 
     reviewed = _reviewed_claims(root, source_revision)
     decision_id = "decision:method-trial-" + trial_id
@@ -282,6 +344,24 @@ def close_method_trial(
     attributes = trial.get("attributes") or {}
     if attributes.get("trial_status") != "OPEN" or attributes.get("trial_id") != trial_id:
         raise ValueError("the reviewed trial is not an open method trial")
+    stored_digest = attributes.get("trial_digest")
+    if not isinstance(stored_digest, str) or stored_digest != _trial_digest(attributes):
+        raise ValueError("trial decision content is not anchored by a matching trial_digest")
+    at_decision_commit = _reviewed_claims(root, decision_commit).get(decision_id)
+    if not at_decision_commit:
+        raise ValueError("decision_commit does not contain the trial decision")
+    if _trial_digest(at_decision_commit.get("attributes") or {}) != stored_digest:
+        raise ValueError("the trial decision changed after decision_commit")
+    prior = attributes.get("prior_lesson_id")
+    prior = prior if isinstance(prior, str) and prior not in ("", "NONE") else None
+    if prior:
+        _lesson_at(reviewed, prior)
+    for claim in reviewed.values():
+        audit = claim.get("attributes") or {}
+        if (claim.get("kind") == "observation"
+                and (audit.get("trial_id") == trial_id
+                     or audit.get("trial_decision_ref") == decision_id)):
+            raise ValueError("trial already has a closing observation; refuse duplicate closure")
     result_id = "observation:method-trial-" + trial_id + "-result"
     known = _known_claim_ids(root, tracked)
     if result_id in known or result_id in reviewed:
@@ -303,11 +383,15 @@ def close_method_trial(
             "trial_id": trial_id,
             "trial_decision_ref": decision_id,
             "trial_status": "CLOSED",
+            "decision_commit": decision_commit,
+            "trial_digest": attributes["trial_digest"],
             "observed_outcome": observed,
             "disposition": disposition,
+            "method_after": method_after or "NOT_RECORDED",
             "actor": actor,
             "source_revision": source_revision,
             "claim_ceiling": ceiling,
+            "evidence_paths_not_in_source_revision": missing_at_source,
         },
     }
     relation = {
@@ -322,12 +406,29 @@ def close_method_trial(
             "establishment": "authored",
         },
     }
+    relations = [relation]
+    if prior:
+        relations.append({
+            "id": f"rel:method-trial-{trial_id}-result-for-lesson",
+            "subject": result_id,
+            "predicate": "references",
+            "object": prior,
+            "evidence_refs": references,
+            "epistemic_status": "declared",
+            "attributes": {
+                "conceptual_relation": "trial_result_for",
+                "establishment": "authored",
+            },
+        })
     read_authored_claim(observation, source_ref="file:" + output_relative, schema_version=2)
-    read_authored_relation(relation, source_ref="file:" + output_relative, schema_version=2)
+    for relation_item in relations:
+        read_authored_relation(
+            relation_item, source_ref="file:" + output_relative, schema_version=2
+        )
     proposal = {
         "schema_version": 2,
         "claims": [observation],
-        "relations": [relation],
+        "relations": relations,
     }
     output_file.parent.mkdir(parents=True, exist_ok=True)
     with output_file.open("x", encoding="utf-8", newline="\n") as stream:
@@ -339,7 +440,10 @@ def close_method_trial(
         "decision_id": decision_id,
         "result_id": result_id,
         "path": output_relative,
+        "decision_commit": decision_commit,
         "disposition": disposition,
+        "method_after": method_after or "NOT_RECORDED",
+        "evidence_paths_not_in_source_revision": missing_at_source,
         "review_state": "UNREVIEWED_DRAFT",
         "method_effect_established": False,
         "semantic_truth_established": False,
@@ -347,46 +451,126 @@ def close_method_trial(
         "next": "Review and commit the result; the trial decision remains the predecision record.",
     }
 
-def build_method_trial_view(
-    trial_id: str, claims: list[Mapping[str, Any]], relations: list[Mapping[str, Any]]
-) -> dict[str, Any]:
-    """Project a trial decision and its optional closing observation."""
+def trial_ancestry(repo: Path) -> Callable[[str, str], str]:
+    """Return a local Git ancestry status function for one repository."""
 
-    trial = next(
-        (item for item in claims if item.get("id") == trial_id), None
-    )
+    root = Path(_git(repo, "rev-parse", "--show-toplevel")).resolve()
+    return lambda ancestor, descendant: _ancestry_status(root, ancestor, descendant)
+
+
+def build_method_trial_view(
+    trial_id: str,
+    claims: list[Mapping[str, Any]],
+    relations: list[Mapping[str, Any]],
+    *,
+    ancestry: Callable[[str, str], str] | None = None,
+) -> dict[str, Any]:
+    """Project a trial decision and its optional closing observation.
+
+    Ambiguity fails closed: more than one closing relation, a missing closing
+    observation, or a closing record whose trial identity does not match raises
+    instead of selecting a first match. Preservation is computed from the
+    recorded digest and, when available, verified Git ancestry.
+    """
+
+    trial = next((item for item in claims if item.get("id") == trial_id), None)
     if not trial or trial.get("kind") != "decision":
         raise ValueError("trial_id is not a reviewed decision claim")
     attributes = trial.get("attributes") or {}
     if attributes.get("trial_status") not in {"OPEN", "CLOSED"}:
         raise ValueError("trial_id is not a method trial decision")
-    closing = None
-    for relation in relations:
-        if relation.get("predicate") != "references":
-            continue
-        if relation.get("object") != trial_id:
-            continue
-        if (relation.get("attributes") or {}).get("conceptual_relation") != "closes_trial":
-            continue
-        closing = next(
-            (item for item in claims if item.get("id") == relation.get("subject")),
-            None,
+
+    stored_digest = attributes.get("trial_digest")
+    if not isinstance(stored_digest, str):
+        decision_digest_match = "NOT_ASSESSED"
+    elif stored_digest == _trial_digest(attributes):
+        decision_digest_match = "MATCH"
+    else:
+        decision_digest_match = "MISMATCH"
+
+    closing_relations = [
+        relation for relation in relations
+        if relation.get("predicate") == "references"
+        and relation.get("object") == trial_id
+        and (relation.get("attributes") or {}).get("conceptual_relation")
+        == "closes_trial"
+    ]
+    if len(closing_relations) > 1:
+        raise ValueError(
+            "multiple closing relations for the trial; refuse ambiguous closure"
         )
-        if closing is not None:
-            break
+
     result = None
-    if closing is not None:
+    result_digest_match = "NOT_ASSESSED"
+    chronology = "NOT_ASSESSED"
+    if closing_relations:
+        relation = closing_relations[0]
+        closing_id = relation.get("subject")
+        matches = [item for item in claims if item.get("id") == closing_id]
+        if len(matches) != 1:
+            raise ValueError(
+                "closing observation is not uniquely present in the explain envelope"
+            )
+        closing = matches[0]
+        if closing.get("kind") != "observation":
+            raise ValueError("the closing record is not an observation")
         result_attributes = closing.get("attributes") or {}
+        if result_attributes.get("trial_id") != attributes.get("trial_id"):
+            raise ValueError("closing observation trial_id does not match the trial")
+        if result_attributes.get("trial_decision_ref") != trial_id:
+            raise ValueError("closing observation decision ref does not match the trial")
+        result_digest = result_attributes.get("trial_digest")
+        if isinstance(stored_digest, str) and isinstance(result_digest, str):
+            result_digest_match = (
+                "MATCH" if result_digest == stored_digest else "MISMATCH"
+            )
+        decision_commit = result_attributes.get("decision_commit")
+        result_revision = result_attributes.get("source_revision")
+        if (_COMMIT.fullmatch(str(decision_commit or ""))
+                and _COMMIT.fullmatch(str(result_revision or ""))):
+            if decision_commit == result_revision:
+                chronology = "FAILED"
+            elif ancestry is not None:
+                status = ancestry(decision_commit, result_revision)
+                if status == "ANCESTOR":
+                    chronology = "VERIFIED"
+                elif status == "NOT_ANCESTOR":
+                    chronology = "FAILED"
+                else:
+                    chronology = "NOT_ASSESSED"
+            else:
+                chronology = "NOT_ASSESSED"
+        if chronology == "FAILED":
+            raise ValueError("closing result is not at a later descendant revision")
         result = {
             "id": closing.get("id"),
             "statement": closing.get("statement"),
             "observed_outcome": result_attributes.get("observed_outcome"),
             "disposition": result_attributes.get("disposition"),
+            "method_after": result_attributes.get("method_after"),
             "actor": result_attributes.get("actor"),
             "source_revision": result_attributes.get("source_revision"),
+            "decision_commit": decision_commit,
             "claim_ceiling": result_attributes.get("claim_ceiling"),
             "evidence_refs": list(closing.get("evidence_refs") or []),
+            "evidence_paths_not_in_source_revision": list(
+                result_attributes.get("evidence_paths_not_in_source_revision") or []
+            ),
         }
+
+    preservation_reasons: list[str] = []
+    if result is None:
+        preservation_reasons.append("TRIAL_OPEN")
+    else:
+        if decision_digest_match != "MATCH":
+            preservation_reasons.append(
+                "DECISION_DIGEST_" + decision_digest_match
+            )
+        if result_digest_match != "MATCH":
+            preservation_reasons.append("RESULT_DIGEST_" + result_digest_match)
+        if chronology != "VERIFIED":
+            preservation_reasons.append("CHRONOLOGY_" + chronology)
+
     return {
         "code": "SEMANTIC_METHOD_TRIAL",
         "trial_id": attributes.get("trial_id"),
@@ -402,16 +586,25 @@ def build_method_trial_view(
             "source_revision": attributes.get("source_revision"),
             "opened_date": attributes.get("opened_date"),
             "claim_ceiling": attributes.get("claim_ceiling"),
+            "trial_digest": stored_digest,
             "evidence_refs": list(trial.get("evidence_refs") or []),
+            "evidence_paths_not_in_source_revision": list(
+                attributes.get("evidence_paths_not_in_source_revision") or []
+            ),
         },
         "closed": result is not None,
         "result": result,
-        "predecision_commitment_preserved": True,
+        "trial_digest_match": decision_digest_match,
+        "result_digest_match": result_digest_match,
+        "trial_chronology": chronology,
+        "predecision_commitment_preserved": not preservation_reasons,
+        "preservation_reasons": preservation_reasons,
         "method_effect_established": False,
         "semantic_truth_established": False,
         "action_authorized": False,
         "explicit_limits": [
             "The trial decision is the predecision record; the result is a later authored observation.",
+            "Preservation requires matching digests and verified later Git ancestry, not just a closing relation.",
             "The disposition is agent-authored and does not prove that the method caused the outcome.",
             "No ranking, method selection or action authorization is performed.",
         ],

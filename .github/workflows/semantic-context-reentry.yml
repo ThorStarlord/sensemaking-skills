@@ -29,6 +29,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          # Method-trial show verifies decision/result ancestry, which needs
+          # the decision commit and its path to the result revision.
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -1456,13 +1459,16 @@ jobs:
           print("Possibility contrast projects assumptions and scenarios without selecting or ranking.")
           PY
 
-      - name: Exercise method-trial open contract and retained trial (mechanics only)
+      - name: Exercise method-trial anchoring and retention (mechanics only)
         shell: bash
         run: |
           set -euo pipefail
           REF="$(git rev-parse HEAD)"
           EPISODE=".sensemaking/method-trial-ci-fixture.json"
           PROPOSAL=".sensemaking/knowledge/method-trial-ci-fixture.json"
+          RESULT_EPISODE="artifacts/history/2026-11-24-method-trial-anchored-close-result.json"
+          RETAINED="decision:method-trial-anchored-close"
+          LEGACY="decision:method-trial-discovery-surface"
           REF="$REF" EPISODE="$EPISODE" python - <<'PY'
           import json
           import os
@@ -1489,27 +1495,126 @@ jobs:
           sensemaking-skills semantic knowledge-proposal-check \
             --repo . --proposal "$PROPOSAL" --json > /dev/null
           sensemaking-skills semantic method trial show \
-            --repo . --ref "$REF" --trial decision:method-trial-discovery-surface --json \
+            --repo . --ref "$REF" --trial "$RETAINED" --json \
             > "$RUNNER_TEMP/method-trial-retained.json"
-          python - <<'PY'
+          sensemaking-skills semantic method trial show \
+            --repo . --ref "$REF" --trial "$LEGACY" --json \
+            > "$RUNNER_TEMP/method-trial-legacy.json"
+          REF="$REF" EPISODE="$EPISODE" RESULT_EPISODE="$RESULT_EPISODE" \
+            RETAINED="$RETAINED" LEGACY="$LEGACY" python - <<'PY'
           import json
           import os
-          with open(os.path.join(os.environ["RUNNER_TEMP"], "method-trial-open.json"), encoding="utf-8") as stream:
-              opened = json.load(stream)
-          with open(os.path.join(os.environ["RUNNER_TEMP"], "method-trial-retained.json"), encoding="utf-8") as stream:
-              retained = json.load(stream)
+          import pathlib
+          import subprocess
+
+          def load(name):
+              path = pathlib.Path(os.environ["RUNNER_TEMP"]) / name
+              with path.open(encoding="utf-8") as stream:
+                  return json.load(stream)
+
+          def cli(*args):
+              return subprocess.run(
+                  ["sensemaking-skills", *args],
+                  capture_output=True,
+                  text=True,
+              )
+
+          def close_fixture(name, decision_commit, source_revision, disposition="CONFIRMED"):
+              path = pathlib.Path(".sensemaking") / f"{name}.json"
+              data = {
+                  "trial_id": "anchored-close",
+                  "actor": "hosted-mechanical-check",
+                  "source_revision": source_revision,
+                  "decision_commit": decision_commit,
+                  "observed_outcome": "negative fixture",
+                  "disposition": disposition,
+                  "evidence_refs": ["file:README.md"],
+                  "claim_ceiling": "negative fixture only",
+              }
+              path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+              subprocess.run(["git", "add", "--", str(path)], check=True)
+              return path
+
+          opened = load("method-trial-open.json")
+          retained = load("method-trial-retained.json")
+          legacy = load("method-trial-legacy.json")
           assert opened["code"] == "SEMANTIC_METHOD_TRIAL_OPENED"
           assert opened["review_state"] == "UNREVIEWED_DRAFT"
           assert opened["method_effect_established"] is False
-          assert retained["code"] == "SEMANTIC_METHOD_TRIAL"
+          assert len(opened["trial_digest"]) == 64
+          assert opened["evidence_paths_not_in_source_revision"] == [os.environ["EPISODE"]]
           assert retained["closed"] is True
-          assert retained["trial_decision"]["id"] == "decision:method-trial-discovery-surface"
+          assert retained["trial_decision"]["id"] == os.environ["RETAINED"]
           assert retained["result"]["disposition"] == "CONFIRMED"
+          assert retained["trial_digest_match"] == "MATCH"
+          assert retained["result_digest_match"] == "MATCH"
+          assert retained["trial_chronology"] == "VERIFIED"
           assert retained["predecision_commitment_preserved"] is True
           assert retained["method_effect_established"] is False
           assert retained["semantic_truth_established"] is False
           assert retained["action_authorized"] is False
-          print("Method trial preserves a predecision commitment and a later result without claiming method effect.")
+          assert legacy["closed"] is True
+          assert legacy["trial_digest_match"] == "NOT_ASSESSED"
+          assert legacy["predecision_commitment_preserved"] is False
+
+          truncated = cli(
+              "semantic", "method", "trial", "show", "--repo", ".", "--ref",
+              os.environ["REF"], "--trial", os.environ["RETAINED"], "--limit", "1",
+          )
+          assert truncated.returncode != 0
+          assert "truncated" in (truncated.stdout + truncated.stderr).lower()
+
+          duplicate = cli(
+              "semantic", "method", "trial", "close", "--repo", ".",
+              "--episode", os.environ["RESULT_EPISODE"],
+              "--output", ".sensemaking/knowledge/ci-trial-duplicate.json",
+          )
+          assert duplicate.returncode != 0
+          assert "already exists" in (duplicate.stdout + duplicate.stderr)
+
+          decision_commit = retained["result"]["decision_commit"]
+          fixtures = []
+          same = close_fixture("ci-trial-same-revision", os.environ["REF"], os.environ["REF"])
+          fixtures.append(same)
+          result = cli(
+              "semantic", "method", "trial", "close", "--repo", ".",
+              "--episode", same.as_posix(), "--output", ".sensemaking/knowledge/ci-trial-same.json",
+          )
+          assert result.returncode != 0
+          assert "must be later" in (result.stdout + result.stderr)
+
+          ancestor = subprocess.check_output(["git", "rev-parse", "HEAD^"], text=True).strip()
+          older = close_fixture("ci-trial-non-descendant", os.environ["REF"], ancestor)
+          fixtures.append(older)
+          result = cli(
+              "semantic", "method", "trial", "close", "--repo", ".",
+              "--episode", older.as_posix(), "--output", ".sensemaking/knowledge/ci-trial-older.json",
+          )
+          assert result.returncode != 0
+          assert "must descend" in (result.stdout + result.stderr)
+
+          adapted = close_fixture(
+              "ci-trial-adapted", decision_commit, os.environ["REF"], "ADAPTED",
+          )
+          fixtures.append(adapted)
+          result = cli(
+              "semantic", "method", "trial", "close", "--repo", ".",
+              "--episode", adapted.as_posix(), "--output", ".sensemaking/knowledge/ci-trial-adapted.json",
+          )
+          assert result.returncode != 0
+          assert "method_after" in (result.stdout + result.stderr)
+
+          for path in fixtures:
+              subprocess.run(["git", "reset", "-q", "--", path.as_posix()], check=True)
+              path.unlink()
+          for name in (
+              "ci-trial-duplicate.json",
+              "ci-trial-same.json",
+              "ci-trial-older.json",
+              "ci-trial-adapted.json",
+          ):
+              (pathlib.Path(".sensemaking/knowledge") / name).unlink(missing_ok=True)
+          print("Method trial preserves anchored chronology and rejects truncated, duplicate, non-descendant and unadapted closure.")
           PY
           git reset -q -- "$EPISODE"
           rm -- "$EPISODE" "$PROPOSAL"

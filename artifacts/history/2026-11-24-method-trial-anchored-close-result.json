@@ -1,0 +1,15 @@
+{
+  "trial_id": "anchored-close",
+  "actor": "Sensemaking repair agent",
+  "source_revision": "5db217e8ac3cc385bb4bd4954b8603adca743dad",
+  "decision_commit": "fc297357f4978d0bcde1413a9347f18a6a557467",
+  "observed_outcome": "At the decision commit, show reported the trial OPEN with decision digest MATCH and preservation false. A close at decision_commit exited non-zero ('must be later'), a close at an ancestor revision exited non-zero ('must descend'), and show --limit 1 exited non-zero on a truncated envelope. The legacy discovery-surface trial reported digest NOT_ASSESSED with preservation false. On a disposable descendant of the enforcement revision, close succeeded, show reported decision digest MATCH, result digest MATCH, chronology VERIFIED and preservation true, and method context listed the trial result beside the trial decision.",
+  "disposition": "CONFIRMED",
+  "evidence_refs": [
+    "file:src/sensemaking_skills/method_trial.py",
+    "file:src/sensemaking_skills/semantic_cli.py",
+    "file:src/sensemaking_skills/method_adaptation.py",
+    "file:skills/using-sensemaking/references/method-trial-v1.md"
+  ],
+  "claim_ceiling": "Same-agent trial of an enforcement mechanism. The end-to-end close/show/context path was observed on a disposable descendant revision; this retained result is the durable pair. No independent use, method effect or comparative benefit is established."
+}

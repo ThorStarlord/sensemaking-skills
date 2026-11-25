@@ -709,20 +709,34 @@ sensemaking-skills semantic method trial show --repo . --ref HEAD \
 The open episode requires a slug, actor, exact source revision, date, method
 question, selected method, assumptions, an observable expected result, tracked
 evidence and a claim ceiling. It may name a reviewed `prior_lesson_id`; the
-producer links the trial decision to that lesson. The decision is committed
-before the work and carries `trial_status: OPEN`.
+producer links the trial decision to that lesson. The decision carries
+`trial_status: OPEN`, a SHA-256 `trial_digest` over the predecision content and
+`evidence_paths_not_in_source_revision`, which discloses cited paths that did
+not yet exist at the declared revision. Commit the decision and episode alone,
+before the work; committing them with the implementation only proves that the
+decision preceded the result.
 
-The close episode requires the same trial slug, a later exact source revision,
-the observed outcome, a disposition (`CONFIRMED`, `ADAPTED`, `REJECTED`,
-`NO_CHANGE` or `INCONCLUSIVE`), tracked evidence and a claim ceiling. It
-appends a separate `observation` linked by `closes_trial`; it does not rewrite
-the predecision decision. A duplicate result identifier is rejected.
+The close episode requires the same trial slug, the `decision_commit` that
+introduced it (and still contains the same anchored decision), a later
+descendant `source_revision`, the observed outcome, a
+disposition (`CONFIRMED`, `ADAPTED`, `REJECTED`, `NO_CHANGE` or
+`INCONCLUSIVE`), tracked evidence and a claim ceiling. `ADAPTED` also requires
+`method_after`. The producer rejects a close at the decision commit, a
+non-descendant revision, a decision whose digest does not match, a second
+closing observation and an already-used result identifier. It appends a
+separate `observation` linked by `closes_trial`; it does not rewrite the
+predecision decision. A lesson-informed close also writes
+`trial_result_for` to the lesson, so `semantic method context` shows the result
+as a later record.
 
-`show` reconstructs the predecision method, assumptions, expected observation
-and lesson beside the later result. `predecision_commitment_preserved` is true
-when the pair is reconstructible; `method_effect_established` remains false.
-The disposition is agent-authored and does not prove that the method caused
-the outcome. A trial is not a ranking, method selector, mandatory stage or
+`show` reconstructs the predecision method, assumptions, expected observation,
+prior lesson id and later result. It refuses a truncated explain envelope and
+ambiguous or mismatched closure. `predecision_commitment_preserved` is true
+only when the decision digest matches, the result digest matches and Git
+ancestry verifies a later descendant; legacy trials without anchors report
+`NOT_ASSESSED` and false. `method_effect_established` remains false. The
+disposition is agent-authored and does not prove that the method caused the
+outcome. A trial is not a ranking, method selector, mandatory stage or
 independent qualification.
 
 ### Possibility ecology (`possibility-ecology`)
