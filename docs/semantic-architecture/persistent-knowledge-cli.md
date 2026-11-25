@@ -1307,8 +1307,10 @@ The opt-in `source_relationships` section reads a clean temporary checkout of
 the selected revision and adds direct imports, direct importers, test
 references, top-level symbols, leading-underscore cross-module imports, parse
 failures and a coverage status. Add `--symbol NAME` for one top-level function
-or class to receive direct syntactic references and test functions/methods that
-mention it. If the target cannot be parsed, the authored context and
+or class to receive direct syntactic references, test functions/methods that
+mention it and a source-level behavioral surface (signature, decorators,
+docstring summary/hash, direct raises/asserts and definition hash). If the
+target cannot be parsed, the authored context and
 file-level importer evidence remain available with `PARTIAL` coverage,
 `target_parse_error` and `symbol_context: null`; the symbol is not assessed.
 Symbol-list truncation also marks the enclosing source relationship and
@@ -1695,10 +1697,15 @@ It compares bounded identities of direct-import modules, importer/test files,
 top-level symbols (kind:name) and optionally direct symbol reference files
 and test candidates (path::test-name). Each identity comparison discloses
 `base_only`, `target_only`, `both`, each side's list completeness and
-`comparison_status`. Read `VISIBLE_ONLY` differences as returned-list
-differences, not established additions or removals; even complete identities
-remain limited to the syntactic scanner. A shared identity is not proof of
-unchanged code or behavior. Missing/non-regular tree entries and unavailable
+`comparison_status`. When `--source-symbol` is present, the optional
+`symbol_behavior_comparison` also pairs source-level signature, decorators,
+docstring summary/hash, direct raises/asserts and exact definition source hash,
+and reports `changed_fields`, `presence` and `source_changed`. Read
+`VISIBLE_ONLY` differences as returned-list differences, not established
+additions or removals; even complete identities remain limited to the
+syntactic scanner. A shared identity is not proof of unchanged code or
+behavior; a behavior-surface difference is not proof of semantic change.
+Missing/non-regular tree entries and unavailable
 symbol contexts are not compared as empty inventories. Per-side source
 truncation propagates to the review packet. The comparison reads committed
 bytes only, including when `--include-worktree` is enabled. No new dependency

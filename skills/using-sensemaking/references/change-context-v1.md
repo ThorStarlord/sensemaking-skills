@@ -52,13 +52,18 @@ explicit scope or increase `--max-paths` if it was omitted. The optional
 symbol may be omitted. `source_relationship_comparison` pairs exact committed
 BASE/TARGET snapshots and reports bounded identity membership (`base_only`,
 `target_only`, `both`) for modules, importer/test files, top-level symbols
-and, when available, symbol reference files and test candidates. Read each
-side's original line evidence before judging consequences. `VISIBLE_ONLY`
-means a list was incomplete; differences do not establish actual additions
-or removals. `both` means observed at both revisions, not unchanged behavior.
-Absent/non-regular entries and unavailable symbol contexts are not compared
-as empty inventories. Authored intent remains BASE-only. No worktree source
-bytes, runtime dependency, coverage, change safety or semantic impact is inferred.
+and, when available, symbol reference files and test candidates. When a symbol
+is selected, `symbol_behavior_comparison` also pairs its reported behavioral
+surface and lists changed fields such as `signature`, `raises`, `assertions`,
+`decorators`, `docstring_sha256` and `source_sha256`. Read each side's original
+evidence before judging consequences. `VISIBLE_ONLY` means a list was
+incomplete; differences do not establish actual additions or removals. `both`
+means observed at both revisions, not unchanged behavior. A `signature` or
+`source_sha256` difference is a behavioral-surface signal, not proof of a
+semantic behavior change. Absent/non-regular entries and unavailable symbol
+contexts are not compared as empty inventories. Authored intent remains
+BASE-only. No worktree source bytes, runtime dependency, coverage, change
+safety or semantic impact is inferred.
 
 ## What the output adds
 
@@ -87,10 +92,11 @@ When `--symbol` is provided and the target parses, `symbol_context` contains:
 
 | Field | Meaning |
 | --- | --- |
-| `definitions` | Top-level definitions with that name in the target file. |
+| `definitions` | Top-level definitions with that name in the target file. Each carries a `behavior` surface. |
+| `behavior` | Source-level signature, decorators, docstring summary/hash, direct raise/assert statements, exact definition source hash, line range and truncation. |
 | `direct_references` | Direct syntactic name/attribute references outside test files, with path, line, kind and target-file flag. |
 | `test_candidates` | Test functions or `Test*` methods whose own body directly mentions the symbol, with reference lines. |
-| `counts` | Definitions, direct references, test candidates and parse failures. |
+| `counts` | Definitions, direct references, test candidates, parse failures and behavior truncation. |
 | `star_import_observed` | Whether a scanned file star-imported the target module. |
 | `test_candidate_scope` | `TEST_FUNCTION_LEVEL`. |
 | `truncated` | Whether a symbol list exceeded the limit; also propagates to the enclosing source and workspace response. |
@@ -100,7 +106,10 @@ requested symbol was not assessed, not that it was absent.
 `definitions` is not a stable-API list. `direct_references` is not a runtime
 call graph. File-wide alias matching does not resolve lexical scope or rebinding. `test_candidates` is not coverage: a test may exercise the symbol
 through a fixture, helper, parameterization or another module without a direct
-mention.
+mention. `behavior` is a source-level reading aid, not a semantic contract:
+signature normalization is not type-checking, a docstring is not a complete
+guarantee, direct raises/asserts do not cover nested or indirect behavior, and a
+source hash changes for any body text edit.
 
 ## How to use it in a change
 
@@ -140,6 +149,10 @@ mention.
   not mapped to test candidates.
 - `direct_references` and `test_candidates` are syntactic evidence, not proof of
   execution, coverage, impact or change safety.
+- `behavior` and `symbol_behavior_comparison` are source-level surfaces. A
+  signature, decorator, docstring, raise/assert or source-hash difference is
+  not automatically a semantic behavior change, and an unchanged surface is not
+  proof of unchanged runtime behavior.
 - A target syntax or decoding error is reported as `target_parse_error` and
   `PARTIAL`; target-derived imports/symbols are empty, while the authored
   context remains available.
