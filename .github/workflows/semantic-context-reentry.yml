@@ -1456,6 +1456,65 @@ jobs:
           print("Possibility contrast projects assumptions and scenarios without selecting or ranking.")
           PY
 
+      - name: Exercise method-trial open contract and retained trial (mechanics only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          REF="$(git rev-parse HEAD)"
+          EPISODE=".sensemaking/method-trial-ci-fixture.json"
+          PROPOSAL=".sensemaking/knowledge/method-trial-ci-fixture.json"
+          REF="$REF" EPISODE="$EPISODE" python - <<'PY'
+          import json
+          import os
+          data = {
+              "trial_id": "ci-method-trial",
+              "actor": "hosted-mechanical-check",
+              "origin_date": "2026-11-24",
+              "source_revision": os.environ["REF"],
+              "question": "Does the trial open contract preserve a predecision method commitment?",
+              "method": "Create a bounded OPEN decision with an observable expected result.",
+              "assumptions": "The episode is staged and its evidence is tracked at the source revision.",
+              "expected_observation": "The proposal validates and the show surface reconstructs the predecision record.",
+              "evidence_refs": ["file:README.md"],
+              "claim_ceiling": "Mechanical contract check only; no method effect.",
+          }
+          with open(os.environ["EPISODE"], "w", encoding="utf-8") as stream:
+              json.dump(data, stream, indent=2)
+              stream.write("\n")
+          PY
+          git add -- "$EPISODE"
+          sensemaking-skills semantic method trial open \
+            --repo . --episode "$EPISODE" --output "$PROPOSAL" --json \
+            > "$RUNNER_TEMP/method-trial-open.json"
+          sensemaking-skills semantic knowledge-proposal-check \
+            --repo . --proposal "$PROPOSAL" --json > /dev/null
+          sensemaking-skills semantic method trial show \
+            --repo . --ref "$REF" --trial decision:method-trial-discovery-surface --json \
+            > "$RUNNER_TEMP/method-trial-retained.json"
+          python - <<'PY'
+          import json
+          import os
+          with open(os.path.join(os.environ["RUNNER_TEMP"], "method-trial-open.json"), encoding="utf-8") as stream:
+              opened = json.load(stream)
+          with open(os.path.join(os.environ["RUNNER_TEMP"], "method-trial-retained.json"), encoding="utf-8") as stream:
+              retained = json.load(stream)
+          assert opened["code"] == "SEMANTIC_METHOD_TRIAL_OPENED"
+          assert opened["review_state"] == "UNREVIEWED_DRAFT"
+          assert opened["method_effect_established"] is False
+          assert retained["code"] == "SEMANTIC_METHOD_TRIAL"
+          assert retained["closed"] is True
+          assert retained["trial_decision"]["id"] == "decision:method-trial-discovery-surface"
+          assert retained["result"]["disposition"] == "CONFIRMED"
+          assert retained["predecision_commitment_preserved"] is True
+          assert retained["method_effect_established"] is False
+          assert retained["semantic_truth_established"] is False
+          assert retained["action_authorized"] is False
+          print("Method trial preserves a predecision commitment and a later result without claiming method effect.")
+          PY
+          git reset -q -- "$EPISODE"
+          rm -- "$EPISODE" "$PROPOSAL"
+          test -z "$(git status --porcelain)"
+
       - name: Exercise possibility synthesis producer contract (mechanics only)
         shell: bash
         run: |

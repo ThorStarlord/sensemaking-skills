@@ -118,7 +118,7 @@ def open_method_trial(
     if episode_file.stat().st_size > 131072:
         raise ValueError("episode source exceeds the 128 KiB bounded input limit")
 
-    data = json.loads(episode_file.read_text(encoding="utf-8"))
+    data = json.loads(episode_file.read_text(encoding="utf-8-sig"))
     if not isinstance(data, dict):
         raise ValueError("episode input must be a JSON object")
     accepted = {
@@ -244,7 +244,7 @@ def close_method_trial(
     if episode_file.stat().st_size > 131072:
         raise ValueError("episode source exceeds the 128 KiB bounded input limit")
 
-    data = json.loads(episode_file.read_text(encoding="utf-8"))
+    data = json.loads(episode_file.read_text(encoding="utf-8-sig"))
     if not isinstance(data, dict):
         raise ValueError("episode input must be a JSON object")
     accepted = {
