@@ -194,6 +194,11 @@ def _evaluate_ref(
         if not path.endswith(".py") or not _SYMBOL.fullmatch(name):
             result["reason"] = "UNSUPPORTED_SYMBOL_REF"
             return result
+        result["evidence_refs"] = [f"file:{path}", f"symbol:{path}#{name}"]
+        if path not in changed_paths:
+            result["status"] = "NO_MATCH"
+            result["reason"] = "PATH_UNCHANGED"
+            return result
         key = (path, name)
         if key not in symbol_cache:
             try:
@@ -208,7 +213,6 @@ def _evaluate_ref(
             result["detail"] = str(comparison["_error"])[:300]
             return result
         behavior = comparison.get("symbol_behavior_comparison") or {}
-        result["evidence_refs"] = [f"file:{path}", f"symbol:{path}#{name}"]
         if behavior.get("presence") != "BOTH":
             result["reason"] = "SYMBOL_NOT_VISIBLE_BOTH"
             return result
@@ -250,7 +254,9 @@ def build_candidate_reconsiderations(
         if path is not None
     )
     base_claims = _claims_at_commit(root, base_sha)
-    target_claims = _claims_at_commit(root, target_sha)
+    target_claims = (
+        base_claims if base_sha == target_sha else _claims_at_commit(root, target_sha)
+    )
     symbol_cache: dict[tuple[str, str], dict[str, Any]] = {}
     evaluations: list[dict[str, Any]] = []
     unconditioned = 0
