@@ -1,0 +1,52 @@
+{
+  "possibility_id": "verified-first-use-handoff",
+  "actor": "Sensemaking construction agent under the 2026-11-27 delegated mission",
+  "source_revision": "feeaecf95df58b675b29e9e8356dc921419e9cca",
+  "origin_date": "2026-11-27",
+  "title": "Verified first-use handoff",
+  "statement": "A first-time owner or coding agent can run one harness-neutral command that verifies the installed using-sensemaking Skill, prepares a handoff artifact for a target repository, and hands off to the single Skill entrypoint without pretending the CLI performs semantic analysis.",
+  "goal_refs": [
+    "goal:compounding-product-knowledge",
+    "goal:domain-general-cognitive-development"
+  ],
+  "source_candidate_refs": [
+    "poss:persistent-semantic-stewardship",
+    "poss:target-repository-discovery-memory"
+  ],
+  "capability_refs": [],
+  "assumption_refs": [
+    "con:agent-owns-semantic-control",
+    "hyp:later-sessions-consult-knowledge"
+  ],
+  "contradicts_refs": [],
+  "dimensions": {
+    "alignment": {
+      "value": "ALIGNED",
+      "basis": "ADR 0034 makes using-sensemaking the single semantic entrypoint. A handoff that verifies the installed Skill and prepares a prompt preserves that boundary rather than adding a second analyzer."
+    },
+    "ambition": {
+      "value": "INCREMENTAL",
+      "basis": "A small user-facing bridge from installation to the existing Skill workflow, not a new cognitive engine."
+    },
+    "horizon": {
+      "value": "FORESEEABLE",
+      "basis": "The setup-skills install record, harness adapter roots and bounded path inventory already exist; the missing piece is a verified handoff."
+    },
+    "realization": {
+      "value": "HYPOTHETICAL",
+      "establishment": "inferred",
+      "basis": "The current analyze command is a print-only stub that names one harness and hardcodes an artifact path. No verified handoff artifact or independent first-use observation exists."
+    }
+  },
+  "synthesis_basis": "Combines the installed-Skill setup and install-record surface, the single using-sensemaking entrypoint and the observed false affordance in the public analyze command. The handoff is a mechanical bridge, not a second semantic controller.",
+  "value_hypothesis": "A verified first-use handoff reduces failed installation-to-Skill transitions and stale-Skill load, helping a first-time agent reach a source-grounded answer faster.",
+  "revisit_when": "An independent first-time user reports whether the handoff reached a source-grounded answer, or the handoff implementation changes: file:src/sensemaking_skills/first_use.py or file:src/sensemaking_skills/cli.py.",
+  "counterevidence": "The real entrypoint is the Skill; a launcher may add a second surface and may not be used by users who read GETTING_STARTED. A generated prompt may not improve the agent's answer.",
+  "claim_ceiling": "One handoff implementation and one same-agent first-use exercise. It does not establish that users start with the CLI, that the handoff improves answer quality, or that independent users reach a source-grounded answer.",
+  "evidence_refs": [
+    "file:src/sensemaking_skills/cli.py",
+    "file:release-v1.0.yaml",
+    "file:GETTING_STARTED.md",
+    "file:src/sensemaking_skills/setup_skills.py"
+  ]
+}
