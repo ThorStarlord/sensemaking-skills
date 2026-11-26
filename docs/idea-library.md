@@ -278,6 +278,19 @@ These grew from the typed records and queries described in section 6. Each is a 
   [the fresh-use record](normal-use/2026-11-24-assumption-contrast-fresh-use.md).
 - **Revisit when:** a fresh agent attempts the relational view on an open prospective question and demonstrates or refutes actual value. Its result may show this is merely an extension of existing synthesis, in which case revise or supersede the concept without rewriting its history.
 
+### 3.7 Verified first-use handoff (2026-11-27)
+
+#### `poss:verified-first-use-handoff`: verified first-use handoff
+
+- **Proposed future:** a first-time owner or coding agent can run one harness-neutral command that verifies the installed `using-sensemaking` Skill, inventories a target repository, and writes a prompt-only handoff that names the actual Skill, target, output directory and question. The command does not analyze semantics; the agent still invokes the single Skill entrypoint.
+- **Origin:** [the 2026-11-27 synthesis episode](../artifacts/history/2026-11-27-verified-first-use-handoff-synthesis.json), grounded in the observed false affordance in the public `analyze` command. The first-use path required knowing to install Skills and invoke a Skill, while the advertised command only printed harness-specific instructions and promised unwritten artifacts.
+- **Dimensions:** `ALIGNED` with ADR 0034's single semantic entrypoint; `INCREMENTAL` ambition; `FORESEEABLE` because install records, harness roots and bounded inventory already exist; `PARTIALLY_IMPLEMENTED` at `deecf6a0` (handoff command, compatibility alias and verified currency comparison). No independent first-time use is established.
+- **Value hypothesis:** a verified handoff reduces failed installation-to-Skill transitions and stale-Skill load, helping a first-time agent reach a source-grounded answer faster.
+- **Assumptions and counterevidence:** the agent owns semantic control and later sessions consult retained knowledge. The real entrypoint remains the Skill; the handoff may be unnecessary for users who already follow `GETTING_STARTED`, and the installed copy can match the package source while the install record is stale.
+- **Disposition:** `SELECTED` for the 2026-11-27 construction episode; the command is implemented and partially exercised. A structured review from `cf57ed48` to `deecf6a0` fired the possibility's condition on `first_use.py` and `cli.py`. No disposition change, independent benefit or answer-quality claim follows.
+- **Revisit condition:** an independent first-time user reports whether the handoff reached a source-grounded answer, or the implementation changes: `file:src/sensemaking_skills/first_use.py` or `file:src/sensemaking_skills/cli.py`.
+- **Relations:** derived from `poss:persistent-semantic-stewardship` and `poss:target-repository-discovery-memory`; assumes `con:agent-owns-semantic-control` and `hyp:later-sessions-consult-knowledge`.
+
 ## 4. Construction paths and evidence prerequisites (not possibilities)
 
 These advance or condition possibilities but are not product futures. They keep their identities from the analysis that defined them. Earlier drafts of this page (PR #625 before merge) listed PATH-2 and the "S5 evidence first" option as possibilities; they are corrected here.

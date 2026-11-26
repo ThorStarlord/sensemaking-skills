@@ -1618,6 +1618,56 @@ jobs:
             exit 1
           fi
 
+      - name: Prepare a verified first-use handoff (mechanics only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          sensemaking-skills handoff \
+            --repo . --output "$RUNNER_TEMP/first-use-handoff" \
+            --skill-path skills/using-sensemaking \
+            --question "How does the review context relate changed paths to reviewed knowledge?" \
+            --json > "$RUNNER_TEMP/handoff.json"
+          sensemaking-skills analyze \
+            --repo . --output "$RUNNER_TEMP/first-use-handoff-alias" \
+            --skill-path skills/using-sensemaking --json \
+            > "$RUNNER_TEMP/handoff-alias.json" 2> "$RUNNER_TEMP/handoff-alias.stderr"
+          python - <<'PY'
+          import json
+          import os
+          def load(name):
+              path = os.path.join(os.environ["RUNNER_TEMP"], name)
+              with open(path, encoding="utf-8") as stream:
+                  return json.load(stream)
+          handoff = load("handoff.json")
+          assert handoff["artifact_id"] == "sensemaking_first_use_handoff"
+          assert handoff["analysis_performed"] is False
+          assert handoff["semantic_truth_established"] is False
+          assert handoff["action_authorized"] is False
+          assert os.path.isdir(handoff["target"]["path"])
+          assert "README.md" in handoff["target"]["inventory"]["entry_documents"]
+          assert handoff["installed_skill"]["skill_md"].endswith(
+              "skills/using-sensemaking/SKILL.md"
+          )
+          assert handoff["installed_skill"]["currency"] == "CURRENT_WITH_PACKAGE_SOURCE"
+          assert handoff["installed_skill"]["source_comparison"]["matches"] is True
+          assert "How does the review context relate changed paths" in handoff["prompt"]
+          assert handoff["target"]["path"] in handoff["prompt"]
+          assert os.path.isfile(handoff["output"]["json"])
+          assert os.path.isfile(handoff["output"]["markdown"])
+          alias = load("handoff-alias.json")
+          assert alias["artifact_id"] == "sensemaking_first_use_handoff"
+          assert alias["analysis_performed"] is False
+          with open(os.path.join(os.environ["RUNNER_TEMP"], "handoff-alias.stderr"), encoding="utf-8") as stream:
+              assert "compatibility alias" in stream.read()
+          print("First-use handoff verifies the installed Skill and writes a prompt-only artifact.")
+          PY
+          if sensemaking-skills handoff \
+            --repo . --skill-path "$RUNNER_TEMP/missing-skill" --json \
+            > /dev/null 2>&1; then
+            echo "missing first-use Skill path unexpectedly accepted"
+            exit 1
+          fi
+
       - name: Compare committed Python source relationships in review context (mechanics only)
         shell: bash
         run: |

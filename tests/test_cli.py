@@ -29,16 +29,26 @@ class TestCLIBasic:
         result = runner.invoke(cli, ["--help"])
         assert result.exit_code == 0
         assert "Sensemaking Skills" in result.output
+        assert "handoff" in result.output
         assert "analyze" in result.output
         assert "validate" in result.output
         assert "test" in result.output
         assert "campaign" in result.output
 
     def test_analyze_help(self, runner):
-        """Test analyze subcommand help."""
+        """The compatibility alias documents its handoff behavior."""
         result = runner.invoke(cli, ["analyze", "--help"])
         assert result.exit_code == 0
         assert "--repo" in result.output
+        assert "compatibility alias" in result.output.lower()
+
+    def test_handoff_help(self, runner):
+        """Test handoff subcommand help."""
+        result = runner.invoke(cli, ["handoff", "--help"])
+        assert result.exit_code == 0
+        assert "--repo" in result.output
+        assert "--question" in result.output
+        assert "--skill-path" in result.output
 
     def test_validate_help(self, runner):
         """Test validate subcommand help."""
@@ -81,6 +91,12 @@ class TestCLIBasic:
         result = runner.invoke(cli, ["analyze"])
         assert result.exit_code != 0
         assert "Error" in result.output or "repo" in result.output.lower()
+
+    def test_handoff_without_repo(self, runner):
+        """Test handoff without --repo returns error."""
+        result = runner.invoke(cli, ["handoff"])
+        assert result.exit_code != 0
+        assert "repo" in result.output.lower()
 
     def test_validate_without_artifact(self, runner):
         """Test validate without --artifact returns error."""

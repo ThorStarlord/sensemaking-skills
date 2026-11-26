@@ -21,7 +21,13 @@ sensemaking-skills semantic
 sensemaking-skills setup-skills
 sensemaking-skills validate
 sensemaking-skills analyze
+sensemaking-skills handoff
 ```
+
+`handoff` is the preferred first-use bridge: it verifies an installed
+`using-sensemaking` Skill and writes a handoff prompt. `analyze` remains a
+compatibility alias for the Version 1.0 command surface. Neither command
+performs semantic analysis; the Skill does.
 
 The command-level compatibility contract, including the retained `test`
 command and stable exit-code categories, is frozen in
