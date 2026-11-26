@@ -445,7 +445,7 @@
           "realization": {
             "value": "PARTIALLY_IMPLEMENTED",
             "establishment": "observed",
-            "basis": "At the 2026-11-26 seventh-episode revision, workspace-review-context --include-candidates parses explicit file:, claim: and symbol: references in revisit_when and reports FIRED, NO_MATCH or NOT_ASSESSED with evidence. It is bounded to review context and does not infer semantic consequence or provide a general indexed-change trigger. Earlier assessment at d0af33b: NOT_IMPLEMENTED because every revisit_when was free text naming no claim identifier.",
+            "basis": "At the 2026-11-26 seventh-episode revision, workspace-review-context --include-candidates parses explicit file:, claim: and symbol: references in revisit_when and reports FIRED, NO_MATCH or NOT_ASSESSED with evidence. A first structured fired use was observed at 403b8d38: the condition fired on a change to possibility_revisit.py, and the agent kept the possibility PARTIALLY_IMPLEMENTED. The surface is bounded to review context and does not infer semantic consequence, provide a general indexed-change trigger, or establish that a fired reference changes a decision. Earlier assessment at d0af33b: NOT_IMPLEMENTED because every revisit_when was free text naming no claim identifier.",
             "observation_ref": "docs/normal-use/2026-11-26-possibility-reconsiderations.md"
           }
         },
@@ -468,8 +468,8 @@
         "assessed_ref": "d0af33beb52e94b375d6a471e9990df11c8c424d",
         "value_hypothesis": "Reconsideration can reuse changes and strategy-assumption surfaces instead of a new query.",
         "revisit_when": "A later change modifies the review-context condition evaluator or its consumer: file:src/sensemaking_skills/semantic_architecture/possibility_revisit.py or file:src/sensemaking_skills/workspace_knowledge.py. Also revisit when an independent agent uses a structured condition to reconsider a retained possibility.",
-        "claim_ceiling": "One review-context implementation and its mechanical checks. Semantic consequence, automatic revival, decision influence, independent reuse and comparative benefit are not established.",
-        "counterevidence": "Most existing revisit_when values remain unstructured and are NOT_ASSESSED. A fired reference is a reconsideration prompt; the agent still judges whether the condition is semantically met."
+        "claim_ceiling": "One review-context implementation, a mechanical fired condition and one follow-up optimization. Semantic consequence, automatic revival, decision influence, independent reuse and comparative benefit are not established.",
+        "counterevidence": "Most existing revisit_when values remain unstructured and are NOT_ASSESSED. The first fired condition was caused by a change to the evaluator itself, not an external product premise. A fired reference is a reconsideration prompt; the agent still judges whether the condition is semantically met."
       }
     },
     {
