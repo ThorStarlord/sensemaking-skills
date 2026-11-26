@@ -1559,6 +1559,105 @@ jobs:
             exit 1
           fi
 
+      - name: Compose a change-scoped verification plan (mechanics only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          REF="$(git rev-parse HEAD)"
+          FOCUS="src/sensemaking_skills/semantic_architecture/knowledge_sources.py"
+          sensemaking-skills semantic verification-plan \
+            --repo . --ref "$REF" --path "$FOCUS" \
+            --symbol build_knowledge_snapshot --json \
+            > "$RUNNER_TEMP/verification-plan.json"
+          PLAN_REF="$REF" PLAN_FOCUS="$FOCUS" python - <<'PY'
+          import json
+          import os
+
+          with open(os.path.join(os.environ["RUNNER_TEMP"], "verification-plan.json"),
+                    encoding="utf-8") as stream:
+              plan = json.load(stream)
+
+          assert plan["code"] == "SEMANTIC_VERIFICATION_PLAN"
+          assert plan["target"]["path"] == os.environ["PLAN_FOCUS"]
+          assert plan["target"]["target_ref"] == os.environ["PLAN_REF"]
+          assert len(plan["target"]["sha256"]) == 64
+          assert plan["target"]["symbol"] == "build_knowledge_snapshot"
+          assert plan["target"]["symbol_defined"] is True
+          assert plan["tests_executed"] is False
+          assert plan["test_analysis_established"] is False
+          assert plan["test_results_established"] is False
+          assert plan["coverage_established"] is False
+          assert plan["semantic_truth_established"] is False
+          assert plan["action_authorized"] is False
+          assert plan["truncated"] is False
+
+          targets = [item["pytest_target"] for item in plan["pytest_candidates"]]
+          assert targets == sorted(targets, key=lambda value: (
+              0 if "::" not in value else 1, value,
+          ))
+          assert len(targets) == len(set(targets))
+          assert plan["counts"]["pytest_candidates"] == len(targets)
+          assert plan["counts"]["direct_test_functions"] >= 6
+          assert plan["counts"]["guard_scenarios"] >= 5
+          assert plan["counts"]["authored_verification_records"] >= 5
+          assert {
+              "tests/test_repository_semantic_steward.py::test_stewardship_revision_lifecycle_and_currentness",
+              "tests/test_semantic_change_classification.py::test_missing_origin_fingerprint_is_not_assessed",
+              "tests/test_semantic_knowledge_self_repo.py::test_real_repo_stewardship_knowledge_rebuild",
+              "tests/test_semantic_knowledge.py",
+          } <= set(targets)
+          authored_ids = {
+              source["claim_id"]
+              for item in plan["pytest_candidates"]
+              for source in item["sources"]
+              if source["kind"] == "AUTHORED_VERIFICATION"
+          }
+          assert "verification:semantic-knowledge-tests" in authored_ids
+          assert any(
+              source["kind"] == "DIRECT_TEST_FUNCTION"
+              for item in plan["pytest_candidates"]
+              for source in item["sources"]
+          )
+          suggested = plan["suggested_pytest"]
+          assert suggested["execution_status"] == "NOT_RUN"
+          assert suggested["argv"][:3] == ["python", "-m", "pytest"]
+          assert len(suggested["argv"]) == (
+              3 + len(suggested["test_files"]) + len(suggested["test_functions"])
+          )
+          assert set(suggested["test_files"]) <= set(targets)
+          assert set(suggested["test_files"]).isdisjoint(suggested["test_functions"])
+          assert plan["counts"]["suggested_pytest_targets"] == (
+              len(suggested["test_files"]) + len(suggested["test_functions"])
+          )
+          assert plan["counts"]["function_targets_subsumed_by_file"] == len(
+              suggested["subsumed_function_candidates"]
+          )
+          assert plan["scenario_candidates"]
+          assert all(
+              item["pytest_target"] is None
+              and item["execution_status"] == "NOT_RUN"
+              and item["test_mapping"] == "NOT_ASSESSED"
+              for item in plan["scenario_candidates"]
+          )
+          statuses = {item["status"] for item in plan["gaps"]}
+          assert {"FILE_LEVEL_ONLY", "NO_EXECUTABLE_TEST", "NOT_RUN", "NOT_ASSESSED"} <= statuses
+          print("Verification plan composes authored records, direct tests and guard scenarios; no execution or coverage claim.")
+          PY
+          if sensemaking-skills semantic verification-plan \
+            --repo . --ref "$REF" --path README.md \
+            --symbol build_knowledge_snapshot --json \
+            > /dev/null 2>&1; then
+            echo "non-Python verification-plan target unexpectedly accepted"
+            exit 1
+          fi
+          if sensemaking-skills semantic verification-plan \
+            --repo . --ref "$REF" --path "$FOCUS" \
+            --symbol 'not-valid!' --json \
+            > /dev/null 2>&1; then
+            echo "malformed verification-plan symbol unexpectedly accepted"
+            exit 1
+          fi
+
       - name: Preview a fail-closed rename patch (mechanics only)
         shell: bash
         run: |

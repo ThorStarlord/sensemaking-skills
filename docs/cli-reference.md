@@ -90,6 +90,15 @@ not a runtime call graph or coverage result. Add `--symbol NAME` for direct
 references, test functions/methods, a source-level behavior surface and
 guard-derived verification scenario candidates; test candidates are not
 coverage and scenario hints are not executable tests.
+`semantic verification-plan --repo . --ref HEAD --path FILE --symbol NAME`
+composes the same authored verification records, direct test-function
+candidates and guard scenarios into one change-scoped plan: deduplicated
+`pytest_target` candidates (a test file or `file::test` node), a suggested
+non-executed pytest invocation that keeps function targets not subsumed by a
+file candidate, separate non-executable guard scenarios, authored records that
+did not map to a test file, and explicit gaps. It does not execute or generate
+tests and does not establish coverage, pass status, test analysis, semantic
+truth or authorization.
 `workspace-query --operation context-for|workspace-impact --repo .` compares
 tracked changed file names and Git's untracked entries, not every file inside a
 wholly untracked directory; `change_scope` discloses the granularity and

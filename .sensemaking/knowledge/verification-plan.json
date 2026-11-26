@@ -12,7 +12,8 @@
         "file:docs/normal-use/2026-11-25-symbol-usage-context.md",
         "file:src/sensemaking_skills/semantic_architecture/source_relationships.py",
         "file:src/sensemaking_skills/semantic_architecture/verification_scenarios.py",
-        "file:docs/cli-reference.md"
+        "file:docs/cli-reference.md",
+        "file:docs/idea-library.md"
       ],
       "epistemic_status": "hypothetical",
       "attributes": {
@@ -37,9 +38,10 @@
             "basis": "The 2026-11-25 symbol context already returns direct test-function candidates and guard scenarios; the authored knowledge query already returns verification records. The missing piece is a plan consumer."
           },
           "realization": {
-            "value": "HYPOTHETICAL",
-            "basis": "The 2026-11-25 normal-use record states that a consumer had to inspect test bodies manually to expand a verification plan for build_knowledge_snapshot. No plan consumer or deduplicated candidate command exists.",
-            "establishment": "inferred"
+            "value": "PARTIALLY_IMPLEMENTED",
+            "basis": "At 6acc0fe9 the semantic verification-plan consumer composes authored verification records, direct test-function candidates and guard scenarios for one committed file and symbol. A real run on knowledge_sources.py / build_knowledge_snapshot returned 5 authored records, 6 direct test functions, 8 guard scenarios, 12 pytest candidates and 10 suggested targets, with explicit FILE_LEVEL_ONLY, NO_EXECUTABLE_TEST, NOT_RUN and NOT_ASSESSED gaps. No test was executed and no coverage, sufficiency, decision change or independent use is established.",
+            "establishment": "observed",
+            "observation_ref": "docs/normal-use/2026-11-28-verification-plan.md"
           }
         },
         "disposition_history": [
@@ -49,15 +51,23 @@
             "authority": "agent-authored synthesis under current delegated mission",
             "source": "artifacts/history/2026-11-28-verification-plan-synthesis.json",
             "rationale": "Combines the existing symbol context, authored verification records and guard-derived scenario candidates into a change-scoped verification plan. It addresses the recorded manual verification-plan work without generating tests, executing them or inferring coverage."
+          },
+          {
+            "value": "SELECTED",
+            "date": "2026-11-28",
+            "authority": "agent construction selection under the owner's 2026-11-28 delegated mission",
+            "source": "docs/normal-use/2026-11-28-verification-plan.md",
+            "rationale": "Selected to apply the retained 2026-11-25 verification-plan pain to a bounded consumer that turns existing direct evidence into a candidate set without executing tests or claiming coverage."
           }
         ],
         "assessed_ref": "ca597b2a6c80e76964f45630fe29e1a11c4c9e19",
         "synthesis_basis": "Combines the existing symbol context, authored verification records and guard-derived scenario candidates into a change-scoped verification plan. It addresses the recorded manual verification-plan work without generating tests, executing them or inferring coverage.",
         "value_hypothesis": "A change-scoped verification plan reduces manual test-body inspection and missed verification by turning direct references, authored verification records and guard scenarios into a runnable candidate set with explicit gaps.",
         "revisit_when": "An independent agent uses the plan on a real change and records whether it changed the verification set; or the direct test-candidate scope or authored verification record surface changes.",
-        "counterevidence": "Direct mentions are not coverage and may miss helpers, fixtures, parameterized work and runtime paths. Authored verification records are file-level. Guard scenarios are candidates, not tests. The plan may over-include tests and does not establish sufficiency or pass status.",
-        "claim_ceiling": "One plan consumer and one real-symbol exercise. It does not establish coverage, test sufficiency, a changed verification decision, independent reuse, comparative benefit or longitudinal development.",
-        "agent_owned": true
+        "counterevidence": "Direct mentions are not coverage and may miss helpers, fixtures, parameterized work and runtime paths. Authored verification records are file-level. Guard scenarios are candidates, not tests. The plan may over-include tests and does not establish sufficiency, collection or pass status. The consumer was same-session and manually read the Skill.",
+        "claim_ceiling": "One plan consumer and one real-symbol exercise. It does not establish coverage, test sufficiency, a changed verification decision, measured effort reduction, independent reuse, comparative benefit or longitudinal development.",
+        "agent_owned": true,
+        "library_ref": "docs/idea-library.md"
       }
     }
   ],

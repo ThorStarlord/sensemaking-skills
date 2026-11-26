@@ -534,6 +534,42 @@ def register_semantic_commands(root_cli: click.Group) -> None:
             raise click.ClickException(str(exc)) from exc
         _emit(payload, output_json=output_json, statement_first_claims=operation == "search")
 
+    @semantic_group.command(name="verification-plan")
+    @click.option("--path", "source_path", required=True,
+                  help="One tracked repository-relative Python file")
+    @click.option("--symbol", "symbol", required=True,
+                  help="One top-level Python function or class in that file")
+    @click.option("--limit", type=click.IntRange(1, 250), default=50)
+    @click.option("--repo", "repo_dir",
+                  type=click.Path(exists=True, file_okay=False, path_type=Path),
+                  default=Path("."), show_default=True,
+                  help="Any directory inside the Git working tree")
+    @click.option("--ref", default="HEAD", show_default=True,
+                  help="Revision to index and query (committed bytes only)")
+    @click.option("--repository", "repository_label", default=None,
+                  help="Explicit repository label; otherwise derived from origin or the checkout directory")
+    @click.option("--index-dir", "index_dir", type=click.Path(path_type=Path), default=None,
+                  help="Derived cache directory outside the checkout (default: per-user cache)")
+    @click.option("--refresh", is_flag=True,
+                  help="Delete the cached snapshot file for this commit and rebuild it")
+    @click.option("--json", "output_json", is_flag=True)
+    def semantic_verification_plan(
+        source_path: str, symbol: str, limit: int, repo_dir: Path, ref: str,
+        repository_label: str | None, index_dir: Path | None, refresh: bool,
+        output_json: bool,
+    ) -> None:
+        """Compose authored verification, direct tests and guard scenarios."""
+        from .workspace_knowledge import run_verification_plan
+
+        try:
+            payload = run_verification_plan(
+                repo=repo_dir, ref=ref, path=source_path, symbol=symbol,
+                limit=limit, repository=repository_label,
+                index_dir=index_dir, refresh=refresh,
+            )
+        except (ValueError, OSError, UnicodeError, KeyError, TypeError) as exc:
+            raise click.ClickException(str(exc)) from exc
+        _emit(payload, output_json=output_json)
 
     @semantic_group.command(name="workspace-changes")
     @click.option("--base-ref", required=True,
