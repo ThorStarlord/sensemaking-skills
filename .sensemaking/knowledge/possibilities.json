@@ -416,7 +416,9 @@
       "evidence_refs": [
         "file:docs/idea-library.md",
         "file:docs/semantic-architecture/product-possibility-ontology.md",
-        "file:src/sensemaking_skills/strategy_cli.py:line:344"
+        "file:src/sensemaking_skills/strategy_cli.py:line:344",
+        "file:src/sensemaking_skills/semantic_architecture/possibility_revisit.py",
+        "file:src/sensemaking_skills/workspace_knowledge.py"
       ],
       "attributes": {
         "concept": "ProductPossibility",
@@ -441,9 +443,10 @@
             "basis": "Reuses existing changes and strategy assumptions surfaces."
           },
           "realization": {
-            "value": "NOT_IMPLEMENTED",
-            "establishment": "inferred",
-            "basis": "Since plan PR 3 changes lists changed poss: records, but every revisit_when is free text naming no claim identifier (exhaustive check of possibilities.json), so no change can yet be matched to a condition."
+            "value": "PARTIALLY_IMPLEMENTED",
+            "establishment": "observed",
+            "basis": "At the 2026-11-26 seventh-episode revision, workspace-review-context --include-candidates parses explicit file:, claim: and symbol: references in revisit_when and reports FIRED, NO_MATCH or NOT_ASSESSED with evidence. It is bounded to review context and does not infer semantic consequence or provide a general indexed-change trigger. Earlier assessment at d0af33b: NOT_IMPLEMENTED because every revisit_when was free text naming no claim identifier.",
+            "observation_ref": "docs/normal-use/2026-11-26-possibility-reconsiderations.md"
           }
         },
         "disposition_history": [
@@ -453,10 +456,20 @@
             "authority": "agent",
             "source": "docs/idea-library.md",
             "rationale": "Candidate alternative to plan PR 5's dedicated reconsideration query."
+          },
+          {
+            "value": "SELECTED",
+            "date": "2026-11-26",
+            "authority": "agent construction selection under the owner's 2026-11-26 continuity mission",
+            "source": "docs/normal-use/2026-11-26-possibility-reconsiderations.md",
+            "rationale": "Selected to realize the retained possibility condition-matching core in the existing review consumer, using explicit file/claim/symbol references rather than a new schema or automatic trigger."
           }
         ],
         "assessed_ref": "d0af33beb52e94b375d6a471e9990df11c8c424d",
-        "value_hypothesis": "Reconsideration can reuse changes and strategy-assumption surfaces instead of a new query."
+        "value_hypothesis": "Reconsideration can reuse changes and strategy-assumption surfaces instead of a new query.",
+        "revisit_when": "A later change modifies the review-context condition evaluator or its consumer: file:src/sensemaking_skills/semantic_architecture/possibility_revisit.py or file:src/sensemaking_skills/workspace_knowledge.py. Also revisit when an independent agent uses a structured condition to reconsider a retained possibility.",
+        "claim_ceiling": "One review-context implementation and its mechanical checks. Semantic consequence, automatic revival, decision influence, independent reuse and comparative benefit are not established.",
+        "counterevidence": "Most existing revisit_when values remain unstructured and are NOT_ASSESSED. A fired reference is a reconsideration prompt; the agent still judges whether the condition is semantically met."
       }
     },
     {
