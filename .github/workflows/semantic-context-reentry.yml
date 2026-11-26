@@ -2263,6 +2263,20 @@ jobs:
                   packet['base_ref'], packet['target_ref'], '--',
               ]).decode('utf-8', errors='replace').split('\0')
           ) - {''}
+          target_condition = next(
+              item for item in reconsiderations['candidates']
+              if item['claim_id'] == 'poss:possibility-reconsideration-from-change'
+          )
+          expected_fire = any(
+              ref['kind'] == 'file' and ref['value'] in changed
+              for ref in target_condition['structured_refs']
+          )
+          assert (target_condition['assessment'] == 'FIRED') == expected_fire
+          if expected_fire:
+              assert any(
+                  ref['status'] == 'FIRED'
+                  for ref in target_condition['structured_refs']
+              )
           cited = set(source_review['changed_cited_paths'])
           containers = set(source_review['changed_record_containers'])
           supporting = set(source_review['changed_supporting_paths'])
