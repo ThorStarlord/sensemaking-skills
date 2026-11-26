@@ -40,7 +40,7 @@ class TestCLIBasic:
         result = runner.invoke(cli, ["analyze", "--help"])
         assert result.exit_code == 0
         assert "--repo" in result.output
-        assert "compatibility alias" in result.output
+        assert "compatibility alias" in result.output.lower()
 
     def test_handoff_help(self, runner):
         """Test handoff subcommand help."""

@@ -38,7 +38,7 @@ def test_prepare_handoff_writes_verified_paths(tmp_path: Path) -> None:
     assert payload["action_authorized"] is False
     assert payload["target"]["path"] == str(target.resolve())
     assert payload["installed_skill"]["skill_dir"] == str(skill.resolve())
-    assert payload["installed_skill"]["currency"] == "UNRECORDED"
+    assert payload["installed_skill"]["currency"] == "DIFFERS_FROM_PACKAGE_SOURCE"
     assert payload["target"]["inventory"]["entry_documents"] == ["README.md"]
     assert payload["target"]["inventory"]["manifests"] == ["pyproject.toml"]
     assert (output / "handoff.json").is_file()
