@@ -21,7 +21,8 @@ sensemaking-skills [--version] <command> ...
 | --- | --- | --- |
 | `setup-skills` | Copy packaged Skill trees to an explicitly chosen harness discovery root. No harness auto-detection. | `docs/harness-adapters.md`, `INSTALLATION.md` |
 | `validate` | Validate a repository sensemaking brief or workflow plan (`--artifact`, `--json`). | `docs/validation-workflow.md` |
-| `analyze` | Prepare the environment for agent-driven diagnosis (`--repo`, `--output`). Diagnosis itself is the `repo-sensemaker` Skill. | `skills/repo-sensemaker/SKILL.md` |
+| `handoff` | Verify an installed `using-sensemaking` Skill, inventory a target repository, and write a ready-to-use handoff prompt (`--repo`, `--output`, `--question`, `--harness`, `--scope`, `--skill-path`, `--json`). Does not analyze semantics. | `docs/cli-reference.md` (below) |
+| `analyze` | Compatibility alias for `handoff`; retained for the Version 1.0 command surface. | `docs/public-surface-v1.0.md` |
 | `test` | Shadow-mode validation automation over sample repositories (`--repos`). | `docs/archive/phase-reports/` (historical) |
 | `campaign` | Durable Campaign state, handoff/resume, execution companions, lineage, bundles, multi-target, provenance. | `docs/campaign-cli.md` |
 | `strategy` | Inspect authored Level-3 strategic analyses. | `docs/strategic-continuity-v1.md` |
@@ -181,6 +182,20 @@ verify GitHub PR identity, complete ancestry, semantic truth or Skill quality.
 
 `audit [--repo-root] [--json]`. Exit code 3 on error findings. See
 `docs/release-authority-audit.md`.
+
+## `handoff`
+
+`sensemaking-skills handoff --repo TARGET [--output DIR] [--question TEXT]
+[--harness generic|claude|codex|opencode] [--scope any|user|project]
+[--skill-path PATH] [--json]` verifies an installed `using-sensemaking` Skill,
+inventories the target repository's paths, manifests and entry documents, and
+writes `handoff.json` and `handoff.md` with a ready-to-use prompt. It does not
+analyze repository semantics, select work or authorize action. It fails closed
+if no installed copy is found or multiple copies are ambiguous; pass
+`--harness`, `--scope` or `--skill-path` to select one. Currency compares the
+installed tree with the packaged source or the install record; a stale or
+unrecorded copy is reported, not silently trusted. `analyze` is a compatibility
+alias with the same options.
 
 ## `validate`
 

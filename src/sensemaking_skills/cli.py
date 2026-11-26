@@ -44,6 +44,8 @@ from .release_cli import register_release_commands
 from .strategy_cli import register_strategy_commands
 from .decision_journey_cli import register_decision_journey_commands
 from .setup_skills import setup_skill_profile as run_setup_skill_profile
+from .first_use import prepare_handoff
+from .harness_adapters import CANONICAL_HARNESS_TARGETS
 
 CAMPAIGN_INVALID_EXIT = 3
 CAMPAIGN_WORKSPACE_EXIT = 4
@@ -218,48 +220,130 @@ def _history_payload(snapshot: CampaignSnapshot) -> dict[str, Any]:
 @cli.command()
 @click.option(
     "--repo",
-    type=click.Path(exists=True),
-    help="Path to repository to analyze",
+    type=click.Path(exists=True, file_okay=False, path_type=Path),
+    help="Path to the target repository",
 )
 @click.option(
     "--output",
-    type=click.Path(),
-    default="artifacts/",
-    help="Output directory for artifacts (default: artifacts/)",
+    type=click.Path(path_type=Path),
+    default=Path("artifacts/sensemaking-handoff"),
+    show_default=True,
+    help="Output directory for the handoff files",
 )
-def analyze(repo, output):
+@click.option("--question", default=None, help="Optional first question for the agent")
+@click.option(
+    "--harness",
+    type=click.Choice(CANONICAL_HARNESS_TARGETS),
+    default=None,
+    help="Restrict installed-Skill discovery to one harness",
+)
+@click.option(
+    "--scope",
+    type=click.Choice(["any", "user", "project"]),
+    default="any",
+    show_default=True,
+    help="Restrict installed-Skill discovery by scope",
+)
+@click.option(
+    "--skill-path",
+    type=click.Path(path_type=Path),
+    default=None,
+    help="Explicit installed using-sensemaking Skill directory or SKILL.md",
+)
+@click.option("--json", "output_json", is_flag=True)
+def handoff(repo, output, question, harness, scope, skill_path, output_json):
+    """Prepare a verified first-use handoff to the installed using-sensemaking Skill.
+
+    The command verifies the installed entrypoint Skill, inventories the target
+    repository and writes handoff.json and handoff.md. It does not analyze the
+    repository or select work; the active agent invokes the Skill.
     """
-    Analyze a repository for fog type and weakest boundary.
+    try:
+        payload = prepare_handoff(
+            repo,
+            output,
+            question=question,
+            harness=harness,
+            scope=scope,
+            skill_path=skill_path,
+        )
+    except (ValueError, OSError) as exc:
+        raise click.ClickException(str(exc)) from exc
+    if output_json:
+        click.echo(json.dumps(payload, sort_keys=True))
+        return
+    skill = payload["installed_skill"]
+    click.echo(f"Handoff: {payload['output']['markdown']}")
+    click.echo(f"JSON: {payload['output']['json']}")
+    click.echo(f"Installed Skill: {skill['skill_dir']} ({skill['currency']})")
+    click.echo("Next: give the prompt in handoff.md to a coding agent that can load the Skill.")
 
-    This CLI prepares the environment for agent-driven diagnosis.
-    For full diagnostics, see: skills/repo-sensemaker/SKILL.md
 
-    Usage:
-        sensemaking-skills analyze --repo /path/to/repo
+@cli.command()
+@click.option(
+    "--repo",
+    type=click.Path(exists=True, file_okay=False, path_type=Path),
+    help="Path to the target repository",
+)
+@click.option(
+    "--output",
+    type=click.Path(path_type=Path),
+    default=Path("artifacts/sensemaking-handoff"),
+    show_default=True,
+    help="Output directory for the handoff files",
+)
+@click.option("--question", default=None, help="Optional first question for the agent")
+@click.option(
+    "--harness",
+    type=click.Choice(CANONICAL_HARNESS_TARGETS),
+    default=None,
+    help="Restrict installed-Skill discovery to one harness",
+)
+@click.option(
+    "--scope",
+    type=click.Choice(["any", "user", "project"]),
+    default="any",
+    show_default=True,
+    help="Restrict installed-Skill discovery by scope",
+)
+@click.option(
+    "--skill-path",
+    type=click.Path(path_type=Path),
+    default=None,
+    help="Explicit installed using-sensemaking Skill directory or SKILL.md",
+)
+@click.option("--json", "output_json", is_flag=True)
+def analyze(repo, output, question, harness, scope, skill_path, output_json):
+    """Compatibility alias for handoff; the CLI does not analyze semantics.
+
+    The stable command name is retained for the Version 1.0 surface. Use
+    `handoff` for the preferred command and options.
     """
-    if not repo:
-        click.echo("Error: --repo is required", err=True)
-        sys.exit(1)
-
-    repo_path = Path(repo).resolve()
-    output_path = Path(output).resolve()
-
-    click.echo(f"Repository: {repo_path}")
-    click.echo(f"Output: {output_path}")
-    click.echo()
-    click.echo("To analyze this repository, use Claude Code:")
-    click.echo()
-    click.echo("1. Open this repository in Claude Code")
-    click.echo("2. Read: skills/using-sensemaking/SKILL.md")
-    click.echo("3. Ask the agent to use: skills/repo-sensemaker/SKILL.md")
-    click.echo(f"4. Specify target repo: {repo_path}")
-    click.echo("5. Artifacts will be saved to: artifacts/")
-    click.echo()
-    click.echo("To validate artifacts after agent creates them:")
+    if repo is None:
+        raise click.UsageError("--repo is required")
     click.echo(
-        "    sensemaking-skills validate --artifact "
-        "artifacts/repository_sensemaking_brief.md"
+        "note: `analyze` is a compatibility alias for `handoff`; "
+        "the CLI does not analyze repository semantics.",
+        err=True,
     )
+    try:
+        payload = prepare_handoff(
+            repo,
+            output,
+            question=question,
+            harness=harness,
+            scope=scope,
+            skill_path=skill_path,
+        )
+    except (ValueError, OSError) as exc:
+        raise click.ClickException(str(exc)) from exc
+    if output_json:
+        click.echo(json.dumps(payload, sort_keys=True))
+        return
+    skill = payload["installed_skill"]
+    click.echo(f"Handoff: {payload['output']['markdown']}")
+    click.echo(f"JSON: {payload['output']['json']}")
+    click.echo(f"Installed Skill: {skill['skill_dir']} ({skill['currency']})")
 
 
 def _artifact_result_error(artifact_path: Path, message: str, *, validator_error: bool) -> dict[str, Any]:
@@ -388,9 +472,9 @@ def validate(artifact: Path, output_json: bool, repo_root: Path | None, target_r
 )
 def test(repos):
     """
-    Run shadow-mode test automation.
+    Compatibility-only: print the repository test commands.
 
-    Tests the validation infrastructure against sample repositories.
+    This command does not run a test suite.
     """
     click.echo(f"Running shadow-mode tests with {repos} repositories...")
     click.echo()

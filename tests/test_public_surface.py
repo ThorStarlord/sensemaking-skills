@@ -18,7 +18,7 @@ def test_stable_cli_commands_are_registered() -> None:
         check=False,
     )
     assert result.returncode == 0
-    for command in ("campaign", "semantic", "setup-skills", "validate", "analyze"):
+    for command in ("campaign", "semantic", "setup-skills", "validate", "analyze", "handoff"):
         assert command in result.stdout
 
 

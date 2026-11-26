@@ -23,6 +23,7 @@ catalog.
 | Need | Start here |
 | --- | --- |
 | Human installation / first use | [`GETTING_STARTED.md`](GETTING_STARTED.md) |
+| Prepare an installed-Skill handoff for a target repository | `sensemaking-skills handoff --repo <target>`; see [`GETTING_STARTED.md`](GETTING_STARTED.md#prepare-a-first-use-handoff) |
 | **Learn from engineering episodes**: recover relevant historical lessons and revisit them as the next decision changes | [Sensemaking Continuous Learning (SCL)](docs/adr/0035-sensemaking-continuous-learning.md) and the [first-use lesson recall](GETTING_STARTED.md#learn-from-prior-engineering-episodes-scl) |
 | **Choose how to reason**: check question/method fitness and allocate intellectual effort without a second controller | [Adaptive Metareasoning System (AMS)](docs/adr/0036-adaptive-metareasoning-system.md) and [first-use example](GETTING_STARTED.md#regulate-reasoning-with-ams) |
 | **Any repository request**: understand it, explore what it could become, choose a direction, or (when authorized) implement | [`skills/using-sensemaking/SKILL.md`](skills/using-sensemaking/SKILL.md), the single entrypoint |

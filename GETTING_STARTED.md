@@ -86,6 +86,21 @@ Installing the Skills is the only setup the entrypoint needs. Repository
 configuration through `setup-sensemaking-skills` is optional and never a
 prerequisite for `using-sensemaking`.
 
+## Prepare a first-use handoff
+
+After `setup-skills`, prepare a verified handoff from the CLI to the installed entrypoint:
+
+```bash
+sensemaking-skills handoff --repo /path/to/target \
+  --output artifacts/sensemaking-handoff \
+  --harness generic \
+  --question "What should a new agent understand first?"
+```
+
+The command verifies the installed `using-sensemaking` Skill, inventories the target repository's paths, manifests and entry documents, and writes `handoff.json` and `handoff.md`. It does **not** analyze the repository. Open the target in your coding-agent harness, make the Skill discoverable (or point the agent at the printed `SKILL.md` path), and give the agent the prompt from `handoff.md`.
+
+If multiple installed copies exist, pass `--harness`, `--scope` or `--skill-path`. A stale or unrecorded copy is reported with an update instruction rather than silently trusted. `analyze` remains a compatibility alias with the same options.
+
 ## Optional decision transparency
 
 For a detailed audit, ask: "Use `using-sensemaking` on this repository with
