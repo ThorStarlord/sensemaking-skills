@@ -12,7 +12,8 @@
         "file:src/sensemaking_skills/cli.py",
         "file:release-v1.0.yaml",
         "file:GETTING_STARTED.md",
-        "file:src/sensemaking_skills/setup_skills.py"
+        "file:src/sensemaking_skills/setup_skills.py",
+        "file:docs/idea-library.md"
       ],
       "epistemic_status": "hypothetical",
       "attributes": {
@@ -37,9 +38,10 @@
             "basis": "The setup-skills install record, harness adapter roots and bounded path inventory already exist; the missing piece is a verified handoff."
           },
           "realization": {
-            "value": "HYPOTHETICAL",
-            "basis": "The current analyze command is a print-only stub that names one harness and hardcodes an artifact path. No verified handoff artifact or independent first-use observation exists.",
-            "establishment": "inferred"
+            "value": "PARTIALLY_IMPLEMENTED",
+            "basis": "At deecf6a0 the handoff command verifies the installed using-sensemaking Skill against the package source or install record, inventories the target repository, writes handoff.json and handoff.md, and keeps analyze as a compatibility alias. A local run reported CURRENT_WITH_PACKAGE_SOURCE. A structured review from cf57ed48 to deecf6a0 fired the possibility condition on first_use.py and cli.py. One same-agent fresh-context consumer used the handoff, reached a source-grounded answer and identified missing entry-point and revision guidance; the prompt was revised. Independent user benefit, host-native loading and comparative value are not established.",
+            "establishment": "observed",
+            "observation_ref": "docs/normal-use/2026-11-27-verified-first-use-handoff.md"
           }
         },
         "disposition_history": [
@@ -49,15 +51,23 @@
             "authority": "agent-authored synthesis under current delegated mission",
             "source": "artifacts/history/2026-11-27-verified-first-use-handoff-synthesis.json",
             "rationale": "Combines the installed-Skill setup and install-record surface, the single using-sensemaking entrypoint and the observed false affordance in the public analyze command. The handoff is a mechanical bridge, not a second semantic controller."
+          },
+          {
+            "value": "SELECTED",
+            "date": "2026-11-27",
+            "authority": "agent construction selection under the owner's 2026-11-27 delegated mission",
+            "source": "docs/normal-use/2026-11-27-verified-first-use-handoff.md",
+            "rationale": "Selected to replace the false analyze affordance with a verified, harness-neutral handoff while preserving the single using-sensemaking semantic entrypoint and the Version 1.0 command surface."
           }
         ],
         "assessed_ref": "feeaecf95df58b675b29e9e8356dc921419e9cca",
         "synthesis_basis": "Combines the installed-Skill setup and install-record surface, the single using-sensemaking entrypoint and the observed false affordance in the public analyze command. The handoff is a mechanical bridge, not a second semantic controller.",
         "value_hypothesis": "A verified first-use handoff reduces failed installation-to-Skill transitions and stale-Skill load, helping a first-time agent reach a source-grounded answer faster.",
         "revisit_when": "An independent first-time user reports whether the handoff reached a source-grounded answer, or the handoff implementation changes: file:src/sensemaking_skills/first_use.py or file:src/sensemaking_skills/cli.py.",
-        "counterevidence": "The real entrypoint is the Skill; a launcher may add a second surface and may not be used by users who read GETTING_STARTED. A generated prompt may not improve the agent's answer.",
-        "claim_ceiling": "One handoff implementation and one same-agent first-use exercise. It does not establish that users start with the CLI, that the handoff improves answer quality, or that independent users reach a source-grounded answer.",
-        "agent_owned": true
+        "counterevidence": "The real semantic entrypoint remains the Skill; the handoff may be unnecessary for users who already follow GETTING_STARTED. The fresh-context answer was produced by manually reading the Skill, not by host-native loading, and it is not a controlled comparison. The command depends on an installed copy or an explicit --skill-path, and the install record can lag the source tree.",
+        "claim_ceiling": "One handoff implementation, one local run, one external-premise condition firing and one same-agent fresh-context use. Host-native Skill loading, independent user benefit, answer-quality improvement, comparative value and longitudinal development are not established.",
+        "agent_owned": true,
+        "library_ref": "docs/idea-library.md"
       }
     }
   ],

@@ -220,6 +220,7 @@ def _history_payload(snapshot: CampaignSnapshot) -> dict[str, Any]:
 @cli.command()
 @click.option(
     "--repo",
+    required=True,
     type=click.Path(exists=True, file_okay=False, path_type=Path),
     help="Path to the target repository",
 )

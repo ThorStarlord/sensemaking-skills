@@ -18,6 +18,7 @@ from .harness_adapters import CANONICAL_HARNESS_TARGETS, get_harness_adapter
 from .semantic_architecture.worktree_context import guarded_git_text
 from .setup_skills import (
     INSTALL_RECORD_NAME,
+    SkillsSetupError,
     _skill_tree_fingerprint,
     _tree_digest,
     get_package_skills_dir,
@@ -84,7 +85,7 @@ def _candidate_roots(target: Path, harness: str | None) -> list[tuple[str, str, 
 def _package_source() -> tuple[Path | None, dict[str, str] | None]:
     try:
         source = get_package_skills_dir() / ENTRY_SKILL
-    except (OSError, ValueError):
+    except (OSError, ValueError, SkillsSetupError):
         return None, None
     if not (source / "SKILL.md").is_file():
         return None, None
@@ -105,12 +106,12 @@ def _currency(
     }
     if matches_source:
         return "CURRENT_WITH_PACKAGE_SOURCE", digest, fingerprint, source
+    if source_path is not None:
+        return "DIFFERS_FROM_PACKAGE_SOURCE", digest, fingerprint, source
     if recorded is None:
         return "UNRECORDED", digest, fingerprint, source
     if recorded.get("tree_sha256") == digest:
         return "CURRENT_AS_INSTALLED", digest, fingerprint, source
-    if source_path is not None:
-        return "DIFFERS_FROM_PACKAGE_SOURCE", digest, fingerprint, source
     return "LOCAL_CHANGES_OR_STALE", digest, fingerprint, source
 
 
@@ -227,6 +228,7 @@ def _target_inventory(target: Path) -> dict[str, Any]:
 
 def _prompt(
     skill: dict[str, Any], target: Path, output: Path, question: str | None,
+    *, git: dict[str, Any], inventory: dict[str, Any],
 ) -> str:
     asked = (question or "").strip() or (
         "Perform a bounded repository orientation and identify the most "
@@ -235,14 +237,36 @@ def _prompt(
     lines = [
         f"Use the installed Sensemaking entrypoint Skill at {skill['skill_md']}.",
         f"Target repository: {target}",
+    ]
+    if git.get("head"):
+        lines.append(f"Target revision: {git['head']}")
+    lines.extend([
         f"Output directory: {output}",
         f"Question: {asked}",
         "",
+    ])
+    entry_documents = inventory.get("entry_documents") or []
+    if entry_documents:
+        lines.append("Start with these entry documents: " + ", ".join(entry_documents))
+    manifests = inventory.get("manifests") or []
+    if manifests:
+        lines.append("Manifests: " + ", ".join(manifests))
+    top_level = [
+        item["name"] for item in (inventory.get("top_level") or [])
+        if item.get("kind") in {"dir", "file"}
+    ][:12]
+    if top_level:
+        lines.append("Top-level paths: " + ", ".join(top_level))
+    lines.extend([
+        "",
         "Follow the Skill's source-grounded workflow. Read the original sources;",
         "distinguish observed evidence, inferences, hypotheses and unresolved",
-        "questions. Do not modify unrelated repositories. Do not claim semantic",
-        "truth, decision authority or actions beyond what is authorized.",
-    ]
+        "questions. If the question uses an ambiguous product term, resolve it",
+        "from the named sources before broad exploration. Write only within the",
+        "output directory or another location you are authorized to modify.",
+        "Do not modify unrelated repositories. Do not claim semantic truth,",
+        "decision authority or actions beyond what is authorized.",
+    ])
     if skill["currency"] not in {
         "CURRENT_AS_INSTALLED", "CURRENT_WITH_PACKAGE_SOURCE",
     }:
@@ -380,7 +404,10 @@ def prepare_handoff(
         "action_authorized": False,
         "limits": list(_LIMITS),
     }
-    payload["prompt"] = _prompt(skill, target, output_dir, question)
+    payload["prompt"] = _prompt(
+        skill, target, output_dir, question,
+        git=payload["target"]["git"], inventory=payload["target"]["inventory"],
+    )
     (output_dir / "handoff.json").write_text(
         json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=True) + "\n",
         encoding="utf-8",
