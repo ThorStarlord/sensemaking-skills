@@ -313,6 +313,14 @@ inspection if the CLI is unavailable. This is not a mandatory query, a strategic
 ranking mechanism or a step for narrow repairs. See
 `references/ontology-first-entry-v1.md` section 2.
 
+**Committed review of retained possibilities (when material).** During a
+committed review, `semantic workspace-review-context --include-candidates`
+evaluates explicit `file:`, `claim:` and `symbol:` references inside authored
+`revisit_when` conditions and reports `FIRED`, `NO_MATCH` or `NOT_ASSESSED`.
+Free text without those references remains `NOT_ASSESSED`. A fired reference
+is a reconsideration prompt, not a staleness verdict, selection or
+authorization.
+
 **Prospective decision rehearsal (when selecting a possibility).** Before
 retaining or building a possibility because it is coherent, easy to justify or
 well connected, the optional `references/prospective-decision-rehearsal-v1.md`

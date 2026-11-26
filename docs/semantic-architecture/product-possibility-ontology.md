@@ -246,6 +246,8 @@ A consequential deferral or rejection may carry a `revisit_when`: a prerequisite
 
 The repository already implements this shape for strategic paths: `strategic_repository_analysis` records `assumptions` and `reassessment_triggers`, `strategy assumptions` projects them and `strategy drift` reports mechanical currentness without invalidating strategy (`src/sensemaking_skills/strategy_cli.py`, commands `assumptions` and `drift`). A possibility's `revisit_when` is the same kind of statement and should reuse that discipline.
 
+An authored condition may additionally name explicit references: `file:path`, `claim:kind:identifier` or `symbol:path.py#name`. `workspace-review-context --include-candidates` evaluates only those references and reports `FIRED`, `NO_MATCH` or `NOT_ASSESSED`. The surrounding prose is not interpreted. A fired reference reopens a question; it does not establish changed meaning, select the possibility or authorize work.
+
 ### 7.4 Reconsideration procedure
 
 1. Retrieve the possibility and its disposition history.

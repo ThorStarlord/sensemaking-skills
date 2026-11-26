@@ -1729,10 +1729,19 @@ matched and unfingerprinted candidates. The comparison matches indexed
 set. `changed_record_containers` separates edited shared knowledge packs from
 `changed_supporting_paths`; a shared pack edit can flag many unrelated
 possibilities. Missing links, omitted candidate edges and missing fingerprints
-remain NOT ASSESSED. This does not interpret free-text `revisit_when`,
-establish changed meaning, feasibility, priority, strategy or permission to act.
-The default review output is unchanged. These are prompts to reopen original
-sources and reconsider **whether** a possibility still matters.
+remain NOT ASSESSED. The opt-in packet also adds `candidate_reconsiderations`,
+which evaluates explicit `file:`, `claim:` and `symbol:` references embedded in
+an authored `revisit_when` and reports `FIRED`, `NO_MATCH` or `NOT_ASSESSED`
+with evidence. `file:` references match committed (and, with
+`--include-worktree`, working-tree) path names. `claim:` references compare the
+normalized authored record at BASE and TARGET and check whether its authority or
+evidence paths changed. `symbol:` references reuse the existing source-level
+behavior surface for one Python definition. Surrounding prose is not
+interpreted; conditions without recognized references remain `NOT_ASSESSED`.
+A fired reference is a reconsideration prompt, not a staleness verdict,
+selection, revival or permission to act. The default review output is
+unchanged. These are prompts to reopen original sources and reconsider
+**whether** a possibility still matters.
 
 This read-only convenience command resolves both exact local commits, uses Git
 diff to list committed changed **path names** (no rename inference), and

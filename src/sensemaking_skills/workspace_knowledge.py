@@ -23,6 +23,7 @@ from .semantic_architecture.knowledge_sources import (
 )
 from .semantic_architecture.knowledge_store import query_context_paths, query_knowledge, store_snapshot
 from .semantic_architecture.knowledge_architecture import is_repository_file_path
+from .semantic_architecture.possibility_revisit import build_candidate_reconsiderations
 from .semantic_architecture.repository_bootstrap import orient_repository
 from .semantic_architecture.source_relationships import build_source_relationships, build_source_review_comparison
 from .semantic_architecture.worktree_context import changed_paths_since_indexed_ref, inspect_worktree_context
@@ -903,6 +904,15 @@ def run_workspace_review_context(
         },
         "semantic_truth_established": False, "action_authorized": False,
     }
+    if include_candidates:
+        reconsiderations = build_candidate_reconsiderations(
+            root, base_sha, sha, combined_changed_paths, limit=limit,
+        )
+        packet["candidate_reconsiderations"] = reconsiderations
+        packet["explicit_limits"].extend(reconsiderations["explicit_limits"])
+        packet["truncated"] = bool(
+            packet["truncated"] or reconsiderations["truncated"]
+        )
     if source_path is not None:
         source_comparison = build_source_review_comparison(
             root, base_sha, sha, source_path, limit=limit, symbol=source_symbol,

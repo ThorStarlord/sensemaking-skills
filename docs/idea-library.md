@@ -150,12 +150,13 @@ Construction paths and evidence prerequisites that earlier drafts listed as poss
 
 #### `poss:possibility-reconsideration-from-change`: reconsideration from indexed change
 
-- **Proposed future:** a possibility's `revisit_when` names the claims or sources whose change would matter, in the same shape as strategic `reassessment_triggers`. When an indexed revision changes one of them (`knowledge-query --operation changes`), the agent sees the possibility as a reconsideration question.
+- **Proposed future:** a possibility's `revisit_when` names the claims or sources whose change would matter, in the same shape as strategic `reassessment_triggers`. When a committed review changes one of them, the agent sees the possibility as a reconsideration question.
 - **Origin:** synthesized by the agent on 2026-10-28 while writing the conceptual model, section 7.3. HYPOTHESIZED.
 - **Alignment basis:** ADR 0031 success conditions: "contradictions and invalidated assumptions are recognized rather than canonized".
 - **Value hypothesis (HYPOTHESIZED):** reconsideration (CQ-084) could reuse two existing surfaces instead of the dedicated `reconsideration_candidates` query proposed in plan PR 5.
-- **Realization:** `NOT_IMPLEMENTED`. Completeness basis: at `d0af33b` no `poss:` records existed in `.sensemaking/knowledge/`. Since plan PR 3, records exist and `changes` lists changed `poss:` records (section 6), but every `revisit_when` is free text that names no claim identifier (exhaustive check of `possibilities.json`), so no change can yet be matched to a condition.
-- **Assumptions:** the claims a `revisit_when` cites exist as typed records (needs plan PR 3). `changes` reports set differences, not semantic consequences (`docs/semantic-architecture/persistent-knowledge-cli.md`), so the agent still judges whether a condition is met.
+- **Realization:** `PARTIALLY_IMPLEMENTED` since 2026-11-26: `workspace-review-context --include-candidates` parses explicit `file:`, `claim:` and `symbol:` references in `revisit_when` and reports `FIRED`, `NO_MATCH` or `NOT_ASSESSED` with evidence. It is bounded to review context and does not infer semantic consequence or provide a general indexed-change trigger. Earlier assessment at `d0af33b`: `NOT_IMPLEMENTED`; every `revisit_when` was free text naming no claim identifier.
+- **Assumptions:** the claims a `revisit_when` cites exist as typed records. Claim comparison is a normalized record diff, not semantic consequence; symbol comparison is the source-level behavior surface, not runtime behavior. The agent still judges whether the condition is met.
+- **Revisit condition:** a later change modifies the condition evaluator or its review consumer; or an independent agent uses a structured condition to reconsider a retained possibility.
 
 #### `poss:capability-learning-analysis`: cross-episode capability learning Skill
 

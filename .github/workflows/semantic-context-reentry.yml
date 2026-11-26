@@ -2228,6 +2228,27 @@ jobs:
               for item in visible
           )
           assert summary['semantic_change_established'] is False
+          from sensemaking_skills.semantic_architecture.possibility_revisit import (
+              parse_revisit_condition,
+          )
+          parsed = parse_revisit_condition(
+              'Revisit when file:src/example.py changes, '
+              'claim:poss:example changes, or symbol:src/example.py#example changes.'
+          )
+          assert [item['kind'] for item in parsed['refs']] == ['file', 'claim', 'symbol']
+          assert parsed['unstructured_text']
+          reconsiderations = candidate_review['candidate_reconsiderations']
+          assert reconsiderations['counts']['with_condition'] >= 11
+          assert reconsiderations['counts']['returned'] == len(reconsiderations['candidates'])
+          assert reconsiderations['selection_order'] == ['FIRED', 'NO_MATCH', 'NOT_ASSESSED']
+          assert all(
+              item['assessment'] in {'FIRED', 'NO_MATCH', 'NOT_ASSESSED'}
+              for item in reconsiderations['candidates']
+          )
+          assert all('structured_refs' in item for item in reconsiderations['candidates'])
+          assert reconsiderations['coverage_status'] in {
+              'PARTIAL', 'COMPLETE_FOR_STRUCTURED_REFS',
+          }
           chosen = next(
               item for item in visible
               if item['claim_id'] == 'poss:construction-time-possibility-reconciliation'
