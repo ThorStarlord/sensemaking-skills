@@ -291,6 +291,19 @@ These grew from the typed records and queries described in section 6. Each is a 
 - **Revisit condition:** an independent first-time user reports whether the handoff reached a source-grounded answer, or the implementation changes: `file:src/sensemaking_skills/first_use.py` or `file:src/sensemaking_skills/cli.py`.
 - **Relations:** derived from `poss:persistent-semantic-stewardship` and `poss:target-repository-discovery-memory`; assumes `con:agent-owns-semantic-control` and `hyp:later-sessions-consult-knowledge`.
 
+### 3.8 Change-scoped verification plan (2026-11-28)
+
+#### `poss:verification-plan-from-direct-references`: verification plan from direct references
+
+- **Proposed future:** for one committed Python file and top-level symbol, an agent can obtain a bounded verification plan that merges authored verification records and direct test-function candidates into deduplicated pytest targets, keeps guard scenarios separate and non-executable, and states explicit gaps. The plan does not execute tests or claim coverage.
+- **Origin:** [the 2026-11-28 synthesis episode](../artifacts/history/2026-11-28-verification-plan-synthesis.json), grounded in the [2026-11-25 symbol-usage record](normal-use/2026-11-25-symbol-usage-context.md), where a consumer had to inspect test bodies manually to expand a verification plan for `build_knowledge_snapshot`.
+- **Dimensions:** `ALIGNED` with source-grounded knowledge use; `INCREMENTAL` composition; `FORESEEABLE` from the existing symbol context and verification record surfaces; `PARTIALLY_IMPLEMENTED` at `6acc0fe9` (CLI consumer, tests, docs and hosted check). No coverage, sufficiency or independent use is established.
+- **Value hypothesis:** a change-scoped verification plan reduces manual test-body inspection and missed verification by turning direct references, authored verification records and guard scenarios into a runnable candidate set with explicit gaps.
+- **Assumptions and counterevidence:** direct mentions are not coverage and may miss helpers, fixtures, parameterization and runtime paths; authored records are file-level; guard scenarios are not tests; the plan may over-include tests and does not establish collection or pass status.
+- **Disposition:** `SELECTED` for the 2026-11-28 cumulative episode and implemented as `semantic verification-plan`; the same `build_knowledge_snapshot` case yields 5 authored records, 6 direct test functions, 8 guard scenarios, 12 pytest candidates and 10 suggested targets. No disposition change, measured effort reduction or independent benefit follows.
+- **Revisit condition:** an independent agent uses the plan on a real change and records whether it changed the verification set; or the direct test-candidate or authored verification surface changes.
+- **Relations:** derived from `poss:persistent-semantic-stewardship` and `poss:construction-time-possibility-reconciliation`; assumes `con:agent-owns-semantic-control` and `hyp:later-sessions-consult-knowledge`.
+
 ## 4. Construction paths and evidence prerequisites (not possibilities)
 
 These advance or condition possibilities but are not product futures. They keep their identities from the analysis that defined them. Earlier drafts of this page (PR #625 before merge) listed PATH-2 and the "S5 evidence first" option as possibilities; they are corrected here.

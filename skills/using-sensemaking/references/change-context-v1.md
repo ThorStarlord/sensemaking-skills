@@ -36,6 +36,28 @@ sensemaking-skills semantic workspace-query --repo . --ref HEAD \
   --include-source-relationships --symbol <name> --json
 ```
 
+## Verification plan
+
+When the change question is which existing pytest candidates to inspect or run,
+compose the same evidence into one bounded plan:
+
+```bash
+sensemaking-skills semantic verification-plan --repo . --ref HEAD \
+  --path src/sensemaking_skills/<module>.py --symbol <name> --json
+```
+
+The plan merges test targets from `context.verification_refs` and
+`symbol_context.test_candidates` into deduplicated `pytest_candidates`
+(`tests/test_x.py` or `tests/test_x.py::test_name`), suggests a non-executed
+pytest invocation whose function targets are not subsumed by a file candidate,
+keeps guard scenarios as non-executable `scenario_candidates`, lists authored
+records that did not map to a test file, and states explicit gaps. It does not
+run or generate tests, map a guard scenario to an existing test, or establish
+coverage, pass status, test analysis, semantic truth or authorization. Authored
+verification records remain file-level unless the record itself names a test
+node; a candidate target is not proof that pytest collects it, that it exercises
+the symbol or that it passes.
+
 ## Committed-change review
 
 When reviewing an actual change rather than planning one, reuse the same

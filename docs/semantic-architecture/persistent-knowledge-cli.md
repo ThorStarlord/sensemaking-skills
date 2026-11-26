@@ -1323,6 +1323,49 @@ flag accepts exactly one tracked `.py` path and is available on
 `workspace-query`, not on the lower-level `knowledge-query` operation. See
 [Change Context v1](../../skills/using-sensemaking/references/change-context-v1.md).
 
+### Change-scoped verification plan
+
+When the question is which existing pytest candidates to inspect or run,
+`semantic verification-plan` composes the same evidence into one bounded plan:
+
+```bash
+sensemaking-skills semantic verification-plan --repo . --ref HEAD \
+  --path src/sensemaking_skills/semantic_architecture/knowledge_sources.py \
+  --symbol build_knowledge_snapshot --json
+```
+
+- `pytest_candidates` merges test targets derived from
+  `context.verification_refs` with `symbol_context.test_candidates`. Each entry
+  carries a `pytest_target` (`tests/test_x.py` or
+  `tests/test_x.py::test_name`), `scope` (`FILE` or `TEST_FUNCTION`), the
+  contributing `sources`, the union of their evidence references and
+  `execution_status: NOT_RUN`. Identical targets are merged; counts report how
+  many merges occurred.
+- `suggested_pytest` gives the deduplicated `test_files`, any `test_functions`
+  whose file is not already a file candidate, the subsumed function candidates,
+  and a non-executed `argv` (`null` when no target exists). `execution_status`
+  is `NOT_RUN`; the invocation is not proof of collection, pass status or
+  coverage.
+- `scenario_candidates` carries direct guard-derived conditions with
+  `pytest_target: null`, `test_mapping: NOT_ASSESSED` and
+  `execution_status: NOT_RUN`. No test is generated or mapped to a scenario.
+- `unmapped_authored_verification` lists verification records whose references
+  did not identify a `tests/*.py` file.
+- `gaps` states file-level-only records, unmapped records, absent direct test
+  functions, scenarios without executable tests, truncation, `NOT_RUN`
+  execution and `NOT_ASSESSED` coverage explicitly.
+- `target` pins the committed path, revision, target SHA-256, symbol and
+  definition line. `tests_executed`, `test_analysis_established`,
+  `test_results_established`, `coverage_established`,
+  `semantic_truth_established` and `action_authorized` are all `false`.
+
+Authored verification records can be linked from an owning component or an
+applicable rule, not only from this symbol's tests. They remain file-level
+unless the record itself names a test node. A candidate target is an invocation
+candidate, not proof that pytest collects it, that it exercises the symbol or
+that it passes. Helpers, fixtures, parameterization, indirect execution,
+runtime relationships, change safety and coverage are not assessed.
+
 Each contract, decision, linked alternative, history, verification and rule
 item keeps its
 `epistemic_status`, `authority_kind`, `authority_ref`, evidence references and

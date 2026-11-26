@@ -26,6 +26,7 @@ from .semantic_architecture.knowledge_architecture import is_repository_file_pat
 from .semantic_architecture.possibility_revisit import build_candidate_reconsiderations
 from .semantic_architecture.repository_bootstrap import orient_repository
 from .semantic_architecture.source_relationships import build_source_relationships, build_source_review_comparison
+from .semantic_architecture.verification_plan import build_verification_plan
 from .semantic_architecture.worktree_context import changed_paths_since_indexed_ref, inspect_worktree_context
 
 OPERATIONS = (
@@ -468,6 +469,38 @@ def run_workspace_query(
     if include_source_relationships:
         payload["workspace_index"]["source_relationships_profile"] = "python-ast-v1"
     return payload
+
+
+def run_verification_plan(
+    *, repo: str | Path, ref: str, path: str, symbol: str,
+    limit: int = 50, repository: str | None = None,
+    index_dir: str | Path | None = None, refresh: bool = False,
+) -> dict[str, Any]:
+    """Compose one change-scoped verification plan from existing query evidence.
+
+    The authored context and committed source relationships are read through the
+    existing ``context-for --include-source-relationships --symbol`` path. The
+    returned plan is a projection: it does not execute or generate tests, infer
+    coverage or authorize a change.
+    """
+
+    payload = run_workspace_query(
+        repo=repo, ref=ref, operation="context-for", paths=(path,),
+        include_source_relationships=True, symbol=symbol, limit=limit,
+        repository=repository, index_dir=index_dir, refresh=refresh,
+    )
+    plan = build_verification_plan(
+        payload["context"], payload["source_relationships"],
+        symbol=symbol, limit=limit,
+    )
+    plan.update({
+        "code": "SEMANTIC_VERIFICATION_PLAN",
+        "repository": payload["repository"],
+        "target_ref": payload["target_ref"],
+        "source_profile": "python-ast-v1",
+        "workspace_context": payload["workspace_context"],
+    })
+    return plan
 
 
 def run_method_context(
