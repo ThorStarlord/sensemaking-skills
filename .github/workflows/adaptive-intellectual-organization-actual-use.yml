@@ -64,6 +64,41 @@ jobs:
               print("TRUNCATION " + json.dumps({k:v for k,v in x.items() if "truncat" in k or "limit" in k})[:2400])
           PY
           test -z "$(git status --porcelain)"
+      - name: Compare goal-level and source-scoped method recall for the actual integration choice
+        run: |
+          set -euo pipefail
+          QUESTION="How should goal-level opportunity discovery and code-grounded experience be combined when choosing a concrete implementation increment?"
+          sensemaking-skills semantic workspace-query --repo . --ref "$SOURCE" \
+            --operation possibility-ecology --subject goal:domain-general-cognitive-development \
+            --method-question "$QUESTION" --include-method-trials --method-limit 8 --limit 60 --json > "$RUNNER_TEMP/actual-selection.json"
+          sensemaking-skills semantic method context --repo . --ref "$SOURCE" \
+            --question "$QUESTION" --path src/sensemaking_skills/semantic_cli.py \
+            --path src/sensemaking_skills/workspace_knowledge.py \
+            --include-trials --limit 8 --json > "$RUNNER_TEMP/actual-source-methods.json"
+          sensemaking-skills semantic verification-plan --repo . --ref "$SOURCE" \
+            --path src/sensemaking_skills/semantic_cli.py --symbol register_semantic_commands \
+            --limit 60 --json > "$RUNNER_TEMP/actual-verification-plan.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          root=Path(os.environ["RUNNER_TEMP"])
+          read=lambda name: json.loads((root/name).read_text())
+          outer=read("actual-selection.json")
+          a=outer["method_precedents"]
+          b=read("actual-source-methods.json")
+          plan=read("actual-verification-plan.json")
+          assert a["target_ref"] == b["target_ref"] == plan["target_ref"] == os.environ["SOURCE"]
+          for label, ctx in [("QUESTION",a),("SOURCE",b)]:
+              print(label+" COUNTS="+json.dumps({k:v for k,v in ctx.items() if k in ("method_candidate_matches","method_candidate_matches_omitted","lesson_corpus_truncated","path_context")}))
+              for c in ctx["method_candidates"]:
+                  print(label+" METHOD="+json.dumps({k:c[k] for k in ("id","procedure","matched_tokens","matched_paths","recall_conditions","related_records_complete","applicability_to_present_task")}))
+              print(label+" TRIALS="+json.dumps([(c["id"],c["status"]) for c in ctx["trial_precedents"]["trial_candidates"]]))
+          print("ADDED_METHODS="+json.dumps(sorted({c["id"] for c in b["method_candidates"]}-{c["id"] for c in a["method_candidates"]})))
+          print("PLAN_COUNTS="+json.dumps(plan["counts"]))
+          print("PLAN_TARGETS="+json.dumps(plan["suggested_pytest"]))
+          print("PLAN_GAPS="+json.dumps(plan["gaps"]))
+          PY
+          test -z "$(git status --porcelain)"
       - name: Retain actual query output
         if: always()
         uses: actions/upload-artifact@v4
