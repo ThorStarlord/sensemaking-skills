@@ -92,7 +92,7 @@ jobs:
               print(label+" COUNTS="+json.dumps({k:v for k,v in ctx.items() if k in ("method_candidate_matches","method_candidate_matches_omitted","lesson_corpus_truncated","path_context")}))
               for c in ctx["method_candidates"]:
                   print(label+" METHOD="+json.dumps({k:c[k] for k in ("id","procedure","matched_tokens","matched_paths","recall_conditions","related_records_complete","applicability_to_present_task")}))
-              print(label+" TRIALS="+json.dumps([(c["id"],c["status"]) for c in ctx["trial_precedents"]["trial_candidates"]]))
+              print(label+" TRIALS="+json.dumps([(c.get("id"),c.get("projection_status"),c.get("status")) for c in ctx["trial_precedents"]["trial_candidates"]]))
           print("ADDED_METHODS="+json.dumps(sorted({c["id"] for c in b["method_candidates"]}-{c["id"] for c in a["method_candidates"]})))
           print("PLAN_COUNTS="+json.dumps(plan["counts"]))
           print("PLAN_TARGETS="+json.dumps(plan["suggested_pytest"]))
