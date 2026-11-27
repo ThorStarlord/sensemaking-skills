@@ -64,6 +64,13 @@ decision):
 
 `inspect`, `paths`, `uncertainty`, `assumptions`, `compare`, `drift`, `history`,
 `graph`. Projections of declared state; no strategic judgment.
+For developmental trajectory reasoning, `strategy paths --artifact PATH --json --include-trajectory-context`
+also projects authored dependencies, capability references, transitions, unlocks,
+risks, assumptions, and other existing path context. `strategy compare --before OLD --after NEW --json --include-trajectory-context`
+also reports changed context fields for matching local path IDs and whether
+declared decision assumptions differ. These are opt-in JSON projections, not
+semantic path matching, validated dependencies, or automatic reconsideration.
+Missing fields remain missing; inspect original artifacts and reconciliation.
 
 ## `journey`
 

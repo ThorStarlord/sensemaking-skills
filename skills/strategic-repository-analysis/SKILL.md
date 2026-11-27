@@ -458,6 +458,12 @@ sequencing, comparison discipline, the **orthogonality challenge**, and
 anti-backlog rules, read
 `references/construction-path-synthesis-v1.md`.
 
+When the present choice changes future enabling conditions, alternative routes,
+or the feasibility of previously deferred paths, use
+`../using-sensemaking/references/developmental-trajectory-reasoning-v1.md`
+to reason about the landscape across paths and later reconciliation. Preserve
+local path identity and distinguish authored assumptions from observed facts.
+
 Before converging on the path set, challenge whether all candidate paths are
 solving the same framed downstream problem. If so, ask whether that frame is
 itself premature or subordinate to another grounded Strategic Frontier. Do not
