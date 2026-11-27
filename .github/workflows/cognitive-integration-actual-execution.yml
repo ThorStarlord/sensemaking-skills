@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 12
     env:
-      SOURCE: "6dd67a491cf8d7a12b0c8540bc436a2c2d39c5b9"
+      SOURCE: "3b55c5f8d4a87c088d2236529dd14d89e92aee4b"
     steps:
       - uses: actions/checkout@v4
         with:
@@ -33,6 +33,10 @@ jobs:
         run: |
           set -euo pipefail
           python scripts/validate-receipt.py .sensemaking/receipts/2026-11-27-cognitive-integration-actual-use-correction.session.yaml --target-repo . --json | tee "$RUNNER_TEMP/actual-receipt-validation.json"
+      - name: Validate continuation receipt at exact proposed source
+        run: |
+          set -euo pipefail
+          python scripts/validate-receipt.py .sensemaking/receipts/2026-11-27-cognitive-integration-canonical-continuation.session.yaml --target-repo . --json | tee "$RUNNER_TEMP/actual-continuation-receipt-validation.json"
       - name: Recover historical closure context at canonical main
         run: |
           set -euo pipefail
