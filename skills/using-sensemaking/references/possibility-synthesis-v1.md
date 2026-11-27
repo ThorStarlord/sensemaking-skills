@@ -85,6 +85,29 @@ It never edits existing possibilities, ranks candidates, selects a direction,
 commits or grants permissions. The output is an `UNREVIEWED_DRAFT`; ordinary
 Git review remains necessary.
 
+When synthesis and review occur in different contexts, keep the hypothetical
+proposal outside active knowledge until a compatible reviewer can inspect it:
+
+```bash
+sensemaking-skills semantic possibility record \
+  --repo . --episode path/to/synthesis.json --draft-only \
+  --output .sensemaking/proposals/possibility-<slug>.json --json
+
+sensemaking-skills semantic knowledge-proposal-check \
+  --repo . --proposal .sensemaking/proposals/possibility-<slug>.json \
+  --destination .sensemaking/knowledge/possibility-<slug>.json --json
+```
+
+The same schema and provenance checks apply. The detached preflight is read-only,
+binds draft bytes by digest and checks against the current committed packs and
+index-tracked evidence; it does not make the draft a queryable opportunity.
+Retain only decision-relevant unreviewed drafts; never treat them as knowledge.
+After semantic review and explicit knowledge-edit authority, compare checked
+bytes, copy to the intended new pack, rerun ordinary preflight, commit and
+build at the exact clean revision. Existing pack edits remain in-place checks.
+If tooling is unavailable, retain the original synthesis episode or draft
+outside knowledge, and report preflight NOT_RUN. No automatic promotion.
+
 ## 4. Consumer and limits
 
 After review, the new candidate appears in existing `product-outline` and
