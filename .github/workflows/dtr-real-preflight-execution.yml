@@ -14,7 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
-      EXPECTED_REVISION: "6acfc86aca3efbf94c55c515c4c741bdd8a623cb"
+      EXPECTED_REVISION: "5152fa3819d07aea93b52fcff45efea9e084ad15"
+      REPOSITORY_ID: "ThorStarlord/sensemaking-skills"
       PRIOR_REVISION: "cf57ed488c5c2d1589409bc641632980d522e205"
     steps:
       - uses: actions/checkout@v4
@@ -25,52 +26,60 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Install actual source at the exact integrated revision
+      - name: Install actual source at exact integrated revision
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_REVISION"
           python -m pip install -e .
-          git status --porcelain
-      - name: Actual retained DTR proposal preflight, no repository mutation
+          test -z "$(git status --porcelain)"
+          cmp artifacts/history/2026-11-27-dtr-knowledge-proposal-DRAFT.json .sensemaking/knowledge/developmental-trajectory-reasoning.json
+      - name: Build reviewed semantic knowledge at exact clean canonical commit
         run: |
           set -euo pipefail
-          sensemaking-skills semantic knowledge-proposal-check --repo . \
-            --proposal artifacts/history/2026-11-27-dtr-knowledge-proposal-DRAFT.json \
-            --destination .sensemaking/knowledge/developmental-trajectory-reasoning.json \
-            --json | tee "$RUNNER_TEMP/dtr-proposal-preflight.json"
-          test ! -e .sensemaking/knowledge/developmental-trajectory-reasoning.json
-      - name: Actual first-use possibility evolution across committed revisions
+          sensemaking-skills semantic knowledge-build --repo . \
+            --repository "$REPOSITORY_ID" --target-ref "$EXPECTED_REVISION" \
+            --db "$RUNNER_TEMP/dtr-reviewed.sqlite" --include-repository-structure --json \
+            | tee "$RUNNER_TEMP/dtr-reviewed-build.json"
+          test -z "$(git status --porcelain)"
+      - name: Recover actual reviewed DTR capability and relations
         run: |
           set -euo pipefail
-          sensemaking-skills semantic workspace-changes --repo . \
-            --base-ref "$PRIOR_REVISION" --ref "$EXPECTED_REVISION" \
-            --json --include-possibility-evolution --limit 100 \
-            > "$RUNNER_TEMP/dtr-opportunity-evolution.json"
+          sensemaking-skills semantic knowledge-query --db "$RUNNER_TEMP/dtr-reviewed.sqlite" \
+            --repository "$REPOSITORY_ID" --target-ref "$EXPECTED_REVISION" \
+            --operation explain --subject cap:developmental-trajectory-reasoning --json \
+            | tee "$RUNNER_TEMP/dtr-reviewed-query.json"
+      - name: Recover actual current goal-family possibility landscape
+        run: |
+          set -euo pipefail
+          sensemaking-skills semantic workspace-query --repo . --ref "$EXPECTED_REVISION" \
+            --operation possibility-ecology --subject goal:domain-general-cognitive-development \
+            --limit 50 --json > "$RUNNER_TEMP/dtr-goal-ecology.json"
           python - <<'PY'
           import json, os
           from pathlib import Path
-          data = json.loads((Path(os.environ["RUNNER_TEMP"]) / "dtr-opportunity-evolution.json").read_text())
-          projection = data.get("possibility_evolution", {})
-          opportunities = projection.get("opportunities", {})
-          print(json.dumps({"target_ref": data.get("target_ref"), "opportunity_count_before": projection.get("opportunity_count_before"), "opportunity_count_after": projection.get("opportunity_count_after"), "counts": opportunities.get("counts"), "truncated": projection.get("truncated"), "first_use_records": [r for group in ("added", "removed", "changed") for r in opportunities.get(group, []) if r.get("id") == "poss:verified-first-use-handoff"], "explicit_limits": projection.get("explicit_limits")}, indent=2))
+          result = json.loads((Path(os.environ["RUNNER_TEMP"]) / "dtr-goal-ecology.json").read_text())
+          ecology = result.get("possibility_ecology", {})
+          print(json.dumps({"target_ref": result.get("target_ref"), "focus": ecology.get("focus"), "candidates": [{"id": x.get("claim_id"), "statement": x.get("statement"), "dimensions": x.get("dimensions"), "realization": x.get("realization")} for group in ("candidates", "descendant_goal_candidates") for x in ecology.get(group, [])], "candidate_omitted": ecology.get("candidate_omitted"), "descendant_candidate_omitted": ecology.get("descendant_candidate_omitted"), "truncated": ecology.get("truncated")}, indent=2))
           PY
-      - name: Ordinary final-path preflight in disposable runner only
+      - name: Actual scoped reconsideration of prior first-use premises
         run: |
           set -euo pipefail
-          DRAFT=artifacts/history/2026-11-27-dtr-knowledge-proposal-DRAFT.json
-          DEST=.sensemaking/knowledge/developmental-trajectory-reasoning.json
-          test ! -e "$DEST"
-          cp "$DRAFT" "$DEST"
-          cmp "$DRAFT" "$DEST"
-          sensemaking-skills semantic knowledge-proposal-check --repo . --proposal "$DEST" --json \
-            | tee "$RUNNER_TEMP/dtr-final-path-preflight.json"
-          rm -- "$DEST"
-          git status --porcelain
+          sensemaking-skills semantic workspace-review-context --repo . \
+            --base-ref "$PRIOR_REVISION" --ref "$EXPECTED_REVISION" \
+            --path src/sensemaking_skills/strategy_cli.py --include-candidates --json \
+            > "$RUNNER_TEMP/dtr-scoped-review.json"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          result = json.loads((Path(os.environ["RUNNER_TEMP"]) / "dtr-scoped-review.json").read_text())
+          packet = result.get("candidate_reconsiderations", {})
+          print(json.dumps({"reference_scope": packet.get("reference_scope"), "coverage_status": packet.get("coverage_status"), "counts": packet.get("counts"), "first_use": [x for x in packet.get("candidates", []) if "poss:verified-first-use-handoff" in str(x)]}, indent=2))
+          PY
       - name: Preserve actual command output
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: actual-dtr-consumer-output
+          name: actual-dtr-reviewed-consumption
           path: ${{ runner.temp }}/dtr-*.json
           if-no-files-found: warn
           retention-days: 14
