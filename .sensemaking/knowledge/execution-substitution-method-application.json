@@ -1,0 +1,57 @@
+{
+  "schema_version": 2,
+  "claims": [
+    {
+      "id": "observation:method-episode-2026-11-27-equivalent-execution-application",
+      "kind": "observation",
+      "statement": "Agent-authored method episode: Before selecting the execution substrate, the active agent read the retained #995/#996 method sources and checked the local environment. It compared manual source inspection, deferral and authorized isolated execution, then applied the unchanged conditional method. Exact-source run 46070374439 returned SUCCESS for both jobs: the actual historical episode was preflighted as a detached draft and reproduced Git blob 7820cf160cb367fc1febd8388f40a8e002c1949a without activating the destination; the current combined possibility/method/trial query returned 13 candidate records, three methods and two trials at one SHA. The returned results informed the later development comparison. The query was not a blind lesson encounter and followed the substrate choice.",
+      "authority_kind": "document",
+      "authority_ref": "artifacts/history/2026-11-27-execution-substitution-method-application.json",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-execution-substitution-method-application.json",
+        "file:artifacts/history/2026-11-27-cognitive-integration-actual-use.md",
+        "file:artifacts/history/2026-11-27-execution-substitution-method-episode.json",
+        "file:artifacts/history/2026-11-27-intellectual-compounding-method-continuity.md",
+        "file:docs/research/cognitive-capability-integration-v1.md",
+        "file:src/sensemaking_skills/method_trial.py",
+        "file:src/sensemaking_skills/workspace_knowledge.py"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "actor": "active ChatGPT coding agent",
+        "source_revision": "361efde0fcf6cdce463dc7e67627cedde0e73515",
+        "evidence_paths_not_in_source_revision": [
+          "artifacts/history/2026-11-27-cognitive-integration-actual-use.md",
+          "artifacts/history/2026-11-27-execution-substitution-method-application.json"
+        ],
+        "decision": "Should the outstanding real detached-method replay and current integrated developmental decision context be deferred because the local checkout and CLI are unavailable, or executed using the earlier conditional equivalent-execution method?",
+        "method_disposition": "apply",
+        "procedure_before": "Identify the unavailable mechanical gate and exact source, bytes, tool behavior and authority. Compare an available isolated equivalent execution context against deferral or direct source reading. Where equivalent for the narrow claim, execute at pinned source, inspect actual results, and re-warrant the next responsibility without bypassing the gate.",
+        "procedure_after": "Identify the unavailable mechanical gate and exact source, bytes, tool behavior and authority. Compare an available isolated equivalent execution context against deferral or direct source reading. Where equivalent for the narrow claim, execute at pinned source, inspect actual results, and re-warrant the next responsibility without bypassing the gate.",
+        "scope": "One later conversation-context, same-agent application to exact-source mechanical verification and subsequent repository responsibility selection.",
+        "counterevidence": "The local host remains unavailable. The isolated runner does not establish equivalent native Skill identity, independent agent behavior, cross-OS runtime, or matched comparator. The prior lesson was read directly before the query. Direct source reading was available for non-runtime questions; the original method was not changed.",
+        "claim_ceiling": "Attributable conditional application and actual mechanical outcomes; no new method adaptation, independent cognitive improvement, comparative benefit, longitudinal learning or policy promotion.",
+        "prior_lesson_id": "lesson:conditional-method-2026-11-27-equivalent-execution-substitution",
+        "decision_ref": "NONE"
+      }
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel:method-episode-2026-11-27-equivalent-execution-application-references-prior",
+      "subject": "observation:method-episode-2026-11-27-equivalent-execution-application",
+      "predicate": "references",
+      "object": "lesson:conditional-method-2026-11-27-equivalent-execution-substitution",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-execution-substitution-method-application.json",
+        "file:artifacts/history/2026-11-27-cognitive-integration-actual-use.md",
+        "file:artifacts/history/2026-11-27-execution-substitution-method-episode.json",
+        "file:artifacts/history/2026-11-27-intellectual-compounding-method-continuity.md",
+        "file:docs/research/cognitive-capability-integration-v1.md",
+        "file:src/sensemaking_skills/method_trial.py",
+        "file:src/sensemaking_skills/workspace_knowledge.py"
+      ],
+      "epistemic_status": "declared"
+    }
+  ]
+}
