@@ -142,6 +142,9 @@ def _evaluate_ref(
     ref: dict[str, str], *, root: Path, base_sha: str, target_sha: str,
     changed_paths: frozenset[str], base_claims: dict[str, dict[str, Any]],
     target_claims: dict[str, dict[str, Any]], symbol_cache: dict[tuple[str, str], dict[str, Any]],
+    explicit_paths: frozenset[str] | None = None,
+    unavailable_paths: frozenset[str] = frozenset(),
+    working_changed_paths: frozenset[str] = frozenset(),
 ) -> dict[str, Any]:
     kind = ref["kind"]
     value = ref["value"]
@@ -153,6 +156,21 @@ def _evaluate_ref(
         "evidence_refs": [],
         "detail": None,
     }
+    if explicit_paths is not None:
+        # A path-scoped diff cannot establish whole-claim changes. Do not read
+        # TARGET packs or infer absence from unrelated, uninspected paths.
+        if kind == "claim":
+            result["reason"] = "CLAIM_COMPARISON_OUT_OF_SCOPE"
+            result["evidence_refs"] = [f"claim:{value}"]
+            return result
+        path = value.split("#", 1)[0] if kind == "symbol" else value
+        if path not in explicit_paths or path in unavailable_paths:
+            result["reason"] = (
+                "REFERENCE_OUT_OF_SCOPE" if path not in explicit_paths
+                else "REFERENCE_PATH_UNAVAILABLE"
+            )
+            result["evidence_refs"] = [f"{kind}:{value}"]
+            return result
     if kind == "file":
         path = _normalized_path(value.removeprefix("file:"))
         if path is None:
@@ -233,6 +251,9 @@ def _evaluate_ref(
                 "source_changed": source_changed,
             }
             return result
+        if path in working_changed_paths:
+            result["reason"] = "WORKTREE_SYMBOL_UNASSESSED"
+            return result
         result["status"] = "NO_MATCH"
         result["reason"] = "SYMBOL_UNCHANGED"
         return result
@@ -242,7 +263,9 @@ def _evaluate_ref(
 
 def build_candidate_reconsiderations(
     root: Path, base_sha: str, target_sha: str, changed_paths: Iterable[str],
-    *, limit: int = 25,
+    *, limit: int = 25, explicit_paths: frozenset[str] | None = None,
+    unavailable_paths: frozenset[str] = frozenset(),
+    working_changed_paths: frozenset[str] = frozenset(),
 ) -> dict[str, Any]:
     """Evaluate structured revisit conditions for authored opportunities."""
 
@@ -255,7 +278,8 @@ def build_candidate_reconsiderations(
     )
     base_claims = _claims_at_commit(root, base_sha)
     target_claims = (
-        base_claims if base_sha == target_sha else _claims_at_commit(root, target_sha)
+        base_claims if base_sha == target_sha or explicit_paths is not None
+        else _claims_at_commit(root, target_sha)
     )
     symbol_cache: dict[tuple[str, str], dict[str, Any]] = {}
     evaluations: list[dict[str, Any]] = []
@@ -275,6 +299,8 @@ def build_candidate_reconsiderations(
                 ref, root=root, base_sha=base_sha, target_sha=target_sha,
                 changed_paths=changed, base_claims=base_claims,
                 target_claims=target_claims, symbol_cache=symbol_cache,
+                explicit_paths=explicit_paths, unavailable_paths=unavailable_paths,
+                working_changed_paths=working_changed_paths,
             )
             for ref in parsed["refs"]
         ]
@@ -327,11 +353,15 @@ def build_candidate_reconsiderations(
     coverage = "PARTIAL" if truncated or counts["not_assessed"] else "COMPLETE_FOR_STRUCTURED_REFS"
     return {
         "scope": "all authored opportunity claims with a revisit_when at BASE",
+        "reference_scope": ("explicit_paths_only" if explicit_paths is not None else "whole_change"),
         "change_paths_total": len(changed),
         "candidates": returned,
         "counts": counts,
         "selection_order": ["FIRED", "NO_MATCH", "NOT_ASSESSED"],
         "coverage_status": coverage,
         "truncated": truncated,
-        "explicit_limits": list(_LIMITS),
+        "explicit_limits": [*list(_LIMITS),
+            "Explicit path review leaves excluded/unavailable file and symbol refs and whole-claim comparison NOT_ASSESSED.",
+            "An unchanged committed symbol with working-tree changes remains NOT_ASSESSED; committed FIRED results do not assess working bytes.",
+        ],
     }

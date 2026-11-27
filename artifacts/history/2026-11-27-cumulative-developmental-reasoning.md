@@ -113,3 +113,33 @@ and knowledge preflight NOT_RUN. Local unit/synthetic evidence tests NOT_RUN
 per CLAUDE.md. Hosted CI unchanged. No separate external repository mutation,
 independent later-agent qualification, longitudinal cognitive improvement or
 cross-domain transfer claim.
+
+## Returned construction consequence — scoped premise reconsideration
+
+After integrating the opportunity evolution projection, source inspection of
+the existing review consumer revealed a distinct, consequential scope issue.
+`workspace-review-context --path` explicitly promises that excluded paths
+are NOT_ASSESSED, but passed only the restricted changed-path set to
+`build_candidate_reconsiderations`. The latter reported PATH_UNCHANGED
+for any file/symbol reference missing from that set; its claim comparison
+could still read all TARGET packs. A source-level reasoning example using
+the actual reviewed `poss:verified-first-use-handoff` record: a scoped review
+of strategy_cli.py should not say that the condition's first_use.py and cli.py
+references are unchanged. It has not inspected them. This is a concrete
+scope mismatch, not an executed failure report.
+
+The bounded correction passes explicit scope and unavailable paths through
+to the existing evaluator. Excluded/missing file or symbol refs and
+whole-claim comparison in a path-limited review stay NOT_ASSESSED; no TARGET
+pack is loaded for that disabled comparison. A working-tree symbol whose
+committed comparison is unchanged also remains NOT_ASSESSED, rather than
+implying dirty bytes were inspected. A committed FIRED signal remains
+valid as a committed signal, with unchanged worktree limits. Existing
+whole-change semantics remain otherwise intact. No new trigger grammar,
+automatic inference or condition population. This is a necessary
+epistemic boundary for developmental causality: not assessed is not
+evidence against an enabling condition or reason to reject a future.
+
+Source/diff review only; actual CLI execution and local unit/synthetic tests
+NOT_RUN. Do not infer a new method lesson or cognitive benefit from the
+repair. The previously selected integrated direction remains warranted.
