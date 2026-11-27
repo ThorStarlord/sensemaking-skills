@@ -116,3 +116,75 @@ evidence tests added or run; source/diff review, existing hosted gates
 unchanged. The isolated execution branch remains outside main. No external
 beneficiary mutation, independent method-learning or cross-domain claim.
 The Level-3 integrated direction remains current.
+
+## Returned re-entry evidence — PR #994
+
+Integrated main `62a9a1e94cfbe53b70951f3af7bef912656efd91`. Actual isolated
+execution-only branch at 9e80ace072aa86271f25a149ae49bb48e0f4be03 ran
+[46012052796](https://github.com/ThorStarlord/sensemaking-skills/actions/runs/46012052796),
+job 140549766130, SUCCESS, at the exact clean integrated source. Output
+[artifact 15203224763](https://github.com/ThorStarlord/sensemaking-skills/actions/runs/46012052796/artifacts/15203224763)
+has 14-day retention. Handoff requested source comparison
+MATCHES_COMMITTED_TREE; host-native loaded identity remains unobserved.
+The inventory recovered 27 knowledge JSON paths, 18 Markdown history
+paths, 13 historical JSON paths with truncated=false, including the actual
+DTR historical draft and detached stewardship synthesis input. The
+proposal directory was ABSENT_OR_NOT_INSPECTABLE (zero paths); no actual
+nonempty proposal-directory case is claimed. Review state NOT_ASSESSED;
+the prompt explains that historical presence is not pending work and
+names the existing explicit-destination preflight. analysis_performed
+and action_authorized remain false. The output directory was external
+to the clean source; no repo mutation occurred.
+
+This is direct evidence for the selected re-entry behavior. It does not
+establish that a later independent agent used these records, generated
+better ideas, saved time, or improved decisions. The current conceptual
+direction remains useful; no need for a new candidate ID or further
+handoff fields from this evidence. Keep the original source and current
+reviewed disposition distinct.
+
+## Conditional method candidate from the actual execution decisions
+
+The preceding source records explicitly separated blocked proposal
+preflight from independently warranted construction. Those recorded
+decisions deferred the mechanical gate because the active host had no
+CLI and GitHub DNS failed. The next episode changed the available
+decision set: instead of treating the active environment as the only
+execution substrate, it selected an authorized disposable runner that
+could execute the exact canonical validator against exact source and
+reviewed draft bytes. The gate was satisfied before the actual knowledge
+promotion. Subsequent actual build, contrast and handoff work reused that
+bounded execution arrangement. The before/after evidence is the recorded
+selection procedure, not a reconstruction of private reasoning.
+
+This is a conditional refinement of the reviewed November 17
+construction-versus-qualification lesson, not a claim that the earlier
+procedure was wrong or a change to the qualification policy. The original
+lesson already requires checking real feasibility. Make that inquiry more
+explicit when execution availability is the decision-changing obstacle:
+identify which properties the gate actually requires, consider a permitted
+equivalent substrate, compare total cost and authority, preserve the same
+validator/source/evidence conditions, and use the returned result before
+re-warranting action. If no equivalent is warranted, the original blocked
+disposition and independently warranted construction remain correct.
+
+Counterexamples: a different execution environment cannot establish
+native Skill loading or machine-specific behavior, preserve an independent
+agent's identity, provide a matched comparison, or validate checkout bytes
+subject to different filters/line endings without further evidence. Do not
+move sensitive data, widen permissions, modify release gates, create a
+permanent workflow, or spend unjustified resources to bypass a local
+obstacle. Prefer the original environment when available and adequate.
+No equivalence follows merely from sharing a Git SHA.
+
+Retain the attributable [method episode](2026-11-27-execution-substitution-method-episode.json)
+using the existing method producer and canonical knowledge preflight.
+The disposition is an agent-authored conditional adaptation candidate
+to the earlier lesson; not independent observed cognitive improvement,
+policy promotion or proof of causal influence. Applying the
+adaptation-object check, the target is the changed selection inquiry
+(scope of feasible execution and gate equivalence), not the technical
+GitHub workflow or the successful result alone. A later authentic
+decision should judge the candidate's applicability and counterevidence,
+and may apply, adapt, reject or leave it unchanged. No mandatory method
+phase or new learning-analysis Skill.
