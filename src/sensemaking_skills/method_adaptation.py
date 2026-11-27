@@ -334,7 +334,9 @@ def _reviewed_claim_kinds(root: Path, source_revision: str) -> dict[str, str]:
     return kinds
 
 
-def record_method_episode(repo: Path, episode_path: str, output_path: str) -> dict[str, Any]:
+def record_method_episode(
+    repo: Path, episode_path: str, output_path: str, *, draft_only: bool = False,
+) -> dict[str, Any]:
     """Create a new uncommitted Git-reviewable pack, never mutate reviewed policy.
 
     Every semantic assertion comes from the agent-authored, source-attributed
@@ -344,8 +346,13 @@ def record_method_episode(repo: Path, episode_path: str, output_path: str) -> di
     root = Path(_git(repo, "rev-parse", "--show-toplevel")).resolve()
     episode_file, episode_relative = _relative(root, episode_path, existing=True)
     output_file, output_relative = _relative(root, output_path, existing=False)
-    if (output_file.parent != root / ".sensemaking" / "knowledge"
-            or not output_relative.endswith(".json")):
+    allowed_parents = (
+        (root / ".sensemaking" / "proposals", root / "artifacts" / "history")
+        if draft_only else (root / ".sensemaking" / "knowledge",)
+    )
+    if output_file.parent not in allowed_parents or not output_relative.endswith(".json"):
+        if draft_only:
+            raise ValueError("draft-only output must be a new .sensemaking/proposals/*.json or artifacts/history/*.json file")
         raise ValueError("output must be a new .sensemaking/knowledge/*.json file")
     if output_file.exists():
         raise ValueError("output already exists; refusing to overwrite a proposal or reviewed record")
@@ -555,8 +562,16 @@ def record_method_episode(repo: Path, episode_path: str, output_path: str) -> di
         "source_revision": source_revision,
         "evidence_paths_not_in_source_revision": missing_at_source,
         "review_state": "UNREVIEWED_DRAFT",
+        **({"detached_draft": True, "inside_active_knowledge": False} if draft_only else {}),
         "semantic_truth_established": False,
         "method_learning_demonstrated": False,
         "action_authorized": False,
-        "next": "Run knowledge-proposal-check, review episode sources and conditions, then use normal Git review; no automatic policy promotion.",
+        "next": (
+            "Run knowledge-proposal-check with an explicit new --destination, "
+            "review episode sources and conditions, then copy the checked bytes "
+            "to the authorized destination and preflight again before normal "
+            "Git review; no automatic policy promotion."
+            if draft_only else
+            "Run knowledge-proposal-check, review episode sources and conditions, then use normal Git review; no automatic policy promotion."
+        ),
     }

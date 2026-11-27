@@ -687,6 +687,34 @@ Each visible goal/non-goal carries its statement, source reference and
 authority/epistemic labels. Each linked record carries its actual declared
 relation ID and claim kind; an opportunity is **not** a shipped capability.
 
+### Detached methodological experience (`method record --draft-only`)
+
+When an actual method episode warrants retention but review or promotion is
+not yet appropriate, use the existing detached proposal lifecycle:
+
+```bash
+sensemaking-skills semantic method record --repo . \
+  --episode artifacts/history/<episode>.json --draft-only \
+  --output .sensemaking/proposals/method-<id>.json --json
+
+sensemaking-skills semantic knowledge-proposal-check --repo . \
+  --proposal .sensemaking/proposals/method-<id>.json \
+  --destination .sensemaking/knowledge/method-<id>.json --json
+```
+
+The producer also accepts a new direct `artifacts/history/*.json` path in
+draft-only mode. The originating episode and its evidence must still be
+tracked; existing episode, source-revision, identity, disposition and claim
+validation rules are unchanged. The draft is not indexed reviewed knowledge
+or a pending-work verdict, and the producer never overwrites a prior file.
+A `no_change` episode still creates no proposal. Review sources, conditions,
+counterevidence and current authority independently of the preflight. Only
+when warranted, copy the exact checked bytes into the new authorized
+destination, repeat ordinary preflight there, review and integrate through
+Git, and build at the exact clean committed revision. No automatic policy
+promotion or inference of methodological learning. The ordinary method
+record path and method-trial contracts remain unchanged.
+
 ### Method trial (`method trial`)
 
 When a method choice has an observable expected result, an optional trial
