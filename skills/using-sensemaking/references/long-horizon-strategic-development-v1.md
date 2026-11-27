@@ -22,6 +22,10 @@ Two mutually reinforcing intended outcomes matter: valuable domain development a
 
 These are properties of the sustained experience, not a score, stage gate or demand for five new artifacts. A clear repair can make a strong contribution to a long trajectory. A lengthy strategic study that does not change understanding or action may contribute little.
 
+## Developmental trajectory reasoning
+
+When future capabilities, enabling conditions, alternative routes, or changes to deferred directions could affect a present strategic decision, load [Developmental Trajectory Reasoning (DTR)](developmental-trajectory-reasoning-v1.md). Cultivate the decision-relevant landscape across selected and unselected futures, using existing strategic artifacts and reviewed possibilities. Reconcile affected trajectories after material developments, not just progress on the selected path. This is a complementary intellectual responsibility, not an additional lifecycle stage, controller, or mandatory record.
+
 ## Authority and entry
 
 Determine the repository, exact source revision, actual loaded Skill path/version where the host exposes it, available CLI identity and permissions. Compare intended source, installed files, available executable and loaded content separately. An installed hash is not proof of loaded bytes. If the pinned tooling is unavailable, use the authoritative Skill source explicitly and record the limitation; do not replace a shared installation in another actor's active session. Continue from original sources when possible.

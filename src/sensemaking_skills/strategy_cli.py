@@ -189,6 +189,21 @@ def _path_map(data: dict[str, Any]) -> dict[str, dict[str, Any]]:
     return result
 
 
+# Authored strategic_repository_analysis fields; no new artifact contract.
+_TRAJECTORY_FIELDS = (
+    "frontier_refs", "why_plausible", "builds_on_capability_ids",
+    "required_capability_ids", "builds_on", "required_capabilities",
+    "construction_sequence", "path_transitions", "possibility_refs",
+    "architecture_option_refs", "dependencies", "unlocks", "risks",
+    "reversibility", "evidence_gaps", "assumptions", "reassessment_triggers",
+)
+
+
+def _trajectory_context(path: dict[str, Any]) -> dict[str, Any]:
+    """Preserve authored fields, including the distinction between absent and empty."""
+    return {field: path[field] for field in _TRAJECTORY_FIELDS if field in path}
+
+
 def _path_transition_map(data: dict[str, Any]) -> dict[str, dict[str, Any]]:
     result: dict[str, dict[str, Any]] = {}
     for path in data.get("construction_paths", []) or []:
@@ -280,8 +295,16 @@ def inspect_analysis(artifact: Path, output_json: bool) -> None:
     type=click.Path(exists=True, dir_okay=False, path_type=Path),
 )
 @click.option("--json", "output_json", is_flag=True, help="Emit JSON")
-def show_paths(artifact: Path, output_json: bool) -> None:
+@click.option(
+    "--include-trajectory-context", is_flag=True,
+    help="Include authored developmental context (requires --json).",
+)
+def show_paths(
+    artifact: Path, output_json: bool, include_trajectory_context: bool,
+) -> None:
     """List declared construction paths without ranking them."""
+    if include_trajectory_context and not output_json:
+        raise click.UsageError("--include-trajectory-context requires --json")
     data = _load_analysis(artifact)
     paths = []
     for item in data.get("construction_paths", []) or []:
@@ -304,6 +327,22 @@ def show_paths(artifact: Path, output_json: bool) -> None:
         "paths": paths,
         "ranked": False,
     }
+    if include_trajectory_context:
+        for projected, authored in zip(
+            paths,
+            (item for item in data.get("construction_paths", []) or []
+             if isinstance(item, dict)),
+        ):
+            projected["trajectory_context"] = _trajectory_context(authored)
+        payload["target_repository"] = data.get("target_repository")
+        payload["target_source_identity"] = data.get("target_source_identity")
+        payload["capability_states"] = data.get("capability_states", [])
+        payload["decision_assumptions"] = data.get("decision_assumptions", [])
+        payload["architecture_synthesis_refs"] = data.get("architecture_synthesis_refs", [])
+        payload["consumer_note"] = (
+            "Authored context only; missing fields are not evidence of absence. "
+            "Inspect original evidence and compare alternatives semantically."
+        )
     if output_json:
         _json_echo(payload)
         return
@@ -388,8 +427,16 @@ def show_assumptions(artifact: Path, output_json: bool) -> None:
     type=click.Path(exists=True, dir_okay=False, path_type=Path),
 )
 @click.option("--json", "output_json", is_flag=True, help="Emit JSON")
-def compare_analyses(before: Path, after: Path, output_json: bool) -> None:
+@click.option(
+    "--include-trajectory-context", is_flag=True,
+    help="Compare authored developmental context for same path IDs (requires --json).",
+)
+def compare_analyses(
+    before: Path, after: Path, output_json: bool, include_trajectory_context: bool,
+) -> None:
     """Compare two authored analyses as declared state, not strategic quality."""
+    if include_trajectory_context and not output_json:
+        raise click.UsageError("--include-trajectory-context requires --json")
     old = _load_analysis(before)
     new = _load_analysis(after)
     old_caps = _capability_map(old)
@@ -441,6 +488,29 @@ def compare_analyses(before: Path, after: Path, output_json: bool) -> None:
         "continuity_after": _continuity(new),
         "quality_ranked_by_command": False,
     }
+    if include_trajectory_context:
+        context_changes = []
+        for pid in sorted(set(old_paths) & set(new_paths)):
+            old_context = _trajectory_context(old_paths[pid])
+            new_context = _trajectory_context(new_paths[pid])
+            fields = [
+                field for field in _TRAJECTORY_FIELDS
+                if (field in old_context) != (field in new_context)
+                or old_context.get(field) != new_context.get(field)
+            ]
+            if fields:
+                context_changes.append({"path_id": pid, "changed_fields": fields})
+        payload["trajectory_context_changes"] = context_changes
+        payload["decision_assumptions_changed"] = (
+            ("decision_assumptions" in old) != ("decision_assumptions" in new)
+            or old.get("decision_assumptions") != new.get("decision_assumptions")
+        )
+        payload["trajectory_context_note"] = (
+            "Literal authored field changes for matching local path IDs only; "
+            "matching IDs do not establish cross-analysis semantic identity. "
+            "Review original sources, renamed paths, continuity and reconciliation. "
+            "No change does not establish that a path remains warranted."
+        )
     if output_json:
         _json_echo(payload)
         return
