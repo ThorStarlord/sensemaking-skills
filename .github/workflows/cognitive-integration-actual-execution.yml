@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 12
     env:
-      SOURCE: "f6529528ec7361c93bda99bcb6395e4ce9c20ef7"
+      SOURCE: "1ef1de9418d6de6d6d2fcfa7337d0196812f088b"
     steps:
       - uses: actions/checkout@v4
         with:
@@ -28,6 +28,10 @@ jobs:
           test "$(git hash-object .sensemaking/knowledge/execution-substitution-method-application.json)" = 8f4687c4401dfc18b878818a7010d69e791a1324
           python -m pip install -e .
           test -z "$(git status --porcelain)"
+      - name: Validate final receipt at canonical source
+        run: |
+          set -euo pipefail
+          python scripts/validate-receipt.py .sensemaking/receipts/2026-11-27-cognitive-integration-actual-use.session.yaml --target-repo . --json | tee "$RUNNER_TEMP/actual-receipt-validation.json"
       - name: Build clean committed knowledge and recover actual integrated context
         run: |
           set -euo pipefail
