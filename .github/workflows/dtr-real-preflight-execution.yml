@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
-      EXPECTED_REVISION: "0de725ee2b79f5ef1d21a08e4e4a049f8aca52d7"
+      EXPECTED_REVISION: "62a9a1e94cfbe53b70951f3af7bef912656efd91"
     steps:
       - uses: actions/checkout@v4
         with:
@@ -26,7 +26,7 @@ jobs:
           test "$(git rev-parse HEAD)" = "$EXPECTED_REVISION"
           python -m pip install -e .
           test -z "$(git status --porcelain)"
-      - name: Recover actual returning engagement context
+      - name: Actual returning engagement on integrated source
         run: |
           set -euo pipefail
           sensemaking-skills handoff --repo . --output "$RUNNER_TEMP/real-handoff" \
@@ -38,28 +38,14 @@ jobs:
           from pathlib import Path
           p=json.loads((Path(os.environ["RUNNER_TEMP"])/"actual-handoff.json").read_text())
           ci=p["continuity"]["inventory"]
-          print("HANDOFF_SUMMARY="+json.dumps({"inventory_keys": sorted(ci), "knowledge_total":ci["knowledge_files"]["total"],"history_total":ci["strategic_history"]["total"],"history_truncated":ci["strategic_history"]["truncated"],"historical_dtr_draft_exists":Path("artifacts/history/2026-11-27-dtr-knowledge-proposal-DRAFT.json").is_file(),"draft_listed":any("dtr-knowledge-proposal-DRAFT.json" in str(v) for v in ci.values()),"synthesis_listed":any("detached-possibility-stewardship-synthesis.json" in str(v) for v in ci.values()),"source_expectation":p["source_expectation"]["status"]}))
+          print("HANDOFF_SUMMARY="+json.dumps({"inventory_keys":sorted(ci),"knowledge_total":ci["knowledge_files"]["total"],"history_total":ci["strategic_history"]["total"],"historical_json_records":ci["historical_json_records"],"detached_proposal_files":ci["detached_proposal_files"],"speculative_record_review_state":ci["speculative_record_review_state"],"prompt_has_boundary":"not establish review status, unresolved work or authority" in p["prompt"],"prompt_has_explicit_review":"knowledge-proposal-check with an explicit new --destination" in p["prompt"],"source_expectation":p["source_expectation"]["status"],"analysis_performed":p["analysis_performed"],"action_authorized":p["action_authorized"]}))
           PY
-      - name: Actual assumption contrast for creative development choice
-        run: |
-          set -euo pipefail
-          cat > "$RUNNER_TEMP/scenarios.json" <<'JSON'
-          {"scenarios":[{"id":"base"},{"id":"no-later-recall","negated":["hyp:later-sessions-consult-knowledge"]},{"id":"no-agent-control","negated":["con:agent-owns-semantic-control"]}]}
-          JSON
-          sensemaking-skills semantic possibility contrast --repo . --ref "$EXPECTED_REVISION" \
-            --subject goal:domain-general-cognitive-development --scenarios "$RUNNER_TEMP/scenarios.json" --limit 50 --json \
-            > "$RUNNER_TEMP/actual-contrast.json"
-          python - <<'PY'
-          import json, os
-          from pathlib import Path
-          p=json.loads((Path(os.environ["RUNNER_TEMP"])/"actual-contrast.json").read_text())
-          print("CONTRAST_SUMMARY="+json.dumps({"target_ref":p["target_ref"],"coverage":p["coverage"],"scenarios":[{"id":r["id"],"counts":r["counts"],"affected":[c["claim_id"] for c in r["affected"]],"unassessed":[c["claim_id"] for c in r["unassessed"]]} for r in p["scenario_results"]],"shared_assumptions":[{"id":x["assumption_id"],"candidates":x["candidate_ids"],"assessment":x["assessment"]} for x in p["shared_assumptions"]]}))
-          PY
+          test -z "$(git status --porcelain)"
       - name: Retain actual outputs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: actual-strategic-creativity-inputs
-          path: ${{ runner.temp }}/actual-*.json
+          name: actual-speculative-continuity-handoff
+          path: ${{ runner.temp }}/actual-handoff.json
           if-no-files-found: warn
           retention-days: 14
