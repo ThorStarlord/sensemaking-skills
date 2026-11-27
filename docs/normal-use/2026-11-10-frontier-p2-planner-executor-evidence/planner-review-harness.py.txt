@@ -1,0 +1,348 @@
+"""Planner-side adversarial review of `semantic workspace-query` (real CLI path).
+
+Not a repository test: it lives in the session scratchpad and only invokes the
+shipped CLI through subprocess. Usage: python planner_review.py <worktree> <scratch>
+"""
+from __future__ import annotations
+
+import json
+import os
+import shutil
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+WT = Path(sys.argv[1]).resolve()
+SCRATCH = Path(sys.argv[2]).resolve()
+ENV = {**os.environ, "PYTHONPATH": str(WT / "src")}
+RESULTS: list[tuple[str, str, str]] = []
+SECRET = "s3cretTOKEN"
+HOST = "example.invalid"
+
+
+def cli(args, cwd, env=None, timeout=240):
+    proc = subprocess.run(
+        [sys.executable, "-m", "sensemaking_skills.cli", "semantic", *args],
+        cwd=str(cwd), env=env or ENV, capture_output=True, text=True, timeout=timeout,
+    )
+    return proc.returncode, proc.stdout, proc.stderr
+
+
+def git(args, cwd):
+    return subprocess.run(["git", *args], cwd=str(cwd), capture_output=True, text=True, timeout=120)
+
+
+def record(name, ok, detail=""):
+    RESULTS.append((name, "PASS" if ok else "FAIL", detail))
+    print(f"[{'PASS' if ok else 'FAIL'}] {name} :: {detail[:300]}", flush=True)
+
+
+def skip(name, detail):
+    RESULTS.append((name, "NOT_RUN", detail))
+    print(f"[NOT_RUN] {name} :: {detail[:300]}", flush=True)
+
+
+def payload(out):
+    return json.loads(out)
+
+
+def make_repo(name, commits=1, origin=None):
+    root = SCRATCH / name
+    if root.exists():
+        shutil.rmtree(root, ignore_errors=True)
+    (root / "src").mkdir(parents=True)
+    git(["init", "-q", "."], root)
+    git(["config", "user.email", "planner@example.invalid"], root)
+    git(["config", "user.name", "planner"], root)
+    git(["config", "core.autocrlf", "false"], root)
+    for i in range(commits):
+        (root / "src" / "a.py").write_text(f"print({i})\n", encoding="utf-8", newline="\n")
+        git(["add", "."], root)
+        git(["commit", "-q", "-m", f"c{i}"], root)
+    if origin:
+        git(["config", "remote.origin.url", origin], root)
+    return root
+
+
+def no_traceback(text):
+    return "Traceback (most recent call last)" not in text
+
+
+def main():
+    SCRATCH.mkdir(parents=True, exist_ok=True)
+    idx = SCRATCH / "index"
+    if idx.exists():
+        shutil.rmtree(idx, ignore_errors=True)
+
+    # R7 baseline: worktree state of the real repository before any call
+    status_before = git(["status", "--porcelain"], WT).stdout
+    worktrees_before = git(["worktree", "list"], WT).stdout.count("\n")
+
+    # R1 real-repo first call (dirty or clean), then reuse, with timing
+    target = "src/sensemaking_skills/semantic_cli.py"
+    t0 = time.time()
+    rc, out, err = cli(["workspace-query", target, "--index-dir", str(idx), "--json"], WT)
+    t_build = time.time() - t0
+    if rc != 0:
+        record("R1 first call on real repo", False, err.strip()[-300:])
+        return
+    first = payload(out)
+    wi = first["workspace_index"]
+    expected_keys = {"indexed_ref", "ref_requested", "repository", "repository_identity_source",
+                     "repository_label_verified", "index_path", "index_state", "build_source",
+                     "equivalent_operations"}
+    head = git(["rev-parse", "HEAD"], WT).stdout.strip()
+    record("R1 workspace_index keys exact", set(wi) == expected_keys, str(sorted(set(wi) ^ expected_keys)))
+    record("R1 built at HEAD", wi["index_state"] == "built" and wi["indexed_ref"] == head
+           and first["code"] == "SEMANTIC_KNOWLEDGE_QUERY" and wi["repository_label_verified"] is False,
+           f"state={wi['index_state']} source={wi['build_source']} ops={wi['equivalent_operations']} t={t_build:.1f}s")
+    db_path = Path(wi["index_path"])
+    record("R1 index outside checkout and under index-dir",
+           db_path.is_file() and idx in db_path.parents and WT not in db_path.parents, str(db_path))
+    mtime_before = db_path.stat().st_mtime
+    time.sleep(1.2)
+    t0 = time.time()
+    rc, out, err = cli(["workspace-query", target, "--index-dir", str(idx), "--json"], WT)
+    t_reuse = time.time() - t0
+    second = payload(out)
+    record("R2 reuse", rc == 0 and second["workspace_index"]["index_state"] == "reused"
+           and second["workspace_index"]["build_source"] is None
+           and second["workspace_index"]["equivalent_operations"] == ["context-for"],
+           f"t={t_reuse:.1f}s ops={second['workspace_index']['equivalent_operations']}")
+    record("R16 mtime touched on reuse", db_path.stat().st_mtime > mtime_before, "")
+    record("R2 same answer on reuse", all(first[k] == second[k] for k in ("context", "claims", "relations")), "")
+
+    # R12 equivalence with the explicit two-step path (single, multi, workspace-impact)
+    explicit_db = SCRATCH / "explicit.sqlite"
+    if explicit_db.exists():
+        explicit_db.unlink()
+    label = wi["repository"]
+    rc, out, err = cli(["knowledge-build", "--repo", ".", "--repository", label, "--target-ref", head,
+                        "--db", str(explicit_db), "--temporary-checkout", "--json"], WT)
+    if rc != 0:
+        record("R12 explicit build", False, err.strip()[-300:])
+    else:
+        def explicit(args):
+            code, o, e = cli(["knowledge-query", "--db", str(explicit_db), "--repository", label,
+                              "--target-ref", head, "--repo", ".", "--json", *args], WT)
+            return code, (payload(o) if code == 0 else None), e
+
+        def front(args):
+            code, o, e = cli(["workspace-query", "--index-dir", str(idx), "--json", *args], WT)
+            return code, (payload(o) if code == 0 else None), e
+
+        cases = {
+            "single context-for": (["--operation", "context-for", "--subject", target], [target]),
+            "multi context-for": (["--operation", "context-for", "--path", target, "--path",
+                                   "src/sensemaking_skills/setup_skills.py", "--path", "CLAUDE.md"],
+                                  [target, "src/sensemaking_skills/setup_skills.py", "CLAUDE.md"]),
+            "workspace-impact": (["--operation", "workspace-impact"], ["--operation", "workspace-impact"]),
+            "search": (["--operation", "search", "--term", "frozen"], ["--operation", "search", "--term", "frozen"]),
+            "explain": (["--operation", "explain", "--subject", "rule:frozen-public-python-api",
+                         "--expect-kind", "verification"],
+                        ["--operation", "explain", "--subject", "rule:frozen-public-python-api",
+                         "--expect-kind", "verification"]),
+            "rules-for": (["--operation", "rules-for", "--subject", target],
+                          ["--operation", "rules-for", "--subject", target]),
+            "orientation-summary": (["--operation", "orientation-summary"], ["--operation", "orientation-summary"]),
+        }
+        for name, (old_args, new_args) in cases.items():
+            c1, p1, e1 = explicit(old_args)
+            c2, p2, e2 = front(new_args)
+            if c1 != 0 or c2 != 0:
+                record(f"R12 equivalence {name}", False, f"rc old={c1} new={c2} {e1[-150:]} {e2[-150:]}")
+                continue
+            p2 = dict(p2)
+            p2.pop("workspace_index", None)
+            diff = sorted(k for k in set(p1) | set(p2) if p1.get(k) != p2.get(k))
+            record(f"R12 equivalence {name}", not diff, f"differing keys: {diff}")
+
+    # R4 explicit label after derived label on the same cache file
+    rc, out, err = cli(["workspace-query", target, "--index-dir", str(idx), "--repository", "foo/bar", "--json"], WT)
+    if rc == 0:
+        p = payload(out)
+        ok = (p["workspace_index"]["index_state"] == "built" and p["repository"] == "foo/bar"
+              and p["workspace_index"]["repository_identity_source"] == "explicit"
+              and Path(p["workspace_index"]["index_path"]) == db_path)
+        record("R4 explicit label stored beside derived label", ok, json.dumps(p["workspace_index"])[:260])
+        rc, out, err = cli(["workspace-query", target, "--index-dir", str(idx), "--json"], WT)
+        record("R4 derived label still reused", rc == 0 and payload(out)["workspace_index"]["index_state"] == "reused", "")
+    else:
+        record("R4 explicit label stored beside derived label", False, err.strip()[-300:])
+
+    # R5 --repo pointing at a subdirectory, and running from a subdirectory
+    rc, out, err = cli(["workspace-query", target, "--repo", "src", "--index-dir", str(idx), "--json"], WT)
+    record("R5 --repo subdirectory", rc == 0 and payload(out)["workspace_index"]["indexed_ref"] == head, err.strip()[-200:])
+    rc, out, err = cli(["workspace-query", target, "--index-dir", str(idx), "--json"], WT / "src")
+    record("R5 cwd subdirectory", rc == 0 and payload(out)["workspace_index"]["indexed_ref"] == head, err.strip()[-200:])
+
+    # R6 invalid path sets
+    for name, args in {
+        "traversal": ["../x.py"], "absolute": ["/etc/passwd"],
+        "nine paths": [f"src/f{i}.py" for i in range(9)],
+        "duplicates": [target, target],
+        "paths with non-context operation": [target, "--operation", "search", "--term", "x"],
+        "paths plus subject": [target, "--subject", target],
+        "no path": [],
+    }.items():
+        rc, out, err = cli(["workspace-query", *args, "--index-dir", str(idx), "--json"], WT)
+        record(f"R6 rejected: {name}", rc != 0 and no_traceback(err + out), (err.strip().splitlines() or [""])[-1][:200])
+
+    # R8 short SHA, annotated tag and branch refs in a scratch repository
+    repo = make_repo("refs", commits=3)
+    full = git(["rev-parse", "HEAD~1"], repo).stdout.strip()
+    git(["tag", "-a", "v-annot", "-m", "t", "HEAD~1"], repo)
+    for name, ref in {"short sha": full[:10], "annotated tag": "v-annot", "relative": "HEAD~1"}.items():
+        rc, out, err = cli(["workspace-query", "src/a.py", "--ref", ref, "--index-dir", str(idx), "--json"], repo)
+        ok = rc == 0 and payload(out)["workspace_index"]["indexed_ref"] == full \
+            and payload(out)["workspace_index"]["ref_requested"] == ref
+        record(f"R8 ref {name}", ok, err.strip()[-200:])
+    record("R8 scratch repo untouched", git(["status", "--porcelain"], repo).stdout == "", "")
+    for bad in ("-x", "a b", "--upload-pack=x", "HEAD\n"):
+        rc, out, err = cli(["workspace-query", "src/a.py", "--ref", bad, "--index-dir", str(idx), "--json"], repo)
+        record(f"R8 bad ref {bad!r} rejected", rc != 0 and no_traceback(err), (err.strip().splitlines() or [""])[-1][:160])
+
+    # R9 credentials never leak, including on error paths
+    cred = make_repo("cred", origin=f"https://user:{SECRET}@{HOST}/acme/widget.git")
+    leaks = []
+    for args in (["src/a.py"], ["src/a.py", "--ref", "nope"], ["--operation", "explain", "--subject", "nope:id"],
+                 ["src/a.py", "--index-dir", str(cred / "inside")], ["--operation", "changes"],
+                 ["src/a.py", "--refresh"]):
+        full_args = ["workspace-query", *args, "--json"]
+        if "--index-dir" not in args:
+            full_args += ["--index-dir", str(idx)]
+        rc, out, err = cli(full_args, cred)
+        if SECRET in out + err or HOST in out + err or "user:" in out + err:
+            leaks.append(" ".join(args))
+    rc, out, err = cli(["workspace-query", "src/a.py", "--index-dir", str(idx), "--json"], cred)
+    lab = payload(out)["workspace_index"] if rc == 0 else {}
+    record("R9 label from credentialed origin", lab.get("repository") == "acme/widget"
+           and lab.get("repository_identity_source") == "origin_remote", json.dumps(lab)[:200])
+    record("R9 no credential or host leak", not leaks, f"leaks in: {leaks}")
+    record("R9 index-dir inside checkout created nothing", not (cred / "inside").exists()
+           and git(["status", "--porcelain"], cred).stdout == "", "")
+
+    # R3 garbage cache file is reported, not silently replaced; --refresh repairs
+    garb = make_repo("garbage")
+    rc, out, err = cli(["workspace-query", "src/a.py", "--index-dir", str(idx), "--json"], garb)
+    gpath = Path(payload(out)["workspace_index"]["index_path"])
+    gpath.write_bytes(b"this is not sqlite" * 64)
+    rc, out, err = cli(["workspace-query", "src/a.py", "--index-dir", str(idx), "--json"], garb)
+    record("R3 garbage cache -> clear error naming --refresh", rc != 0 and no_traceback(err) and "--refresh" in err,
+           (err.strip().splitlines() or [""])[-1][:240])
+    record("R3 garbage cache not silently deleted", gpath.is_file() and gpath.read_bytes().startswith(b"this is not"), "")
+    rc, out, err = cli(["workspace-query", "src/a.py", "--index-dir", str(idx), "--refresh", "--json"], garb)
+    record("R3 --refresh repairs", rc == 0 and payload(out)["workspace_index"]["index_state"] == "built", err.strip()[-200:])
+
+    # R14 retention keeps foreign names and the newest file; exactly 8 snapshot files
+    ret = make_repo("retention")
+    rc, out, err = cli(["workspace-query", "src/a.py", "--index-dir", str(idx), "--json"], ret)
+    clone_dir = Path(payload(out)["workspace_index"]["index_path"]).parent
+    (clone_dir / "notes.txt").write_text("keep", encoding="utf-8")
+    (clone_dir / "abc.sqlite").write_text("keep", encoding="utf-8")
+    newest = None
+    for i in range(1, 11):
+        (ret / "src" / "a.py").write_text(f"print({i + 100})\n", encoding="utf-8", newline="\n")
+        git(["commit", "-q", "-am", f"r{i}"], ret)
+        rc, out, err = cli(["workspace-query", "src/a.py", "--index-dir", str(idx), "--json"], ret)
+        if rc != 0:
+            record("R14 retention run", False, err.strip()[-200:])
+            break
+        newest = Path(payload(out)["workspace_index"]["index_path"])
+        time.sleep(0.05)
+    snaps = sorted(p.name for p in clone_dir.iterdir() if len(p.stem) == 40 and p.suffix == ".sqlite")
+    record("R14 exactly 8 snapshot files", len(snaps) == 8, f"count={len(snaps)}")
+    record("R14 newest kept and foreign names kept", bool(newest) and newest.is_file()
+           and (clone_dir / "notes.txt").is_file() and (clone_dir / "abc.sqlite").is_file(), "")
+
+    # R10 two concurrent first builds of one commit
+    conc = make_repo("concurrent")
+    procs = [subprocess.Popen([sys.executable, "-m", "sensemaking_skills.cli", "semantic", "workspace-query",
+                               "src/a.py", "--index-dir", str(idx), "--json"], cwd=str(conc), env=ENV,
+                              stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True) for _ in range(2)]
+    outs = [p.communicate(timeout=240) + (p.returncode,) for p in procs]
+    states = [payload(o)["workspace_index"]["index_state"] if rc == 0 else f"rc={rc}:{e.strip()[-120:]}" for o, e, rc in outs]
+    rc, out, err = cli(["workspace-query", "src/a.py", "--index-dir", str(idx), "--json"], conc)
+    record("R10 concurrent first builds", all(o[2] == 0 for o in outs) and rc == 0
+           and payload(out)["workspace_index"]["index_state"] == "reused", f"states={states}")
+
+    # R11 default location fallback when LOCALAPPDATA / XDG_CACHE_HOME are absent (fake home)
+    fake_home = SCRATCH / "fakehome"
+    fake_home.mkdir(exist_ok=True)
+    env = {k: v for k, v in ENV.items() if k not in ("LOCALAPPDATA", "XDG_CACHE_HOME")}
+    env.update({"USERPROFILE": str(fake_home), "HOME": str(fake_home)})
+    dflt = make_repo("defaultdir")
+    rc, out, err = cli(["workspace-query", "src/a.py", "--json"], dflt, env=env)
+    if rc == 0:
+        ip = Path(payload(out)["workspace_index"]["index_path"])
+        record("R11 default index dir falls back under the home directory", fake_home in ip.parents,
+               str(ip.relative_to(fake_home)) if fake_home in ip.parents else str(ip))
+    else:
+        record("R11 default index dir falls back under the home directory", False, err.strip()[-240:])
+
+    # R1b symlinked clone-key directory is refused (needs symlink privilege on Windows)
+    sym = make_repo("symlink")
+    sidx = SCRATCH / "index-sym"
+    if sidx.exists():
+        shutil.rmtree(sidx, ignore_errors=True)
+    rc, out, err = cli(["workspace-query", "src/a.py", "--index-dir", str(sidx), "--json"], sym)
+    sdir = Path(payload(out)["workspace_index"]["index_path"]).parent
+    shutil.rmtree(sdir)
+    elsewhere = SCRATCH / "elsewhere"
+    elsewhere.mkdir(exist_ok=True)
+    try:
+        os.symlink(elsewhere, sdir, target_is_directory=True)
+    except (OSError, NotImplementedError) as exc:
+        skip("R1b symlinked clone-key directory refused", f"cannot create symlink here: {exc}")
+    else:
+        rc, out, err = cli(["workspace-query", "src/a.py", "--index-dir", str(sidx), "--json"], sym)
+        record("R1b symlinked clone-key directory refused", rc != 0 and no_traceback(err) and not any(elsewhere.iterdir()),
+               (err.strip().splitlines() or [""])[-1][:200])
+
+    # R15 multi-revision operations refused before any build
+    fresh = make_repo("norebuild")
+    fidx = SCRATCH / "index-none"
+    if fidx.exists():
+        shutil.rmtree(fidx, ignore_errors=True)
+    for op in (["--operation", "changes"], ["--operation", "history", "--subject", "adr:0031"]):
+        rc, out, err = cli(["workspace-query", *op, "--index-dir", str(fidx), "--json"], fresh)
+        made = fidx.exists() and any(fidx.rglob("*.sqlite"))
+        record(f"R15 {op[1]} refused before build", rc != 0 and not made and "knowledge-query" in err,
+               (err.strip().splitlines() or [""])[-1][:200])
+
+    # R10b error surfaces: not a repository, unborn HEAD
+    plain = SCRATCH / "plain"
+    plain.mkdir(exist_ok=True)
+    rc, out, err = cli(["workspace-query", "a.py", "--index-dir", str(idx), "--json"], plain)
+    record("R10b non-repository", rc != 0 and no_traceback(err), (err.strip().splitlines() or [""])[-1][:200])
+    unborn = SCRATCH / "unborn"
+    if unborn.exists():
+        shutil.rmtree(unborn, ignore_errors=True)
+    unborn.mkdir()
+    git(["init", "-q", "."], unborn)
+    rc, out, err = cli(["workspace-query", "a.py", "--index-dir", str(idx), "--json"], unborn)
+    record("R10b unborn HEAD", rc != 0 and no_traceback(err), (err.strip().splitlines() or [""])[-1][:200])
+
+    # R13 help is ASCII and names the derived cache; cp1252 stream is safe
+    env = {**ENV, "PYTHONIOENCODING": "cp1252"}
+    rc, out, err = cli(["workspace-query", "--help"], WT, env=env)
+    record("R13 help ASCII under cp1252", rc == 0 and out.isascii() and "UnicodeEncodeError" not in err,
+           " ".join(out.split())[:200])
+    rc, out, err = cli(["--help"], WT)
+    record("R13 group help lists workspace-query", "workspace-query" in out, "")
+
+    # R7 the real repository is exactly as before
+    record("R7 real repo status unchanged", git(["status", "--porcelain"], WT).stdout == status_before, "")
+    record("R7 no leftover worktree entries", git(["worktree", "list"], WT).stdout.count("\n") == worktrees_before, "")
+
+    print("\nTIMING first=%.1fs reuse=%.1fs" % (t_build, t_reuse))
+    fails = [r for r in RESULTS if r[1] == "FAIL"]
+    print(f"SUMMARY pass={sum(r[1] == 'PASS' for r in RESULTS)} fail={len(fails)} "
+          f"not_run={sum(r[1] == 'NOT_RUN' for r in RESULTS)}")
+    for name, _, detail in fails:
+        print("  FAIL:", name, "::", detail[:300])
+
+
+if __name__ == "__main__":
+    main()
