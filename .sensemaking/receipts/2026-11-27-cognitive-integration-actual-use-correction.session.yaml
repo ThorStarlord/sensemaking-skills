@@ -1,0 +1,69 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-11-27-cognitive-integration-actual-use-correction
+state: final
+created_at: "2026-11-27T21:35:18Z"
+updated_at: "2026-11-27T21:35:19Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: 1ef1de9418d6de6d6d2fcfa7337d0196812f088b
+  end_ref: 1ef1de9418d6de6d6d2fcfa7337d0196812f088b
+  worktree_clean_at_end: null
+skill_identity:
+  load_mode: manual_explicit_load
+  sensemaking_source_ref: null
+goal:
+  statement: "Repair the invalid receipt without editing its original bytes or changing the observed cognitive integration results."
+  source: owner_message
+  source_ref: null
+delegation:
+  granted: [read, local_write, run_local_commands, commit, push, open_pr, merge, knowledge_edit]
+  withheld: [release, deploy, tracker_write, external_publication]
+continuity:
+  resumes: 2026-11-27-cognitive-integration-actual-use
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: Identify and preserve the malformed historical receipt
+    capability: ordinary_coding
+    status: completed
+    reason: "Run 46071260667 rejected stop.reason (326 characters) and claim_ceiling (337 characters), each over 300. Preserve the original blob 237287b4aeab7a9d830469489d5287df6eb5b7c9 in history, outside the admitted receipt directory."
+    artifact_refs: [artifacts/history/2026-11-27-cognitive-integration-actual-use.invalid-receipt.yaml, artifacts/history/2026-11-27-cognitive-integration-actual-use.md]
+    validation:
+      - command: Inspect exact canonical validator output and original receipt blob
+        result: PASS
+  - id: R-2
+    responsibility: Retain a linked correction and the original continuation boundary
+    capability: using-sensemaking
+    status: completed
+    reason: "Use a new concise successor, not a rewritten final receipt or relaxed validation. The prior preflight, actual clean feature build, method application and knowledge results remain intact; independent benefit remains unestablished."
+    artifact_refs: [artifacts/history/2026-11-27-cognitive-integration-actual-use.invalid-receipt.yaml, artifacts/history/2026-11-27-cognitive-integration-actual-use.md, .sensemaking/knowledge/cognitive-capability-integration.json, .sensemaking/knowledge/execution-substitution-method-application.json]
+    validation:
+      - command: Original source and schema inspection
+        result: PASS
+      - command: Local receipt validator
+        result: NOT_RUN
+findings:
+  - id: F-1
+    statement: "The post-merge receipt gate failed only on two length violations. This correction does not supersede the knowledge evidence or establish independent cognitive benefit."
+    epistemic_status: OBSERVED
+    evidence_refs: [artifacts/history/2026-11-27-cognitive-integration-actual-use.invalid-receipt.yaml, artifacts/history/2026-11-27-cognitive-integration-actual-use.md]
+    disposition: resolved
+open_questions:
+  - id: Q-1
+    question: "Can a genuinely later agent apply the integrated context in meaningful development and retain warranted methodological adaptation or justified unchanged practice?"
+    source: external_environment
+    blocking: true
+    options: []
+    durable_ref: artifacts/history/2026-11-27-cognitive-integration-actual-use.md
+stop:
+  disposition: EXTERNAL_BLOCKER
+  reason: "Receipt correction prepared; actual replay, method application and reviewed knowledge remain intact. Independent later-agent evidence requires an authentic executor or beneficiary context, not another simulated projection."
+next:
+  warranted_responsibility: "Use integrated context in a genuine consequential development episode; compare real alternatives, execute useful work and retain or reject adaptations from actual experience."
+  blocked_on: [Q-1]
+persistence: committed
+claim_ceiling: "Actual hosted replay, same-agent method application, proposal validation and clean committed retrieval. No new method adaptation, independent agent benefit, comparative improvement or longitudinal compounding established."
+action_authorized_by_receipt: false
+immutable: true
