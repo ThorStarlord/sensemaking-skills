@@ -472,9 +472,11 @@ def register_semantic_commands(root_cli: click.Group) -> None:
     @click.option("--symbol", default=None,
                   help="Optional top-level Python symbol for direct references and test candidates (requires --include-source-relationships)")
     @click.option("--method-question", default=None,
-                  help="Optional decision question; include authored method precedents in product-outline only")
+                  help="Optional decision question; include authored method precedents in product-outline or possibility-ecology")
     @click.option("--method-limit", type=click.IntRange(1, 25), default=8,
-                  help="Maximum method candidates for --method-question")
+                  help="Maximum candidates per precedent family for --method-question")
+    @click.option("--include-method-trials", is_flag=True,
+                  help="Include historical trial precedents (requires --method-question)")
     @click.option("--include-js-module-imports", is_flag=True,
                   help="Index optional static JS/TS ESM specifiers in a separate zero-setup cache profile")
     @click.option("--max-js-imports", type=click.IntRange(0, 10000), default=1000,
@@ -494,7 +496,7 @@ def register_semantic_commands(root_cli: click.Group) -> None:
         paths: tuple[str, ...], operation: str, subject: str | None, search_terms: tuple[str, ...],
         query_text: str | None, search_kinds: tuple[str, ...], expected_kinds: tuple[str, ...],
         include_candidates: bool, method_question: str | None, method_limit: int,
-        include_source_relationships: bool, symbol: str | None,
+        include_method_trials: bool, include_source_relationships: bool, symbol: str | None,
         include_js_module_imports: bool, max_js_imports: int,
         limit: int, depth: int, repo_dir: Path, ref: str,
         repository_label: str | None, index_dir: Path | None, refresh: bool, output_json: bool,
@@ -508,10 +510,12 @@ def register_semantic_commands(root_cli: click.Group) -> None:
         from .workspace_knowledge import run_method_context, run_workspace_query
 
         try:
-            if method_question is not None and operation != "product-outline":
-                raise ValueError("--method-question is supported only for product-outline")
+            if method_question is not None and operation not in {"product-outline", "possibility-ecology"}:
+                raise ValueError("--method-question is supported only for product-outline or possibility-ecology")
             if method_question is None and method_limit != 8:
                 raise ValueError("--method-limit requires --method-question")
+            if include_method_trials and method_question is None:
+                raise ValueError("--include-method-trials requires --method-question")
             payload = run_workspace_query(
                 repo=repo_dir, ref=ref, operation=operation, paths=paths, subject=subject,
                 search_terms=search_terms, expected_kinds=expected_kinds,
@@ -525,8 +529,9 @@ def register_semantic_commands(root_cli: click.Group) -> None:
             )
             if method_question is not None:
                 payload["method_precedents"] = run_method_context(
-                    repo=repo_dir, ref=ref, question=method_question, limit=method_limit,
+                    repo=repo_dir, ref=payload["target_ref"], question=method_question, limit=method_limit,
                     repository=repository_label, index_dir=index_dir,
+                    include_trials=include_method_trials,
                 )
                 payload["method_precedents"]["consumer_note"] = (
                     "Optional authored method precedents for this selection; "
@@ -1118,49 +1123,25 @@ def register_semantic_commands(root_cli: click.Group) -> None:
     @click.option("--ref", default="HEAD", show_default=True,
                   help="Exact committed source revision (default: HEAD)")
     @click.option("--limit", type=click.IntRange(1, 25), default=8,
-                  help="Maximum explicit methodological candidates to inspect")
+                  help="Maximum explicit candidates per precedent family to inspect")
+    @click.option("--include-trials", is_flag=True,
+                  help="Include historical trial precedents, even without a prior lesson link")
     @click.option("--json", "output_json", is_flag=True)
     def semantic_method_context(
         question: str, source_paths: tuple[str, ...], repo_dir: Path,
-        ref: str, limit: int, output_json: bool,
+        ref: str, limit: int, include_trials: bool, output_json: bool,
     ) -> None:
         """Read candidate procedures and later cited episodes before an agent decision.
 
         Reads the existing reviewed lesson index and one-hop source links;
         does not determine whether any candidate is applicable or beneficial.
         """
-        from .method_adaptation import method_context
-        from .workspace_knowledge import _normalize_path, run_workspace_query
+        from .workspace_knowledge import run_method_context
 
         try:
-            if len(source_paths) > 8:
-                raise ValueError("method context accepts at most eight source paths")
-            paths = tuple(dict.fromkeys(_normalize_path(path) for path in source_paths))
-            # Literal ID prefix retrieves explicit lessons from the existing index.
-            # The helper ranks only those whose authored attributes define a method.
-            initial = run_workspace_query(
-                repo=repo_dir, ref=ref, operation="search", subject="lesson:",
-                search_kinds=("lesson",), limit=250,
-            )
-            # Pin subsequent lookups to the exact initial revision. A moving
-            # HEAD must never mix lessons, source-path context and feedback.
-            pinned_ref = initial["target_ref"]
-
-            def explain(identifier: str) -> dict:
-                return run_workspace_query(
-                    repo=repo_dir, ref=pinned_ref, operation="explain", subject=identifier,
-                    limit=250,
-                )
-
-            path_contexts = {
-                path: run_workspace_query(
-                    repo=repo_dir, ref=pinned_ref, operation="context-for",
-                    subject=path, limit=250,
-                )
-                for path in paths
-            }
-            payload = method_context(
-                question, initial, explain, limit=limit, path_contexts=path_contexts,
+            payload = run_method_context(
+                repo=repo_dir, ref=ref, question=question, limit=limit,
+                source_paths=source_paths, include_trials=include_trials,
             )
         except (ValueError, OSError, UnicodeError, KeyError, TypeError) as exc:
             raise click.ClickException(str(exc)) from exc

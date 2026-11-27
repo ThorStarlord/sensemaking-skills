@@ -306,9 +306,16 @@ existing metareasoning, warrant and reconciliation, not a universal taxonomy.
 | Premature convergence | Which materially different question, explanation, scope or outcome was excluded before commitment? | EXPLORE or CHALLENGE; assess coverage proportionately |
 | Outcome-responsibility drift | Does the actual selected responsibility serve the original purpose, or has it effectively displaced it? | Recover goal/authority; compare responsibility scopes; correct or reaffirm |
 | Premature local closure | Is the completed local increment being used to justify terminal stopping without considering independent remaining work? | RECONCILE then re-warrant the mission-level STOP or CONTINUE |
-| Defensive minimalism (possible tendency) | Were omission cost, retained value and credible larger but feasible interventions compared alongside risk and cost? | Warrant / Choice; compare realistic alternatives including direct reversible BUILD |
+| Strategic underreach (selection concern; defensive minimalism is one hypothesized contributor) | What materially stronger credible contribution might be omitted, what would it unlock, and why is the present responsibility preferable after omission cost and feasible commitment levels are compared? | Warrant / Choice; widen possibility coverage or compare a direct reversible BUILD when warranted |
 | Constraint inversion / proxy capture | Does an evidence, implementation or qualification constraint govern the objective or replace it? | Separate construction, claim and authorization gates; keep genuine prerequisites |
 | Local completion bias (possible contributor) | Does the evidence support only a local success, or the actual consumer and broader closure claim? | Output reconciliation; verify decision-changing downstream consequences |
+
+Strategic underreach means a materially weaker contribution than a credible,
+sufficiently warranted and authorized alternative without adequate comparative
+justification. Mere option poverty or an unverified alternative is a reason to
+investigate, not proof of underreach. Preserve epistemic caution and architectural
+restraint; historical defensive minimalism is a possible explanation, not an
+inferred motive or a criticism of defensive programming.
 
 Do not infer a cause, prevalence, failure or correct larger intervention from
 a small diff, an unfinished long-term ambition, a green check, or the mere

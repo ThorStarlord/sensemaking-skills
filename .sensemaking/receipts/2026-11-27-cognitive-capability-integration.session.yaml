@@ -1,0 +1,99 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-11-27-cognitive-capability-integration
+state: final
+created_at: "2026-11-27T20:00:14Z"
+updated_at: "2026-11-27T20:04:59Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: 4fdda284899ab9302c0ff3656fccf0c2b54ab750
+  end_ref: f3e472f2e6b2aaeb50d14bf1a9b0df55c1969f12
+  worktree_clean_at_end: null
+skill_identity:
+  load_mode: manual_explicit_load
+  sensemaking_source_ref: null
+goal:
+  statement: "Investigate cognitive capability integration as a developmental concern, develop operational guidance and construct warranted decision-time integration within the existing product thesis."
+  source: owner_message
+  source_ref: null
+delegation:
+  granted: [read, local_write, run_local_commands, commit, push, open_pr, merge, knowledge_edit]
+  withheld: [release, deploy, tracker_write, external_publication]
+continuity:
+  resumes: 2026-11-27-adaptive-cognitive-correction
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: Develop the intellectual problem of cognitive integration and compare alternatives
+    capability: divergent-exploration
+    status: completed
+    reason: "Investigate influence, continuity, conflict, adaptation, emergent competence, cost and evaluation; compare quality, activation, delivery, composition and agent limitations without attributing historical behavior to a single cause."
+    artifact_refs: [docs/research/cognitive-capability-integration-v1.md]
+    validation:
+      - command: Inspect governing thesis, current capabilities and historical episodes
+        result: PASS
+  - id: R-2
+    responsibility: Operationalize decision influence, adaptive composition and strategic ambition
+    capability: ordinary_coding
+    status: completed
+    reason: "Integrate conditional feedback, conflict interpretation and adaptive commitment in existing controller and references; distinguish strategic underreach from justified small work."
+    artifact_refs: [skills/using-sensemaking/SKILL.md, skills/using-sensemaking/references/adaptive-skill-composition-v1.md, skills/using-sensemaking/references/metareasoning-policy-v0.md, skills/using-sensemaking/references/warrant-choice-policy-v0.md]
+    validation:
+      - command: Source and diff inspection
+        result: PASS
+  - id: R-3
+    responsibility: Construct integrated developmental and methodological context
+    capability: ordinary_coding
+    status: completed
+    reason: "Question-led method recall omitted unlinked trials, and product context joined method evidence through a separately resolved ref. Reuse existing trial projection, pin to the resolved SHA, expose separately bounded trial candidates in developmental views and preserve defaults."
+    artifact_refs: [src/sensemaking_skills/method_trial.py, src/sensemaking_skills/workspace_knowledge.py, src/sensemaking_skills/semantic_cli.py, docs/cli-reference.md, .github/workflows/semantic-context-reentry.yml]
+    validation:
+      - command: Exact source and diff review of selection, projection, CLI and actual-record hosted consumer
+        result: PASS
+      - command: Local checkout and runtime verification
+        result: NOT_RUN
+      - command: Local unit and synthetic evidence tests
+        result: NOT_RUN
+  - id: R-4
+    responsibility: Observe decision influence and adapt intellectual organization in a genuine later episode
+    capability: using-sensemaking
+    status: blocked
+    reason: "A capable checkout and an authentic later agent episode are not available in this execution environment. Historical inspection and mechanical consumer checks cannot establish decision influence, adaptation or comparative benefit."
+    artifact_refs: [docs/research/cognitive-capability-integration-v1.md]
+    validation:
+      - command: Authentic later-agent behavioral evaluation
+        result: NOT_RUN
+findings:
+  - id: F-1
+    statement: "Cognitive integration is decision-relevant interpretation and cooperation, not artifact exchange or specialist invocation counts. Existing composition and learning architecture supplies the controller; no second controller is warranted by inspected evidence."
+    epistemic_status: DERIVED
+    evidence_refs: [docs/research/cognitive-capability-integration-v1.md, skills/using-sensemaking/references/adaptive-skill-composition-v1.md]
+    disposition: resolved
+  - id: F-2
+    statement: "Existing authored unlinked and anchored method trials provide distinct precedent evidence. The new optional consumer retrieves them by question, preserves original limits and combines method and possibility evidence at one source revision."
+    epistemic_status: OBSERVED
+    evidence_refs: [.sensemaking/knowledge/method-trial-discovery-surface.json, .sensemaking/knowledge/method-trial-anchored-close.json, src/sensemaking_skills/method_trial.py, src/sensemaking_skills/workspace_knowledge.py]
+    disposition: resolved
+  - id: F-3
+    statement: "Preconstruction comparison and source-reviewed implementation are attributable; neither demonstrates that agent cognition improved nor establishes the causal source of recurring judgment problems."
+    epistemic_status: DERIVED
+    evidence_refs: [docs/research/cognitive-capability-integration-v1.md]
+    disposition: no_action
+open_questions:
+  - id: Q-1
+    question: "In a consequential later development decision, does relevant method/possibility context alter a real comparison, method composition or justified reaffirmation at acceptable cost, and does the experience support retention or adaptation?"
+    source: external_environment
+    blocking: true
+    options: []
+    durable_ref: docs/research/cognitive-capability-integration-v1.md
+stop:
+  disposition: EXTERNAL_BLOCKER
+  reason: "Research, operational guidance and selected consumer are implemented and source-reviewed. The next evidence-bearing responsibility needs a real capable agent checkout and consequential task. This is not repository-wide exhaustion or independent behavioral qualification."
+next:
+  warranted_responsibility: "Use the integrated consumer during a genuine strategic selection; preserve real alternatives, actual interpretation, decision influence or justified restraint, cost and consequences; reconcile and adapt when warranted."
+  blocked_on: [Q-1]
+persistence: committed
+claim_ceiling: "Source-grounded research and source-reviewed implementation. Hosted verification pending at receipt authoring; no local runtime, causal learning effect, independent agent use, generalized strategic improvement or longitudinal compounding established."
+action_authorized_by_receipt: false
+immutable: true

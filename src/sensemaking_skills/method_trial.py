@@ -23,6 +23,9 @@ from .method_adaptation import (
     _string,
 )
 from .semantic_architecture.knowledge import read_authored_claim, read_authored_relation
+from .semantic_architecture.knowledge_retrieval import (
+    _FUNCTION_WORDS, _QUESTION_WORD, _lexical_hit, _query_tokens, _stem,
+)
 
 _TRIAL_SLUG = re.compile(r"[a-z0-9][a-z0-9-]{2,70}\Z")
 _DATE = re.compile(r"[0-9]{4}-[0-9]{2}-[0-9]{2}\Z")
@@ -456,6 +459,88 @@ def trial_ancestry(repo: Path) -> Callable[[str, str], str]:
 
     root = Path(_git(repo, "rev-parse", "--show-toplevel")).resolve()
     return lambda ancestor, descendant: _ancestry_status(root, ancestor, descendant)
+
+
+def method_trial_context(
+    question: str, initial: Mapping[str, Any],
+    explain: Callable[[str], Mapping[str, Any]], *, limit: int = 8,
+    ancestry: Callable[[str, str], str] | None = None,
+) -> dict[str, Any]:
+    """Find authored method-trial precedents by question, then inspect each pair.
+
+    Trials are not lessons. Discovery is lexical, even when a trial cites no
+    prior lesson; the existing trial-view contract controls chronology and
+    closure. A failed projection is visible, never mistaken for an open trial.
+    """
+    if (not isinstance(question, str) or len(question) > 300
+            or any(ord(c) < 32 for c in question)):
+        raise ValueError("question must be one line of at most 300 characters")
+    tokens = _query_tokens(question)
+    if not 1 <= len(tokens) <= 24 or not 1 <= limit <= 25:
+        raise ValueError("method trial context requires 1..24 words and limit 1..25")
+    words = tuple(word for word in tokens if word not in _FUNCTION_WORDS)
+    if not words:
+        raise ValueError("question must contain a decision-relevant content word")
+    ranked: list[tuple[int, int, str, tuple[str, ...]]] = []
+    for claim in initial.get("claims", []):
+        identifier = claim.get("id")
+        attributes = claim.get("attributes") or {}
+        if (claim.get("kind") != "decision" or not isinstance(identifier, str)
+                or not identifier.startswith("decision:method-trial-")
+                or attributes.get("trial_status") not in {"OPEN", "CLOSED"}):
+            continue
+        name = identifier.casefold().partition(":")[2]
+        text = " ".join(str(attributes.get(key) or "") for key in (
+            "question", "method", "assumptions", "expected_observation",
+        )).casefold()
+        stems = {_stem(word) for word in _QUESTION_WORD.findall(name + " " + text)}
+        matched = tuple(word for word in words if _lexical_hit(word, name, text, stems))
+        if matched:
+            ranked.append((-len(matched), -sum(map(len, matched)), identifier, matched))
+    ranked.sort()
+    candidates = []
+    for _, _, identifier, matched in ranked[:limit]:
+        envelope = explain(identifier)
+        item: dict[str, Any] = {
+            "id": identifier,
+            "matched_tokens": list(matched),
+            "applicability_to_present_task": "NOT_ESTABLISHED",
+            "projection_status": "NOT_ASSESSED",
+            "trial": None,
+        }
+        if envelope.get("target_ref") != initial.get("target_ref"):
+            raise ValueError("method trial context source revision mismatch")
+        if envelope.get("truncated"):
+            item["projection_reason"] = "EXPLAIN_TRUNCATED"
+        else:
+            try:
+                item["trial"] = build_method_trial_view(
+                    identifier, envelope.get("claims", []),
+                    envelope.get("relations", []), ancestry=ancestry,
+                )
+            except ValueError as exc:
+                item["projection_reason"] = str(exc)
+            else:
+                item["projection_status"] = "PROJECTED"
+        candidates.append(item)
+    return {
+        "target_ref": initial.get("target_ref"),
+        "trial_candidates": candidates,
+        "trial_candidate_matches": len(ranked),
+        "trial_candidate_matches_omitted": max(0, len(ranked) - limit),
+        "trial_corpus_returned": len(initial.get("claims", [])),
+        "trial_corpus_total": initial.get("search_hit_total"),
+        "trial_corpus_truncated": bool(initial.get("truncated", False)),
+        "method_effect_established": False,
+        "semantic_truth_established": False,
+        "action_authorized": False,
+        "explicit_limits": [
+            "Matches use authored trial questions, methods, assumptions, expectations and IDs; lexical overlap is not applicability.",
+            "The search corpus is bounded at 250 records; a miss or truncation does not establish absence.",
+            "A projected trial preserves the existing chronology, digest and closure limits. An unassessed projection is not an open trial.",
+            "Trial precedents are historical evidence, not promoted lessons or method recommendations.",
+        ],
+    }
 
 
 def build_method_trial_view(

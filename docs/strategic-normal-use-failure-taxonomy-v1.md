@@ -253,7 +253,7 @@ reconciliation](normal-use/2026-11-27-adaptive-cognitive-failure-review.md).
 | --- | --- | --- |
 | Outcome-responsibility drift (ORD) | F5, F10, F13; may coexist with F1 | Mismatch between governing outcome and selected/closed responsibility |
 | Premature local closure | F12, F13, F16 | Inadequately warranted terminal stop; local success can be real |
-| Defensive minimalism | Possible contributor to F6/F8 or narrow F1/F4 | Hypothesized preference distortion, not a demonstrated cause or synonym for small work |
+| Strategic underreach | Comparative selection concern overlapping F6/F8 or narrow F1/F4 | Inadequately justified weaker contribution than a credible sufficiently warranted and authorized alternative; historical defensive minimalism is a possible contributor, not a demonstrated cause or synonym for small work |
 | Constraint inversion | F5; may contribute to F8/F16 | A constraint or gate displaces the end it was meant to serve |
 | Local completion bias | Possible contributor to F12/F13 | Easy local observability can distort evaluation of broader outcomes |
 
@@ -261,7 +261,11 @@ Premature convergence (F1) concerns commitment without adequate alternative
 coverage. It can contribute to these failures but is not their parent category.
 The #935 receipt explicitly acknowledged the wider objective; the disputed
 claim is its terminal stopping justification, not proof of unconscious goal
-loss. Apply the existing portable [AMS cognitive safeguards](../skills/using-sensemaking/references/metareasoning-policy-v0.md#5b-cognitive-failure-recognition-and-correction-conditional)
+loss. Do not infer underreach merely from small work, low risk or an
+unbuilt future. Compare actual credible alternatives and omission costs;
+insufficient evidence about a better option is a reason for inquiry, not a
+verdict. See [cognitive capability integration research](research/cognitive-capability-integration-v1.md).
+Apply the existing portable [AMS cognitive safeguards](../skills/using-sensemaking/references/metareasoning-policy-v0.md#5b-cognitive-failure-recognition-and-correction-conditional)
 only when relevant to a material choice. Preserve the symmetric risks of
 over-exploration and unnecessary construction. No rate or intrinsic tendency
 is established by the source-selected episodes.

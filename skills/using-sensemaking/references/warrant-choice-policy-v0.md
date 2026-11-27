@@ -290,6 +290,27 @@ For the **actual decision to support**:
    would warrant reconsidering the boundary. Preserve `NO_SELECTION`,
    `MORE_EVIDENCE_REQUIRED` and owner escalation when appropriate.
 
+### Calibrate the target of commitment
+
+For a consequential selection in broad development, ask what stronger
+credible contribution to the governing outcome might be omitted. Consider
+enabling capabilities and foregone learning, not difficulty, patch size or
+certainty alone. If the option set is impoverished, explore or backcast
+before comparing. A small repair can be the strongest choice. Do not demand
+a larger alternative or invent a false comparison for settled work.
+
+Distinguish the commitment being warranted: considering a plausible future,
+investigating it, prototyping, retaining a reversible build, making enduring
+architectural commitments, and claiming demonstrated outcomes have different
+evidence and downside. An uncertain full commitment may admit affordable
+reversible exploration or retained construction instead. Conversely, a
+successful probe does not warrant canonical integration automatically. This
+is adaptive commitment within Warrant / Choice, Experiment Economy and
+existing authority, not a new stage model. Prefer the strongest useful
+contribution after total cost, consequence, information, omission and
+reversibility are compared; do not optimize for the smallest available
+implementation.
+
 For a **previously deferred or declined responsibility**, distinguish the
 earlier recorded reason/condition from the present justification. Cite the
 predecessor and say whether that condition was observed, revised under new

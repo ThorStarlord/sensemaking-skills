@@ -506,6 +506,7 @@ def run_verification_plan(
 def run_method_context(
     *, repo: str | Path, ref: str, question: str, limit: int = 8,
     repository: str | None = None, index_dir: str | Path | None = None,
+    source_paths: tuple[str, ...] = (), include_trials: bool = False,
 ) -> dict[str, Any]:
     """Compose the existing reviewed method context for a selection consumer.
 
@@ -513,6 +514,9 @@ def run_method_context(
     """
     from .method_adaptation import method_context
 
+    if len(source_paths) > 8:
+        raise ValueError("method context accepts at most eight source paths")
+    paths = tuple(dict.fromkeys(_normalize_path(path) for path in source_paths))
     initial = run_workspace_query(
         repo=repo, ref=ref, operation="search", subject="lesson:",
         search_kinds=("lesson",), limit=250, repository=repository,
@@ -526,7 +530,31 @@ def run_method_context(
             limit=250, repository=repository, index_dir=index_dir,
         )
 
-    return method_context(question, initial, explain, limit=limit)
+    path_contexts = {
+        path: run_workspace_query(
+            repo=repo, ref=pinned_ref, operation="context-for",
+            subject=path, limit=250, repository=repository, index_dir=index_dir,
+        )
+        for path in paths
+    }
+    result = method_context(
+        question, initial, explain, limit=limit, path_contexts=path_contexts,
+    )
+    if include_trials:
+        from .method_trial import method_trial_context, trial_ancestry
+
+        trials = run_workspace_query(
+            repo=repo, ref=pinned_ref, operation="search",
+            subject="decision:method-trial-", search_kinds=("decision",),
+            limit=250, repository=repository, index_dir=index_dir,
+        )
+        if trials["target_ref"] != pinned_ref:
+            raise ValueError("method trial context source revision mismatch")
+        result["trial_precedents"] = method_trial_context(
+            question, trials, explain, limit=limit,
+            ancestry=trial_ancestry(Path(repo).expanduser().resolve()),
+        )
+    return result
 
 
 def run_workspace_changes(

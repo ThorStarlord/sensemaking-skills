@@ -112,6 +112,84 @@ master artifact, states:
 The controller reads the return, decides what changed, and reconciles before
 continuing.
 
+## 5a. Cognitive integration: preserve the decision-relevant effect
+
+When composing consequential intellectual work, distinguish availability and
+connectivity from actual influence. A result is integrated when its supported
+contribution is interpreted against the governing question and changes a
+material premise, possibility, comparison, method, action, or justified
+reaffirmation. Calling several Skills or producing compatible artifacts does
+not establish better judgment.
+
+Consider the relevant kind of influence, not a required sequence:
+
+- **Enabling:** understanding exposes constraints, affordances or an
+  unrepresented distinction that makes exploration or evaluation useful.
+- **Corrective:** challenge or verification defeats an assumption or
+  unsupported conclusion; reopen the affected question rather than defend
+  the old result.
+- **Transformative:** a new route, affordable reversible probe or revised
+  objective changes what deserves commitment.
+- **Generative:** recombine grounded relationships, capabilities and future
+  states to discover a genuinely different possibility. Check enabling
+  conditions, contrary evidence and downstream costs; novelty is not value.
+
+Carry forward the governing intent, actual decision/question, exact source
+identity and authority, affected claims and their epistemic limits, relevant
+alternatives, live assumptions, counterevidence, and reconsideration
+conditions. Preserve only what the next decision or later consumer needs
+through existing evidence, knowledge, decision and receipt surfaces. Do not
+preserve private reasoning traces or build a second knowledge store.
+When using several projections, pin their source revisions; a shared
+snapshot is not proof of current applicability or semantic compatibility.
+
+When results seem incompatible, first distinguish factual contradictions
+from different premises, objectives, time horizons, contemplated
+commitments or tradeoffs. Resolve genuine contradictions using source
+evidence. A valid risk finding and a valuable opportunity can both hold:
+compare a reversible build, staged inquiry, another design, deferral or no
+change before committing. No synthesis may silently waive an invariant,
+qualification requirement or authority boundary.
+
+For decisions that turn on both future possibilities and intellectual
+approach, use [developmental trajectory reasoning](developmental-trajectory-reasoning-v1.md)
+and the existing [method precedent and trial guidance](method-trial-v1.md)
+when warranted. The CLI supports `workspace-query --operation product-outline`
+or `--operation possibility-ecology` with `--method-question QUESTION`;
+add `--include-method-trials` when earlier trial decisions and observations
+could inform the present composition. Question-led discovery is lexical,
+not applicability. A trial without a prior lesson link can be recovered;
+a trial is not a promoted lesson. Inspect actual conditions and results.
+Do not assume a prior method or composition applies just because it matches.
+
+## 5b. Develop the composition itself when actual experience warrants it
+
+The active agent can adapt how it combines existing methods rather than
+only improving their individual outputs. For example, insufficient option
+coverage may warrant backcasting from a desired capability state before
+divergence and comparison. A conflict between consequence depth and
+architecture may warrant a reversible feasibility probe before selection.
+These are possibilities, not prescriptions.
+
+If a consequential real episode exposes an integration barrier, identify
+whether it concerns method quality, activation, context delivery, semantic
+compatibility, interpretation, selection influence, cross-session retention,
+or unnecessary cost. Compare alternative explanations and source evidence;
+do not infer an intrinsic agent trait or diagnose failure from absent traces.
+Use SCL and Method Adaptation for a conditional procedural change only when
+the actual method before/after, scope, evidence, outcome and limitations
+support it. Optional method trials can preserve an attributable predecision
+commitment; later observation remains separate from effect or causality.
+
+Use the least costly composition that preserves a strong warranted decision,
+not the least ambitious product responsibility. Account for the value of
+discovered options, avoided rework, information, omitted opportunities,
+retained complexity and future context burden. Direct work, a brief source
+check, a focused specialist, a parallel independent review, or a richer
+composition can each be preferable. Return to direct action when further
+cooperation would not materially change the decision. There is no mandatory
+integration artifact, stage, score, controller or qualification gate.
+
 ## 6. Anti-patterns
 
 - A fixed pipeline that runs every activity for every request.
