@@ -1,16 +1,16 @@
-name: Actual cognitive integration stewardship (execution branch only)
+name: Actual cognitive integration retrieval (execution branch only)
 on:
   push:
     branches: [claude/cognitive-integration-actual-execution-20261127]
 permissions:
   contents: read
 jobs:
-  actual-preflight:
+  actual-retrieval:
     if: github.ref == 'refs/heads/claude/cognitive-integration-actual-execution-20261127'
     runs-on: ubuntu-latest
     timeout-minutes: 12
     env:
-      SOURCE: "12d046aa7810c12411957fed949b2b60d1c92671"
+      SOURCE: "f6529528ec7361c93bda99bcb6395e4ce9c20ef7"
     steps:
       - uses: actions/checkout@v4
         with:
@@ -20,50 +20,80 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Install exact source
+      - name: Install exact integrated source
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE"
+          test "$(git hash-object .sensemaking/knowledge/cognitive-capability-integration.json)" = b00d7dab420b3b747074b8a8dc5ef78318c46680
+          test "$(git hash-object .sensemaking/knowledge/execution-substitution-method-application.json)" = 8f4687c4401dfc18b878818a7010d69e791a1324
           python -m pip install -e .
           test -z "$(git status --porcelain)"
-          sensemaking-skills --version
-      - name: Preflight real integration knowledge and actual application
+      - name: Build clean committed knowledge and recover actual integrated context
         run: |
           set -euo pipefail
-          C=artifacts/history/2026-11-27-cognitive-integration-knowledge-DRAFT.json
-          CDEST=.sensemaking/knowledge/cognitive-capability-integration.json
-          E=.sensemaking/proposals/execution-substitution-method-application.json
-          EDEST=.sensemaking/knowledge/execution-substitution-method-application.json
-          test ! -e "$CDEST" && test ! -e "$EDEST" && test ! -e "$E"
-          test "$(git hash-object "$C")" = b00d7dab420b3b747074b8a8dc5ef78318c46680
-          sensemaking-skills semantic knowledge-proposal-check --repo . --proposal "$C" \
-            --destination "$CDEST" --json | tee "$RUNNER_TEMP/actual-concept-detached.json"
-          sensemaking-skills semantic method record --repo . \
-            --episode artifacts/history/2026-11-27-execution-substitution-method-application.json \
-            --output "$E" --draft-only --json | tee "$RUNNER_TEMP/actual-application-producer.json"
-          sensemaking-skills semantic knowledge-proposal-check --repo . --proposal "$E" \
-            --destination "$EDEST" --json | tee "$RUNNER_TEMP/actual-application-detached.json"
-          test ! -e "$CDEST" && test ! -e "$EDEST"
-          cp "$C" "$CDEST"
-          cp "$E" "$EDEST"
-          cmp "$C" "$CDEST"
-          cmp "$E" "$EDEST"
-          sensemaking-skills semantic knowledge-proposal-check --repo . --proposal "$CDEST" --json \
-            | tee "$RUNNER_TEMP/actual-concept-final-path.json"
-          sensemaking-skills semantic knowledge-proposal-check --repo . --proposal "$EDEST" --json \
-            | tee "$RUNNER_TEMP/actual-application-final-path.json"
-          echo "CONCEPT_BLOB=$(git hash-object "$CDEST")"
-          echo "APPLICATION_BLOB=$(git hash-object "$EDEST")"
-          echo "APPLICATION_BASE64=$(base64 -w0 "$EDEST")"
-          cp "$EDEST" "$RUNNER_TEMP/actual-application-pack.json"
-          rm -- "$CDEST" "$EDEST" "$E"
+          DB="$RUNNER_TEMP/integration.sqlite"
+          sensemaking-skills semantic knowledge-build --repo . \
+            --repository ThorStarlord/sensemaking-skills --target-ref "$SOURCE" \
+            --db "$DB" --include-repository-structure --json \
+            > "$RUNNER_TEMP/actual-build.json"
+          sensemaking-skills semantic knowledge-query --db "$DB" \
+            --repository ThorStarlord/sensemaking-skills --target-ref "$SOURCE" \
+            --operation explain --subject domain_concept:cognitive-capability-integration --json \
+            > "$RUNNER_TEMP/actual-concept.json"
+          sensemaking-skills semantic knowledge-query --db "$DB" \
+            --repository ThorStarlord/sensemaking-skills --target-ref "$SOURCE" \
+            --operation explain --subject cap:integrated-developmental-decision-context --json \
+            > "$RUNNER_TEMP/actual-capability.json"
+          sensemaking-skills semantic method context --repo . --ref "$SOURCE" \
+            --question "Which method helps choose developmental work when a required canonical mechanical gate cannot execute in the active environment?" \
+            --include-trials --limit 4 --json \
+            > "$RUNNER_TEMP/actual-method-context.json"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          root = Path(os.environ["RUNNER_TEMP"])
+          source = os.environ["SOURCE"]
+          def read(name):
+              return json.loads((root / name).read_text(encoding="utf-8"))
+          build = read("actual-build.json")
+          concept = read("actual-concept.json")
+          capability = read("actual-capability.json")
+          methods = read("actual-method-context.json")
+          # Use exact reviewed IDs in the actual returned projection, not an
+          # independently invented graph or a synthetic consumer.
+          assert concept["target_ref"] == capability["target_ref"] == methods["target_ref"] == source
+          for envelope in (concept, capability, methods):
+              assert envelope["semantic_truth_established"] is False
+              assert envelope["action_authorized"] is False
+          concept_claims = {item["id"] for item in concept["claims"]}
+          capability_claims = {item["id"] for item in capability["claims"]}
+          assert "domain_concept:cognitive-capability-integration" in concept_claims
+          assert "cap:adaptive-metareasoning" in concept_claims
+          assert "cap:developmental-trajectory-reasoning" in concept_claims
+          assert "cap:experience-lesson-recall" in concept_claims
+          assert "cap:warrant-and-choice-guidance" in concept_claims
+          assert "cap:integrated-developmental-decision-context" in capability_claims
+          assert "component:semantic-cli" in capability_claims
+          assert "goal:domain-general-cognitive-development" in capability_claims
+          assert "observation:cognitive-integration-actual-context-2026-11-27" in capability_claims
+          previous = next(c for c in methods["method_candidates"] if c["id"] == "lesson:conditional-method-2026-11-27-equivalent-execution-substitution")
+          applied = next(c for c in previous["later_related_records"] if c["id"] == "observation:method-episode-2026-11-27-equivalent-execution-application")
+          assert applied["source_read_status"] == "INDEXED_RECORD"
+          assert applied["record"]["attributes"]["method_disposition"] == "apply"
+          assert previous["applicability_to_present_task"] == "NOT_ESTABLISHED"
+          assert all(c["trial"]["method_effect_established"] is False for c in methods["trial_precedents"]["trial_candidates"] if c.get("trial") is not None)
+          print("BUILD=" + json.dumps(build))
+          print("CONCEPT=" + json.dumps({"ids": sorted(concept_claims), "truncated": concept.get("truncated"), "target_ref": concept["target_ref"]}))
+          print("CAPABILITY=" + json.dumps({"ids": sorted(capability_claims), "truncated": capability.get("truncated"), "target_ref": capability["target_ref"]}))
+          print("METHOD_APPLICATION=" + json.dumps({"lesson": previous["id"], "observation": applied["id"], "disposition": applied["record"]["attributes"]["method_disposition"], "claim_ceiling": applied["record"]["attributes"]["claim_ceiling"], "applicability": previous["applicability_to_present_task"], "related_records_complete": previous["related_records_complete"]}))
+          print("ACTUAL_COMMITTED_RETRIEVAL=PASS")
+          PY
           test -z "$(git status --porcelain)"
-          echo "ACTUAL_STEWARDSHIP_PREFLIGHT=PASS"
-      - name: Retain actual proposal evidence
+      - name: Retain exact actual outputs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: actual-cognitive-integration-stewardship
+          name: actual-cognitive-integration-retrieval
           path: ${{ runner.temp }}/actual-*.json
           if-no-files-found: warn
           retention-days: 14
