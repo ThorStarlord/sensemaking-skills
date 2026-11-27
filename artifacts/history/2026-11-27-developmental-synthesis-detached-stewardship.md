@@ -117,3 +117,46 @@ independent later-agent qualification, longitudinal improvement or transfer.
 No Level-3 reopening or new thesis decision. Stop this bounded increment
 at the current execution constraint after source/diff review and integration;
 further runtime expansion without actual consumer use is not warranted.
+
+## Returned source evidence at integrated PR #990
+
+Canonical main `acc912a7fdde760884adf589a48510759036f1ef`. All 25 tracked
+JSON packs under .sensemaking/knowledge were read at this exact source
+revision through the repository connector. For the four draft claim IDs
+and four draft relation IDs, no matching IDs occurred in those packs.
+The one external relation endpoint,
+`goal:domain-general-cognitive-development`, exists with kind goal in
+product.json. No matching relation object referring to the four proposed
+claim IDs was found in those packs. All seven distinct local file:
+evidence paths occur in the same committed tree. Source inspection of
+knowledge.py confirms that the draft's claim kinds, authority/status
+vocabulary and predicates are present in the version-1 vocabulary.
+The proposed synthesis ID `poss:detached-possibility-stewardship`
+also does not occur in these packs.
+
+This is an exact-revision source-level identity, endpoint and path-existence
+audit. It is **not** a mechanical preflight: no execution of
+read_authored_claim/read_authored_relation, validate_snapshot, source
+resolution, cross-pack incoming-rule/flow checks, final destination check
+or knowledge-build is claimed. Source presence does not establish that
+the content supports each claim. The detached draft remains unchanged
+outside active knowledge. No validated pack has been produced.
+
+On a compatible checkout of this revision or a descendant with the feature,
+check the actual retained draft before any copy:
+
+```bash
+sensemaking-skills semantic knowledge-proposal-check \
+  --repo . \
+  --proposal artifacts/history/2026-11-27-dtr-knowledge-proposal-DRAFT.json \
+  --destination .sensemaking/knowledge/developmental-trajectory-reasoning.json \
+  --json
+```
+
+Reassess the sources and exact destination at that checkout. If the check
+and semantic review warrant promotion, use ordinary final-path preflight
+and exact clean-commit knowledge-build. The audit removes no validation
+gate. No new test, CI workflow, receipt claim, or active knowledge pack
+was authored for this check. Prior PR #989 exact-main Product Validation
+46006839301 and Release Candidate Distribution 46006839312 both succeeded;
+PR #990 exact-main validation was still pending at first observation.
