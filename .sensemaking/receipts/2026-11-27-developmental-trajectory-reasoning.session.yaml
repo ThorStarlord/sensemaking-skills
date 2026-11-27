@@ -64,13 +64,18 @@ findings:
     epistemic_status: UNRESOLVED
     evidence_refs: [artifacts/history/2026-11-27-developmental-trajectory-reasoning.md]
     disposition: handed_off
-open_questions: []
+open_questions:
+  - id: Q-1
+    question: "Can a compatible Sensemaking CLI and repository checkout be made available to preflight a reviewed DTR knowledge projection?"
+    source: external_environment
+    blocking: true
+    durable_ref: skills/repository-semantic-steward/references/knowledge-contract.md
 stop:
   disposition: EXTERNAL_BLOCKER
   reason: "Source-level construction integrated; remaining reviewed-knowledge preflight requires the unavailable CLI. Receipt retrospectively authored after merge, not a live log. No further warranted framework mechanism absent real consumer evidence."
 next:
   warranted_responsibility: "Preflight a minimal DTR knowledge projection when tooling is available; separately authorize a worthwhile OhMyGame sustained development episode to exercise DTR across real construction and re-entry."
-  blocked_on: [knowledge-proposal validator availability, separate beneficiary authorization]
+  blocked_on: [Q-1]
 persistence: committed
 claim_ceiling: "Source and diff review, canonical merge only. Receipt validator and runtime NOT_RUN; actual installed/loaded source identity unverified. Playcraft is hypothetical; hosted CI in progress at merge; no cognitive benefit or release qualification established."
 action_authorized_by_receipt: false
