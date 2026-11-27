@@ -1,0 +1,148 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-11-09-sequential-autonomy-pilot-002-reconciliation
+state: final
+created_at: "2026-11-09T06:30:25Z"
+updated_at: "2026-11-09T06:30:25Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: 53b667c17c3e2e65ef2e344ccedfc60296f8d7cd
+  end_ref: 53b667c17c3e2e65ef2e344ccedfc60296f8d7cd
+  worktree_clean_at_end: true
+skill_identity:
+  load_mode: harness_discovered
+  sensemaking_source_ref: null
+goal:
+  statement: "Pilot 002 reconciliation at origin/main 53b667c1: correct the first-pass admission inference, verify Skill identity in an isolated root, and admit a target only if unprotected, unfinished and multi-responsibility."
+  source: owner_message
+  source_ref: null
+delegation:
+  granted: [read, local_write, run_local_commands, commit, push, open_pr, knowledge_edit]
+  withheld: [merge, release, deploy, tracker_write, external_publication]
+continuity:
+  resumes: 2026-11-09-sequential-autonomy-pilot-002
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: Pinned source revision and clean worktree verification
+    capability: ordinary_coding
+    status: completed
+    reason: origin/main is still 53b667c1. The worktree branch head 185a6868 differs from it only by the two pilot documents, so its Skill sources are identical to the pinned source.
+    artifact_refs: [docs/normal-use/2026-11-09-sequential-autonomy-pilot-002.md]
+    validation:
+      - command: git fetch origin main; git rev-parse origin/main; git diff --stat origin/main HEAD
+        result: PASS
+  - id: R-2
+    responsibility: Skill parity and CLI import verification in an isolated root
+    capability: ordinary_coding
+    status: completed
+    reason: "User root: drift for using-sensemaking and strategic-sensemaking-loop; steward synced. Scratch-root sync 3 of 3. Loaded using-sensemaking text matches the user-installed revision, not pinned. Installed sync and CLI reinstall were not done. PATH CLI imports main checkout src."
+    artifact_refs: [docs/normal-use/2026-11-09-sequential-autonomy-pilot-002.md]
+    validation:
+      - command: python scripts/probe_skill_distribution.py --no-write (user root, read-only); same probe with --sync against scratchpad root only
+        result: PASS
+      - command: PYTHONPATH=src python -m sensemaking_skills.cli --version; python -c import check from neutral directory
+        result: PASS
+  - id: R-3
+    responsibility: Reconcile PR 794 and correct the first-pass admission inference
+    capability: using-sensemaking
+    status: completed
+    reason: The first pass overstated that no ready-for-agent label means no authorized opportunity. The corroboration plan section 4.2 permits operator discovery, and PATH-1 is the active responsibility. Documents preserved and corrected in a second-pass section without rewriting the first pass.
+    artifact_refs: [docs/normal-use/2026-11-09-sequential-autonomy-pilot-002.md]
+    validation:
+      - command: gh pr view 794 --json headRefOid,mergeStateStatus,statusCheckRollup
+        result: PASS
+  - id: R-4
+    responsibility: Bounded operator-side opportunity discovery and admission decision
+    capability: using-sensemaking
+    status: completed
+    reason: "Searched compass, issues, PRs, merges, source markers and plans. Four candidates: C1 and C2 need protected owner choices; C3 is a stale checklist; C4 is outside repository authority. Outcome OWNER_DECISION_REQUIRED."
+    artifact_refs: [docs/normal-use/2026-11-09-sequential-autonomy-pilot-002.md]
+    validation:
+      - command: grep owned_paths in knowledge.py; knowledge-contract.md line 74; finalize_plan callers in src, scripts and skills
+        result: PASS
+  - id: R-5
+    responsibility: Continuation report and receipt
+    capability: ordinary_coding
+    status: completed
+    reason: Added second-pass section 8 to the existing report; the first-pass report and receipt stay historical and immutable. No product code changed, so no unit tests were run.
+    artifact_refs:
+      - docs/normal-use/2026-11-09-sequential-autonomy-pilot-002.md
+      - .sensemaking/receipts/2026-11-09-sequential-autonomy-pilot-002-reconciliation.session.yaml
+    validation:
+      - command: python scripts/validate-receipt.py on this receipt --target-repo .
+        result: PASS
+      - command: python scripts/validate-docs-currentness.py --repo-root .
+        result: PASS
+findings:
+  - id: F-1
+    statement: "The first-pass finding F-4 and admission wording overstated that no ready-for-agent label means no authorized product opportunity. Corrected in report section 8.1."
+    epistemic_status: OBSERVED
+    evidence_refs: ["docs/agents/triage-labels.md", "docs/autonomous-terminal-mission-corroboration-plan.md"]
+    disposition: no_action
+  - id: F-2
+    statement: "The loaded using-sensemaking text matches the user-installed revision (blob 92bb8409), not the pinned revision (blob 6c64ed45), by a distinguishing phrase comparison. This is text evidence, not native harness version attribution."
+    epistemic_status: OBSERVED
+    evidence_refs: ["docs/normal-use/2026-11-09-sequential-autonomy-pilot-002.md"]
+    disposition: handed_off
+  - id: F-3
+    statement: "User-installed strategic-sensemaking-loop and using-sensemaking drift from the pinned source; repository-semantic-steward is synchronized. The PATH CLI imports the main checkout src."
+    epistemic_status: OBSERVED
+    evidence_refs: ["docs/normal-use/2026-11-09-sequential-autonomy-pilot-002.md"]
+    disposition: handed_off
+  - id: F-4
+    statement: "An isolated scratchpad root reaches 3 of 3 parity at the pinned source. It is not harness-discovered and not a qualification of current-version Skill loading."
+    epistemic_status: OBSERVED
+    evidence_refs: ["docs/normal-use/2026-11-09-sequential-autonomy-pilot-002.md"]
+    disposition: no_action
+  - id: F-5
+    statement: "C1: file-level context-for ownership for test files (Pilot 001 F-4) needs an ownership-model choice. ADR 0033 is PROPOSED and the knowledge contract line 74 is component-only. This is a protected owner choice, not an approved requirement."
+    epistemic_status: OBSERVED
+    evidence_refs: ["src/sensemaking_skills/semantic_architecture/knowledge.py", "skills/repository-semantic-steward/references/knowledge-contract.md", "docs/adr/0033-architecture-and-ontology-vocabulary.md"]
+    disposition: handed_off
+  - id: F-6
+    statement: "C2: the finalize_plan fog-to-workflow fallback (owner Q-1) is specified by accepted ADR 0025. Its reconcile, retire or keep choice is owner-reserved. In-repo callers are tests and instruction text only."
+    epistemic_status: OBSERVED
+    evidence_refs: ["scripts/workflow-runtime.py", "docs/adr/0025-workflow-orchestration-plan-lifecycle.md"]
+    disposition: handed_off
+  - id: F-7
+    statement: "The October 20 construction plan shows 36 unchecked boxes, but its Tasks 2-5 are implemented in source. The checklist is stale; the features are not missing."
+    epistemic_status: OBSERVED
+    evidence_refs: ["docs/superpowers/plans/2026-10-20-construction-first-semantic-stewardship.md", "src/sensemaking_skills/semantic_architecture/worktree_context.py"]
+    disposition: no_action
+open_questions:
+  - id: Q-1
+    question: "Authorize an ownership model for test files (accept ADR 0033 or give a direct contract decision), keep component-only ownership, or defer the pilot?"
+    source: owner_intent
+    blocking: true
+    options:
+      - option: Authorize an ownership model for test files
+        consequence: A multi-responsibility build becomes admissible (decision, validator, query, records, docs, tests). The pilot could then run on that goal.
+      - option: Keep component-only ownership
+        consequence: Test files stay reachable through verification records and component explain; file-level NOT_ASSESSED stays by design. No build.
+      - option: Defer the pilot
+        consequence: No pilot run. Sequential-autonomy evidence stays unqualified.
+    durable_ref: docs/normal-use/2026-11-09-sequential-autonomy-pilot-002.md
+  - id: Q-2
+    question: "Reconcile, retire or keep the finalize_plan fog-to-workflow fallback (owner Q-1 from 2026-10-25)?"
+    source: owner_intent
+    blocking: false
+    options:
+      - option: Reconcile the map to the four canonical fog types
+        consequence: Routing for ui_fog and docs_fog changes and needs its own responsibility and tests.
+      - option: Retire the map
+        consequence: Changes accepted ADR 0025 behaviour. The agent selects workflows as SKILL.md requires.
+      - option: Keep as is
+        consequence: The divergence stays recorded.
+    durable_ref: docs/normal-use/2026-11-09-sequential-autonomy-pilot-002.md
+stop:
+  disposition: OWNER_DECISION_REQUIRED
+  reason: "No candidate is both unprotected and multi-responsibility. C1 needs a protected ownership-model choice (Q-1). No participant was launched. Pilot stays unexecuted until the owner chooses."
+next:
+  warranted_responsibility: "Owner chooses C1 ownership model (Q-1) or defers; then re-warrant admission before any participant launch."
+  blocked_on: ["Q-1"]
+persistence: committed
+claim_ceiling: "Identity at pinned 53b667c1; scratch root parity-verified, user root not. Loaded using-sensemaking identified by text comparison only. No participant run, no pilot behaviour, no product change. Unit tests NOT_RUN."
+action_authorized_by_receipt: false
+immutable: true
