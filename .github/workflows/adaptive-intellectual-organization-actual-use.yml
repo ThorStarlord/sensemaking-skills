@@ -1,0 +1,73 @@
+name: Adaptive intellectual organization actual-use (execution branch only)
+on:
+  push:
+    branches: [claude/adaptive-intellectual-organization-execution-20261127]
+permissions:
+  contents: read
+jobs:
+  decision-context:
+    if: github.ref == 'refs/heads/claude/adaptive-intellectual-organization-execution-20261127'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      SOURCE: "ab180ba627e1a0f95406b74eb432268a7f13875f"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.SOURCE }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install exact source
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE"
+          python -m pip install -e .
+          test -z "$(git status --porcelain)"
+      - name: Recover live developmental landscape and method precedent before selection
+        run: |
+          set -euo pipefail
+          sensemaking-skills semantic workspace-query --repo . --ref "$SOURCE" \
+            --operation possibility-ecology --subject goal:domain-general-cognitive-development \
+            --method-question "How can prior method experience and developmental possibilities inform consequential construction choices and improve the organization of intellectual activity without unnecessary process?" \
+            --include-method-trials --method-limit 8 --limit 60 --json > "$RUNNER_TEMP/actual-landscape.json"
+          sensemaking-skills semantic workspace-query --repo . --ref "$SOURCE" \
+            --operation product-outline --include-candidates --limit 60 --json > "$RUNNER_TEMP/actual-outline.json"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          root = Path(os.environ["RUNNER_TEMP"])
+          for f in sorted(root.glob("actual-*.json")):
+              x = json.loads(f.read_text())
+              assert x["target_ref"] == os.environ["SOURCE"]
+              assert x["semantic_truth_established"] is False
+              assert x["action_authorized"] is False
+              print(f.name + " TOP_LEVEL=" + json.dumps(list(x)))
+              def walk(obj, path=""):
+                  if isinstance(obj, dict):
+                      if ("id" in obj or "claim_id" in obj) and not any(t in path for t in (".evidence_refs", ".relations")):
+                          short = {k:obj[k] for k in ("id","claim_id","kind","statement","status","disposition","realization","applicability_to_present_task","claim_ceiling","question","method","related_records_complete") if k in obj}
+                          if "attributes" in obj:
+                              a=obj["attributes"]
+                              short["attributes"]={k:a[k] for k in ("realization","disposition","value_hypothesis","revisit_when","scope","conditions","claim_ceiling") if k in a}
+                          if short:
+                              print("RECORD " + path + " " + json.dumps(short, ensure_ascii=True)[:1800])
+                      for k,v in obj.items():
+                          if k in ("claims","direct_candidates","descendant_candidates","candidates","method_candidates","trial_candidates","goals","possibilities","possibility_ecology","product_outline","method_context","trial_precedents","record","candidate","goal","decision","result"):
+                              walk(v,path+"."+k)
+                  elif isinstance(obj,list):
+                      for item in obj:
+                          walk(item,path+"[]")
+              walk(x)
+              print("TRUNCATION " + json.dumps({k:v for k,v in x.items() if "truncat" in k or "limit" in k})[:2400])
+          PY
+          test -z "$(git status --porcelain)"
+      - name: Retain actual query output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: actual-developmental-decision-context
+          path: ${{ runner.temp }}/actual-*.json
+          retention-days: 14
