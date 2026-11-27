@@ -130,10 +130,10 @@
       }
     },
     {
-      "id": "rel:integrated-decision-context-implemented-by-plane",
+      "id": "rel:integrated-decision-context-implemented-by-cli",
       "subject": "cap:integrated-developmental-decision-context",
       "predicate": "implemented_by",
-      "object": "component:semantic-knowledge-plane",
+      "object": "component:semantic-cli",
       "evidence_refs": [
         "file:src/sensemaking_skills/semantic_cli.py",
         "file:src/sensemaking_skills/workspace_knowledge.py",
@@ -141,7 +141,7 @@
       ],
       "epistemic_status": "declared",
       "attributes": {
-        "scope": "Actual read-only query composition in the existing semantic knowledge plane; not an implementation of autonomous judgment."
+        "scope": "Existing semantic CLI owns semantic_cli.py and workspace_knowledge.py; method_trial.py is supporting source evidence, not a claimed ownership extension. This is the read-only consumer, not autonomous judgment."
       }
     },
     {

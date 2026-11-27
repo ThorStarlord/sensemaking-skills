@@ -91,6 +91,11 @@ bounded actual observation. Link the concept to AMS, DTR, recall and Warrant /
 Choice, and the consumer to the ratified goal and existing semantic component.
 The links denote intended cooperation and actual documentary/mechanical
 implementation, not causal enabling or independent competence.
+A subsequent exact ownership read of architecture.json corrected the draft's
+implementation relation: the semantic CLI component owns both entry and
+workspace query modules; the semantic knowledge plane owns different
+underlying architecture modules. Use component:semantic-cli, not an
+inferred ownership or implementation edge to the underlying plane.
 
 Use the existing method producer with disposition `apply` and the original
 reviewed lesson ID, retaining one attributable observation. No new procedure,
