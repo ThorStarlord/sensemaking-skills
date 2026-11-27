@@ -435,8 +435,11 @@ evidence for your choice, never the choice. Load a specialist by its Skill
 name through the host's Skill mechanism when one exists, so its own
 `SKILL.md` contract (validation, CLI, templates) comes with it; reading one of
 its reference files directly skips that contract. Activity owners, when each is
-warranted, feedback moves and the return convention:
+warranted, feedback moves, decision-relevant influence, conflict reconciliation
+and adaptation of method compositions:
 `references/adaptive-skill-composition-v1.md`.
+Do not equate specialist completion with intellectual integration. Interpret
+what each consequential result changes or justifiably reaffirms.
 
 ### Inquiry orientation and global-local scope integrity
 
@@ -470,7 +473,7 @@ fitness guidance. Do not add a checkpoint to routine, already well-scoped work.
 
 **Cognitive safeguards (conditional):** At a material responsibility selection,
 commitment or stop, challenge signs of premature convergence, goal/responsibility
-drift, defensive minimalism, proxy capture or premature local closure. Compare
+drift, strategic underreach, proxy capture or premature local closure. Compare
 the delegated outcome, selected scope, credible alternatives and omission cost;
 distinguish a blocked responsibility from a blocked mission. An acknowledged
 remaining goal must affect continuation when warranted; a small repair or a
