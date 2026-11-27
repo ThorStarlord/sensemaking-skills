@@ -1,6 +1,6 @@
 ---
 name: using-sensemaking
-description: Use when someone wants to understand a repository (what the product is, its domain and architecture), build durable source-grounded knowledge about it that later sessions can reuse, explore what it could become, or decide which directions are warranted; use Adaptive Metareasoning System (AMS) to reassess a consequential question or reasoning method and select when to act, inquire, challenge, explore, verify, escalate or stop; also the entrypoint for resuming earlier Sensemaking work and for a broad delegated repository mission. It establishes or reuses an ontology of the repository first, explores possibilities before converging, composes the specialized Sensemaking Skills, and selects or recommends a direction (or justifies none). Implementation is an optional downstream step that needs its own authority. Works in sparse or well-documented repositories; the coding agent owns judgment.
+description: Use for sustained long-horizon adaptive strategic development or when someone wants to understand a repository (what the product is, its domain and architecture), build durable source-grounded knowledge about it that later sessions can reuse, explore what it could become, or decide which directions are warranted; use Adaptive Metareasoning System (AMS) to reassess a consequential question or reasoning method and select when to act, inquire, challenge, explore, verify, escalate or stop; also the entrypoint for resuming earlier Sensemaking work and for a broad delegated repository mission. It establishes or reuses an ontology of the repository first, explores possibilities before converging, composes the specialized Sensemaking Skills, and selects or recommends a direction (or justifies none). Implementation is an optional downstream step that needs its own authority. Works in sparse or well-documented repositories; the coding agent owns judgment.
 ---
 
 # Using Sensemaking: Adaptive Reasoning Controller
@@ -45,6 +45,8 @@ only a repository is supplied, you establish what it is and reason about what
 it could become.** Everything below works after this Skill loads, even when the
 target repository has no `CLAUDE.md`, `AGENTS.md`, `CONTEXT.md`, Grounding Pack,
 knowledge index or Sensemaking CLI.
+
+**Sustained strategic development.** When the user delegates long-horizon product development or repeated responsibilities in a sustained engagement, read `references/long-horizon-strategic-development-v1.md`. Develop the product and selectively develop persistent understanding and attributable intellectual methods through consequential experience. Maintain adequate semantic knowledge across sessions under explicit knowledge-edit authority; do not treat repeated local economy as a reason to omit consequential stewardship. Preserve the direct path for narrow tasks and the separate read-only entry.
 
 **Understanding is a complete outcome.** A source-grounded semantic model, a
 possibility landscape, an architecture synthesis, a strategic selection, a

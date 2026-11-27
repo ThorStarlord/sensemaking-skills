@@ -343,6 +343,12 @@ Next: <reconcile, continue, stop or owner-reserved decision>
   Add a durable note, ADR or compact knowledge pack only when later
   collaborators would otherwise lose decision-changing understanding.
   `NO_MODEL_CHANGE` and no new files are valid outcomes.
+- For sustained product development, consult `long-horizon-strategic-development-v1.md`.
+  The absence of a reviewed knowledge surface across substantial repeated work
+  warrants consideration of incremental BOOTSTRAP under explicit knowledge-edit
+  authority; do not infer that ordinary PR history permanently substitutes for
+  an adequate semantic foundation. Distinguish unassessed/withheld stewardship
+  from a justified NO_MODEL_CHANGE.
 - Check actual PR/commit/merge status when claiming integration, and separate
   open, pending, failing and completed verification results.
 - A bounded task may finish here. For **multiple independent responsibilities

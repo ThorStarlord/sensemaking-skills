@@ -22,7 +22,8 @@ For an actual `sensemaking-skills` increment, read **selectively**:
   `docs/product-strategy.md`: product goals, intended benefit and
   explicit epistemic ceilings.
 - Accepted ADR 0029: scope, non-goals and agent-owned semantic control.
-  Accepted ADR 0031: the Persistent Semantic Stewardship destination.
+  Accepted ADR 0038: the Long-Horizon Adaptive Strategic Development purpose.
+  Accepted ADR 0031: the persistent semantic stewardship foundation.
   Other accepted owner decisions and authority-bearing sources when
   relevant. The two sources used by PR #599 are **not** a future
   two-document authority allowlist.

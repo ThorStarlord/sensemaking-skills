@@ -2,7 +2,7 @@
 
 ## Current product definition
 
-The **owner-ratified long-term product purpose** is a **domain-general cognitive substrate for developing persistent, reflective and increasingly capable intelligent agents** ([ADR 0037](docs/adr/0037-domain-general-cognitive-development.md)). The cognitive core gives equal conceptual standing to agents across disciplines. Cognitive continuity, understanding, possibility discovery, reflective judgment, metareasoning and learning are intended to interact so experience improves later decisions. The active host agent remains the semantic controller; independent value judgment does not create external authority.
+The **owner-ratified defining purpose** is **Long-Horizon Adaptive Strategic Development** ([ADR 0038](docs/adr/0038-long-horizon-adaptive-strategic-development.md)): sustained valuable development through persistent understanding, prospective discovery, reflective strategic judgment, adaptive metareasoning and learning from consequential experience. Sensemaking remains a domain-general cognitive-development substrate (ADR 0037), with reciprocal domain and cognitive development as its governing value-creation model. Software product development is the flagship practical priority. The active host agent remains the semantic controller; independent value judgment does not create external authority.
 
 **Current operational specialization:** repository understanding and prospective reasoning (ADR 0034), persistent source-grounded semantic knowledge (ADR 0031), continuous learning (ADR 0035), adaptive metareasoning (ADR 0036) and agent-native engineering support bounded by ADR 0029. Domain-general utility, cross-host identity, integration advantage and longitudinal transfer are **NOT QUALIFIED**. The broader purpose does not authorize a new runtime, shared policy self-editing, publication or external action.
 
@@ -47,7 +47,7 @@ New evidence may warrant a responsibility conventionally considered earlier, lat
 
 The Strategic Repository Evolution loop operates above bounded Campaign work. It evaluates product/repository capability state against current strategy, maintains the Strategic Frontier, states the **Strategic Decision to Support**, qualitatively compares credible boundaries, selects or declines one boundary/responsibility, delegates bounded work downward, and reassesses after qualified results. It is not a roadmap processor and does not automatically rank work.
 
-The current **implemented engineering boundary** remains ADR 0029: agent-native software-repository reasoning with optional Campaign/continuation machinery while the active agent owns semantic judgment. **ADR 0037** defines the new intended product purpose; it does not silently change that implemented boundary. ADR 0031 remains a knowledge foundation, ADR 0034 an engineering specialization, and ADRs 0035/0036 intended learning and metareasoning capabilities. Their current evidence and authority limits remain intact.
+The current **implemented engineering boundary** remains ADR 0029: agent-native software-repository reasoning with optional Campaign/continuation machinery while the active agent owns semantic judgment. **ADR 0038** defines the revised intended product purpose, preserving ADR 0037's domain-general foundation; it does not silently change that implemented boundary. ADR 0031 remains a knowledge foundation, ADR 0034 an engineering specialization, and ADRs 0035/0036 intended learning and metareasoning capabilities. Their current evidence and authority limits remain intact.
 
 The knowledge plane preserves **prescriptive** authority, **descriptive**
 source/runtime observations and **epistemic** inferences separately.
@@ -59,7 +59,9 @@ See [ADR 0031](docs/adr/0031-persistent-semantic-stewardship.md) and
 [the development plan](docs/persistent-semantic-stewardship-plan.md).
 
 See:
-- [docs/adr/0037-domain-general-cognitive-development.md](docs/adr/0037-domain-general-cognitive-development.md) — ratified product-purpose revision
+- [docs/adr/0038-long-horizon-adaptive-strategic-development.md](docs/adr/0038-long-horizon-adaptive-strategic-development.md) — current ratified product-purpose revision
+- [skills/using-sensemaking/references/long-horizon-strategic-development-v1.md](skills/using-sensemaking/references/long-horizon-strategic-development-v1.md) — portable integrated strategic development lifecycle
+- [docs/adr/0037-domain-general-cognitive-development.md](docs/adr/0037-domain-general-cognitive-development.md) — domain-general foundation
 - [docs/product-strategy.md](docs/product-strategy.md) — Level-4 product thesis and strategic authority
 - [docs/adr/0031-persistent-semantic-stewardship.md](docs/adr/0031-persistent-semantic-stewardship.md) — owner-selected persistent knowledge platform direction
 - [docs/persistent-semantic-stewardship-plan.md](docs/persistent-semantic-stewardship-plan.md) — detailed staged knowledge-model and long-term learning construction

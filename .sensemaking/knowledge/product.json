@@ -4,14 +4,19 @@
     {
       "id": "goal:domain-general-cognitive-development",
       "kind": "goal",
-      "statement": "Sensemaking's owner-ratified fundamental purpose is domain-general cognitive development: support increasingly capable and independent agents through persistent situated understanding, prospective opportunity discovery, reflective value formation, adaptive metareasoning, experience-grounded method adaptation and cognitive continuity. The developmental benefit and comparative improvement remain unqualified.",
+      "statement": "Sensemaking's owner-ratified purpose is Long-Horizon Adaptive Strategic Development: reciprocal domain and cognitive development through sustained valuable activity, persistent understanding, prospective discovery, reflective strategic judgment, adaptive metareasoning and experience-grounded learning. Software product development is the flagship practical priority; the domain-general cognitive-development foundation is preserved. Integrated benefit and comparative improvement remain unqualified.",
       "authority_kind": "policy",
-      "authority_ref": "docs/adr/0037-domain-general-cognitive-development.md",
-      "evidence_refs": ["file:docs/adr/0037-domain-general-cognitive-development.md", "file:docs/product-strategy.md", "file:artifacts/history/2026-11-13-domain-general-cognitive-thesis-reconciliation.md"],
+      "authority_ref": "docs/adr/0038-long-horizon-adaptive-strategic-development.md",
+      "evidence_refs": [
+        "file:docs/adr/0038-long-horizon-adaptive-strategic-development.md",
+        "file:docs/adr/0037-domain-general-cognitive-development.md",
+        "file:docs/product-strategy.md",
+        "file:artifacts/history/2026-11-27-long-horizon-strategic-development-reconciliation.md"
+      ],
       "epistemic_status": "declared",
       "attributes": {
-        "scope": "Level-4 fundamental purpose across intended agent domains; existing stewardship goals remain distinct engineering-specialization goals.",
-        "decision_changed": "Evaluate development responsibilities by contribution to later consequential judgment, not merely source-knowledge accumulation.",
+        "scope": "Level-4 integrated purpose across intended agent domains, software product development flagship; preserve existing engineering-specialization goals and domain-general cognitive foundation.",
+        "decision_changed": "Prefer integrated, sustained strategic development with meaningful product value and consequential semantic/method continuity over isolated capability or artifact accumulation.",
         "claim_ceiling": "Ratified product intent, not demonstrated cognitive development, independent comparative benefit or cross-domain transfer."
       }
     },
@@ -159,9 +164,9 @@
       "subject": "goal:compounding-product-knowledge",
       "predicate": "serves_goal",
       "object": "goal:domain-general-cognitive-development",
-      "evidence_refs": ["file:docs/adr/0037-domain-general-cognitive-development.md", "file:artifacts/history/2026-11-13-domain-general-cognitive-thesis-reconciliation.md"],
+      "evidence_refs": ["file:docs/adr/0037-domain-general-cognitive-development.md", "file:artifacts/history/2026-11-13-domain-general-cognitive-thesis-reconciliation.md", "file:docs/adr/0038-long-horizon-adaptive-strategic-development.md"],
       "attributes": {
-        "scope": "Reviewed repository knowledge is a useful engineering-specialization foundation, not the fundamental goal or proof of cognitive improvement."
+        "scope": "Reviewed repository knowledge is an engineering-specialization foundation of reciprocal development; not proof of cognitive improvement."
       }
     },
     {

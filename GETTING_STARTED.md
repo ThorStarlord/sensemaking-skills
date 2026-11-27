@@ -115,6 +115,16 @@ contract and `examples/decision-observability-example.md` for an illustrative
 report. Host telemetry varies and self-reported explanations are not proof of
 hidden reasoning or causation.
 
+## Long-Horizon Adaptive Strategic Development
+
+For sustained product development, use the single public `using-sensemaking` entrypoint. A practical prompt is:
+
+> Use using-sensemaking to develop this repository toward its governing product purpose across successive responsibilities. Recover and maintain adequate source-grounded semantic knowledge, explore valuable future directions when open, select and execute the next worthwhile authorized responsibility, adapt your intellectual methods, and reconcile consequential experience. I authorize reviewed knowledge edits within this repository under its existing governance. Continue within the explicitly delegated implementation and integration authority; stop at a genuine boundary.
+
+State code-write, commit, push and merge permission separately when intended. The example does not itself grant authority, and a read-only repository request stays read-only. For a terminal outcome specify what makes it complete.
+
+The [integrated lifecycle](skills/using-sensemaking/references/long-horizon-strategic-development-v1.md) explains exactly which existing knowledge, strategic and receipt artifacts are created, consumed and revised, plus fallback when a CLI is unavailable. First sustained engagement establishes/reuses adequate semantic knowledge; subsequent engagements recover relevant knowledge before consequential decisions, re-warrant direction and reconcile material changes. Keep the work lightweight on narrow tasks, but do not repeatedly omit stewardship across sustained development. Do not require a new strategic analysis, new ontology record or learning artifact per task. Actual agent-method improvement and product outcomes are separate evidence claims.
+
 ## Choose how much Sensemaking you need
 
 You do not need to create a Campaign for every task. The coding agent should use the lightest process that preserves the required engineering invariants.

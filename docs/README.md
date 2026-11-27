@@ -9,7 +9,7 @@ and the sections marked **Current** below. A document that opens with a
 `HISTORICAL` or `SUPERSEDED` banner (many pre-ADR-0013 files do) is preserved
 evidence, not current guidance. Where two documents disagree,
 **source-specific authority matters**: ADR 0029 governs the external product
-boundary for current engineering implementation; ADR 0037 governs the new long-term cognitive-development purpose, while ADR 0031 remains the knowledge-plane foundation;
+boundary for current engineering implementation; ADR 0038 governs Long-Horizon Adaptive Strategic Development, preserving ADR 0037's domain-general foundation, while ADR 0031 remains the knowledge-plane foundation;
 ADR 0030 governs compact Grounding Packs; ADR 0013 and the mechanical contracts
 govern agent-native control and existing validation behavior.
 
@@ -21,9 +21,10 @@ A fresh maintainer or agent should normally need only this spine:
 | --- | --- |
 | Human use | `../GETTING_STARTED.md` |
 | Agent operating doctrine | `../skills/using-sensemaking/SKILL.md` |
+| Integrated sustained development | [Long-Horizon Adaptive Strategic Development](../skills/using-sensemaking/references/long-horizon-strategic-development-v1.md) |
 | Strategic one-prompt continuation | `../skills/strategic-sensemaking-loop/SKILL.md` |
 | Current repository state | `../STATUS.md` |
-| Product/authority model | [`product-strategy.md`](product-strategy.md), [`adr/0029-current-product-boundary.md`](adr/0029-current-product-boundary.md), [`adr/0031-persistent-semantic-stewardship.md`](adr/0031-persistent-semantic-stewardship.md), [`adr/0037-domain-general-cognitive-development.md`](adr/0037-domain-general-cognitive-development.md) |
+| Product/authority model | [`product-strategy.md`](product-strategy.md), [`adr/0029-current-product-boundary.md`](adr/0029-current-product-boundary.md), [`adr/0031-persistent-semantic-stewardship.md`](adr/0031-persistent-semantic-stewardship.md), [`adr/0038-long-horizon-adaptive-strategic-development.md`](adr/0038-long-horizon-adaptive-strategic-development.md) |
 | Long-term semantic knowledge architecture and plan | [`persistent-semantic-stewardship-plan.md`](persistent-semantic-stewardship-plan.md) (implementation roadmap, not shipped functionality) |
 | Operations / qualification | [`operations-runbook.md`](operations-runbook.md) |
 | Commands | [`cli-reference.md`](cli-reference.md) |

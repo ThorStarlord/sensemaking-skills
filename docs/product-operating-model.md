@@ -1,7 +1,7 @@
 # Sensemaking Skills Product Operating Model
 
 **Status:** current operating model  
-**Authority:** product strategy plus ADRs 0013/0029; ADR 0031 is the owner-selected long-term knowledge direction  
+**Authority:** product strategy and ADR 0038 govern the intended developmental purpose; ADRs 0013/0029 govern control and current external scope; ADR 0031 is the knowledge foundation  
 **Scope:** how value is delivered and who owns each reasoning/control boundary
 
 This is a compact value-stream and responsibility map. The more detailed
@@ -86,7 +86,8 @@ responsibility conventionally considered earlier, later, or sideways.
 ## Selected long-horizon knowledge loop (ADR 0031)
 
 The bounded control process above is **not** the total product objective.
-The owner selected a persistent semantic stewardship destination:
+ADR 0031 established persistent semantic stewardship as a foundational specialization;
+ADR 0038 places it within reciprocal product and cognitive development. It supplies
 versioned, typed, queryable understanding of the product's goals, domain,
 capabilities, architecture, constraints, decisions, source evidence and history.
 
@@ -105,8 +106,9 @@ what to do next. Good tests and reviews provide indispensable evidence but
 are not the ultimate success metric. Durable learning is evidenced when
 **later episodes** correctly reuse or revise earlier product understanding.
 
-This is a **selected long-term destination, not a completed or independently
-qualified platform**. Its S1-S4 foundation now includes Git-reviewed semantic
+This is a **selected foundation, not a completed or independently
+qualified platform**. For the sustained development experience, see the
+[portable integrated lifecycle](../skills/using-sensemaking/references/long-horizon-strategic-development-v1.md). Its S1-S4 foundation now includes Git-reviewed semantic
 records and a rebuildable SQLite query index; later-session decision value
 and comparative improvement remain unproven. The existing Grounding Pack
 remains a compact retrieval entry point under ADR 0030. For the continuing

@@ -2,7 +2,7 @@
 
 **Status:** Owner-endorsed operating guidance for the current `sensemaking-skills` CONSTRUCTION phase (2026-10-26).  
 **Scope:** How an active coding agent or delegated builder chooses, constructs, integrates, learns from, and continues ordinary repository responsibilities.  
-**Authority:** [product strategy](product-strategy.md) and [ADR 0031](adr/0031-persistent-semantic-stewardship.md) govern the product destination; [ADR 0029](adr/0029-current-product-boundary.md) governs the external boundary; [STATUS.md](../STATUS.md) and current reconciled Level-3 artifacts govern repository direction; [CLAUDE.md](../CLAUDE.md) governs the current local verification/merge discipline. This guide creates no additional authority.
+**Authority:** [product strategy](product-strategy.md) and [ADR 0038](adr/0038-long-horizon-adaptive-strategic-development.md) govern the product destination; [ADR 0029](adr/0029-current-product-boundary.md) governs the external boundary; [STATUS.md](../STATUS.md) and current reconciled Level-3 artifacts govern repository direction; [CLAUDE.md](../CLAUDE.md) governs the current local verification/merge discipline. This guide creates no additional authority.
 
 **Working label:** *Value-Directed Continuous Construction* is a descriptive name for the owner's working preference, not a standardized methodology, another strategic level, a registered Skill, or an executable planner.
 
@@ -10,7 +10,7 @@
 
 ## 1. Build toward product value, not activity volume
 
-The selected Level-4 destination is **Persistent Semantic Stewardship**: source-grounded, typed, queryable knowledge of product intent, domain, capabilities, architecture, evidence, decisions, and history that later coding agents can reuse and challenge. ADR 0031 selects that destination; continuous product-grounded development is its operating/learning loop, while lean decision assistance remains appropriate for simple tasks.
+The selected Level-4 purpose is **Long-Horizon Adaptive Strategic Development** (ADR 0038): reciprocal domain and cognitive development through sustained valuable work. Persistent Semantic Stewardship (ADR 0031) is a foundational specialization. The [portable integrated lifecycle](../skills/using-sensemaking/references/long-horizon-strategic-development-v1.md) connects durable understanding, strategic selection, AMS and SCL without requiring every local task to run a full strategic procedure.
 
 The intended product outcome is twofold:
 
@@ -25,15 +25,15 @@ Read **selectively**, with current source identity and explicit authority:
 
 | Need | Start here | Governing role |
 | --- | --- | --- |
-| Product definition and non-goals | [CONTEXT.md](../CONTEXT.md), [product-strategy.md](product-strategy.md), ADRs [0031](adr/0031-persistent-semantic-stewardship.md) and [0029](adr/0029-current-product-boundary.md) | Level 4 purpose and external boundary |
-| Current development direction | [STATUS.md](../STATUS.md), [persistent stewardship plan](persistent-semantic-stewardship-plan.md), the current [strategic analysis](../artifacts/history/2026-10-23-strategic-repository-analysis.md) and [reconciliation](../artifacts/history/2026-10-24-strategic-reconciliation.md) | Level 3 compass and historical decision lineage; check for later reconciliations |
+| Product definition and non-goals | [CONTEXT.md](../CONTEXT.md), [product-strategy.md](product-strategy.md), ADRs [0038](adr/0038-long-horizon-adaptive-strategic-development.md) and [0029](adr/0029-current-product-boundary.md) | Level 4 purpose and external boundary |
+| Current development direction | [STATUS.md](../STATUS.md), [persistent stewardship plan](persistent-semantic-stewardship-plan.md), the [current reconciliation](../artifacts/history/2026-11-27-long-horizon-strategic-development-reconciliation.md) and its linked prior analyses | Level 3 compass and historical decision lineage; check for later reconciliations |
 | Working authority and verification | [AGENTS.md](../AGENTS.md), [CLAUDE.md](../CLAUDE.md), applicable ADRs, actual GitHub protections/CI | What the agent may change, merge, or claim |
 | Semantic and architecture context | [Semantic Architecture](semantic-architecture/README.md), [ontology](semantic-architecture/ontology.md), [relations and epistemics](semantic-architecture/relations-and-epistemics.md), and reviewed `.sensemaking/knowledge/*.json` | Meanings, constraints, owners, relationships, and source-linked rationale; not action authority |
 | Implementation reality | Current code, consumers, contracts, Git history, observed runs and CI | What exists and what a change could affect |
 
 The root `roadmap.md` and `goal.md` explicitly mark themselves **historical/superseded**. Do not promote either to the current construction backlog. A plan is a **compass**, not a proof of correctness or an instruction to implement every listed item. Favor current, semantically applicable decisions over file recency or a familiar filename.
 
-The current Level-3 PATH-1 direction is to **accrete useful product knowledge through genuine engineering responsibilities**. A new prompt, a completed earlier task, ordinary code drift, or a visible issue does not automatically reopen the Level-3 strategic analysis.
+The [current Level-3 reconciliation](../artifacts/history/2026-11-27-long-horizon-strategic-development-reconciliation.md) retains PATH-1's useful semantic accretion through genuine engineering work as part of the integrated sustained-development experience. A new prompt, a completed earlier task, ordinary code drift, or a visible issue does not automatically reopen the Level-3 strategic analysis.
 
 ## 3. Architect and Builder are complementary responsibilities
 

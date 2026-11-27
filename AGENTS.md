@@ -28,7 +28,7 @@
 
 ## Current product authority
 
-[ADR 0037](docs/adr/0037-domain-general-cognitive-development.md) ratifies domain-general cognitive development as the long-term intended product purpose. Engineering implementation and external permissions remain bounded by ADRs 0029 and 0034; the broader product goal does not establish a new runtime, automatic authority or empirically demonstrated cognitive transfer. Do not confuse documentation/knowledge volume with improved cognition.
+[ADR 0038](docs/adr/0038-long-horizon-adaptive-strategic-development.md) ratifies Long-Horizon Adaptive Strategic Development and reciprocal domain/cognitive development, with software products the flagship practical priority and ADR 0037's domain-general foundation retained. ADRs 0029 and 0034 still govern engineering implementation and external permissions. Read the [integrated lifecycle](skills/using-sensemaking/references/long-horizon-strategic-development-v1.md) for sustained work. Maintain adequate semantic understanding and consider attributable method learning proportionately, with explicit knowledge-edit authority; do not force a full procedure on local tasks or claim empirical benefit from artifact volume.
 
 ## Current construction orientation
 

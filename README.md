@@ -3,7 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 
-**Intended product direction (owner-ratified 2026-11-13):** a **domain-general cognitive substrate for the continuous development of intelligent agents**. Persistent cognitive continuity, source-grounded understanding, possibility discovery, reflective value formation, adaptive metareasoning and experience-grounded learning are intended to improve agents' later judgment across disciplines. This long-term cognitive benefit and cross-domain transfer have **not** been demonstrated. See [ADR 0037](docs/adr/0037-domain-general-cognitive-development.md) and the [current product strategy](docs/product-strategy.md).
+**Intended product direction (owner-ratified 2026-11-27):** **Long-Horizon Adaptive Strategic Development.** Sensemaking is a domain-general cognitive-development substrate enabling agents to develop valuable products and other endeavors through persistent understanding, prospective discovery, reflective strategic judgment, adaptive metareasoning and learning from consequential experience. Software product development is the flagship practical application. Reciprocal product and cognitive development is the intended outcome, not a demonstrated comparative or longitudinal benefit. See [ADR 0038](docs/adr/0038-long-horizon-adaptive-strategic-development.md) and the [current product strategy](docs/product-strategy.md).
 
 **What this repository implements today:** an ontology-grounded repository understanding and prospective reasoning specialization for coding agents. Its single public entrypoint is [using-sensemaking](skills/using-sensemaking/SKILL.md), with reviewed semantic knowledge, source-revision queries, Skills and optional separately authorized engineering work. ADRs [0029](docs/adr/0029-current-product-boundary.md), [0031](docs/adr/0031-persistent-semantic-stewardship.md) and [0034](docs/adr/0034-ontology-first-adaptive-sensemaking.md) still govern those implemented responsibilities within their evidence and authority limits. Equal conceptual standing for non-coding agents is an intended product principle, not a claim of current equal implementation maturity.
 
@@ -22,6 +22,7 @@ catalog.
 
 | Need | Start here |
 | --- | --- |
+| **Delegate sustained strategic product development** | [Integrated long-horizon development](GETTING_STARTED.md#long-horizon-adaptive-strategic-development), through the single `using-sensemaking` entrypoint |
 | Human installation / first use | [`GETTING_STARTED.md`](GETTING_STARTED.md) |
 | Prepare an installed-Skill handoff for a target repository | `sensemaking-skills handoff --repo <target>`; see [`GETTING_STARTED.md`](GETTING_STARTED.md#prepare-a-first-use-handoff) |
 | **Learn from engineering episodes**: recover relevant historical lessons and revisit them as the next decision changes | [Sensemaking Continuous Learning (SCL)](docs/adr/0035-sensemaking-continuous-learning.md) and the [first-use lesson recall](GETTING_STARTED.md#learn-from-prior-engineering-episodes-scl) |
