@@ -11,6 +11,7 @@ on:
       - 'src/sensemaking_skills/semantic_architecture/**'
       - 'src/sensemaking_skills/semantic_cli.py'
       - 'src/sensemaking_skills/method_adaptation.py'
+      - 'src/sensemaking_skills/method_trial.py'
       - 'src/sensemaking_skills/decision_review.py'
       - 'src/sensemaking_skills/workspace_knowledge.py'
       - 'src/sensemaking_skills/workflow_availability.py'
@@ -216,6 +217,73 @@ jobs:
           assert precedent["recall_conditions"]["scope"] != "NOT_RECORDED"
           assert result["method_precedents"]["action_authorized"] is False
           print("Product-outline method precedents are consumer-readable; no selection.")
+          PY
+      - name: Compose retained trial precedents with actual developmental context (mechanics only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          REF="$(git rev-parse HEAD)"
+          QUESTION="Should the method-trial capability add a list command or is exact-ID show sufficient?"
+          sensemaking-skills semantic method context --repo . --ref "$REF" \
+            --question "$QUESTION" --include-trials --json \
+            > "$RUNNER_TEMP/method-trial-context.json"
+          sensemaking-skills semantic method context --repo . --ref "$REF" \
+            --question "$QUESTION" --json > "$RUNNER_TEMP/method-context-default.json"
+          sensemaking-skills semantic workspace-query --repo . --ref "$REF" \
+            --operation possibility-ecology --subject goal:domain-general-cognitive-development \
+            --method-question "$QUESTION" --include-method-trials --json \
+            > "$RUNNER_TEMP/ecology-method-trials.json"
+          sensemaking-skills semantic workspace-query --repo . --ref "$REF" \
+            --operation product-outline --include-candidates \
+            --method-question "method-trial repair close chronology anchoring fail-closed inspection" \
+            --include-method-trials --json > "$RUNNER_TEMP/product-method-trials.json"
+          if sensemaking-skills semantic workspace-query --repo . --ref "$REF" \
+            --operation product-outline --include-method-trials --json; then
+            echo "trial retrieval must require a method question" >&2
+            exit 1
+          fi
+          REF="$REF" python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          def read(name):
+              return json.loads((Path(os.environ["RUNNER_TEMP"]) / name).read_text(encoding="utf-8"))
+
+          def candidates(context):
+              assert context["target_ref"] == os.environ["REF"]
+              assert context["semantic_truth_established"] is False
+              assert context["action_authorized"] is False
+              trials = context["trial_precedents"]
+              assert trials["target_ref"] == context["target_ref"]
+              assert trials["method_effect_established"] is False
+              return {item["id"]: item for item in trials["trial_candidates"]}
+
+          direct = read("method-trial-context.json")
+          legacy = candidates(direct)["decision:method-trial-discovery-surface"]
+          assert legacy["applicability_to_present_task"] == "NOT_ESTABLISHED"
+          assert legacy["projection_status"] == "PROJECTED"
+          trial = legacy["trial"]
+          assert trial["trial_decision"]["prior_lesson_id"] == "NONE"
+          assert trial["closed"] is True
+          assert trial["trial_digest_match"] == "NOT_ASSESSED"
+          assert trial["predecision_commitment_preserved"] is False
+          assert trial["result"]["id"] == "observation:method-trial-discovery-surface-result"
+          assert "trial_precedents" not in read("method-context-default.json")
+          ecology = read("ecology-method-trials.json")
+          assert ecology["target_ref"] == os.environ["REF"]
+          assert ecology["possibility_ecology"]["focus_kind"] == "goal"
+          assert candidates(ecology["method_precedents"])["decision:method-trial-discovery-surface"] == legacy
+          outline = read("product-method-trials.json")
+          assert outline["target_ref"] == os.environ["REF"]
+          assert outline["product_outline"]["goals"]
+          anchored = candidates(outline["method_precedents"])["decision:method-trial-anchored-close"]["trial"]
+          assert anchored["trial_chronology"] == "VERIFIED"
+          assert anchored["trial_digest_match"] == "MATCH"
+          assert anchored["result_digest_match"] == "MATCH"
+          assert anchored["predecision_commitment_preserved"] is True
+          assert anchored["method_effect_established"] is False
+          print("Existing unlinked and anchored trial precedents are accessible in source-pinned developmental views; no cognitive effect claim.")
           PY
       - name: Exercise method source-path and draft producer contracts (no learning claim)
         shell: bash
