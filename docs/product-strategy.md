@@ -1,7 +1,7 @@
 # Sensemaking Skills Product Strategy
 
 **Status:** owner-ratified intended product thesis and strategic authority; empirical claims retain source evidence ceilings  
-**Updated:** 2026-11-13  
+**Updated:** 2026-11-27  
 **Control level:** Level 4 — Product Thesis / Strategy Revision  
 **Scope:** public repository strategy; empirical claims retain the ceilings of their source evidence
 
@@ -25,15 +25,16 @@ The 2026-09-11 Product Boundary Reconciliation v1 is an owner-ratified Level-4
 
 ## 1. Product purpose
 
-Sensemaking's **owner-ratified fundamental purpose** is to serve as a **domain-general cognitive substrate for the continuous development of intelligent agents**. Its primary users are intelligent agents across software engineering, scientific research, creative practice, education and other domains, with equal conceptual standing even when current implementations differ.
+Sensemaking's **owner-ratified defining purpose** is **Long-Horizon Adaptive Strategic Development**: the sustained development of a product or other worthwhile endeavor through persistent understanding, prospective discovery, reflective strategic judgment, adaptive intellectual activity and learning from consequential experience.
 
-Sensemaking intends to enable **persistent, reflective, increasingly capable and independent cognitive agency** through the functional integration of knowledge, prospective discovery, reflective value formation, adaptive metareasoning, learning and cognitive continuity. An active host agent, not a separate Sensemaking agent or automatic planner, owns semantic judgment. Independently forming a value judgment does not grant authority over external resources or protected commitments.
+Sensemaking is a **domain-general cognitive-development substrate** enabling agents to pursue that development autonomously within delegated authority. Its defining value-creation model is **reciprocal domain and cognitive development**: valuable work develops the domain and the agent's attributable understanding, judgment and methods; accumulated intellectual experience should in turn improve later work. Software product development is the flagship construction and positioning priority; other disciplines retain equal conceptual standing in the cognitive core.
 
-**The intended differentiator is integrated cognitive development:** retained experience should improve later judgment and intellectual method selection. Co-located knowledge records or separate Skills alone do not establish this outcome. The selected destination does not protect any particular schema or runtime from revision.
+**Practical promise:** delegate the development of a product, not merely the execution of its tasks. Strategy-guided and strategy-generating development are both valid within authority. Long horizon concerns future consequences and capabilities as well as continuity across sessions, not simply elapsed time or fixed-roadmap execution.
 
-**Current implementation:** ontology-grounded software-repository understanding and prospective reasoning through the single public using-sensemaking Skill, with persistent semantic stewardship and optional separately authorized engineering construction. These are valuable specialized foundations, not a finished or qualified domain-general system.
+**Current implementation:** ontology-grounded repository understanding, prospective reasoning, semantic stewardship and separately authorized engineering construction through one agent-native controller. The intended integrated experience and cognitive benefit are not established merely by the availability of these components.
 
-[ADR 0037](adr/0037-domain-general-cognitive-development.md) records the explicit 2026-11-13 Level-4 REVISE. General cognitive improvement, functional integration advantage and cross-domain transfer remain NOT QUALIFIED.
+[ADR 0038](adr/0038-long-horizon-adaptive-strategic-development.md) records the 2026-11-27 Level-4 REVISE; [ADR 0037](adr/0037-domain-general-cognitive-development.md) remains the compatible domain-general foundation. [The integrated portable lifecycle](../skills/using-sensemaking/references/long-horizon-strategic-development-v1.md) describes ordinary sustained use. General cognitive improvement, comparative benefit, longitudinal transfer and cross-host continuity remain NOT QUALIFIED.
+
 
 ### Level-4 extension 2026-11-12: Adaptive Metareasoning System (ADR 0036)
 
@@ -156,23 +157,23 @@ This is the intended behavior, **not** established comparative effectiveness.
 
 ## 2. Problem
 
-Capable agents often execute local tasks without reliably retaining their cognitive development, noticing unasked questions, revising questionable purposes, selecting suitable reasoning methods or improving subsequent judgment from experience. External memory and separate Skills may help without demonstrating generalizable learning. Domain evidence, values and authority also differ; indiscriminate transfer can be harmful. Repository-specific missing-question, stale-evidence and continuity failures remain important applications of this broader problem.
+Capable agents often execute local tasks without sustaining coherent strategic development across sessions: governing intent, product understanding, rationale, future possibilities and methodological experience become fragmented. Local procedural economy can become long-term cognitive impoverishment when repeated omission of consequential stewardship increases rediscovery or strategic drift. Capable agents may also fail to notice unasked questions, revise questionable purposes, select suitable reasoning methods or improve subsequent judgment from experience. External memory and separate Skills may help without demonstrating generalizable learning. Domain evidence, values and authority also differ; indiscriminate transfer can be harmful. Repository-specific missing-question, stale-evidence and continuity failures remain important applications of this broader problem.
 
 ## 3. Primary users and anti-persona
 
-**Primary operational users:** intelligent agents across all domains, with equal standing in the shared cognitive capabilities. Coding agents are the best-developed current specialization, not a privileged universal user. **Secondary users:** the people and organizations deploying, authorizing and evaluating these agents. Owner intent is context and legitimate authority, not a prohibition on critically examining objectives.
+**Primary operational users:** intelligent agents across all domains, with equal standing in the shared cognitive capabilities. Coding agents engaged in sustained software product development are the flagship practical beneficiaries and current construction priority, not a privileged universal user. **Secondary users:** the people and organizations deploying, authorizing and evaluating these agents. Owner intent is context and legitimate authority, not a prohibition on critically examining objectives.
 
 **Anti-persona:** a narrow, mechanically obvious task whose correct execution needs no consequential uncertainty assessment, cognitive adaptation or continuity. Do not force expensive process or generic-agent machinery onto such tasks.
 
 ## 4. Job to be done
 
-> When an intelligent agent encounters a consequential question, help it recover relevant evidence and its own cognitive history, discover and evaluate alternative purposes, determine suitable intellectual methods, reach a defensible provisional judgment, and learn from consequences so its future reasoning becomes more capable.
+> When an agent is entrusted with the sustained development of a product or endeavor, help it understand governing purpose, discover and realize worthwhile futures, adapt its strategic and intellectual approach, maintain relevant semantic knowledge, and learn from consequential experience so that later work and judgment become more capable.
 
 Sufficient understanding and relevant possibility coverage are required **before consequential strategic commitments**, but are not mandatory fixed procedures for every local task. Explicit and agent-adaptive intellectual approaches coexist. A persistent agent may work across domains, while distinct agents may selectively exchange qualified methods without assuming identical identity or transferred permissions.
 
 ## 5. Value proposition
 
-Sensemaking combines **portable cognitive continuity**, source- and authority-aware knowledge, possibility discovery, reflective value formation, metareasoning, and experience-grounded method adaptation. The same agent may combine Architect, Free-Thinker, Critic, Tutor and other cognitive modes without spawning competing controllers.
+The beneficiary-facing experience is long-horizon development: maintain directional, semantic, prospective, cognitive and developmental continuity while retaining the ability to act directly on clear local tasks. Sensemaking combines **portable cognitive continuity**, source- and authority-aware knowledge, possibility discovery, reflective value formation, metareasoning, and experience-grounded method adaptation. The same agent may combine Architect, Free-Thinker, Critic, Tutor and other cognitive modes without spawning competing controllers.
 
 **Agent-level cognitive state** (attributed learned methods, history and evaluative commitments) remains distinct from **domain knowledge** (local facts, evidence, assumptions, preferences and authority). Persistent state may migrate across compatible hosts without assuming identical models or proving agent identity. Agent-owned, reversible method adaptations require independent evaluation; changes to shared guidance require separate qualification, review and authority.
 
@@ -182,7 +183,7 @@ A minimal shared cognitive ontology admits domain-specific extensions. Cognitive
 
 ## 6. Positioning and boundary
 
-**Long-term identity:** domain-general cognitive substrate, not a separate agent, foundation model, universal runtime or execution platform. **Present implemented scope:** source-grounded repository knowledge, prospective reasoning, specialized Skills and bounded engineering/Campaign support. ADR 0029 remains the controlling **current external product boundary**, while ADR 0037 governs intended purpose.
+**Long-term identity:** cognitive-development substrate for Long-Horizon Adaptive Strategic Development, not a separate agent, foundation model, universal runtime or execution platform. **Present implemented scope:** source-grounded repository knowledge, prospective reasoning, specialized Skills and bounded engineering/Campaign support. ADR 0029 remains the controlling **current external product boundary**, while ADR 0038 governs intended purpose and preserves the domain-general foundations of ADR 0037.
 
 Functional integration must change the agent's future behavior through interactions among continuity, cognitive regulation and learning, not merely share a data store. The developmental objective persists, but particular mechanisms are revisable under contrary evidence.
 
@@ -286,7 +287,7 @@ These remain **current implementation non-goals**, not prohibitions against the 
 
 ## 10. Success measures
 
-The ultimate success measure is **independently established longitudinal, transferable improvement in an agent's consequential reasoning and intellectual methods**, including any incremental benefit of functional integration over strong simpler-tool baselines.
+The practical success measure is **sustained, valuable strategic development**: meaningful product outcomes, coherent yet adaptable direction, and source-checked reuse and maintenance of consequential understanding across real sessions. The ultimate cognitive success measure remains **independently established longitudinal, transferable improvement in an agent's consequential reasoning and intellectual methods**, including the incremental benefit of functional integration over strong simpler-tool baselines. Assess each separately, at proportionate total cost; a better product is not by itself proof of a more capable agent.
 
 Use graduated qualification with distinct ceilings:
 
@@ -302,7 +303,7 @@ The first practical *research direction*, not an automatic experiment order, is 
 
 ## 11. Product-level strategic frontier
 
-> Can functional integration of persistent cognitive continuity, reflective value formation, adaptive metareasoning and experience-grounded learning yield **demonstrably better later judgment across episodes and domains**, beyond capable direct agents and conventional memory-plus-Skills approaches?
+> Can agents sustain valuable long-horizon strategic development through integrated understanding, prospective discovery, adaptive metareasoning and continuous learning, and can that reciprocal process yield **demonstrably better later judgment across episodes and domains**, beyond capable direct agents and conventional memory-plus-Skills approaches?
 
 Key open hypotheses concern methodological improvement beyond retrieval, independent agent identity continuity, justified cross-domain transfer and the incremental cost-adjusted benefit of integration. No empirical benefit is currently established by the decision to adopt the thesis.
 
@@ -350,6 +351,8 @@ rather than blindly continue the previous repository responsibility.
 
 **2026-11-13 — ADR 0037:** owner-selected REVISE of product purpose, primary users and ultimate evidence criteria; existing ADRs 0029/0031/0034/0035/0036 remain authoritative within their qualified current-scope meanings. The broader intended purpose and its evidence ceilings are separated from present operational/release permissions. Level 3 is separately reconciled before dependent work.
 
+**2026-11-27 — ADR 0038:** owner-ratified REVISE of defining purpose, practical priority, stewardship expectation and success measures. The [Level-3 reconciliation](../artifacts/history/2026-11-27-long-horizon-strategic-development-reconciliation.md) governs downstream selection; existing authority and qualification ceilings are preserved.
+
 ## 13. Public/private boundary
 
 Public strategy may include the product problem, persona, JTBD, positioning,
@@ -361,7 +364,10 @@ underlying record.
 
 ## 14. Authority and related documents
 
-- Current owner-ratified intended product purpose: [ADR 0037](adr/0037-domain-general-cognitive-development.md)
+- Current owner-ratified intended product purpose: [ADR 0038](adr/0038-long-horizon-adaptive-strategic-development.md)
+- Domain-general foundation: [ADR 0037](adr/0037-domain-general-cognitive-development.md)
+- Current post-revision Level-3 reconciliation: [2026-11-27 strategic development reconciliation](../artifacts/history/2026-11-27-long-horizon-strategic-development-reconciliation.md)
+- Integrated operating experience: [long-horizon strategic development](../skills/using-sensemaking/references/long-horizon-strategic-development-v1.md)
 - Mandatory post-revision Level-3 reconciliation: [2026-11-13 cognitive thesis reconciliation](../artifacts/history/2026-11-13-domain-general-cognitive-thesis-reconciliation.md)
 - Current product-boundary authority: [ADR 0029](adr/0029-current-product-boundary.md)
 - Owner-selected persistent semantic stewardship: [ADR 0031](adr/0031-persistent-semantic-stewardship.md)

@@ -47,7 +47,7 @@ Five canonical labels using the skill defaults. See `docs/agents/triage-labels.m
 
 Single-context repo — `CONTEXT.md` at root, ADRs in `docs/adr/`. See `docs/agents/domain.md`.
 
-### Source-linked semantic knowledge (optional, task-relevant)
+### Source-linked semantic knowledge (sustained stewardship; task-relevant use)
 
 This repository also maintains reviewed architectural memory under
 `.sensemaking/knowledge/*.json`. When historical decisions, component ownership,
@@ -63,7 +63,7 @@ adapt or reject it as warranted. Routine work does not require a lesson lookup.
 Inspect decisive original sources; a knowledge claim
 is not permission or semantic truth. Do not bootstrap a complete index or
 restart strategic analysis before an otherwise warranted local build.
-This is a pointer for **this repository**, not proof of native discovery by
+For sustained development, selectively maintain consequential knowledge and consider reusable method experience under explicit knowledge-edit authority; do not repeatedly bypass stewardship merely because each local task is clear. This is a pointer for **this repository**, not proof of native discovery by
 other coding-agent harnesses or target repositories.
 
 ## Current operating discipline
@@ -90,7 +90,7 @@ The active coding agent owns the top-level control loop (ADR 0013). Use
 - **Finding is not authorization.** Diagnosis, recommendation, implementation,
   validation, owner decision, publication, and canonical closure are distinct
   lifecycle states.
-- **Research hypotheses are not architecture.** Domain-general cognitive development is a ratified product **purpose** (ADR 0037). Generic runtimes, domain-specific package frameworks and formalized decision-theory implementations remain separate unqualified architectural questions.
+- **Research hypotheses are not architecture.** Long-Horizon Adaptive Strategic Development and reciprocal cognitive development are the ratified product **purpose** (ADR 0038, preserving ADR 0037's domain-general foundation). Generic runtimes, domain-specific package frameworks and formalized decision-theory implementations remain separate unqualified architectural questions.
 
 See `docs/decision-orchestration-boundary.md` for the control-ownership boundary
 and `docs/research/control-model-research-agenda.md` for explicitly non-ratified
@@ -98,7 +98,7 @@ research paths.
 
 ## Choosing and building an increment
 
-The intended product purpose is domain-general cognitive development ([ADR 0037](docs/adr/0037-domain-general-cognitive-development.md)); its current engineering specialization remains ontology-grounded repository understanding and prospective reasoning ([ADR 0034](docs/adr/0034-ontology-first-adaptive-sensemaking.md));
+The intended product purpose is Long-Horizon Adaptive Strategic Development ([ADR 0038](docs/adr/0038-long-horizon-adaptive-strategic-development.md)); use the [integrated sustained-development lifecycle](skills/using-sensemaking/references/long-horizon-strategic-development-v1.md) to connect strategic selection, semantic stewardship and methodological learning; its current engineering specialization remains ontology-grounded repository understanding and prospective reasoning ([ADR 0034](docs/adr/0034-ontology-first-adaptive-sensemaking.md));
 the [portable `using-sensemaking` Skill](skills/using-sensemaking/SKILL.md) is
 its single public entrypoint. Its **Architect -> Builder -> Reconcile
 construction capability** is an optional downstream use, and this repository's

@@ -18,6 +18,8 @@ replace the component Skills, create a new strategic policy, or introduce a
 second truth system. A delegated reasoning mission can complete without any
 execution.
 
+For sustained strategic development, use the controller's `references/long-horizon-strategic-development-v1.md` (under the sibling `using-sensemaking` Skill). Recover prior strategic rationale, relevant knowledge and method experience, not only the last task. Reassess direction when evidence materially changes it; ensure consequential stewardship is handled or its authority/availability limit is explicit. Do not turn a terminal mission into indefinite work.
+
 ## Responsibility
 
 From the user's current goal, repository state, authority, and existing durable

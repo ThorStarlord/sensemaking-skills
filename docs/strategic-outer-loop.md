@@ -199,10 +199,12 @@ Level-4 escalation / stop
 The Level-3 loop is recursive. It is not a phase-gated lifecycle, a backlog
 processor, or a deterministic priority function.
 
-For operator UX, `strategic-sensemaking-loop` may act as a **one-prompt front
-door** over this existing architecture. It reconstructs the current durable
-boundary and conditionally invokes the established Level-3/Level-2/execution
-return surfaces. It does not add a fifth control level, master state, planner,
+For long-horizon development, `using-sensemaking` remains the single public
+entrypoint and composes `strategic-sensemaking-loop` for continuity over this
+existing architecture. It reconstructs the current durable boundary and
+conditionally invokes the established Level-3/Level-2/execution return
+surfaces. The [integrated lifecycle](../skills/using-sensemaking/references/long-horizon-strategic-development-v1.md) explains sustained strategic
+and semantic continuity under ADR 0038. It does not add a fifth control level, master state, planner,
 or automatic semantic router.
 
 See [Strategic Sensemaking Loop v1](strategic-sensemaking-loop-v1.md).

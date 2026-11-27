@@ -70,8 +70,9 @@ disagree, the ADR file is authoritative.
 | [0035](0035-sensemaking-continuous-learning.md) | Sensemaking Continuous Learning as a First-Class Product Capability | Accepted (owner-selected; independent benefit not qualified) |
 | [0036](0036-adaptive-metareasoning-system.md) | Adaptive Metareasoning System as a First-Class Cognitive Capability | Accepted (owner-selected; behavioral benefit not qualified) |
 | [0037](0037-domain-general-cognitive-development.md) | Domain-General Cognitive Development as Sensemaking's Product Purpose | Accepted (owner-ratified; cognitive benefit unqualified) |
+| [0038](0038-long-horizon-adaptive-strategic-development.md) | Long-Horizon Adaptive Strategic Development — Reciprocal Domain and Cognitive Development | Accepted (owner-ratified; integrated benefit unqualified) |
 
-For the current **intended product purpose** read ADR 0037. This new owner-ratified Level-4 direction does not automatically expand implementation or empirical claims.
+For the current **intended product purpose** read ADR 0038. ADR 0037 remains the compatible domain-general cognitive foundation. This owner-ratified Level-4 revision does not automatically expand implementation or empirical claims.
 For the current **external product boundary** read ADR 0029, not 0014.
 For the currently implemented **persistent semantic knowledge foundation**, read ADR 0031; for the
 current **engineering specialization and public entrypoint**, read ADR 0034.

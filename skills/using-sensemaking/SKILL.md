@@ -46,6 +46,8 @@ it could become.** Everything below works after this Skill loads, even when the
 target repository has no `CLAUDE.md`, `AGENTS.md`, `CONTEXT.md`, Grounding Pack,
 knowledge index or Sensemaking CLI.
 
+**Sustained strategic development.** When the user delegates long-horizon product development or repeated responsibilities in a sustained engagement, read `references/long-horizon-strategic-development-v1.md`. Develop the product and selectively develop persistent understanding and attributable intellectual methods through consequential experience. Maintain adequate semantic knowledge across sessions under explicit knowledge-edit authority; do not treat repeated local economy as a reason to omit consequential stewardship. Preserve the direct path for narrow tasks and the separate read-only entry.
+
 **Understanding is a complete outcome.** A source-grounded semantic model, a
 possibility landscape, an architecture synthesis, a strategic selection, a
 justified no-change and a warranted next responsibility are all successful
