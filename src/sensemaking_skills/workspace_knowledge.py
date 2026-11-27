@@ -941,6 +941,9 @@ def run_workspace_review_context(
     if include_candidates:
         reconsiderations = build_candidate_reconsiderations(
             root, base_sha, sha, combined_changed_paths, limit=limit,
+            explicit_paths=frozenset(requested) if explicit_scope else None,
+            unavailable_paths=frozenset([*not_found_requested, *ignored_requested]),
+            working_changed_paths=working_changed_paths,
         )
         packet["candidate_reconsiderations"] = reconsiderations
         packet["explicit_limits"].extend(reconsiderations["explicit_limits"])
