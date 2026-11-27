@@ -14,3 +14,27 @@ Alternatives: documentation only (does not remove discovery gap); new resume con
 **Evidence ceiling:** source/diff review only at construction. Local unit/synthetic tests NOT_RUN by owner policy. Direct GitHub access from the local runtime failed DNS; no actual target checkout or agent harness is available here. Hosted checks can establish mechanical behavior, not beneficiary decision benefit. No beneficiary repository mutation. Actual fresh-context strategic use, semantic stewardship, method adaptation and comparative/longitudinal benefit remain open.
 
 **Next:** use this capability in meaningful sustained work with explicit domain knowledge-edit authority and current tooling; assess whether recovered understanding contributes to a consequential decision and reconcile affected domain knowledge and attributable intellectual experience. Do not extend handoff merely to increase artifact coverage. No new Level-3 strategy required.
+
+## Returned beneficiary source evidence — 2026-11-27
+
+Read-only inspection after PR #981 found the two reported beneficiary
+canonical revisions unchanged. One has no reviewed knowledge directory;
+the other still has three reviewed knowledge packs. Both prior receipts
+withheld knowledge-edit authority. One receipt declares `state: completed`,
+non-contract responsibility statuses and `stop.disposition: COMPLETE`. The
+other declares `state: final` but retains an `in_progress` integration
+responsibility. The existing validator explicitly rejects those
+combinations (RECEIPT_ENUM / RECEIPT_STATE_CONFLICT). This is a source-level
+comparison, not an executed validation or a claim that other fields pass.
+Target identities and private narrative/engine details are not needed for
+this transferable observation.
+
+The warranted response is to clarify the existing producer lifecycle:
+validate before finalizing/committing when tooling is available, represent
+actual unfinished integration without promising a future merge, preserve
+original invalid history and use authorized successor corrections. The
+new handoff must retain an invalid status rather than projecting it as
+validated prior understanding. No schema relaxation or new validator is
+warranted. No beneficiary repository was edited. This evidence supports
+the existing re-entry responsibility, not another strategy change or an
+independently demonstrated learning benefit.
