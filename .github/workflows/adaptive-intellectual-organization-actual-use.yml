@@ -26,55 +26,12 @@ jobs:
           test "$(git rev-parse HEAD)" = "$SOURCE"
           python -m pip install -e .
           test -z "$(git status --porcelain)"
-      - name: Recover live developmental landscape and method precedent before selection
+      - name: Inspect the actual file-level evidence omitted from the verification plan
         run: |
           set -euo pipefail
           sensemaking-skills semantic workspace-query --repo . --ref "$SOURCE" \
-            --operation possibility-ecology --subject goal:domain-general-cognitive-development \
-            --method-question "How can prior method experience and developmental possibilities inform consequential construction choices and improve the organization of intellectual activity without unnecessary process?" \
-            --include-method-trials --method-limit 8 --limit 60 --json > "$RUNNER_TEMP/actual-landscape.json"
-          sensemaking-skills semantic workspace-query --repo . --ref "$SOURCE" \
-            --operation product-outline --include-candidates --limit 60 --json > "$RUNNER_TEMP/actual-outline.json"
-          python - <<'PY'
-          import json, os
-          from pathlib import Path
-          root = Path(os.environ["RUNNER_TEMP"])
-          for f in sorted(root.glob("actual-*.json")):
-              x = json.loads(f.read_text())
-              assert x["target_ref"] == os.environ["SOURCE"]
-              assert x["semantic_truth_established"] is False
-              assert x["action_authorized"] is False
-              print(f.name + " TOP_LEVEL=" + json.dumps(list(x)))
-              def walk(obj, path=""):
-                  if isinstance(obj, dict):
-                      if ("id" in obj or "claim_id" in obj) and not any(t in path for t in (".evidence_refs", ".relations")):
-                          short = {k:obj[k] for k in ("id","claim_id","kind","statement","status","disposition","realization","applicability_to_present_task","claim_ceiling","question","method","related_records_complete") if k in obj}
-                          if "attributes" in obj:
-                              a=obj["attributes"]
-                              short["attributes"]={k:a[k] for k in ("realization","disposition","value_hypothesis","revisit_when","scope","conditions","claim_ceiling") if k in a}
-                          if short:
-                              print("RECORD " + path + " " + json.dumps(short, ensure_ascii=True)[:1800])
-                      for k,v in obj.items():
-                          if k in ("claims","direct_candidates","descendant_candidates","candidates","method_candidates","trial_candidates","goals","possibilities","possibility_ecology","product_outline","method_context","trial_precedents","record","candidate","goal","decision","result"):
-                              walk(v,path+"."+k)
-                  elif isinstance(obj,list):
-                      for item in obj:
-                          walk(item,path+"[]")
-              walk(x)
-              print("TRUNCATION " + json.dumps({k:v for k,v in x.items() if "truncat" in k or "limit" in k})[:2400])
-          PY
-          test -z "$(git status --porcelain)"
-      - name: Compare goal-level and source-scoped method recall for the actual integration choice
-        run: |
-          set -euo pipefail
-          QUESTION="How should goal-level opportunity discovery and code-grounded experience be combined when choosing a concrete implementation increment?"
-          sensemaking-skills semantic workspace-query --repo . --ref "$SOURCE" \
-            --operation possibility-ecology --subject goal:domain-general-cognitive-development \
-            --method-question "$QUESTION" --include-method-trials --method-limit 8 --limit 60 --json > "$RUNNER_TEMP/actual-selection.json"
-          sensemaking-skills semantic method context --repo . --ref "$SOURCE" \
-            --question "$QUESTION" --path src/sensemaking_skills/semantic_cli.py \
-            --path src/sensemaking_skills/workspace_knowledge.py \
-            --include-trials --limit 8 --json > "$RUNNER_TEMP/actual-source-methods.json"
+            --operation context-for src/sensemaking_skills/semantic_cli.py \
+            --include-source-relationships --symbol register_semantic_commands --limit 60 --json > "$RUNNER_TEMP/actual-cli-context.json"
           sensemaking-skills semantic verification-plan --repo . --ref "$SOURCE" \
             --path src/sensemaking_skills/semantic_cli.py --symbol register_semantic_commands \
             --limit 60 --json > "$RUNNER_TEMP/actual-verification-plan.json"
@@ -82,21 +39,16 @@ jobs:
           import json,os
           from pathlib import Path
           root=Path(os.environ["RUNNER_TEMP"])
-          read=lambda name: json.loads((root/name).read_text())
-          outer=read("actual-selection.json")
-          a=outer["method_precedents"]
-          b=read("actual-source-methods.json")
-          plan=read("actual-verification-plan.json")
-          assert a["target_ref"] == b["target_ref"] == plan["target_ref"] == os.environ["SOURCE"]
-          for label, ctx in [("QUESTION",a),("SOURCE",b)]:
-              print(label+" COUNTS="+json.dumps({k:v for k,v in ctx.items() if k in ("method_candidate_matches","method_candidate_matches_omitted","lesson_corpus_truncated","path_context")}))
-              for c in ctx["method_candidates"]:
-                  print(label+" METHOD="+json.dumps({k:c[k] for k in ("id","procedure","matched_tokens","matched_paths","recall_conditions","related_records_complete","applicability_to_present_task")}))
-              print(label+" TRIALS="+json.dumps([(c.get("id"),c.get("projection_status"),c.get("status")) for c in ctx["trial_precedents"]["trial_candidates"]]))
-          print("ADDED_METHODS="+json.dumps(sorted({c["id"] for c in b["method_candidates"]}-{c["id"] for c in a["method_candidates"]})))
-          print("PLAN_COUNTS="+json.dumps(plan["counts"]))
-          print("PLAN_TARGETS="+json.dumps(plan["suggested_pytest"]))
-          print("PLAN_GAPS="+json.dumps(plan["gaps"]))
+          a=json.loads((root/"actual-cli-context.json").read_text())
+          b=json.loads((root/"actual-verification-plan.json").read_text())
+          assert a["target_ref"] == b["target_ref"] == os.environ["SOURCE"]
+          rel=a["source_relationships"]
+          print("FILE_TEST_REFERENCES="+json.dumps(rel["test_references"]))
+          print("FILE_TEST_COUNTS="+json.dumps(rel["counts"]))
+          existing={c["pytest_target"].split("::",1)[0] for c in b["pytest_candidates"]}
+          print("PLAN_TEST_FILES="+json.dumps(sorted(existing)))
+          print("ADDITIONAL_FILE_REFERENCES="+json.dumps([c for c in rel["test_references"] if c["path"] not in existing]))
+          print("TRUNCATED="+json.dumps({"context":a["truncated"],"relationships":rel["truncated"],"plan":b["truncated"]}))
           PY
           test -z "$(git status --porcelain)"
       - name: Retain actual query output
