@@ -1,0 +1,55 @@
+{
+  "possibility_id": "detached-possibility-stewardship",
+  "actor": "active ChatGPT coding agent",
+  "source_revision": "8e082730e9f505558f2ec1b56240eff09b1c86df",
+  "origin_date": "2026-11-27",
+  "title": "Durable detached possibility stewardship",
+  "statement": "An agent can preserve a source-grounded speculative possibility across development sessions and preflight it as a candidate new knowledge pack without placing unreviewed bytes in the active reviewed namespace; a later authorized agent reviews and explicitly promotes appropriate material.",
+  "goal_refs": [
+    "goal:compounding-product-knowledge",
+    "goal:domain-general-cognitive-development"
+  ],
+  "source_candidate_refs": [
+    "poss:cross-episode-possibility-synthesis",
+    "poss:git-authored-knowledge-index",
+    "poss:verified-first-use-handoff"
+  ],
+  "capability_refs": [],
+  "assumption_refs": [
+    "con:agent-owns-semantic-control",
+    "hyp:later-sessions-consult-knowledge"
+  ],
+  "contradicts_refs": [],
+  "dimensions": {
+    "alignment": {
+      "value": "ALIGNED",
+      "basis": "ADR 0038 calls for sustained reciprocal development and adequate semantic stewardship; ADR 0034 retains the agent as controller."
+    },
+    "ambition": {
+      "value": "INCREMENTAL",
+      "basis": "Recombine the current producer and preflight, not a new engine."
+    },
+    "horizon": {
+      "value": "FORESEEABLE",
+      "basis": "The DTR draft and existing validator provide a real source boundary and reusable mechanism."
+    },
+    "realization": {
+      "value": "HYPOTHETICAL",
+      "establishment": "inferred",
+      "basis": "At source_revision, the validator accepts only the active knowledge path; the new desired end is proposed, not claimed realized."
+    }
+  },
+  "synthesis_basis": "The previous DTR episode retained an unvalidated draft outside active knowledge. The existing possibility producer writes a new active-namespace proposal and the preflight requires that namespace. Combine possibility synthesis and reviewed stewardship with a detached, digest-identified new-pack check and later explicit review; re-entry remains agent-owned.",
+  "value_hypothesis": "A later agent could recover and mechanically check speculative material without risking accidental inclusion in reviewed queries or requiring a preparatory copy to the active namespace. Current source/evidence and review still matter.",
+  "revisit_when": "A later authorized agent checks the actual DTR draft and either promotes, revises or rejects it; or the source boundary changes: file:src/sensemaking_skills/semantic_architecture/stewardship_validation.py or file:src/sensemaking_skills/possibility_synthesis.py.",
+  "counterevidence": "An isolated worktree plus the ordinary in-place preflight already suffices; the host without a compatible CLI remains unable to validate. Detached draft retention may impose maintenance overhead. No observed accidental promotion, measured time saving or independent use.",
+  "claim_ceiling": "Source-grounded hypothetical product future and agent-owned synthesis; no automatic selection, realized benefit, reviewed pack, independent method improvement or transfer is established.",
+  "evidence_refs": [
+    "file:artifacts/history/2026-11-27-dtr-knowledge-proposal-DRAFT.json",
+    "file:artifacts/history/2026-11-27-cumulative-developmental-reasoning.md",
+    "file:src/sensemaking_skills/semantic_architecture/stewardship_validation.py",
+    "file:src/sensemaking_skills/possibility_synthesis.py",
+    "file:docs/normal-use/2026-11-27-verified-first-use-handoff.md",
+    "file:docs/adr/0038-long-horizon-adaptive-strategic-development.md"
+  ]
+}

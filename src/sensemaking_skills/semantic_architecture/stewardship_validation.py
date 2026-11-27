@@ -8,6 +8,7 @@ continues to require a separate CLEAN exact Git checkout.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import locale
 import re
@@ -56,29 +57,44 @@ def _head_pack(root: Path, relative: str) -> dict:
     return data
 
 
-def _safe_proposal(root: Path, proposal: Path) -> tuple[Path, str]:
-    candidate = proposal if proposal.is_absolute() else root / proposal
+def _safe_pack_path(root: Path, path: Path, *, detached: bool = False) -> tuple[Path, str]:
+    candidate = path if path.is_absolute() else root / path
     relative = candidate.absolute().relative_to(root)
+    allowed = (
+        (("artifacts", "history"), (".sensemaking", "proposals"))
+        if detached else ((".sensemaking", "knowledge"),)
+    )
     if (
         not relative.parts or ".." in relative.parts
         or len(relative.parts) != 3
-        or relative.parts[:2] != (".sensemaking", "knowledge")
+        or relative.parts[:2] not in allowed
         or relative.suffix != ".json"
     ):
+        if detached:
+            raise ValueError("detached draft must be a JSON file under artifacts/history/ or .sensemaking/proposals/")
         raise ValueError("proposal must be a JSON file under .sensemaking/knowledge/")
     current = root
-    for part in relative.parts:
+    for index, part in enumerate(relative.parts):
         current = current / part
         if current.is_symlink():
             raise ValueError(f"symlink proposal refused: {relative}")
-    if not candidate.is_file() or candidate.stat().st_size > _MAX_PROPOSAL_BYTES:
-        raise ValueError("proposal missing or exceeds 512 KiB")
+        if index < len(relative.parts) - 1 and current.exists() and not current.is_dir():
+            raise ValueError(f"proposal parent is not a directory: {relative}")
     if not candidate.resolve().is_relative_to(root):
         raise ValueError("proposal escapes repository")
     return candidate, relative.as_posix()
 
 
-def inspect_knowledge_proposal(repo_root: Path, proposal: Path) -> dict:
+def _safe_proposal(root: Path, proposal: Path, *, detached: bool = False) -> tuple[Path, str]:
+    candidate, relative = _safe_pack_path(root, proposal, detached=detached)
+    if not candidate.is_file() or candidate.stat().st_size > _MAX_PROPOSAL_BYTES:
+        raise ValueError("proposal missing or exceeds 512 KiB")
+    return candidate, relative
+
+
+def inspect_knowledge_proposal(
+    repo_root: Path, proposal: Path, *, destination: Path | None = None,
+) -> dict:
     """Inspect proposed authored knowledge without clean-worktree requirements.
 
     The result is a mechanical preflight, NEVER semantic review/acceptance.
@@ -87,12 +103,31 @@ def inspect_knowledge_proposal(repo_root: Path, proposal: Path) -> dict:
     root = repo_root.resolve()
     if not (root / ".git").exists():
         raise ValueError("target must be a Git checkout")
-    path, relative = _safe_proposal(root, proposal)
+    path, source_relative = _safe_proposal(root, proposal, detached=destination is not None)
+    if destination is None:
+        relative = source_relative
+        destination_path = path
+    else:
+        destination_path, relative = _safe_pack_path(root, destination)
     target_ref = _git(root, "rev-parse", "HEAD")
     committed = set(filter(None, _git(root, "ls-tree", "-r", "-z", "--name-only", "HEAD").split(chr(0))))
     tracked = set(filter(None, _git(root, "ls-files", "-z").split("\0")))
+    if destination is not None:
+        # Reject both existing pack paths and committed/indexed file-directory
+        # conflicts even if those paths have been removed in the worktree.
+        def conflicts(name: str) -> bool:
+            path_parts = Path(name).parts
+            destination_parts = Path(relative).parts
+            prefix_length = min(len(path_parts), len(destination_parts))
+            return Path(*path_parts[:prefix_length]) == Path(*destination_parts[:prefix_length])
+
+        if destination_path.exists() or any(conflicts(name) for name in committed | tracked):
+            raise ValueError("detached draft requires a new unoccupied knowledge destination")
     worktree_clean = not bool(_git(root, "--no-optional-locks", "status", "--porcelain", "--untracked-files=all"))
-    data = json.loads(path.read_text(encoding="utf-8"))
+    proposal_bytes = path.read_bytes()
+    if len(proposal_bytes) > _MAX_PROPOSAL_BYTES:
+        raise ValueError("proposal exceeds 512 KiB")
+    data = json.loads(proposal_bytes.decode("utf-8"))
     if not isinstance(data, dict) or set(data) != {"schema_version", "claims", "relations"}:
         raise ValueError("proposal must contain exactly schema_version, claims and relations")
     if data["schema_version"] not in AUTHORED_SCHEMA_VERSIONS or not isinstance(data["claims"], list) or not isinstance(data["relations"], list):
@@ -275,7 +310,13 @@ def inspect_knowledge_proposal(repo_root: Path, proposal: Path) -> dict:
     return {
         "code": "SEMANTIC_KNOWLEDGE_PROPOSAL_VALID",
         "valid": True,
-        "proposal": relative,
+        "proposal": source_relative,
+        **({
+            "proposed_destination": relative,
+            "destination_state": "ABSENT_AT_INSPECTION",
+            "proposal_sha256": hashlib.sha256(proposal_bytes).hexdigest(),
+            "detached_draft": True,
+        } if destination is not None else {}),
         "head_sha": target_ref,
         "worktree_clean": worktree_clean,
         "validation_scope": "single_proposed_pack_against_HEAD_packs_and_worktree_evidence",
@@ -297,6 +338,10 @@ def inspect_knowledge_proposal(repo_root: Path, proposal: Path) -> dict:
         "authority_verified": False,
         "action_authorized": False,
         "limits": [
+            *([
+                "Detached draft bytes are checked as a new pack at the explicit destination; neither file is written, staged, moved or promoted.",
+                "The digest identifies the checked draft bytes only; recheck current evidence, HEAD, destination and final pack before review.",
+            ] if destination is not None else []),
             "Selected proposal and index-tracked cited evidence use CURRENT WORKTREE bytes, not staged content.",
             "Other authored knowledge packs use committed HEAD bytes; dirty, deleted or untracked other packs are ignored.",
             "Only relationships referencing this pack are checked across pack boundaries; unrelated pack defects are not assessed.",
