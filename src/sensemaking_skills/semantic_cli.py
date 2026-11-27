@@ -1172,10 +1172,12 @@ def register_semantic_commands(root_cli: click.Group) -> None:
     @click.option("--episode", "episode_path", required=True,
                   help="Tracked source-attributed episode JSON, authored by the active agent")
     @click.option("--output", "output_path", required=True,
-                  help="New exclusive .sensemaking/knowledge/*.json proposal; never overwrites")
+                  help="New exclusive knowledge proposal (or detached path with --draft-only); never overwrites")
+    @click.option("--draft-only", is_flag=True,
+                  help="Keep the unreviewed proposal outside active knowledge")
     @click.option("--json", "output_json", is_flag=True)
     def semantic_method_record(
-        repo_dir: Path, episode_path: str, output_path: str, output_json: bool,
+        repo_dir: Path, episode_path: str, output_path: str, draft_only: bool, output_json: bool,
     ) -> None:
         """Materialize an agent-authored adaptation/rejection as reviewable records.
 
@@ -1185,7 +1187,9 @@ def register_semantic_commands(root_cli: click.Group) -> None:
         from .method_adaptation import record_method_episode
 
         try:
-            payload = record_method_episode(repo_dir, episode_path, output_path)
+            payload = record_method_episode(
+                repo_dir, episode_path, output_path, draft_only=draft_only,
+            )
         except (ValueError, OSError, UnicodeError, KeyError, TypeError) as exc:
             raise click.ClickException(str(exc)) from exc
         _emit(payload, output_json=output_json)
