@@ -1,0 +1,38 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-11-27-adaptive-cognitive-correction
+state: in_progress
+created_at: "2026-11-27T18:28:00Z"
+updated_at: "2026-11-27T18:28:00Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: a6291c2d4815dec585526e3f21f142375169b98c
+  end_ref: null
+  worktree_clean_at_end: null
+skill_identity:
+  load_mode: manual_explicit_load
+  sensemaking_source_ref: a6291c2d4815dec585526e3f21f142375169b98c
+goal:
+  statement: "Implement proportionate cognitive safeguards and investigate, select and construct warranted adaptive cognitive failure recognition and correction within the current product thesis."
+  source: owner_message
+  source_ref: null
+delegation:
+  granted: [read, local_write, run_local_commands, commit, push, open_pr, merge, knowledge_edit]
+  withheld: [release, deploy, tracker_write, external_publication]
+continuity:
+  resumes: 2026-11-19-precommit-review-construction
+  campaign_ref: null
+  resolves_questions: []
+responsibilities: []
+findings: []
+open_questions: []
+stop:
+  disposition: IN_PROGRESS
+  reason: "Historical reconciliation and current capability assessment underway."
+next:
+  warranted_responsibility: null
+  blocked_on: []
+persistence: pending
+claim_ceiling: "Source inspection and current session observations only; no independent cognitive qualification."
+action_authorized_by_receipt: false
+immutable: false
