@@ -1,6 +1,6 @@
 # Developmental Trajectory Reasoning (DTR) v1
 
-**Role:** first-class intellectual capability within the existing using-sensemaking controller and Long-Horizon Adaptive Strategic Development. DTR discovers, understands, evaluates, cultivates and adapts possible developmental trajectories through which present actions transform the conditions for future value creation. It is not a planner, roadmap, new ontology, fixed workflow or permission grant.
+**Role:** first-class intellectual capability within the existing using-sensemaking controller and Long-Horizon Adaptive Strategic Development. DTR discovers, understands, evaluates, cultivates and adapts possible developmental trajectories through which present actions transform the conditions for future value creation. It is not a planner, roadmap, separate ontology runtime, fixed workflow or permission grant. Its [explicit conceptual ontology](../../../docs/semantic-architecture/developmental-trajectory-reasoning-ontology.md) defines the semantic roles and relationship boundaries within the existing layered ontology; this portable method remains usable without the framework docs.
 
 ## When it changes a decision
 
@@ -43,7 +43,7 @@ For a consequential comparison, record in the appropriate existing artifact: the
 Start with the actual question, current revision, earlier analysis and latest valid reconciliation. Use source-only reading if the CLI is absent. If available, existing commands provide candidate context:
 - `sensemaking-skills semantic workspace-query --repo TARGET --ref SHA --operation product-outline --include-candidates --json` for authored goals and candidate futures.
 - `sensemaking-skills semantic workspace-query --repo TARGET --ref SHA --operation possibility-ecology --subject GOAL_OR_POSS_ID --json` for bounded candidate relations; inspect original records.
-- `sensemaking-skills strategy paths --artifact ANALYSIS --json --include-trajectory-context` for declared path context, prerequisites, transitions and unlocks; `strategy assumptions` for declared assumptions.
+- `sensemaking-skills strategy paths --artifact ANALYSIS --json --include-trajectory-context` for declared path context, prerequisites, transitions, unlocks, and shared typed capability/assumption references within one analysis; `strategy assumptions` for declared assumptions. Shared references are candidates for investigation, not proven shared enablers. `strategy graph` keeps source-local path/assumption/transition identities separate and discloses unresolved prior-analysis references.
 - `sensemaking-skills strategy compare --before OLD --after NEW --json --include-trajectory-context` exposes literal context changes for matching local IDs. Check continuity and actual semantic correspondence independently; the tool does not match renamed paths or infer causality.
 - `sensemaking-skills semantic workspace-changes --repo TARGET --base-ref OLD --ref NEW --json` and the existing opt-in possibility reconsideration surface can locate evidence changes. Inspect command help for the supported option in the available version. Structured reference changes are prompts, not truth of the natural-language condition.
 

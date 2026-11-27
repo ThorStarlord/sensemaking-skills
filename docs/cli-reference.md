@@ -66,7 +66,15 @@ decision):
 `graph`. Projections of declared state; no strategic judgment.
 For developmental trajectory reasoning, `strategy paths --artifact PATH --json --include-trajectory-context`
 also projects authored dependencies, capability references, transitions, unlocks,
-risks, assumptions, and other existing path context. `strategy compare --before OLD --after NEW --json --include-trajectory-context`
+risks, assumptions, and other existing path context. Its
+`shared_trajectory_context` groups literal typed capability references by
+builds-on/required roles and shared declared assumption IDs within one analysis;
+legacy prose/missing fields remain unassessed. Shared references are not
+validated dependencies, shared causal enablers or a priority ranking.
+`strategy graph` scopes path, assumption and transition identifiers to their
+original supplied analysis, using exact declared references or exact supplied
+file paths; unresolved or ambiguous references remain separate. Graph node
+identifiers are presentation-local, not stable semantic IDs. `strategy compare --before OLD --after NEW --json --include-trajectory-context`
 also reports changed context fields for matching local path IDs and whether
 declared decision assumptions differ. These are opt-in JSON projections, not
 semantic path matching, validated dependencies, or automatic reconsideration.
