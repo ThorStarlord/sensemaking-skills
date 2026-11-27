@@ -116,3 +116,52 @@ compounding. No independent agent executor in the active environment.
 Level-3 direction reaffirmed. Continue with a genuine authorized beneficiary
 or later agent episode, using the knowledge/method cycle to pursue meaningful
 product value rather than collecting more illustrative episodes.
+
+## Actual stewardship and clean-commit consumption
+
+The corrected source at `12d046aa7810c12411957fed949b2b60d1c92671`
+was preflighted by [run 46070829603](https://github.com/ThorStarlord/sensemaking-skills/actions/runs/46070829603),
+job 140747092075, SUCCESS. The concept pack passed both detached and
+ordinary final-path checks (3 claims, 8 relations, 6 existing endpoints);
+the existing method producer materialized the real application with
+disposition `apply`, and its pack passed both checks (1 claim, 1 relation,
+1 existing endpoint). The earlier mechanical preflight at be4b6929 passed
+but did not establish the correct implementation ownership. The subsequent
+source review corrected the component edge; only the corrected checked
+bytes were integrated. The two reviewed blobs are
+`b00d7dab420b3b747074b8a8dc5ef78318c46680` and
+`8f4687c4401dfc18b878818a7010d69e791a1324`.
+No new lesson or method trial was generated.
+
+[Run 46070975743](https://github.com/ThorStarlord/sensemaking-skills/actions/runs/46070975743),
+job 140747567621, SUCCESS, installed the actual code at exact clean
+`f6529528ec7361c93bda99bcb6395e4ce9c20ef7`, confirmed both pack blobs,
+built the committed knowledge with repository structure and ran real
+explain and question-based method queries. The bounded index returned
+820 claims, 897 relations (including mechanical source structure), digest
+`d2895fac55eb84db508749ee85c019b79be2edd11a3e86721bcef93753e655d3`.
+
+- The concept's explain view recovered AMS, DTR, experience lesson recall,
+  Warrant / Choice, and the integrated decision-context capability without
+  truncation.
+- The decision-context capability's explain view recovered its governing
+  goal, the actual-use observation, the concept and the corrected semantic
+  CLI component without truncation.
+- The original execution-substitution lesson's question-based method
+  context returned the new later application observation with
+  `source_read_status: INDEXED_RECORD`, `method_disposition: apply` and
+  `related_records_complete: true`. Present applicability stays
+  `NOT_ESTABLISHED`. Retrieved historical trials retain their original
+  effect/authority ceilings.
+
+[Actual output artifact 15233350871](https://github.com/ThorStarlord/sensemaking-skills/actions/runs/46070975743/artifacts/15233350871)
+has 14-day retention. The durable evidence is this report, the original
+episode, reviewed packs and pinned source/run identifiers. Neither the
+branch-only workflow nor its scratch outputs are merged to main.
+The four claims and nine relations are reviewed understanding and
+attributed experience, not automatic selection or demonstrated cognitive
+improvement. This closes the selected mechanical replay, actual
+same-agent application and knowledge-reentry responsibilities.
+Independent later-agent use, change in intellectual procedure and comparative
+or longitudinal benefit remain unestablished. No owner-reserved thesis
+decision was needed. Local unit/synthetic evidence tests NOT_RUN.
