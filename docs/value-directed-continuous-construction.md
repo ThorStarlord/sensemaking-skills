@@ -25,8 +25,8 @@ Read **selectively**, with current source identity and explicit authority:
 
 | Need | Start here | Governing role |
 | --- | --- | --- |
-| Product definition and non-goals | [CONTEXT.md](../CONTEXT.md), [product-strategy.md](product-strategy.md), ADRs [0031](adr/0031-persistent-semantic-stewardship.md) and [0029](adr/0029-current-product-boundary.md) | Level 4 purpose and external boundary |
-| Current development direction | [STATUS.md](../STATUS.md), [persistent stewardship plan](persistent-semantic-stewardship-plan.md), the current [strategic analysis](../artifacts/history/2026-10-23-strategic-repository-analysis.md) and [reconciliation](../artifacts/history/2026-10-24-strategic-reconciliation.md) | Level 3 compass and historical decision lineage; check for later reconciliations |
+| Product definition and non-goals | [CONTEXT.md](../CONTEXT.md), [product-strategy.md](product-strategy.md), ADRs [0038](adr/0038-long-horizon-adaptive-strategic-development.md) and [0029](adr/0029-current-product-boundary.md) | Level 4 purpose and external boundary |
+| Current development direction | [STATUS.md](../STATUS.md), [persistent stewardship plan](persistent-semantic-stewardship-plan.md), the [current reconciliation](../artifacts/history/2026-11-27-long-horizon-strategic-development-reconciliation.md) and its linked prior analyses | Level 3 compass and historical decision lineage; check for later reconciliations |
 | Working authority and verification | [AGENTS.md](../AGENTS.md), [CLAUDE.md](../CLAUDE.md), applicable ADRs, actual GitHub protections/CI | What the agent may change, merge, or claim |
 | Semantic and architecture context | [Semantic Architecture](semantic-architecture/README.md), [ontology](semantic-architecture/ontology.md), [relations and epistemics](semantic-architecture/relations-and-epistemics.md), and reviewed `.sensemaking/knowledge/*.json` | Meanings, constraints, owners, relationships, and source-linked rationale; not action authority |
 | Implementation reality | Current code, consumers, contracts, Git history, observed runs and CI | What exists and what a change could affect |

@@ -236,6 +236,7 @@ The current Engineering and Product Management Domain Packs describe implemented
 22. Domain-general user standing does not imply current equal implementation or evidence.
 23. Personal learning does not silently promote shared policy or third-party permissions.
 24. Preserve the developmental objective while allowing evidence to replace its technical realization.
+25. **Optimize the sustained developmental horizon:** maintain adequate semantic and strategic continuity and consider attributable method learning across real engagements. Local direct action remains appropriate; reconcile consequential knowledge under explicit authority at natural boundaries. Assess retention and rediscovery costs together, rather than counting artifacts or imposing fixed stages.
 
 ## 8. Strategic non-goals
 
@@ -307,7 +308,7 @@ The first practical *research direction*, not an automatic experiment order, is 
 
 Key open hypotheses concern methodological improvement beyond retrieval, independent agent identity continuity, justified cross-domain transfer and the incremental cost-adjusted benefit of integration. No empirical benefit is currently established by the decision to adopt the thesis.
 
-The old **PATH-1** direction—growing reviewed repository knowledge through genuine engineering responsibilities—remains a valuable **domain-specific construction path**, not Sensemaking's ultimate purpose. See the [mandatory Level-3 reconciliation](../artifacts/history/2026-11-13-domain-general-cognitive-thesis-reconciliation.md). No new runtime, universal ontology, benchmark, or game package becomes an automatic task.
+The old **PATH-1** direction—growing reviewed repository knowledge through genuine engineering responsibilities—remains a valuable **domain-specific construction path**, not Sensemaking's ultimate purpose. See the [current Level-3 reconciliation](../artifacts/history/2026-11-27-long-horizon-strategic-development-reconciliation.md) and its [ADR 0037 predecessor](../artifacts/history/2026-11-13-domain-general-cognitive-thesis-reconciliation.md). No new runtime, universal ontology, benchmark, or game package becomes an automatic task.
 
 ## 12. Level-4 revision semantics
 

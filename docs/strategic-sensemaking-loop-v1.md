@@ -15,7 +15,10 @@ Normal use showed that requiring the operator to manually prompt each transition
 created unnecessary ceremony and made it easier to restart an already-completed
 stage.
 
-Strategic Sensemaking Loop v1 adds one front door:
+Strategic Sensemaking Loop v1 supplies internal one-prompt continuation under
+`using-sensemaking`, the single public entrypoint. For sustained development,
+use the [integrated lifecycle](../skills/using-sensemaking/references/long-horizon-strategic-development-v1.md) to recover and reconcile
+knowledge, strategic rationale and consequential experience as well as task state:
 
 ```text
 ONE USER PROMPT

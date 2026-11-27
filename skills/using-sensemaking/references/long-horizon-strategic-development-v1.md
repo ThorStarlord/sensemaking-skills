@@ -10,6 +10,18 @@ Long-horizon development is not merely long-running execution. Strategy selects 
 
 Two mutually reinforcing intended outcomes matter: valuable domain development and attributable cognitive development. Pursue real work even when it yields no new lesson. Preserve procedural adaptations only when actual experience warrants them. Do not privilege an isolated local cost saving if repeated rediscovery, lost assumptions or strategic drift materially increase total cost; do not create artifacts whose expected reuse cannot justify their maintenance.
 
+## Five dimensions of continuity
+
+| Dimension | Decision-time question |
+| --- | --- |
+| Directional | Does the selected work serve governing purpose and remain worthwhile under changed conditions? |
+| Semantic | What relevant understanding is already available, current or missing? |
+| Prospective | What possibilities become valuable, feasible, invalidated or newly discovered after real work? |
+| Cognitive | What attributable method experience could improve the current reasoning approach? |
+| Developmental | What actual benefit does this responsibility create, and how does it alter the next useful responsibility? |
+
+These are properties of the sustained experience, not a score, stage gate or demand for five new artifacts. A clear repair can make a strong contribution to a long trajectory. A lengthy strategic study that does not change understanding or action may contribute little.
+
 ## Authority and entry
 
 Determine the repository, exact source revision, actual loaded Skill path/version where the host exposes it, available CLI identity and permissions. Compare intended source, installed files, available executable and loaded content separately. An installed hash is not proof of loaded bytes. If the pinned tooling is unavailable, use the authoritative Skill source explicitly and record the limitation; do not replace a shared installation in another actor's active session. Continue from original sources when possible.
@@ -29,7 +41,7 @@ Recover the user's governing purpose and existing product authorities; distingui
 | `.sensemaking/receipts/*.query.yaml` | Steward query receipt when applicable under its contract | Inspect retrieval hits, misses, source checks and reconciliation evidence | Same session linkage; a miss does not prove absence and a receipt is not reviewed knowledge |
 | Reviewed lesson / method observation and conditional proposal | SCL and existing Method Adaptation guidance when consequential experience changes a reasoning procedure | Later agent retrieves prior procedure with provenance, conditions, counterevidence; adopts, adapts or rejects before a consequential decision | Retain selectively, separate domain fact and method change; authorized review before promotion into shared knowledge or guidance |
 
-Use `../repository-semantic-steward/SKILL.md` relative to the using-sensemaking Skill directory (i.e. the sibling Skill), its BOOTSTRAP/RECALL/RECONCILE references, `ontology-first-entry-v1.md`, `session-receipt-v1.md`, and the existing Method Adaptation guidance for actual contracts. Do not infer a schema from this table.
+Use [the sibling Repository Semantic Steward](../../repository-semantic-steward/SKILL.md), its BOOTSTRAP/RECALL/RECONCILE references, `ontology-first-entry-v1.md`, `session-receipt-v1.md`, and the existing Method Adaptation guidance for actual contracts. Do not infer a schema from this table.
 
 ### First sustained engagement
 
@@ -43,7 +55,7 @@ Read the current request and governing authority; recover relevant earlier recei
 
 Choose the intellectual approach through AMS in proportion to the decision. Consider future enablers and opportunity cost, compare material alternatives, and retain the decisive rationale where useful. Build, observe and evaluate a real product outcome when authorized. Consequential new facts, corrected assumptions, invalidated possibilities, new opportunities and method experience feed stewardship/SCL and strategic reconciliation as relevant. A minor change can leave the model unchanged; sustained absence or material staleness across substantial work merits attention even if no local task strictly required an ontology edit. Distinguish a real NO_MODEL_CHANGE from an unassessed or unauthorized knowledge responsibility.
 
-Before finalizing, ensure a future consumer can recover relevant knowledge and unresolved decisions without reconstructing the conversation. Validate the receipt using `sensemaking-skills validate --artifact <file>` or `python scripts/validate-receipt.py <file>` according to the existing contract and available runtime (check exact command help when needed); record NOT_RUN when inaccessible. Keep final receipts immutable and respect current Git/publish permissions.
+Before finalizing, ensure a future consumer can recover relevant knowledge and unresolved decisions without reconstructing the conversation. Validate the receipt using `sensemaking-skills validate --artifact <file>` or `python scripts/validate-receipt.py <file> --target-repo <target-repo>` according to the existing contract and available runtime (check exact command help when needed); record NOT_RUN when inaccessible. Keep final receipts immutable and respect current Git/publish permissions.
 
 ## What success looks like
 
