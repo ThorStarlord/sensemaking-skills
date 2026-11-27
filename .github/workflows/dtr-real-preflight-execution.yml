@@ -1,4 +1,4 @@
-name: Actual conditional method retention (execution branch only)
+name: Actual detached methodological experience (execution branch only)
 on:
   push:
     branches: [claude/dtr-real-preflight-execution]
@@ -10,8 +10,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
-      EXPECTED_REVISION: "44d48bedf32cb677bb03d524b3dea4c586b0b643"
-      REPOSITORY_ID: "ThorStarlord/sensemaking-skills"
+      EXPECTED_REVISION: "a6291c2d4815dec585526e3f21f142375169b98c"
+      HISTORICAL_TARGET: "76d510fda3b28efd484197a6e9ebc5439d0615bc"
+      EXPECTED_BLOB: "7820cf160cb367fc1febd8388f40a8e002c1949a"
     steps:
       - uses: actions/checkout@v4
         with:
@@ -21,45 +22,71 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Install exact integrated source and verify reviewed bytes
+      - name: Install exact integrated source and materialize actual prior target
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_REVISION"
           python -m pip install -e .
           test -z "$(git status --porcelain)"
-          test "$(git hash-object .sensemaking/knowledge/execution-substitution-method.json)" = 7820cf160cb367fc1febd8388f40a8e002c1949a
-      - name: Build reviewed knowledge at exact clean canonical commit
+          test "$(git hash-object .sensemaking/knowledge/execution-substitution-method.json)" = "$EXPECTED_BLOB"
+          TARGET="$RUNNER_TEMP/actual-prior-method-target"
+          git worktree add --detach "$TARGET" "$HISTORICAL_TARGET"
+          test "$(git -C "$TARGET" rev-parse HEAD)" = "$HISTORICAL_TARGET"
+          test -z "$(git -C "$TARGET" status --porcelain)"
+      - name: Re-materialize actual earlier method episode as detached draft
         run: |
           set -euo pipefail
-          sensemaking-skills semantic knowledge-build --repo . \
-            --repository "$REPOSITORY_ID" --target-ref "$EXPECTED_REVISION" \
-            --db "$RUNNER_TEMP/actual-method.sqlite" --include-repository-structure --json \
-            | tee "$RUNNER_TEMP/actual-method-build.json"
-          test -z "$(git status --porcelain)"
-      - name: Retrieve actual conditional method and prior lesson
+          TARGET="$RUNNER_TEMP/actual-prior-method-target"
+          DRAFT=.sensemaking/proposals/execution-substitution-method.json
+          DEST=.sensemaking/knowledge/execution-substitution-method.json
+          test ! -e "$TARGET/$DEST"
+          sensemaking-skills semantic method record --repo "$TARGET" \
+            --episode artifacts/history/2026-11-27-execution-substitution-method-episode.json \
+            --draft-only --output "$DRAFT" --json \
+            | tee "$RUNNER_TEMP/actual-method-draft.json"
+          test ! -e "$TARGET/$DEST"
+          test "$(git -C "$TARGET" hash-object "$DRAFT")" = "$EXPECTED_BLOB"
+          cmp "$TARGET/$DRAFT" ".sensemaking/knowledge/execution-substitution-method.json"
+          echo "ACTUAL_METHOD_DRAFT_BLOB=$EXPECTED_BLOB"
+          sensemaking-skills semantic knowledge-proposal-check --repo "$TARGET" \
+            --proposal "$DRAFT" --destination "$DEST" --json \
+            | tee "$RUNNER_TEMP/actual-method-detached-preflight.json"
+          test ! -e "$TARGET/$DEST"
+      - name: Actual handoff with a nonempty detached proposal directory
         run: |
           set -euo pipefail
-          sensemaking-skills semantic knowledge-query --db "$RUNNER_TEMP/actual-method.sqlite" \
-            --repository "$REPOSITORY_ID" --target-ref "$EXPECTED_REVISION" \
-            --operation explain --subject lesson:conditional-method-2026-11-27-equivalent-execution-substitution --json \
-            | tee "$RUNNER_TEMP/actual-method-explain.json"
-      - name: Recover method context from actual decision question
-        run: |
-          set -euo pipefail
-          sensemaking-skills semantic method context --repo . --ref "$EXPECTED_REVISION" \
-            --question "Required canonical mechanical gate cannot execute in active environment; authorized equivalent execution context versus deferring blocked responsibility" --json \
-            > "$RUNNER_TEMP/actual-method-context.json"
+          TARGET="$RUNNER_TEMP/actual-prior-method-target"
+          sensemaking-skills handoff --repo "$TARGET" --output "$RUNNER_TEMP/actual-handoff" \
+            --skill-path "$GITHUB_WORKSPACE/skills/using-sensemaking" \
+            --expected-source-ref "$EXPECTED_REVISION" \
+            --question "Recover the actual earlier method episode before deciding whether to retain it" --json \
+            > "$RUNNER_TEMP/actual-method-handoff.json"
           python - <<'PY'
           import json, os
           from pathlib import Path
-          p=json.loads((Path(os.environ["RUNNER_TEMP"])/"actual-method-context.json").read_text())
-          print("METHOD_CONTEXT_SUMMARY="+json.dumps({"target_ref":p.get("target_ref"),"candidate_ids":[c.get("id") for c in p.get("method_candidates",[])],"candidate_status":[{"id":c.get("id"),"applicability":c.get("applicability_to_present_task")} for c in p.get("method_candidates",[])],"semantic_truth_established":p.get("semantic_truth_established"),"action_authorized":p.get("action_authorized")}))
+          p = json.loads((Path(os.environ["RUNNER_TEMP"])/"actual-method-handoff.json").read_text())
+          ci = p["continuity"]["inventory"]
+          print("ACTUAL_DRAFT_HANDOFF="+json.dumps({"detached_proposal_files":ci["detached_proposal_files"],"speculative_record_review_state":ci["speculative_record_review_state"],"analysis_performed":p["analysis_performed"],"action_authorized":p["action_authorized"],"source_expectation":p["source_expectation"]["status"]}))
           PY
+      - name: Preserve exact checked bytes and confirm original gate
+        run: |
+          set -euo pipefail
+          TARGET="$RUNNER_TEMP/actual-prior-method-target"
+          DRAFT=.sensemaking/proposals/execution-substitution-method.json
+          DEST=.sensemaking/knowledge/execution-substitution-method.json
+          test ! -e "$TARGET/$DEST"
+          cp "$TARGET/$DRAFT" "$TARGET/$DEST"
+          cmp "$TARGET/$DRAFT" "$TARGET/$DEST"
+          sensemaking-skills semantic knowledge-proposal-check --repo "$TARGET" \
+            --proposal "$DEST" --json | tee "$RUNNER_TEMP/actual-method-final-path-preflight.json"
+          rm -- "$TARGET/$DEST" "$TARGET/$DRAFT"
+          test -z "$(git -C "$TARGET" status --porcelain)"
+          test -z "$(git status --porcelain)"
       - name: Retain actual outputs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: actual-integrated-conditional-method-consumption
+          name: actual-detached-method-experience
           path: ${{ runner.temp }}/actual-method-*.json
           if-no-files-found: warn
           retention-days: 14
