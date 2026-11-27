@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "claims": [
+    {
+      "id": "cap:developmental-trajectory-reasoning",
+      "kind": "capability",
+      "statement": "Developmental Trajectory Reasoning discovers, understands, evaluates, cultivates and adapts possible developmental trajectories through which present actions transform the conditions for future value creation. Use it when future capability states, enabling conditions, path dependence or unselected futures could change a consequential choice.",
+      "authority_kind": "document",
+      "authority_ref": "skills/using-sensemaking/references/developmental-trajectory-reasoning-v1.md",
+      "evidence_refs": [
+        "file:skills/using-sensemaking/references/developmental-trajectory-reasoning-v1.md",
+        "file:docs/semantic-architecture/developmental-trajectory-reasoning-ontology.md"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "decision_changed": "When selecting or revising a consequential development responsibility, compare the conditions and effects of multiple routes rather than only optimizing the currently selected path.",
+        "claim_ceiling": "Source-declared capability and integrated guidance, not independent cognitive benefit or runtime verification."
+      }
+    },
+    {
+      "id": "domain_concept:developmental-trajectory-landscape",
+      "kind": "domain_concept",
+      "statement": "A developmental trajectory landscape is a decision-relative view of actual and possible states, coherent construction paths, enabling conditions, constraints, conditional consequences and deferred or emergent opportunities. Shared-reference overlap, necessity, complementarity and causal enabling are distinct.",
+      "authority_kind": "document",
+      "authority_ref": "docs/semantic-architecture/developmental-trajectory-reasoning-ontology.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/developmental-trajectory-reasoning-ontology.md",
+        "file:skills/using-sensemaking/references/developmental-trajectory-reasoning-v1.md"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "decision_changed": "Retain and reconsider materially affected unselected routes and distinguish typed reference overlap from semantic warrants; no new master artifact or automatic strategy."
+      }
+    },
+    {
+      "id": "con:dtr-source-scoped-trajectory-identity",
+      "kind": "constraint",
+      "statement": "Construction path, assumption and transition identifiers are scoped to their original strategic analysis. Matching local IDs or chronological proximity cannot establish cross-analysis semantic identity; exact supplied references may be projected mechanically and ambiguous references must stay unresolved.",
+      "authority_kind": "document",
+      "authority_ref": "docs/semantic-architecture/developmental-trajectory-reasoning-ontology.md",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/developmental-trajectory-reasoning-ontology.md",
+        "file:docs/semantic-architecture/prospective-reasoning-ontology.md",
+        "file:artifacts/history/2026-11-27-dtr-ontology-self-development.md"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "decision_changed": "Prevent a closed historical path from being mistaken for a different later path reusing its ID."
+      }
+    },
+    {
+      "id": "observation:dtr-declared-context-projection",
+      "kind": "observation",
+      "statement": "At the integrated 2026-11-27 source revision, the opt-in strategy paths JSON projection groups literal typed capability references and declared shared assumption IDs; strategy graph uses analysis-local path/assumption/transition identities and explicit reference resolution.",
+      "authority_kind": "code",
+      "authority_ref": "src/sensemaking_skills/strategy_cli.py",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/strategy_cli.py",
+        "file:docs/cli-reference.md",
+        "file:artifacts/history/2026-11-27-dtr-ontology-self-development.md"
+      ],
+      "epistemic_status": "observed",
+      "attributes": {
+        "assessed_ref": "ccd7d1f9155e239ac969341757f2f15d7d09efe9",
+        "claim_ceiling": "Observed source implementation only; CLI execution, actual semantic use and benefit not established."
+      }
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel:dtr-serves-long-horizon-purpose",
+      "subject": "cap:developmental-trajectory-reasoning",
+      "predicate": "serves_goal",
+      "object": "goal:domain-general-cognitive-development",
+      "evidence_refs": [
+        "file:docs/adr/0038-long-horizon-adaptive-strategic-development.md",
+        "file:skills/using-sensemaking/references/developmental-trajectory-reasoning-v1.md"
+      ],
+      "attributes": {
+        "scope": "Intended intellectual contribution to the ratified purpose; no outcome proof."
+      }
+    },
+    {
+      "id": "rel:dtr-references-developmental-landscape",
+      "subject": "cap:developmental-trajectory-reasoning",
+      "predicate": "references",
+      "object": "domain_concept:developmental-trajectory-landscape",
+      "evidence_refs": [
+        "file:skills/using-sensemaking/references/developmental-trajectory-reasoning-v1.md",
+        "file:docs/semantic-architecture/developmental-trajectory-reasoning-ontology.md"
+      ],
+      "attributes": {
+        "scope": "The documentary landscape is the cognitive object, not a separate database or artifact."
+      }
+    },
+    {
+      "id": "rel:dtr-constrained-by-scoped-identity",
+      "subject": "cap:developmental-trajectory-reasoning",
+      "predicate": "constrained_by",
+      "object": "con:dtr-source-scoped-trajectory-identity",
+      "evidence_refs": [
+        "file:docs/semantic-architecture/developmental-trajectory-reasoning-ontology.md",
+        "file:skills/using-sensemaking/references/developmental-trajectory-reasoning-v1.md"
+      ],
+      "attributes": {
+        "scope": "Identity and semantic correspondence boundary."
+      }
+    },
+    {
+      "id": "rel:dtr-references-source-projection",
+      "subject": "cap:developmental-trajectory-reasoning",
+      "predicate": "references",
+      "object": "observation:dtr-declared-context-projection",
+      "evidence_refs": [
+        "file:skills/using-sensemaking/references/developmental-trajectory-reasoning-v1.md",
+        "file:src/sensemaking_skills/strategy_cli.py"
+      ],
+      "attributes": {
+        "scope": "Read-only assistance, not a claim that mechanical projection implements the full intellectual capability."
+      }
+    }
+  ]
+}
