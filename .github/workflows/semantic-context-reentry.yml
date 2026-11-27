@@ -1841,6 +1841,16 @@ jobs:
           assert prior["session_ref"] == "2026-11-27-long-horizon-strategic-development"
           assert prior["state"] == "final"
           assert "Episode 10C" in prior["next"]["warranted_responsibility"]
+          import yaml
+          source = yaml.safe_load(Path(record["path"]).read_text(encoding="utf-8"))
+          responsibilities = source["responsibilities"]
+          assert prior["responsibilities_omitted"] == max(0, len(responsibilities) - 12)
+          for projected, authored in zip(prior["responsibilities"], responsibilities[:12], strict=True):
+              for field in ("id", "responsibility", "capability", "status", "reason"):
+                  assert projected[field] == authored[field], field
+              assert projected["artifact_refs"] == authored["artifact_refs"][:12]
+              assert projected["artifact_refs_omitted"] == max(0, len(authored["artifact_refs"]) - 12)
+          assert "A completed local increment is not mission closure." in packet["prompt"]
           assert record["relevance_established"] is False and record["action_authorized"] is False
           assert packet["analysis_performed"] is False and packet["action_authorized"] is False
           print("Selected actual prior receipt validated and projected; no agent benefit or loading claim.")

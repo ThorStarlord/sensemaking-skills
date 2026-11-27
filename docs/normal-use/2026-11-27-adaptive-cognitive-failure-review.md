@@ -74,6 +74,8 @@ python scripts/summarize-receipts.py --repo . \
   --closure-context 2026-11-19-precommit-review-construction --json
 ~~~
 
+The adjacent first-use handoff consumer already projected goal, stop, next and claim ceiling for explicitly selected validated receipts, but omitted the actual responsibility entries. Extend its existing bounded projection with those entries, reasons, artifact pointers and omission counts; add one conditional prompt cue for goal-to-responsibility comparison. This is not a new handoff or duplicate reader. Original receipt inspection remains authoritative. The existing real retained-session handoff check now compares responsibility fields to source.
+
 The actual #935 record (not a synthetic cognition fixture) is used by the existing hosted context-reentry workflow to verify field preservation. This validates delivery of historical evidence only. The reviewer still owns judgment, checks current intent and relevant original sources, and distinguishes a real blocker from merely missing qualification. No inferred failure flag, forced activation, automatic stop, or global defect count is produced.
 
 **Next developmental boundary:** a fresh capable coding-agent session should use this context when a real consequential continuation choice arises, then demonstrate actual correction or justified reaffirmation. Retain a conditional method update only if actual evidence warrants it. Independent qualification (#872/#874) remains separate. No new controller, schema, synthetic episode, or forced learning record.

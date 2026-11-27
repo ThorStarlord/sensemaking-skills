@@ -132,6 +132,7 @@ def _project(data: dict[str, Any]) -> dict[str, Any]:
     projection["next"]["blocked_on"] = [_scalar(item) for item in blocked[:_MAX_ITEMS]]
     projection["next"]["blocked_on_omitted"] = max(0, len(blocked) - _MAX_ITEMS)
     for key, fields in (
+        ("responsibilities", ("id", "responsibility", "capability", "status", "reason")),
         ("findings", ("id", "statement", "epistemic_status", "disposition")),
         ("open_questions", ("id", "question", "source", "blocking", "durable_ref")),
     ):
@@ -141,6 +142,12 @@ def _project(data: dict[str, Any]) -> dict[str, Any]:
             for item in items[:_MAX_ITEMS]
         ]
         projection[key + "_omitted"] = max(0, len(items) - _MAX_ITEMS)
+    for index, responsibility in enumerate((data.get("responsibilities") or [])[:_MAX_ITEMS]):
+        refs = responsibility.get("artifact_refs") or []
+        projection["responsibilities"][index]["artifact_refs"] = [
+            _scalar(ref) for ref in refs[:_MAX_ITEMS]
+        ]
+        projection["responsibilities"][index]["artifact_refs_omitted"] = max(0, len(refs) - _MAX_ITEMS)
     for index, finding in enumerate((data.get("findings") or [])[:_MAX_ITEMS]):
         refs = finding.get("evidence_refs") or []
         projection["findings"][index]["evidence_refs"] = [_scalar(ref) for ref in refs[:_MAX_ITEMS]]
