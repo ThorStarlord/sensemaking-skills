@@ -185,7 +185,16 @@ Then:
    predecessor links and next responsibilities; a tie for the latest update
    time is reported without choosing one. Inspect relevant source receipts:
    chronology does not establish relevance or whether a linked session
-   actually supersedes a finding or recommendation.
+   actually supersedes a finding or recommendation. The reader's
+   `closure_context` presents the authored goal, selected responsibilities,
+   stop reason, next, source identity and claim ceiling for the latest final
+   candidate(s); use repeatable `--closure-context SESSION_REF` to include
+   relevant historical final sessions alongside them. Unavailable or
+   non-final requested sessions are disclosed, not invented. Compare the
+   actual scope, evidence and blocker with the original delegation and
+   current sources when a consequential continuation or stop could change.
+   This projection is not a diagnosis, recommendation or decision about
+   historical warrant; ties are not resolved by the reader.
 4. **HISTORICAL / REPEATED KNOWLEDGE MISSES** are inputs for
    `repository-semantic-steward` RECONCILE, not a backlog. The reader lists
    follow-up statuses as recorded in each receipt, without reconciling later

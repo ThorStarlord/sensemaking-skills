@@ -10,6 +10,9 @@ It reports, mechanically and without judging meaning:
   - open questions not resolved by any later receipt's continuity.resolves_questions;
   - final sessions' next responsibilities and predecessor links, plus the
     latest final session by update time (not a relevance or authority decision);
+  - authored closure context for latest final candidates and any explicitly selected
+    historical final sessions (goal, responsibilities, stop rationale and claim
+    ceiling, without inferring whether the stop is warranted);
   - knowledge misses recorded as ADD_PROPOSED or DEFERRED at the time;
   - misses whose subject or terms recur across two or more sessions;
   - receipts whose declared persistence is non-durable and whose current content
@@ -218,7 +221,8 @@ def _remote_durability(records: list[dict], current_blobs: dict[str, str] | None
             "local_only_not_checked_out": [{"receipt": name} for name in not_checked_out]}
 
 
-def summarize(receipt_dir: Path, repo_root: Path | None = None) -> dict[str, Any]:
+def summarize(receipt_dir: Path, repo_root: Path | None = None, *,
+              closure_sessions: list[str] | None = None) -> dict[str, Any]:
     files = sorted(
         p for p in receipt_dir.glob("*.yaml")
         if p.name.endswith(".session.yaml") or p.name.endswith(".query.yaml")
@@ -290,6 +294,44 @@ def summarize(receipt_dir: Path, repo_root: Path | None = None) -> dict[str, Any
                    if latest is not None and r["updated_at"] == latest["updated_at"]]
     next_step = latest if len(latest_ties) == 1 else None
 
+    # Project authored closure evidence for the latest candidate(s), plus
+    # caller-selected historical final sessions. A next label alone hides the
+    # distinction between mission scope, local completion and a real blocker.
+    # Do not assess intent, diagnose failure, or choose between tied sessions.
+    finals_by_ref = {r["data"]["session_ref"]: r for r in finals}
+    selected_refs = list(dict.fromkeys([*latest_ties, *(closure_sessions or [])]))
+    closure_records = []
+    unavailable_closure_refs = []
+    for session_ref in selected_refs:
+        record = finals_by_ref.get(session_ref)
+        if record is None:
+            unavailable_closure_refs.append(session_ref)
+            continue
+        data = record["data"]
+        closure_records.append({
+            "from_session": session_ref,
+            "receipt": record["file"],
+            "source_identity": data["source_identity"],
+            "goal": data["goal"],
+            "responsibilities": [
+                {key: responsibility[key] for key in
+                 ("id", "responsibility", "status", "reason", "artifact_refs")}
+                for responsibility in data["responsibilities"]
+            ],
+            "stop": data["stop"],
+            "next": data["next"],
+            "claim_ceiling": data["claim_ceiling"],
+        })
+    closure_context = {
+        "sessions": closure_records,
+        "unavailable": unavailable_closure_refs,
+        "note": (
+            "Authored historical evidence only; not an assessment of stop warrant, "
+            "failure, current relevance or authority. Inspect original receipts "
+            "and later corrections before deciding."
+        ),
+    }
+
     unfinished = [
         {"receipt": r["file"], "updated_at": r["data"]["updated_at"]}
         for r in sessions + queries if r["data"]["state"] == "in_progress"
@@ -349,6 +391,7 @@ def summarize(receipt_dir: Path, repo_root: Path | None = None) -> dict[str, Any
         "next": next_step,
         "final_sessions": final_sessions,
         "latest_ties": latest_ties if len(latest_ties) > 1 else [],
+        "closure_context": closure_context,
         "pending_misses": pending_misses,
         "pending_misses_note": _MISS_STATUS_NOTE,
         "repeated_misses": repeated_misses,
@@ -404,6 +447,24 @@ def _print_text(summary: dict[str, Any]) -> None:
         lines.append(f"NEXT: latest update time tied: {', '.join(summary['latest_ties'])}")
     else:
         lines.append("NEXT: no final session receipt")
+    context = summary["closure_context"]
+    lines.append("AUTHORED CLOSURE CONTEXT (latest candidate(s) and requested historical sessions):")
+    lines.append(f"  {context['note']}")
+    for session in context["sessions"]:
+        lines.append(f"  {session['from_session']} ({session['receipt']})")
+        lines.append(f"    goal: {session['goal']['statement']}")
+        for responsibility in session["responsibilities"]:
+            lines.append(
+                f"    {responsibility['id']} [{responsibility['status']}] "
+                f"{responsibility['responsibility']}: {responsibility['reason']}"
+            )
+        lines.append(f"    stop ({session['stop']['disposition']}): {session['stop']['reason']}")
+        lines.append(f"    next: {session['next']['warranted_responsibility']}")
+        if session["next"]["blocked_on"]:
+            lines.append(f"    blocked on: {', '.join(session['next']['blocked_on'])}")
+        lines.append(f"    claim ceiling: {session['claim_ceiling']}")
+    for session_ref in context["unavailable"]:
+        lines.append(f"  {session_ref}: no valid final session receipt found")
     lines.append(f"HISTORICAL KNOWLEDGE MISSES (ADD_PROPOSED or DEFERRED): {len(summary['pending_misses'])}")
     lines.append(f"  {_MISS_STATUS_NOTE}")
     for m in summary["pending_misses"]:
@@ -454,11 +515,13 @@ def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(description="Summarize Sensemaking receipts for session start")
     parser.add_argument("--repo", default=".", help="Target repository root (default: current directory)")
     parser.add_argument("--dir", default=None, help=f"Receipt directory (default: <repo>/{_validator.RECEIPT_DIR})")
+    parser.add_argument("--closure-context", metavar="SESSION_REF", action="append", default=[],
+                        help="Include authored closure context for a historical final session (repeatable)")
     parser.add_argument("--json", action="store_true", help="Emit JSON")
     args = parser.parse_args(argv)
 
     receipt_dir = Path(args.dir) if args.dir else Path(args.repo) / _validator.RECEIPT_DIR
-    summary = summarize(receipt_dir, Path(args.repo))
+    summary = summarize(receipt_dir, Path(args.repo), closure_sessions=args.closure_context)
     if args.json:
         print(_ascii(json.dumps(summary, indent=2)))
     else:

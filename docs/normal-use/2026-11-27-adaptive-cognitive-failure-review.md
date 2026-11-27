@@ -62,4 +62,18 @@ Existing architecture covers the intended cognitive operations conceptually; an 
 
 **Developmental choice:** the intended trajectory is externally prompted recognition -> method-supported diagnosis -> self-initiated correction -> conditional adaptation -> experience-informed prevention -> transferable improvement. These are prospective capability states, not ratified maturity levels or observed transitions. The governing product strategy is reaffirmed; no Level-3 reopening or Level-4 revision is warranted. Construction and use proceed together where justified.
 
-**Next decision:** reconstruct the actual #935 goal/stop/next/claim ceiling through existing surfaces; determine whether a point-of-use repair improves the consumer. Subsequent authentic use should record observable task context and actual actions, including counterexamples and justified STOP. Independent qualification (#872/#874) stays separate. No synthetic episode, automated review gate, new schema, or forced learning record.
+## 5. Point-of-use construction
+
+Source inspection of `scripts/summarize-receipts.py` confirmed the relevant barrier: validated receipt data already contains the delegated goal, responsibility reasons, stop reason and claim ceiling, but `final_sessions` and `next` projected only the stop disposition and next task/blocked-on list. A reader can therefore see `SCOPE_EXHAUSTED` without the scope on which that conclusion rests. Raw YAML reads remain a valid, cheaper alternative for a single known receipt. The ordinary session-start reader is already the consumer; use a bounded additive projection rather than a separate evaluator or new receipt schema.
+
+The selected mechanical enhancement emits `closure_context` for the latest valid final candidate(s) and optionally selected historical session references, without selecting among ties. Both text and JSON show the authored goal, local responsibilities and reasons, stop rationale, next and claim ceiling; JSON preserves source identity and artifact pointers. Existing `next`, `final_sessions`, exit codes and persistence semantics stay unchanged. An unavailable requested final session is explicitly reported. Example:
+
+~~~bash
+python scripts/summarize-receipts.py --repo . \
+  --closure-context 2026-11-19-method-v0-source-path-provenance \
+  --closure-context 2026-11-19-precommit-review-construction --json
+~~~
+
+The actual #935 record (not a synthetic cognition fixture) is used by the existing hosted context-reentry workflow to verify field preservation. This validates delivery of historical evidence only. The reviewer still owns judgment, checks current intent and relevant original sources, and distinguishes a real blocker from merely missing qualification. No inferred failure flag, forced activation, automatic stop, or global defect count is produced.
+
+**Next developmental boundary:** a fresh capable coding-agent session should use this context when a real consequential continuation choice arises, then demonstrate actual correction or justified reaffirmation. Retain a conditional method update only if actual evidence warrants it. Independent qualification (#872/#874) remains separate. No new controller, schema, synthetic episode, or forced learning record.
