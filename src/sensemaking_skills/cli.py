@@ -251,9 +251,11 @@ def _history_payload(snapshot: CampaignSnapshot) -> dict[str, Any]:
     default=None,
     help="Explicit installed using-sensemaking Skill directory or SKILL.md",
 )
+@click.option("--expected-source-ref", default=None, help="Intended full Git commit ID for the Skill")
+@click.option("--resume-from", multiple=True, help="Select a target-relative session receipt (repeat up to five times)")
 @click.option("--json", "output_json", is_flag=True)
-def handoff(repo, output, question, harness, scope, skill_path, output_json):
-    """Prepare a verified first-use handoff to the installed using-sensemaking Skill.
+def handoff(repo, output, question, harness, scope, skill_path, expected_source_ref, resume_from, output_json):
+    """Prepare a first-use or returning handoff to the installed using-sensemaking Skill.
 
     The command verifies the installed entrypoint Skill, inventories the target
     repository and writes handoff.json and handoff.md. It does not analyze the
@@ -267,6 +269,8 @@ def handoff(repo, output, question, harness, scope, skill_path, output_json):
             harness=harness,
             scope=scope,
             skill_path=skill_path,
+            expected_source_ref=expected_source_ref,
+            resume_from=resume_from,
         )
     except (ValueError, OSError) as exc:
         raise click.ClickException(str(exc)) from exc
@@ -313,8 +317,10 @@ def handoff(repo, output, question, harness, scope, skill_path, output_json):
     default=None,
     help="Explicit installed using-sensemaking Skill directory or SKILL.md",
 )
+@click.option("--expected-source-ref", default=None, help="Intended full Git commit ID for the Skill")
+@click.option("--resume-from", multiple=True, help="Select a target-relative session receipt (repeat up to five times)")
 @click.option("--json", "output_json", is_flag=True)
-def analyze(repo, output, question, harness, scope, skill_path, output_json):
+def analyze(repo, output, question, harness, scope, skill_path, expected_source_ref, resume_from, output_json):
     """Compatibility alias for handoff; the CLI does not analyze semantics.
 
     The stable command name is retained for the Version 1.0 surface. Use
@@ -335,6 +341,8 @@ def analyze(repo, output, question, harness, scope, skill_path, output_json):
             harness=harness,
             scope=scope,
             skill_path=skill_path,
+            expected_source_ref=expected_source_ref,
+            resume_from=resume_from,
         )
     except (ValueError, OSError) as exc:
         raise click.ClickException(str(exc)) from exc
