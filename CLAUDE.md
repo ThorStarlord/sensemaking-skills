@@ -84,6 +84,11 @@ The active coding agent owns the top-level control loop (ADR 0013). Use
   warranted by current evidence. Execution/orchestration coordinates how the
   selected responsibility is performed. Do not restore automatic downstream
   routing merely because a runtime path exists.
+- **Cognitive safeguards at consequential choices.** Apply the existing
+  [AMS cognitive failure recognition and correction](skills/using-sensemaking/references/metareasoning-policy-v0.md#5b-cognitive-failure-recognition-and-correction-conditional)
+  when goal fit, alternative coverage, omission cost, or a proposed terminal
+  stop is materially uncertain. Do not review every routine output or treat
+  the completion of a self-selected increment as exhaustion of owner scope.
 - **Validation is not closure.** Mechanical PASS makes an artifact eligible
   for semantic use; it does not prove the conclusion, work claim, or original
   finding is resolved.
