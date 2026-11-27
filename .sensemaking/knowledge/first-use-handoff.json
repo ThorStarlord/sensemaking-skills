@@ -69,6 +69,25 @@
         "agent_owned": true,
         "library_ref": "docs/idea-library.md"
       }
+    },
+    {
+      "id": "cap:source-qualified-sustained-reentry",
+      "kind": "capability",
+      "statement": "The existing handoff command supports explicit intended Skill source comparison and executable provenance, bounded current continuity path discovery, and canonical validation with historical projection of selected prior session receipts. It does not select relevance, strategy, loaded Skill identity or authority.",
+      "authority_kind": "code",
+      "authority_ref": "src/sensemaking_skills/first_use.py",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/first_use.py",
+        "file:src/sensemaking_skills/reentry_context.py",
+        "file:src/sensemaking_skills/cli.py",
+        "file:docs/normal-use/2026-11-27-sustained-development-reentry.md",
+        "file:docs/adr/0038-long-horizon-adaptive-strategic-development.md"
+      ],
+      "epistemic_status": "observed",
+      "attributes": {
+        "scope": "Source-inspected implementation; selected working-tree receipts, direct committed Skill tree comparison when available or install record fallback. No implicit full history scan.",
+        "claim_ceiling": "Source-level capability. Actual fresh-context benefit, verified loaded bytes, reduced rediscovery and independent longitudinal cognitive development are not established."
+      }
     }
   ],
   "relations": [
@@ -170,6 +189,19 @@
       "attributes": {
         "conceptual_relation": "assumes",
         "establishment": "authored"
+      }
+    },
+    {
+      "id": "rel:source-qualified-reentry-serves-cognitive-goal",
+      "subject": "cap:source-qualified-sustained-reentry",
+      "predicate": "serves_goal",
+      "object": "goal:domain-general-cognitive-development",
+      "evidence_refs": [
+        "file:docs/adr/0038-long-horizon-adaptive-strategic-development.md",
+        "file:docs/normal-use/2026-11-27-sustained-development-reentry.md"
+      ],
+      "attributes": {
+        "scope": "Intended contribution to integrated long-horizon strategic development; not proven cognitive benefit."
       }
     }
   ]

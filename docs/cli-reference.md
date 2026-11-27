@@ -21,7 +21,7 @@ sensemaking-skills [--version] <command> ...
 | --- | --- | --- |
 | `setup-skills` | Copy packaged Skill trees to an explicitly chosen harness discovery root. No harness auto-detection. | `docs/harness-adapters.md`, `INSTALLATION.md` |
 | `validate` | Validate a repository sensemaking brief or workflow plan (`--artifact`, `--json`). | `docs/validation-workflow.md` |
-| `handoff` | Verify an installed `using-sensemaking` Skill, inventory a target repository, and write a ready-to-use handoff prompt (`--repo`, `--output`, `--question`, `--harness`, `--scope`, `--skill-path`, `--json`). Does not analyze semantics. | `docs/cli-reference.md` (below) |
+| `handoff` | Verify an installed `using-sensemaking` Skill, inventory a target repository, and write a ready-to-use handoff prompt (`--repo`, `--output`, `--question`, `--harness`, `--scope`, `--skill-path`, `--expected-source-ref`, `--resume-from`, `--json`). Does not analyze semantics. | `docs/cli-reference.md` (below) |
 | `analyze` | Compatibility alias for `handoff`; retained for the Version 1.0 command surface. | `docs/public-surface-v1.0.md` |
 | `test` | Shadow-mode validation automation over sample repositories (`--repos`). | `docs/archive/phase-reports/` (historical) |
 | `campaign` | Durable Campaign state, handoff/resume, execution companions, lineage, bundles, multi-target, provenance. | `docs/campaign-cli.md` |
@@ -196,7 +196,7 @@ verify GitHub PR identity, complete ancestry, semantic truth or Skill quality.
 
 `sensemaking-skills handoff --repo TARGET [--output DIR] [--question TEXT]
 [--harness generic|claude|codex|opencode] [--scope any|user|project]
-[--skill-path PATH] [--json]` verifies an installed `using-sensemaking` Skill,
+[--skill-path PATH] [--expected-source-ref SHA] [--resume-from RECEIPT ...] [--json]` verifies an installed `using-sensemaking` Skill,
 inventories the target repository's paths, manifests and entry documents, and
 writes `handoff.json` and `handoff.md` with a ready-to-use prompt. It does not
 analyze repository semantics, select work or authorize action. It fails closed
@@ -205,6 +205,8 @@ if no installed copy is found or multiple copies are ambiguous; pass
 installed tree with the packaged source or the install record; a stale or
 unrecorded copy is reported, not silently trusted. `analyze` is a compatibility
 alias with the same options.
+
+The additive handoff fields expose executable code provenance, expected source comparison (direct committed Skill tree when available, otherwise digest-linked record), bounded continuity path inventories and (only on explicit selection) validated prior session receipt projections. `--resume-from` accepts up to five distinct direct repository-relative `.sensemaking/receipts/*.session.yaml` paths. It uses the existing canonical validator against the current target, not a new format or automatic resume selector. Invalid/unavailable receipts are reported without a historical projection. The handoff is not a snapshot and does not prove loaded Skill identity, relevance, currentness or permission. See [returning engagement](../GETTING_STARTED.md#re-enter-sustained-development).
 
 ## `validate`
 

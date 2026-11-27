@@ -99,7 +99,26 @@ sensemaking-skills handoff --repo /path/to/target \
 
 The command verifies the installed `using-sensemaking` Skill, inventories the target repository's paths, manifests and entry documents, and writes `handoff.json` and `handoff.md`. It does **not** analyze the repository. Open the target in your coding-agent harness, make the Skill discoverable (or point the agent at the printed `SKILL.md` path), and give the agent the prompt from `handoff.md`.
 
-If multiple installed copies exist, pass `--harness`, `--scope` or `--skill-path`. A stale or unrecorded copy is reported with an update instruction rather than silently trusted. `analyze` remains a compatibility alias with the same options.
+If multiple installed copies exist, pass `--harness`, `--scope` or `--skill-path`. A stale or unrecorded copy is reported rather than silently trusted. `analyze` remains a compatibility alias with the same options.
+
+### Re-enter sustained development
+
+Use the same handoff for a returning agent. It inventories bounded working-tree paths for reviewed knowledge, receipts and strategy. Select relevant prior sessions yourself rather than automatically following the latest receipt:
+
+```bash
+sensemaking-skills handoff --repo /path/to/target \
+  --output /path/to/handoff \
+  --harness generic \
+  --expected-source-ref FULL_FRAMEWORK_COMMIT \
+  --resume-from .sensemaking/receipts/SESSION.session.yaml \
+  --question "Which next responsibility best advances the product purpose?"
+```
+
+Replace the placeholders with actual values. Repeat `--resume-from` up to five times or omit it to inventory without reading receipts. The output separately reports the requested Skill ref, digest-linked install record, package-tree comparison, executable code provenance and unobserved loaded identity. When the requested commit exists in an available framework source checkout, the selected tree is compared directly with its committed Skill tree using the existing setup-skills tree comparator; line-ending-only differences are disclosed separately. The comparison covers only the entry Skill tree, not sibling Skills, the CLI source revision or host-loaded bytes. Otherwise a matching record is metadata, not proof of host loading. A copy matching package bytes but lacking a matching source-commit record or committed-tree comparison is not a verified requested ref; resolve through the intended source or an authorized isolated install. No automatic updates.
+
+Explicitly selected receipts use the existing bundled validator against the target working tree. Valid bounded historical projections, invalid results and unavailable validation are distinguished. Read the original receipt for full evidence, authority, blockers and omitted fields. A prior receipt is never authority, strategic selection or proof of currentness. Keep outputs local when they contain private domain context. Read original sources and the [integrated lifecycle](skills/using-sensemaking/references/long-horizon-strategic-development-v1.md).
+
+For direct validation without a handoff, use `sensemaking-skills validate --artifact <receipt-path> --target-repo <target-root> --json`. Wheels already bundle the canonical validator. If the CLI is missing, explicitly load the intended Skill source and use the existing source-checkout validator where available; report NOT_RUN otherwise.
 
 ## Optional decision transparency
 

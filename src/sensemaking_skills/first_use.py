@@ -1,4 +1,4 @@
-"""Prepare a verified first-use handoff from the CLI to the installed Skill.
+"""Prepare a first-use or returning-engagement handoff to the installed Skill.
 
 The handoff names paths, install-record facts and a target-repository inventory.
 It does not analyze repository semantics, select work or authorize action. The
@@ -8,17 +8,22 @@ active agent still invokes the installed ``using-sensemaking`` entrypoint.
 from __future__ import annotations
 
 import json
+import re
+import sys
 from datetime import datetime, timezone
-from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
 from . import __version__
+from .code_provenance import code_provenance_lines
+from .reentry_context import continuity_inventory, selected_receipts
 from .harness_adapters import CANONICAL_HARNESS_TARGETS, get_harness_adapter
 from .semantic_architecture.worktree_context import guarded_git_text
 from .setup_skills import (
     INSTALL_RECORD_NAME,
     SkillsSetupError,
+    _CommittedSkillHistory,
+    _git_tree_id,
     _skill_tree_fingerprint,
     _tree_digest,
     get_package_skills_dir,
@@ -52,10 +57,12 @@ _MANIFESTS = (
     "justfile",
 )
 _LIMITS = (
-    "The handoff names paths and install metadata only; it does not analyze repository semantics.",
-    "Installed-Skill currency compares the copied tree with the install record; it does not show what a harness loaded or will load.",
+    "The handoff projects paths, install metadata and selected receipt history; it does not analyze repository semantics.",
+    "Installed-Skill currency compares the copied tree with package source or the install record; it does not show what a harness loaded or will load.",
+    "Receipt validation checks representation and current path references, not semantic correctness, applicability or authority.",
+    "Continuity inventories describe the working tree, not a committed snapshot or a complete strategic model.",
     "The generated prompt must be executed by a capable agent with repository access and its own authority.",
-    "A stale or unrecorded Skill may differ from the package; update it with setup-skills before consequential use.",
+    "A stale or unrecorded Skill may differ from the package; resolve the actual source before consequential use.",
     "No semantic truth, decision authority or action authorization is established.",
 )
 
@@ -81,7 +88,6 @@ def _candidate_roots(target: Path, harness: str | None) -> list[tuple[str, str, 
     return roots
 
 
-@lru_cache(maxsize=1)
 def _package_source() -> tuple[Path | None, dict[str, str] | None]:
     try:
         source = get_package_skills_dir() / ENTRY_SKILL
@@ -145,6 +151,8 @@ def _skill_candidate(
         "tree_sha256": digest,
         "source_comparison": source,
         "version_mismatch": version_mismatch,
+        "recorded_tree_matches": bool(recorded and recorded.get("tree_sha256") == digest),
+        "loaded_skill_identity": "NOT_OBSERVED",
     }
 
 
@@ -201,7 +209,7 @@ def _git_facts(target: Path) -> dict[str, Any]:
         return {"is_git": True, "head": None, "branch": None, "error": str(exc)[:240]}
 
 
-def _target_inventory(target: Path) -> dict[str, Any]:
+def _target_inventory(target: Path, continuity: dict[str, Any]) -> dict[str, Any]:
     top_level: list[dict[str, str]] = []
     for item in sorted(target.iterdir(), key=lambda path: path.name):
         if item.name == ".git":
@@ -210,10 +218,7 @@ def _target_inventory(target: Path) -> dict[str, Any]:
             break
         kind = "symlink" if item.is_symlink() else ("dir" if item.is_dir() else "file")
         top_level.append({"name": item.name, "kind": kind})
-    knowledge = target / ".sensemaking" / "knowledge"
-    knowledge_files = (
-        len(list(knowledge.glob("*.json"))) if knowledge.is_dir() else 0
-    )
+    knowledge = continuity["knowledge_files"]
     return {
         "top_level": top_level,
         "top_level_truncated": len(top_level) >= _MAX_TOP_LEVEL,
@@ -221,14 +226,74 @@ def _target_inventory(target: Path) -> dict[str, Any]:
             name for name in _ENTRY_DOCUMENTS if (target / name).is_file()
         ],
         "manifests": [name for name in _MANIFESTS if (target / name).is_file()],
-        "sensemaking_knowledge_present": knowledge.is_dir(),
-        "sensemaking_knowledge_file_count": knowledge_files,
+        "sensemaking_knowledge_present": knowledge["directory_status"] == "OBSERVED",
+        "sensemaking_knowledge_file_count": knowledge["total"],
+        "sensemaking_knowledge_directory_status": knowledge["directory_status"],
     }
+
+
+def _committed_skill_comparison(skill: dict[str, Any], expected: str) -> str:
+    """Compare the selected Skill to the requested commit's existing Git tree.
+
+    Reuse setup-skills' tree comparison (regular non-executable Skill files).
+    No history traversal, network access, installation, or loaded-byte claim.
+    """
+    source = skill["source_comparison"].get("path")
+    skill_dir = Path(skill["skill_dir"])
+    roots = [Path(source).parent] if source else []
+    if skill_dir.parent.name == "skills" and skill_dir.parent not in roots:
+        roots.append(skill_dir.parent)
+    for root in roots:
+        history = _CommittedSkillHistory.for_source(root)
+        if history is None:
+            continue
+        try:
+            commit = guarded_git_text(history.repo_root, "rev-parse", "--verify",
+                                      expected + "^{commit}").strip()
+            if commit != expected:
+                continue
+            tree = guarded_git_text(history.repo_root, "rev-parse", "--verify",
+                                    expected + ":skills/" + ENTRY_SKILL).strip()
+            exact = _git_tree_id(skill_dir, history.hash_name, lf_only=False)
+            if exact == tree:
+                return "MATCHES_COMMITTED_TREE"
+            if _git_tree_id(skill_dir, history.hash_name, lf_only=True) == tree:
+                return "LINE_ENDINGS_ONLY"
+            return "DIFFERS_FROM_COMMITTED_TREE"
+        except (ValueError, OSError, RuntimeError):
+            continue
+    return "NOT_AVAILABLE"
+
+
+def _source_expectation(skill: dict[str, Any], expected: str | None) -> dict[str, Any]:
+    """Keep requested commit, installed bytes and recorded provenance distinct."""
+    recorded = skill.get("recorded") or {}
+    recorded_commit = recorded.get("source_commit") if skill["recorded_tree_matches"] else None
+    if not isinstance(recorded_commit, str) or not re.fullmatch(
+            r"[0-9a-f]{40}|[0-9a-f]{64}", recorded_commit):
+        recorded_commit = None
+    comparison = _committed_skill_comparison(skill, expected) if expected else "NOT_REQUESTED"
+    if expected is None:
+        status = "NOT_REQUESTED"
+    elif comparison != "NOT_AVAILABLE":
+        status = comparison
+    elif recorded_commit == expected:
+        status = "MATCHES_INSTALL_RECORD"
+    elif recorded_commit:
+        status = "DIFFERS_FROM_INSTALL_RECORD"
+    else:
+        status = "NOT_ESTABLISHED"
+    return {"expected_source_ref": expected, "status": status,
+            "committed_tree_comparison": comparison,
+            "scope": "ENTRY_SKILL_TREE_ONLY",
+            "matching_tree_recorded_source_commit": recorded_commit,
+            "loaded_skill_identity": "NOT_OBSERVED"}
 
 
 def _prompt(
     skill: dict[str, Any], target: Path, output: Path, question: str | None,
     *, git: dict[str, Any], inventory: dict[str, Any],
+    continuity: dict[str, Any], source_expectation: dict[str, Any],
 ) -> str:
     asked = (question or "").strip() or (
         "Perform a bounded repository orientation and identify the most "
@@ -236,10 +301,14 @@ def _prompt(
     )
     lines = [
         f"Use the installed Sensemaking entrypoint Skill at {skill['skill_md']}.",
+        "Verify actual loaded Skill identity where the host exposes it; otherwise disclose unknown.",
         f"Target repository: {target}",
     ]
     if git.get("head"):
-        lines.append(f"Target revision: {git['head']}")
+        lines.append(f"Target HEAD (working-tree overlay not indexed): {git['head']}")
+    if source_expectation["expected_source_ref"]:
+        lines.append(f"Requested Skill source: {source_expectation['expected_source_ref']}")
+        lines.append(f"Entry-Skill comparison only: {source_expectation['status']}")
     lines.extend([
         f"Output directory: {output}",
         f"Question: {asked}",
@@ -267,14 +336,47 @@ def _prompt(
         "Do not modify unrelated repositories. Do not claim semantic truth,",
         "decision authority or actions beyond what is authorized.",
     ])
+    ci = continuity["inventory"]
+    if (continuity["selected_receipts"] or ci["receipt_files"]["total"]
+            or ci["knowledge_files"]["total"]):
+        lines.extend([
+            "",
+            f"Returning engagement: inspect the continuity section of {output / 'handoff.json'}.",
+            "Read relevant original receipts and reviewed knowledge, recheck their",
+            "currentness, then re-warrant the strategic direction and responsibility.",
+            "A valid prior receipt is historical evidence, not today's instructions",
+            "or permission. Invalid/unavailable receipts require source recovery;",
+            "do not silently treat them as absent or rewrite immutable history.",
+            "Use the receipt's evidence refs and unresolved blockers; verify them in",
+            "current sources. A valid receipt may be irrelevant, incomplete or stale.",
+            "When available, use the existing semantic workspace-query search for",
+            "the current question (source-pinned lexical candidates, not relevance proof),",
+            "and product-outline or method context only when decision-relevant.",
+        ])
+    lines.extend([
+        "For explicitly sustained development, load the long-horizon strategic",
+        "development reference; establish or reuse adequate semantic knowledge",
+        "and explicit knowledge-edit authority. Keep clear isolated work light.",
+    ])
+    if source_expectation["status"] not in {
+        "NOT_REQUESTED", "MATCHES_INSTALL_RECORD", "MATCHES_COMMITTED_TREE",
+    }:
+        lines.extend([
+            "",
+            "The requested Skill source identity is not established for this copy.",
+            "Resolve the intended source against actual installed/loaded content",
+            "before consequential use. An explicit pinned source load is an option;",
+            "do not replace a shared installation without authorization.",
+        ])
     if skill["currency"] not in {
         "CURRENT_AS_INSTALLED", "CURRENT_WITH_PACKAGE_SOURCE",
     }:
         lines.extend([
             "",
             f"Note: the installed Skill is reported as {skill['currency']}. "
-            "Verify or update it with `sensemaking-skills setup-skills --target "
-            f"{skill['harness']} --update` before relying on it.",
+            "Verify the selected copy and use setup-skills with its actual harness "
+            "and scope, or explicitly load the intended source. Review divergent "
+            "content before updating; do not modify another active installation.",
         ])
     return "\n".join(lines)
 
@@ -320,6 +422,15 @@ def _render_markdown(payload: dict[str, Any]) -> str:
         f"- Currency: `{skill['currency']}`",
         f"- Package version: `{__version__}`",
     ])
+    runtime = payload["generator_identity"]
+    expectation = payload["source_expectation"]
+    lines.extend([
+        f"- CLI Python executable: `{runtime['python_executable']}`",
+        *[f"- {line}" for line in runtime["code_provenance"]],
+        f"- Requested Skill source: `{expectation['expected_source_ref'] or 'not specified'}`",
+        f"- Requested-source comparison: `{expectation['status']}`",
+        "- Loaded Skill identity: not observed by this CLI",
+    ])
     recorded = skill.get("recorded") or {}
     if recorded.get("package_version"):
         lines.append(f"- Recorded package version: `{recorded['package_version']}`")
@@ -333,6 +444,21 @@ def _render_markdown(payload: dict[str, Any]) -> str:
             f"- Package source comparison: {'matches' if source.get('matches') else 'differs'} "
             f"(`{source.get('path')}`)"
         )
+    continuity = payload["continuity"]
+    ci = continuity["inventory"]
+    lines.extend([
+        "",
+        "## Returning-engagement evidence",
+        "",
+        "Working-tree paths (not a currentness or adequacy judgment):",
+        f"- Reviewed knowledge: {ci['knowledge_files']['total']} files",
+        f"- Receipt files: {ci['receipt_files']['total']} files",
+        "- Governing/strategic paths: " + (", ".join(ci["governing_paths"]) or "none detected"),
+        "See handoff.json for bounded path lists and omissions.",
+        "Explicit selected-receipt validation describes the current target, not historical truth.",
+    ])
+    for receipt in continuity["selected_receipts"]:
+        lines.append(f"- Selected receipt: `{receipt['path']}` ({receipt['validation']})")
     lines.extend([
         "",
         "## How to use",
@@ -364,9 +490,13 @@ def prepare_handoff(
     harness: str | None = None,
     scope: str = "any",
     skill_path: str | Path | None = None,
+    expected_source_ref: str | None = None,
+    resume_from: tuple[str, ...] = (),
 ) -> dict[str, Any]:
     """Write a verified handoff and return its payload."""
 
+    if expected_source_ref is not None and not re.fullmatch(r"[0-9a-f]{40}|[0-9a-f]{64}", expected_source_ref):
+        raise ValueError("expected source ref must be a full lowercase Git commit ID")
     if scope not in {"any", "user", "project"}:
         raise ValueError("scope must be any, user or project")
     target = Path(repo).expanduser().resolve()
@@ -375,22 +505,31 @@ def prepare_handoff(
     output_dir = Path(output).expanduser().resolve()
     if output_dir.exists() and not output_dir.is_dir():
         raise ValueError(f"output path is not a directory: {output_dir}")
-    output_dir.mkdir(parents=True, exist_ok=True)
     skill = _select_skill(
         target,
         harness=harness,
         scope=scope,
         skill_path=Path(skill_path) if skill_path is not None else None,
     )
+    continuity = {"inventory": continuity_inventory(target),
+                  "selected_receipts": selected_receipts(target, resume_from)}
+    output_dir.mkdir(parents=True, exist_ok=True)
+    for name in ("handoff.json", "handoff.md"):
+        destination = output_dir / name
+        if destination.is_symlink() or (destination.exists() and not destination.is_file()):
+            raise ValueError(f"handoff output is not a regular file: {destination}")
     payload: dict[str, Any] = {
         "artifact_id": HANDOFF_ARTIFACT_ID,
         "schema_version": HANDOFF_SCHEMA_VERSION,
         "generated_at": datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
         "generator_version": __version__,
+        "generator_identity": {"python_executable": sys.executable, "code_provenance": code_provenance_lines()},
+        "source_expectation": _source_expectation(skill, expected_source_ref),
+        "continuity": continuity,
         "target": {
             "path": str(target),
             "git": _git_facts(target),
-            "inventory": _target_inventory(target),
+            "inventory": _target_inventory(target, continuity["inventory"]),
         },
         "installed_skill": skill,
         "output": {
@@ -407,6 +546,7 @@ def prepare_handoff(
     payload["prompt"] = _prompt(
         skill, target, output_dir, question,
         git=payload["target"]["git"], inventory=payload["target"]["inventory"],
+        continuity=continuity, source_expectation=payload["source_expectation"],
     )
     (output_dir / "handoff.json").write_text(
         json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=True) + "\n",
