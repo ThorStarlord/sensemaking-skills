@@ -45,11 +45,15 @@ def _paths(target: Path, directory: str, suffixes: tuple[str, ...]) -> dict[str,
     if not _contained(target, folder) or not folder.is_dir():
         return {"paths": [], "total": 0, "truncated": False,
                 "directory_status": "ABSENT_OR_NOT_INSPECTABLE"}
-    paths = sorted(
-        p.relative_to(target).as_posix()
-        for p in folder.iterdir()
-        if p.name.endswith(suffixes) and _contained(target, p) and p.is_file()
-    )
+    try:
+        paths = sorted(
+            p.relative_to(target).as_posix()
+            for p in folder.iterdir()
+            if p.name.endswith(suffixes) and _contained(target, p) and p.is_file()
+        )
+    except OSError:
+        return {"paths": [], "total": 0, "truncated": False,
+                "directory_status": "NOT_INSPECTABLE"}
     return {"paths": paths[:_MAX_PATHS], "total": len(paths),
             "truncated": len(paths) > _MAX_PATHS, "directory_status": "OBSERVED"}
 
@@ -90,8 +94,10 @@ def _canonical_validation(target: Path, path: Path) -> tuple[str, dict[str, Any]
                 ".validator.execution_error") for e in errors):
             return "VALIDATOR_UNAVAILABLE", {}
         if result["valid"]:
-            if completed.returncode != 0 or result.get("artifact_id") != "sensemaking_session_receipt":
+            if completed.returncode != 0:
                 return "VALIDATOR_UNAVAILABLE", {}
+            if result.get("artifact_id") != "sensemaking_session_receipt":
+                return "NOT_SESSION_RECEIPT", result
             return "VALID", result
         return "INVALID", result
     except (ArtifactValidatorError, OSError, ValueError, subprocess.SubprocessError):

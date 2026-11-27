@@ -206,7 +206,7 @@ installed tree with the packaged source or the install record; a stale or
 unrecorded copy is reported, not silently trusted. `analyze` is a compatibility
 alias with the same options.
 
-The additive handoff fields expose executable code provenance, expected source comparison, bounded continuity path inventories and (only on explicit selection) validated prior session receipt projections. `--resume-from` accepts up to five distinct direct repository-relative `.sensemaking/receipts/*.session.yaml` paths. It uses the existing canonical validator against the current target, not a new format or automatic resume selector. Invalid/unavailable receipts are reported without a historical projection. The handoff is not a snapshot and does not prove loaded Skill identity, relevance, currentness or permission. See [returning engagement](../GETTING_STARTED.md#re-enter-sustained-development).
+The additive handoff fields expose executable code provenance, expected source comparison (direct committed Skill tree when available, otherwise digest-linked record), bounded continuity path inventories and (only on explicit selection) validated prior session receipt projections. `--resume-from` accepts up to five distinct direct repository-relative `.sensemaking/receipts/*.session.yaml` paths. It uses the existing canonical validator against the current target, not a new format or automatic resume selector. Invalid/unavailable receipts are reported without a historical projection. The handoff is not a snapshot and does not prove loaded Skill identity, relevance, currentness or permission. See [returning engagement](../GETTING_STARTED.md#re-enter-sustained-development).
 
 ## `validate`
 

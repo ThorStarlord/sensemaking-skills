@@ -11,7 +11,6 @@ import json
 import re
 import sys
 from datetime import datetime, timezone
-from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
@@ -23,6 +22,8 @@ from .semantic_architecture.worktree_context import guarded_git_text
 from .setup_skills import (
     INSTALL_RECORD_NAME,
     SkillsSetupError,
+    _CommittedSkillHistory,
+    _git_tree_id,
     _skill_tree_fingerprint,
     _tree_digest,
     get_package_skills_dir,
@@ -87,7 +88,6 @@ def _candidate_roots(target: Path, harness: str | None) -> list[tuple[str, str, 
     return roots
 
 
-@lru_cache(maxsize=1)
 def _package_source() -> tuple[Path | None, dict[str, str] | None]:
     try:
         source = get_package_skills_dir() / ENTRY_SKILL
@@ -234,16 +234,51 @@ def _target_inventory(target: Path) -> dict[str, Any]:
     }
 
 
-def _source_expectation(skill: dict[str, Any], expected: str | None) -> dict[str, Any]:
-    """Compare a requested ref with digest-linked install metadata.
+def _committed_skill_comparison(skill: dict[str, Any], expected: str) -> str:
+    """Compare the selected Skill to the requested commit's existing Git tree.
 
-    Matching the running package tree is a separate observation, not proof
-    that its source commit or the loaded Skill identity is established.
+    Reuse setup-skills' tree comparison (regular non-executable Skill files).
+    No history traversal, network access, installation, or loaded-byte claim.
     """
+    source = skill["source_comparison"].get("path")
+    skill_dir = Path(skill["skill_dir"])
+    roots = [Path(source).parent] if source else []
+    if skill_dir.parent.name == "skills" and skill_dir.parent not in roots:
+        roots.append(skill_dir.parent)
+    for root in roots:
+        history = _CommittedSkillHistory.for_source(root)
+        if history is None:
+            continue
+        try:
+            commit = guarded_git_text(history.repo_root, "rev-parse", "--verify",
+                                      expected + "^{commit}").strip()
+            if commit != expected:
+                continue
+            tree = guarded_git_text(history.repo_root, "rev-parse", "--verify",
+                                    expected + ":skills/" + ENTRY_SKILL).strip()
+            exact = _git_tree_id(skill_dir, history.hash_name, lf_only=False)
+            if exact == tree:
+                return "MATCHES_COMMITTED_TREE"
+            if _git_tree_id(skill_dir, history.hash_name, lf_only=True) == tree:
+                return "LINE_ENDINGS_ONLY"
+            return "DIFFERS_FROM_COMMITTED_TREE"
+        except (ValueError, OSError, RuntimeError):
+            continue
+    return "NOT_AVAILABLE"
+
+
+def _source_expectation(skill: dict[str, Any], expected: str | None) -> dict[str, Any]:
+    """Keep requested commit, installed bytes and recorded provenance distinct."""
     recorded = skill.get("recorded") or {}
     recorded_commit = recorded.get("source_commit") if skill["recorded_tree_matches"] else None
+    if not isinstance(recorded_commit, str) or not re.fullmatch(
+            r"[0-9a-f]{40}|[0-9a-f]{64}", recorded_commit):
+        recorded_commit = None
+    comparison = _committed_skill_comparison(skill, expected) if expected else "NOT_REQUESTED"
     if expected is None:
         status = "NOT_REQUESTED"
+    elif comparison != "NOT_AVAILABLE":
+        status = comparison
     elif recorded_commit == expected:
         status = "MATCHES_INSTALL_RECORD"
     elif recorded_commit:
@@ -251,6 +286,7 @@ def _source_expectation(skill: dict[str, Any], expected: str | None) -> dict[str
     else:
         status = "NOT_ESTABLISHED"
     return {"expected_source_ref": expected, "status": status,
+            "committed_tree_comparison": comparison,
             "matching_tree_recorded_source_commit": recorded_commit,
             "loaded_skill_identity": "NOT_OBSERVED"}
 
@@ -266,6 +302,7 @@ def _prompt(
     )
     lines = [
         f"Use the installed Sensemaking entrypoint Skill at {skill['skill_md']}.",
+        "Verify actual loaded Skill identity where the host exposes it; otherwise disclose unknown.",
         f"Target repository: {target}",
     ]
     if git.get("head"):
@@ -300,7 +337,7 @@ def _prompt(
     if continuity["selected_receipts"] or continuity["inventory"]["receipt_files"]["total"]:
         lines.extend([
             "",
-            "Returning engagement: inspect the continuity section of handoff.json.",
+            f"Returning engagement: inspect the continuity section of {output / 'handoff.json'}.",
             "Read relevant original receipts and reviewed knowledge, recheck their",
             "currentness, then re-warrant the strategic direction and responsibility.",
             "A valid prior receipt is historical evidence, not today's instructions",
@@ -309,7 +346,9 @@ def _prompt(
             "For sustained development, load the long-horizon strategic development",
             "reference and establish explicit knowledge-edit authority before writing.",
         ])
-    if source_expectation["status"] not in {"NOT_REQUESTED", "MATCHES_INSTALL_RECORD"}:
+    if source_expectation["status"] not in {
+        "NOT_REQUESTED", "MATCHES_INSTALL_RECORD", "MATCHES_COMMITTED_TREE",
+    }:
         lines.extend([
             "",
             "The requested Skill source identity is not established for this copy.",
@@ -404,6 +443,7 @@ def _render_markdown(payload: dict[str, Any]) -> str:
         f"- Receipt files: {ci['receipt_files']['total']} files",
         "- Governing/strategic paths: " + (", ".join(ci["governing_paths"]) or "none detected"),
         "See handoff.json for bounded path lists and omissions.",
+        "Explicit selected-receipt validation describes the current target, not historical truth.",
     ])
     for receipt in continuity["selected_receipts"]:
         lines.append(f"- Selected receipt: `{receipt['path']}` ({receipt['validation']})")

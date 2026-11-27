@@ -14,6 +14,9 @@ on:
       - 'src/sensemaking_skills/decision_review.py'
       - 'src/sensemaking_skills/workspace_knowledge.py'
       - 'src/sensemaking_skills/workflow_availability.py'
+      - 'src/sensemaking_skills/first_use.py'
+      - 'src/sensemaking_skills/reentry_context.py'
+      - 'src/sensemaking_skills/cli.py'
       - 'skills/strategic-repository-analysis/**'
       - 'skills/repository-semantic-steward/**'
       - '.github/workflows/semantic-context-reentry.yml'
@@ -1766,6 +1769,46 @@ jobs:
             echo "missing first-use Skill path unexpectedly accepted"
             exit 1
           fi
+
+      - name: Re-enter a real retained strategic-development session (mechanics only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          REF="$(git rev-parse HEAD)"
+          RECEIPT=".sensemaking/receipts/2026-11-27-long-horizon-strategic-development.session.yaml"
+          sensemaking-skills handoff \
+            --repo . --output "$RUNNER_TEMP/sustained-reentry" \
+            --skill-path skills/using-sensemaking --expected-source-ref "$REF" \
+            --resume-from "$RECEIPT" \
+            --question "What remains warranted after the revised product thesis?" \
+            --json > "$RUNNER_TEMP/sustained-reentry.json"
+          REENTRY_REF="$REF" RECEIPT="$RECEIPT" python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          packet = json.loads((Path(os.environ["RUNNER_TEMP"]) / "sustained-reentry.json").read_text())
+          assert packet["target"]["git"]["head"] == os.environ["REENTRY_REF"]
+          assert packet["source_expectation"]["expected_source_ref"] == os.environ["REENTRY_REF"]
+          assert packet["source_expectation"]["status"] == "MATCHES_COMMITTED_TREE"
+          assert packet["source_expectation"]["loaded_skill_identity"] == "NOT_OBSERVED"
+          assert packet["generator_identity"]["code_provenance"]
+          assert packet["continuity"]["inventory"]["knowledge_files"]["total"] > 0
+          assert packet["continuity"]["inventory"]["semantic_adequacy_established"] is False
+          records = packet["continuity"]["selected_receipts"]
+          assert len(records) == 1
+          record = records[0]
+          assert record["path"] == os.environ["RECEIPT"]
+          assert record["sha256"] == hashlib.sha256(Path(record["path"]).read_bytes()).hexdigest()
+          assert record["validation"] == "VALID", record
+          prior = record["historical_projection"]
+          assert prior["session_ref"] == "2026-11-27-long-horizon-strategic-development"
+          assert prior["state"] == "final"
+          assert "Episode 10C" in prior["next"]["warranted_responsibility"]
+          assert record["relevance_established"] is False and record["action_authorized"] is False
+          assert packet["analysis_performed"] is False and packet["action_authorized"] is False
+          print("Selected actual prior receipt validated and projected; no agent benefit or loading claim.")
+          PY
 
       - name: Compare committed Python source relationships in review context (mechanics only)
         shell: bash
