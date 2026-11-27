@@ -345,12 +345,21 @@ def build_candidate_reconsiderations(
         "fired": sum(1 for item in evaluations if item["assessment"] == "FIRED"),
         "no_match": sum(1 for item in evaluations if item["assessment"] == "NO_MATCH"),
         "not_assessed": sum(1 for item in evaluations if item["assessment"] == "NOT_ASSESSED"),
+        "conditions_with_unassessed_refs": sum(
+            1 for item in evaluations
+            if item["unparsed_refs"] or any(
+                ref["status"] == "NOT_ASSESSED" for ref in item["structured_refs"]
+            )
+        ),
         "returned": len(returned),
         "omitted": len(omitted),
         "omitted_fired": sum(1 for item in omitted if item["assessment"] == "FIRED"),
     }
     truncated = bool(omitted) or any(item["truncated"] for item in returned)
-    coverage = "PARTIAL" if truncated or counts["not_assessed"] else "COMPLETE_FOR_STRUCTURED_REFS"
+    coverage = (
+        "PARTIAL" if truncated or counts["not_assessed"] or counts["conditions_with_unassessed_refs"]
+        else "COMPLETE_FOR_STRUCTURED_REFS"
+    )
     return {
         "scope": "all authored opportunity claims with a revisit_when at BASE",
         "reference_scope": ("explicit_paths_only" if explicit_paths is not None else "whole_change"),
