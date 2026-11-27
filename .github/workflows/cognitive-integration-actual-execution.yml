@@ -1,0 +1,120 @@
+name: Actual cognitive integration continuation (execution branch only)
+on:
+  push:
+    branches: [claude/cognitive-integration-actual-execution-20261127]
+permissions:
+  contents: read
+jobs:
+  actual-context:
+    if: github.ref == 'refs/heads/claude/cognitive-integration-actual-execution-20261127'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      SOURCE: "361efde0fcf6cdce463dc7e67627cedde0e73515"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.SOURCE }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install actual integrated source
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE"
+          python -m pip install -e .
+          test -z "$(git status --porcelain)"
+      - name: Recover decision context for the current development choice
+        run: |
+          set -euo pipefail
+          sensemaking-skills semantic workspace-query --repo . --ref "$SOURCE" \
+            --operation possibility-ecology --subject goal:domain-general-cognitive-development \
+            --method-question "Which method helps choose developmental work when a required canonical mechanical gate cannot execute in the active environment?" \
+            --include-method-trials --method-limit 4 --limit 20 --json \
+            > "$RUNNER_TEMP/actual-decision-context.json"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          p = json.loads((Path(os.environ["RUNNER_TEMP"]) / "actual-decision-context.json").read_text())
+          m = p["method_precedents"]
+          t = m["trial_precedents"]
+          assert p["target_ref"] == m["target_ref"] == t["target_ref"] == os.environ["SOURCE"]
+          assert p["action_authorized"] is False and m["action_authorized"] is False
+          e = p["possibility_ecology"]
+          print("CONTEXT_SUMMARY=" + json.dumps({"target_ref": p["target_ref"], "focus_kind": e.get("focus_kind"), "outer_truncated": p.get("truncated"), "ecology_keys": sorted(e), "method_matches": m["method_candidate_matches"], "method_omitted": m["method_candidate_matches_omitted"], "trial_matches": t["trial_candidate_matches"], "trial_omitted": t["trial_candidate_matches_omitted"]}))
+          for group in ("candidates", "descendant_goal_candidates"):
+              for candidate in e.get(group, []):
+                  print("POSSIBILITY=" + json.dumps({"group": group, "data": {k: candidate[k] for k in ("claim_id", "statement", "realization", "via_goals") if k in candidate}}))
+          for c in m["method_candidates"]:
+              print("METHOD=" + json.dumps({k:c[k] for k in ("id","procedure","recall_conditions","applicability_to_present_task","related_records_complete")}))
+          for c in t["trial_candidates"]:
+              trial = c.get("trial") or {}
+              print("TRIAL=" + json.dumps({"id":c["id"],"status":c["projection_status"],"reason":c.get("projection_reason"),"preserved":trial.get("predecision_commitment_preserved"),"decision":trial.get("trial_decision"),"result":trial.get("result")}))
+          PY
+          test -z "$(git status --porcelain)"
+      - name: Retain actual decision context
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: actual-decision-context
+          path: ${{ runner.temp }}/actual-decision-context.json
+          if-no-files-found: warn
+          retention-days: 14
+  actual-replay:
+    if: github.ref == 'refs/heads/claude/cognitive-integration-actual-execution-20261127'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      SOURCE: "361efde0fcf6cdce463dc7e67627cedde0e73515"
+      EPISODE_SOURCE: "76d510fda3b28efd484197a6e9ebc5439d0615bc"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.SOURCE }}
+          path: implementation
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EPISODE_SOURCE }}
+          path: historical
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Replay actual historical method proposal without activating it
+        run: |
+          set -euo pipefail
+          test "$(git -C implementation rev-parse HEAD)" = "$SOURCE"
+          test "$(git -C historical rev-parse HEAD)" = "$EPISODE_SOURCE"
+          python -m pip install -e implementation
+          test -z "$(git -C implementation status --porcelain)"
+          test -z "$(git -C historical status --porcelain)"
+          cd historical
+          DEST=.sensemaking/knowledge/execution-substitution-method.json
+          DRAFT=.sensemaking/proposals/execution-substitution-method-replay.json
+          test ! -e "$DEST" && test ! -e "$DRAFT"
+          sensemaking-skills semantic method record --repo . \
+            --episode artifacts/history/2026-11-27-execution-substitution-method-episode.json \
+            --output "$DRAFT" --draft-only --json | tee "$RUNNER_TEMP/actual-replay-producer.json"
+          sensemaking-skills semantic knowledge-proposal-check --repo . --proposal "$DRAFT" \
+            --destination "$DEST" --json | tee "$RUNNER_TEMP/actual-replay-preflight.json"
+          test ! -e "$DEST"
+          test "$(git hash-object "$DRAFT")" = 7820cf160cb367fc1febd8388f40a8e002c1949a
+          cmp "$DRAFT" "../implementation/$DEST"
+          echo "REPLAY_BLOB=$(git hash-object "$DRAFT")"
+          cp "$DRAFT" "$RUNNER_TEMP/actual-replay-pack.json"
+          rm -- "$DRAFT"
+          test -z "$(git status --porcelain)"
+          echo "ACTUAL_REPLAY_MATCH=PASS"
+      - name: Retain exact replay evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: actual-detached-method-replay
+          path: ${{ runner.temp }}/actual-replay-*.json
+          if-no-files-found: warn
+          retention-days: 14
