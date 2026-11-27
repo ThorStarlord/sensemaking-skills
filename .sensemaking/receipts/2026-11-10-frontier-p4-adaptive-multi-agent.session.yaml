@@ -1,0 +1,135 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-11-10-frontier-p4-adaptive-multi-agent
+state: final
+created_at: "2026-11-10T11:05:00Z"
+updated_at: "2026-11-10T14:20:00Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: baaec6b92f87a00dbcefdbf865da04f86d5ce59f
+  end_ref: c4e61e7b3ccdf728e0468ad603e8a7e64d64436c
+  worktree_clean_at_end: true
+skill_identity:
+  load_mode: manual_explicit_load
+  sensemaking_source_ref: baaec6b92f87a00dbcefdbf865da04f86d5ce59f
+goal:
+  statement: Frontier P4. Evaluate whether the planner can direct a multi-stage engineering mission through lower-cost implementation workers while adapting to new evidence, failures and changing constraints.
+  source: owner_message
+  source_ref: null
+delegation:
+  granted: [read, local_write, run_local_commands, commit, push, open_pr, knowledge_edit]
+  withheld: [merge, release, deploy, tracker_write, external_publication]
+continuity:
+  resumes: null
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: experimental preparation and orientation
+    capability: ordinary_coding
+    status: completed
+    reason: Verified host model, effort, permission mode and revision; read the checked-in Skill by hand, STATUS.md, open PRs and issues at origin/main. The memory index was loaded, so the context was not fully fresh.
+    artifact_refs: []
+    validation: []
+  - id: R-2
+    responsibility: independent task admission
+    capability: fresh-context operator subagent
+    status: completed
+    reason: The mission supplied no admitted outcome. An operator subagent admitted a temporary checkout for knowledge-orient, knowledge-check-rules and knowledge-audit. Independence is context-level only.
+    artifact_refs:
+      - docs/normal-use/2026-11-10-frontier-p4-adaptive-multi-agent-evidence/operator-admission-report.md
+    validation:
+      - command: the three commands in a checkout with one untracked file, before the change
+        result: FAIL
+  - id: R-3
+    responsibility: recall and architecture selection
+    capability: repository-semantic-steward RECALL
+    status: completed
+    reason: context-for on five files returned the build decision, two rejected alternatives, the overlay invariant and the frozen-API rule. Three hosted tests pin the dirty refusal, so the flag is opt-in.
+    artifact_refs: []
+    validation: []
+  - id: R-4
+    responsibility: delegated implementation and guidance edits
+    capability: two lower-cost worker subagents in separate worktrees
+    status: completed
+    reason: One worker edited semantic_cli.py in two iterations and one edited six guidance files in three, concurrently, against a fixed interface contract. The planner made no source or documentation edit.
+    artifact_refs:
+      - docs/normal-use/2026-11-10-frontier-p4-adaptive-multi-agent-evidence/worker-contract-w1-code-v1.md
+      - docs/normal-use/2026-11-10-frontier-p4-adaptive-multi-agent-evidence/worker-contract-w2-docs-v1.md
+      - docs/normal-use/2026-11-10-frontier-p4-adaptive-multi-agent-evidence/worker-repair-w1-1.md
+      - docs/normal-use/2026-11-10-frontier-p4-adaptive-multi-agent-evidence/worker-repair-w2-1.md
+      - docs/normal-use/2026-11-10-frontier-p4-adaptive-multi-agent-evidence/worker-repair-w2-2.md
+    validation:
+      - command: planner real-CLI probes on the final code (planner-review-probes.py.txt), 19 of 19
+        result: PASS
+      - command: ruff --select E4,E7,E9,F and the seven repository validators on the PR head
+        result: PASS
+      - command: pytest (local unit and synthetic tests; construction policy)
+        result: NOT_RUN
+  - id: R-5
+    responsibility: knowledge reconciliation
+    capability: repository-semantic-steward RECONCILE
+    status: completed
+    reason: On the PR branch the planner revised the decision and the invariant and added two alternatives, one lesson and five relations. The edits are proposed in PR 804, not merged.
+    artifact_refs: []
+    validation:
+      - command: semantic knowledge-proposal-check on .sensemaking/knowledge/stewardship.json (PR branch)
+        result: PASS
+  - id: R-6
+    responsibility: independent review of the integrated change
+    capability: fresh-context reviewer subagent
+    status: completed
+    reason: The reviewer verified the operator's nine conditions at 3c6ba4fc and returned ACCEPT_WITH_REPAIRS. It was cut off once by the account usage limit and resumed. The three repair commits were not re-reviewed.
+    artifact_refs:
+      - docs/normal-use/2026-11-10-frontier-p4-adaptive-multi-agent-evidence/reviewer-brief-v1.md
+      - docs/normal-use/2026-11-10-frontier-p4-adaptive-multi-agent-evidence/reviewer-report.md
+    validation:
+      - command: hosted CI on PR 804 at 3c6ba4fc, nine checks including the full test suite
+        result: PASS
+  - id: R-7
+    responsibility: evaluation record
+    capability: ordinary_coding
+    status: completed
+    reason: The owner's mission asked for a complete evidence-backed evaluation with model identities, usage and defect attribution.
+    artifact_refs:
+      - docs/normal-use/2026-11-10-frontier-p4-adaptive-multi-agent.md
+    validation:
+      - command: python scripts/validate-docs-currentness.py --repo-root .
+        result: PASS
+findings:
+  - id: F-1
+    statement: A clone made under this host's system core.autocrlf=true checks out CRLF files; knowledge-audit from it reported 442 of 442 records changed, against 139 of 442 from a worktree of the repository. The flag does not change that across clones.
+    epistemic_status: OBSERVED
+    evidence_refs:
+      - src/sensemaking_skills/semantic_architecture/knowledge_store.py
+      - docs/normal-use/2026-11-10-frontier-p4-adaptive-multi-agent-evidence/reviewer-report.md
+    disposition: handed_off
+  - id: F-2
+    statement: Eleven of sixteen recorded defects or failures trace to the planner's decisions or contract text, two to worker execution, one to the host and two to review tooling or evidence.
+    epistemic_status: DERIVED
+    evidence_refs:
+      - docs/normal-use/2026-11-10-frontier-p4-adaptive-multi-agent.md
+    disposition: no_action
+  - id: F-3
+    statement: PR 801 and PR 804 both edit line 100 of the Steward SKILL.md; whichever merges second needs a one-line resolution, which the PR 804 description supplies.
+    epistemic_status: OBSERVED
+    evidence_refs:
+      - skills/repository-semantic-steward/SKILL.md
+    disposition: open
+  - id: F-4
+    statement: No hosted test exercises --temporary-checkout on any of the four commands; the behaviour rests on real-CLI probes by the workers, the planner and the reviewer.
+    epistemic_status: OBSERVED
+    evidence_refs:
+      - docs/normal-use/2026-11-10-frontier-p4-adaptive-multi-agent-evidence/reviewer-report.md
+    disposition: open
+open_questions: []
+stop:
+  disposition: GOAL_SATISFIED
+  reason: The mission ran to an evidence-backed evaluation. PR 804 is open, independently reviewed and repaired; merge was not granted and is left to the owner.
+next:
+  warranted_responsibility: Owner decides whether and in which order to merge PR 804 and PR 801. An independent re-review of the three repair commits would strengthen the evidence.
+  blocked_on: ["authority:merge"]
+persistence: committed
+claim_ceiling: One run on one host, one vendor's models. The repair commits were not independently re-reviewed. No control arm ran, so nothing compares cost or outcome with a single model. Use of the flag by another agent is not tested.
+action_authorized_by_receipt: false
+immutable: true
