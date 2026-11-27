@@ -1,13 +1,9 @@
-name: DTR actual proposal and history consumption (execution branch only)
-
+name: Actual strategic creativity consumer (execution branch only)
 on:
   push:
-    branches:
-      - claude/dtr-real-preflight-execution
-
+    branches: [claude/dtr-real-preflight-execution]
 permissions:
   contents: read
-
 jobs:
   actual-consumer:
     if: github.ref == 'refs/heads/claude/dtr-real-preflight-execution'
@@ -15,7 +11,6 @@ jobs:
     timeout-minutes: 15
     env:
       EXPECTED_REVISION: "0de725ee2b79f5ef1d21a08e4e4a049f8aca52d7"
-      REPOSITORY_ID: "ThorStarlord/sensemaking-skills"
     steps:
       - uses: actions/checkout@v4
         with:
@@ -25,38 +20,46 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Install exact integrated product and verify reviewed bytes
+      - name: Install exact integrated product
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_REVISION"
           python -m pip install -e .
           test -z "$(git status --porcelain)"
-          test "$(git hash-object .sensemaking/knowledge/developmental-trajectory-reasoning.json)" = d10dc4633259b6e12f09a2bf9350ed32a2147d5a
-          test "$(git hash-object .sensemaking/knowledge/detached-possibility-stewardship.json)" = 4041cec6275417fc4919c7377920fea2e087bafb
-      - name: Build final reviewed semantic knowledge at exact clean canonical commit
+      - name: Recover actual returning engagement context
         run: |
           set -euo pipefail
-          sensemaking-skills semantic knowledge-build --repo . \
-            --repository "$REPOSITORY_ID" --target-ref "$EXPECTED_REVISION" \
-            --db "$RUNNER_TEMP/dtr-final.sqlite" --include-repository-structure --json \
-            | tee "$RUNNER_TEMP/dtr-final-build.json"
-          test -z "$(git status --porcelain)"
-      - name: Recover DTR and actual synthesized possibility
+          sensemaking-skills handoff --repo . --output "$RUNNER_TEMP/real-handoff" \
+            --skill-path skills/using-sensemaking --expected-source-ref "$EXPECTED_REVISION" \
+            --question "Recover prior speculative and reviewed product understanding for the next valuable development" --json \
+            > "$RUNNER_TEMP/actual-handoff.json"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          p=json.loads((Path(os.environ["RUNNER_TEMP"])/"actual-handoff.json").read_text())
+          ci=p["continuity"]["inventory"]
+          print("HANDOFF_SUMMARY="+json.dumps({"inventory_keys": sorted(ci), "knowledge_total":ci["knowledge_files"]["total"],"history_total":ci["strategic_history"]["total"],"history_truncated":ci["strategic_history"]["truncated"],"historical_dtr_draft_exists":Path("artifacts/history/2026-11-27-dtr-knowledge-proposal-DRAFT.json").is_file(),"draft_listed":any("dtr-knowledge-proposal-DRAFT.json" in str(v) for v in ci.values()),"synthesis_listed":any("detached-possibility-stewardship-synthesis.json" in str(v) for v in ci.values()),"source_expectation":p["source_expectation"]["status"]}))
+          PY
+      - name: Actual assumption contrast for creative development choice
         run: |
           set -euo pipefail
-          sensemaking-skills semantic knowledge-query --db "$RUNNER_TEMP/dtr-final.sqlite" \
-            --repository "$REPOSITORY_ID" --target-ref "$EXPECTED_REVISION" \
-            --operation explain --subject cap:developmental-trajectory-reasoning --json \
-            | tee "$RUNNER_TEMP/dtr-final-dtr-query.json"
-          sensemaking-skills semantic knowledge-query --db "$RUNNER_TEMP/dtr-final.sqlite" \
-            --repository "$REPOSITORY_ID" --target-ref "$EXPECTED_REVISION" \
-            --operation explain --subject poss:detached-possibility-stewardship --json \
-            | tee "$RUNNER_TEMP/dtr-final-possibility-query.json"
-      - name: Preserve actual command output
+          cat > "$RUNNER_TEMP/scenarios.json" <<'JSON'
+          {"scenarios":[{"id":"base"},{"id":"no-later-recall","negated":["hyp:later-sessions-consult-knowledge"]},{"id":"no-agent-control","negated":["con:agent-owns-semantic-control"]}]}
+          JSON
+          sensemaking-skills semantic possibility contrast --repo . --ref "$EXPECTED_REVISION" \
+            --subject goal:domain-general-cognitive-development --scenarios "$RUNNER_TEMP/scenarios.json" --limit 50 --json \
+            > "$RUNNER_TEMP/actual-contrast.json"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          p=json.loads((Path(os.environ["RUNNER_TEMP"])/"actual-contrast.json").read_text())
+          print("CONTRAST_SUMMARY="+json.dumps({"target_ref":p["target_ref"],"coverage":p["coverage"],"scenarios":[{"id":r["id"],"counts":r["counts"],"affected":[c["claim_id"] for c in r["affected"]],"unassessed":[c["claim_id"] for c in r["unassessed"]]} for r in p["scenario_results"]],"shared_assumptions":[{"id":x["assumption_id"],"candidates":x["candidate_ids"],"assessment":x["assessment"]} for x in p["shared_assumptions"]]}))
+          PY
+      - name: Retain actual outputs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: final-reviewed-dtr-and-synthesis
-          path: ${{ runner.temp }}/dtr-*.json
+          name: actual-strategic-creativity-inputs
+          path: ${{ runner.temp }}/actual-*.json
           if-no-files-found: warn
           retention-days: 14
