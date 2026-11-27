@@ -6,10 +6,13 @@
 
 ## 1. Purpose
 
-The current repository strategy is `NO_CHANGE / NORMAL_USE_HANDOFF`.
-Normal use should therefore generate evidence about whether the integrated
-strategic-control surfaces fail repeatedly in material ways before another
-construction package is opened.
+This guide originated under the historical `NO_CHANGE / NORMAL_USE_HANDOFF`
+strategy. Current product purpose and continuation are governed by
+[ADR 0038](adr/0038-long-horizon-adaptive-strategic-development.md) and the
+[current Level-3 reconciliation](../artifacts/history/2026-11-27-long-horizon-strategic-development-reconciliation.md).
+Normal use and independently warranted construction should generate evidence
+about material failures; a taxonomy entry is not a construction or
+qualification gate.
 
 This taxonomy makes those failures easier to name without converting ordinary
 use into a synthetic benchmark or experiment program.

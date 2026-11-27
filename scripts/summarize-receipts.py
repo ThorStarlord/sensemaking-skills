@@ -311,15 +311,18 @@ def summarize(receipt_dir: Path, repo_root: Path | None = None, *,
         closure_records.append({
             "from_session": session_ref,
             "receipt": record["file"],
-            "source_identity": data["source_identity"],
-            "goal": data["goal"],
+            "source_identity": {
+                key: data["source_identity"][key] for key in
+                ("start_ref", "end_ref", "worktree_clean_at_end")
+            },
+            "goal": {key: data["goal"][key] for key in ("statement", "source", "source_ref")},
             "responsibilities": [
                 {key: responsibility[key] for key in
                  ("id", "responsibility", "status", "reason", "artifact_refs")}
                 for responsibility in data["responsibilities"]
             ],
-            "stop": data["stop"],
-            "next": data["next"],
+            "stop": {key: data["stop"][key] for key in ("disposition", "reason")},
+            "next": {key: data["next"][key] for key in ("warranted_responsibility", "blocked_on")},
             "claim_ceiling": data["claim_ceiling"],
         })
     closure_context = {

@@ -147,8 +147,8 @@ source-attributed task/decision evidence already useful to the work; a
 post-hoc report is not a contemporaneous decision trace. A small patch can
 be exactly right, and a `NO_CODE_CHANGE` decision can be justified.
 
-**Current continuation:** use the
-[Method Adaptation v0 construction-and-observation plan](../superpowers/plans/2026-11-19-method-adaptation-v0-continuation-ord-observation.md).
+**Historical continuation (2026-11-19):** the
+[Method Adaptation v0 construction-and-observation plan](../superpowers/plans/2026-11-19-method-adaptation-v0-continuation-ord-observation.md) sets the earlier construction-first context.
 ORD is a secondary observation lens, not a new controller, obligatory
 reflection checkpoint, qualification study, or reason to postpone construction.
 
