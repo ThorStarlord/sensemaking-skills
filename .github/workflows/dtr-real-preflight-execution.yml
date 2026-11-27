@@ -1,4 +1,4 @@
-name: Actual strategic creativity consumer (execution branch only)
+name: Actual conditional method retention (execution branch only)
 on:
   push:
     branches: [claude/dtr-real-preflight-execution]
@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
-      EXPECTED_REVISION: "62a9a1e94cfbe53b70951f3af7bef912656efd91"
+      EXPECTED_REVISION: "76d510fda3b28efd484197a6e9ebc5439d0615bc"
     steps:
       - uses: actions/checkout@v4
         with:
@@ -20,32 +20,32 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Install exact integrated product
+      - name: Install exact source and tracked episode
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_REVISION"
           python -m pip install -e .
           test -z "$(git status --porcelain)"
-      - name: Actual returning engagement on integrated source
+      - name: Materialize actual conditional method episode and preflight
         run: |
           set -euo pipefail
-          sensemaking-skills handoff --repo . --output "$RUNNER_TEMP/real-handoff" \
-            --skill-path skills/using-sensemaking --expected-source-ref "$EXPECTED_REVISION" \
-            --question "Recover prior speculative and reviewed product understanding for the next valuable development" --json \
-            > "$RUNNER_TEMP/actual-handoff.json"
-          python - <<'PY'
-          import json, os
-          from pathlib import Path
-          p=json.loads((Path(os.environ["RUNNER_TEMP"])/"actual-handoff.json").read_text())
-          ci=p["continuity"]["inventory"]
-          print("HANDOFF_SUMMARY="+json.dumps({"inventory_keys":sorted(ci),"knowledge_total":ci["knowledge_files"]["total"],"history_total":ci["strategic_history"]["total"],"historical_json_records":ci["historical_json_records"],"detached_proposal_files":ci["detached_proposal_files"],"speculative_record_review_state":ci["speculative_record_review_state"],"prompt_has_boundary":"not establish review status, unresolved work or authority" in p["prompt"],"prompt_has_explicit_review":"knowledge-proposal-check with an explicit new --destination" in p["prompt"],"source_expectation":p["source_expectation"]["status"],"analysis_performed":p["analysis_performed"],"action_authorized":p["action_authorized"]}))
-          PY
+          DEST=.sensemaking/knowledge/execution-substitution-method.json
+          test ! -e "$DEST"
+          sensemaking-skills semantic method record --repo . \
+            --episode artifacts/history/2026-11-27-execution-substitution-method-episode.json \
+            --output "$DEST" --json | tee "$RUNNER_TEMP/actual-method-producer.json"
+          sensemaking-skills semantic knowledge-proposal-check --repo . --proposal "$DEST" --json \
+            | tee "$RUNNER_TEMP/actual-method-preflight.json"
+          cp "$DEST" "$RUNNER_TEMP/actual-method-pack.json"
+          echo "METHOD_GIT_BLOB=$(git hash-object "$DEST")"
+          echo "METHOD_BASE64=$(base64 -w0 "$DEST")"
+          rm -- "$DEST"
           test -z "$(git status --porcelain)"
       - name: Retain actual outputs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: actual-speculative-continuity-handoff
-          path: ${{ runner.temp }}/actual-handoff.json
+          name: actual-conditional-method-proposal
+          path: ${{ runner.temp }}/actual-method-*.json
           if-no-files-found: warn
           retention-days: 14
