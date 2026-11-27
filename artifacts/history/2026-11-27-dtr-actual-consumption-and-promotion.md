@@ -107,3 +107,103 @@ or cross-domain transfer is established. No local unit or synthetic
 evidence tests were added/run. No external repository mutations,
 deployment or release. Level 3 is reaffirmed; the selected integrated
 direction remains valid.
+
+## Returned evidence: actual reviewed knowledge and opportunity synthesis
+
+PR #992 merged at `5152fa3819d07aea93b52fcff45efea9e084ad15`. The reviewed
+DTR pack and historical draft are the same Git blob; Product Validation
+[46010168896](https://github.com/ThorStarlord/sensemaking-skills/actions/runs/46010168896)
+and Distribution [46010168942](https://github.com/ThorStarlord/sensemaking-skills/actions/runs/46010168942)
+succeeded at that exact main. The isolated execution branch at
+`061c282b48e99c314245359806492286db30c9f4` checked out that exact
+clean commit, installed its code, checked draft/pack equality, and ran
+[46010254201](https://github.com/ThorStarlord/sensemaking-skills/actions/runs/46010254201)
+(job 140543640439), SUCCESS. Outputs are in
+[artifact 15203406547](https://github.com/ThorStarlord/sensemaking-skills/actions/runs/46010254201/artifacts/15203406547)
+(14-day retention).
+
+- Actual knowledge-build with repository structure indexed 813 claims and
+  878 relations; these totals include bounded mechanical structure and
+  other tracked sources, not 813 reviewed cognitive claims. Snapshot digest
+  `bf78f795fe96645dc9b76de0a6d88a668bdfb78a6ebf82bc03b43d1d029589d8`.
+- Actual explain query of cap:developmental-trajectory-reasoning at
+  5152fa38 returned its four authored relations, the four new claims and
+  governing goal, with truncated=false. The query retains false semantic
+  truth/action authority flags.
+- Actual goal-family ecology returned 12 candidates (no omitted direct
+  or descendant candidates, but overall projection truncated=true);
+  possibilities included assumption contrast, goal-family construction
+  bridge, cross-episode synthesis, reconsideration, and deferred learning
+  analysis/transfer. Treat omitted relationships as unassessed.
+- Actual scoped workspace review from cf57ed488c5c2d1589409bc641632980d522e205
+  to 5152fa38, limited to strategy_cli.py, returned the first-use record
+  NOT_ASSESSED. Both first_use.py and cli.py structured file refs had
+  reason REFERENCE_OUT_OF_SCOPE. Reference scope explicit_paths_only,
+  coverage PARTIAL; 13 conditions not assessed, zero fired/no-match.
+  This is actual finding-specific evidence for #988's excluded-file
+  boundary, not exhaustive verification of every symbol/claim case.
+
+The actual goal-family landscape and the new execution route support
+continuing a *retained* generative direction rather than inventing another
+new abstraction. The earlier
+[detached stewardship synthesis input](2026-11-27-detached-possibility-stewardship-synthesis.json)
+has a real reconsideration condition (actual DTR draft reviewed/promoted);
+that condition has now occurred. Preserve its original identity, compare
+the intended end with actual construction and reconsider remaining value.
+The new possibility is distinct from the DTR capability and from generic
+possibility memory: the reviewed knowledge lifecycle can straddle
+contexts while speculative bytes stay outside active knowledge. This is
+a candidate product outcome, not a new universal execution architecture.
+
+Alternatives: retain the old hypothetical source only (omits the real
+realization and reviewed lineage); implement a new external executor
+or automatic method-learning selector (unsupported recurring need and
+authority expansion); produce another speculative candidate (unnecessary
+when the prior one has consequential new evidence); select the existing
+possibility synthesis producer plus semantic stewardship (actual useful
+cross-episode construction). Select the last route. The deferred
+capability-learning analysis still requires repeated, attributable
+normal-use experience; cross-domain transfer remains a separate future.
+No Level-3 change.
+
+## Actual retained synthesis producer and reviewed reconciliation
+
+Execution-only branch revision
+`fb57a84668aaec792ef9ef083cb08f881ef7ae55` ran
+[46010487074](https://github.com/ThorStarlord/sensemaking-skills/actions/runs/46010487074)
+(job 140544429358) at exact clean main 5152fa38. The existing possibility
+record --draft-only producer materialized the actual tracked prior
+episode, originally HYPOTHETICAL, outside active knowledge. The explicitly
+agent-authored reconciliation then preserved origin, synthesis premise,
+hypothetical epistemic status and typed relations, and changed only the
+realization/disposition, source evidence, counterevidence, ceiling and
+reconsideration conditions to reflect the actual preceding implementation
+and use. No automatic semantic judgment. The two actual preflight checks
+both returned SEMANTIC_KNOWLEDGE_PROPOSAL_VALID: 1 claim, 7 relations,
+7 existing endpoints, 8 local evidence paths; no affected incoming
+relations, destination absent, no other dirty/staged packs. The generated
+reconciled draft SHA-256 is
+`52ce2b98700a34d4a5ce1765808b4ec3ea438a030d12524b2609d1ad9d910c9f`;
+Git blob `4041cec6275417fc4919c7377920fea2e087bafb`.
+Original producer output, reconciled output and preflights are preserved
+in [artifact 15203626877](https://github.com/ThorStarlord/sensemaking-skills/actions/runs/46010487074/artifacts/15203626877)
+(14-day retention).
+
+Review: the new opportunity has two goal links, three explicit source
+candidate derivations and two assumption references. Those are authored
+hypotheses, not proven dependencies. The actual earlier DTR preflight,
+promotion, exact build and query support PARTIALLY_IMPLEMENTED of the
+detached workflow; independent later-agent decision benefit remains
+unassessed. The original episode remains immutable and the candidate
+statement remains hypothetical. Retain the identical reviewed/preflighted
+blob at .sensemaking/knowledge/detached-possibility-stewardship.json.
+Do not use the reviewed status to claim automated promotion, an independent
+agent, or a completed cognitive capability.
+
+This closes the formerly blocked DTR knowledge responsibility and exercises
+a genuine generative synthesis -> construction -> reconciliation ->
+reviewed possibility lifecycle. It is source-attributed actual usage by
+the same active agent across episodes, not comparative cognitive evidence.
+No new product subsystem, workflow, test, release or external mutation.
+The exact clean-commit build of this additional pack is the remaining
+mechanical gate, not an independent cognitive qualification.

@@ -1,0 +1,209 @@
+{
+  "schema_version": 2,
+  "claims": [
+    {
+      "id": "poss:detached-possibility-stewardship",
+      "kind": "opportunity",
+      "statement": "An agent can preserve a source-grounded speculative possibility across development sessions and preflight it as a candidate new knowledge pack without placing unreviewed bytes in the active reviewed namespace; a later authorized agent reviews and explicitly promotes appropriate material.",
+      "authority_kind": "hypothesis",
+      "authority_ref": "artifacts/history/2026-11-27-detached-possibility-stewardship-synthesis.json",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-detached-possibility-stewardship-synthesis.json",
+        "file:artifacts/history/2026-11-27-dtr-knowledge-proposal-DRAFT.json",
+        "file:artifacts/history/2026-11-27-cumulative-developmental-reasoning.md",
+        "file:src/sensemaking_skills/semantic_architecture/stewardship_validation.py",
+        "file:src/sensemaking_skills/possibility_synthesis.py",
+        "file:docs/normal-use/2026-11-27-verified-first-use-handoff.md",
+        "file:docs/adr/0038-long-horizon-adaptive-strategic-development.md",
+        "file:artifacts/history/2026-11-27-dtr-actual-consumption-and-promotion.md"
+      ],
+      "epistemic_status": "hypothetical",
+      "attributes": {
+        "concept": "ProductPossibility",
+        "title": "Durable detached possibility stewardship",
+        "origin": {
+          "ref": "artifacts/history/2026-11-27-detached-possibility-stewardship-synthesis.json",
+          "date": "2026-11-27",
+          "author": "active ChatGPT coding agent"
+        },
+        "dimensions": {
+          "alignment": {
+            "value": "ALIGNED",
+            "basis": "ADR 0038 calls for sustained reciprocal development and adequate semantic stewardship; ADR 0034 retains the agent as controller."
+          },
+          "ambition": {
+            "value": "INCREMENTAL",
+            "basis": "Recombine the current producer and preflight, not a new engine."
+          },
+          "horizon": {
+            "value": "FORESEEABLE",
+            "basis": "The DTR draft and existing validator provide a real source boundary and reusable mechanism."
+          },
+          "realization": {
+            "value": "PARTIALLY_IMPLEMENTED",
+            "establishment": "observed",
+            "basis": "PR 990 implements detached output and logical-destination preflight. At 6acfc86a, actual run 46009940905 passed detached and ordinary final-path checks for the retained DTR draft; PR 992 integrated the identical blob. Run 46010254201 built and queried reviewed DTR at exact canonical 5152fa38. This run materialized the actual earlier synthesis outside active knowledge. Independent consumer benefit and comparative efficiency are unestablished.",
+            "observation_ref": "artifacts/history/2026-11-27-dtr-actual-consumption-and-promotion.md"
+          }
+        },
+        "disposition_history": [
+          {
+            "value": "EXPLORATORY",
+            "date": "2026-11-27",
+            "authority": "agent-authored synthesis under current delegated mission",
+            "source": "artifacts/history/2026-11-27-detached-possibility-stewardship-synthesis.json",
+            "rationale": "The previous DTR episode retained an unvalidated draft outside active knowledge. The existing possibility producer writes a new active-namespace proposal and the preflight requires that namespace. Combine possibility synthesis and reviewed stewardship with a detached, digest-identified new-pack check and later explicit review; re-entry remains agent-owned."
+          },
+          {
+            "value": "SELECTED",
+            "date": "2026-11-27",
+            "authority": "agent construction selection under the owner's delegated mission",
+            "source": "artifacts/history/2026-11-27-developmental-synthesis-detached-stewardship.md",
+            "rationale": "The actual retained DTR draft motivated the bounded combination of existing possibility producer and reviewed semantic stewardship. PR 990 selected and built the mechanism; actual later use supports partial realization, not a new architecture or automatic promotion."
+          }
+        ],
+        "assessed_ref": "8e082730e9f505558f2ec1b56240eff09b1c86df",
+        "synthesis_basis": "The previous DTR episode retained an unvalidated draft outside active knowledge. The existing possibility producer writes a new active-namespace proposal and the preflight requires that namespace. Combine possibility synthesis and reviewed stewardship with a detached, digest-identified new-pack check and later explicit review; re-entry remains agent-owned.",
+        "value_hypothesis": "A later agent could recover and mechanically check speculative material without risking accidental inclusion in reviewed queries or requiring a preparatory copy to the active namespace. Current source/evidence and review still matter.",
+        "revisit_when": "A later independent authorized agent recovers a detached draft and reviews or rejects it in normal product work, or the source boundary changes: file:src/sensemaking_skills/semantic_architecture/stewardship_validation.py or file:src/sensemaking_skills/possibility_synthesis.py.",
+        "counterevidence": "An isolated checkout plus ordinary in-place preflight already suffices. The local host still needs compatible execution elsewhere. No observed accidental promotion or measured time saving. Retaining speculative drafts can impose maintenance cost.",
+        "claim_ceiling": "Actual source-grounded synthesis, detached producer and preflight, same-agent authorized DTR review and integration, and exact-commit build/query. No independent consumer, better decisions, measured comparative benefit, longitudinal cognitive improvement or transfer is established.",
+        "agent_owned": true
+      }
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel:possibility-detached-possibility-stewardship-candidate-for-1",
+      "subject": "poss:detached-possibility-stewardship",
+      "predicate": "candidate_opportunity_for",
+      "object": "goal:compounding-product-knowledge",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-detached-possibility-stewardship-synthesis.json",
+        "file:artifacts/history/2026-11-27-dtr-knowledge-proposal-DRAFT.json",
+        "file:artifacts/history/2026-11-27-cumulative-developmental-reasoning.md",
+        "file:src/sensemaking_skills/semantic_architecture/stewardship_validation.py",
+        "file:src/sensemaking_skills/possibility_synthesis.py",
+        "file:docs/normal-use/2026-11-27-verified-first-use-handoff.md",
+        "file:docs/adr/0038-long-horizon-adaptive-strategic-development.md"
+      ],
+      "epistemic_status": "hypothetical"
+    },
+    {
+      "id": "rel:possibility-detached-possibility-stewardship-candidate-for-2",
+      "subject": "poss:detached-possibility-stewardship",
+      "predicate": "candidate_opportunity_for",
+      "object": "goal:domain-general-cognitive-development",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-detached-possibility-stewardship-synthesis.json",
+        "file:artifacts/history/2026-11-27-dtr-knowledge-proposal-DRAFT.json",
+        "file:artifacts/history/2026-11-27-cumulative-developmental-reasoning.md",
+        "file:src/sensemaking_skills/semantic_architecture/stewardship_validation.py",
+        "file:src/sensemaking_skills/possibility_synthesis.py",
+        "file:docs/normal-use/2026-11-27-verified-first-use-handoff.md",
+        "file:docs/adr/0038-long-horizon-adaptive-strategic-development.md"
+      ],
+      "epistemic_status": "hypothetical"
+    },
+    {
+      "id": "rel:possibility-detached-possibility-stewardship-derived-from-1",
+      "subject": "poss:detached-possibility-stewardship",
+      "predicate": "derived_from",
+      "object": "poss:cross-episode-possibility-synthesis",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-detached-possibility-stewardship-synthesis.json",
+        "file:artifacts/history/2026-11-27-dtr-knowledge-proposal-DRAFT.json",
+        "file:artifacts/history/2026-11-27-cumulative-developmental-reasoning.md",
+        "file:src/sensemaking_skills/semantic_architecture/stewardship_validation.py",
+        "file:src/sensemaking_skills/possibility_synthesis.py",
+        "file:docs/normal-use/2026-11-27-verified-first-use-handoff.md",
+        "file:docs/adr/0038-long-horizon-adaptive-strategic-development.md"
+      ],
+      "epistemic_status": "hypothetical",
+      "attributes": {
+        "conceptual_relation": "combines",
+        "establishment": "authored"
+      }
+    },
+    {
+      "id": "rel:possibility-detached-possibility-stewardship-derived-from-2",
+      "subject": "poss:detached-possibility-stewardship",
+      "predicate": "derived_from",
+      "object": "poss:git-authored-knowledge-index",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-detached-possibility-stewardship-synthesis.json",
+        "file:artifacts/history/2026-11-27-dtr-knowledge-proposal-DRAFT.json",
+        "file:artifacts/history/2026-11-27-cumulative-developmental-reasoning.md",
+        "file:src/sensemaking_skills/semantic_architecture/stewardship_validation.py",
+        "file:src/sensemaking_skills/possibility_synthesis.py",
+        "file:docs/normal-use/2026-11-27-verified-first-use-handoff.md",
+        "file:docs/adr/0038-long-horizon-adaptive-strategic-development.md"
+      ],
+      "epistemic_status": "hypothetical",
+      "attributes": {
+        "conceptual_relation": "combines",
+        "establishment": "authored"
+      }
+    },
+    {
+      "id": "rel:possibility-detached-possibility-stewardship-derived-from-3",
+      "subject": "poss:detached-possibility-stewardship",
+      "predicate": "derived_from",
+      "object": "poss:verified-first-use-handoff",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-detached-possibility-stewardship-synthesis.json",
+        "file:artifacts/history/2026-11-27-dtr-knowledge-proposal-DRAFT.json",
+        "file:artifacts/history/2026-11-27-cumulative-developmental-reasoning.md",
+        "file:src/sensemaking_skills/semantic_architecture/stewardship_validation.py",
+        "file:src/sensemaking_skills/possibility_synthesis.py",
+        "file:docs/normal-use/2026-11-27-verified-first-use-handoff.md",
+        "file:docs/adr/0038-long-horizon-adaptive-strategic-development.md"
+      ],
+      "epistemic_status": "hypothetical",
+      "attributes": {
+        "conceptual_relation": "combines",
+        "establishment": "authored"
+      }
+    },
+    {
+      "id": "rel:possibility-detached-possibility-stewardship-assumes-1",
+      "subject": "poss:detached-possibility-stewardship",
+      "predicate": "references",
+      "object": "con:agent-owns-semantic-control",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-detached-possibility-stewardship-synthesis.json",
+        "file:artifacts/history/2026-11-27-dtr-knowledge-proposal-DRAFT.json",
+        "file:artifacts/history/2026-11-27-cumulative-developmental-reasoning.md",
+        "file:src/sensemaking_skills/semantic_architecture/stewardship_validation.py",
+        "file:src/sensemaking_skills/possibility_synthesis.py",
+        "file:docs/normal-use/2026-11-27-verified-first-use-handoff.md",
+        "file:docs/adr/0038-long-horizon-adaptive-strategic-development.md"
+      ],
+      "epistemic_status": "hypothetical",
+      "attributes": {
+        "conceptual_relation": "assumes",
+        "establishment": "authored"
+      }
+    },
+    {
+      "id": "rel:possibility-detached-possibility-stewardship-assumes-2",
+      "subject": "poss:detached-possibility-stewardship",
+      "predicate": "references",
+      "object": "hyp:later-sessions-consult-knowledge",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-detached-possibility-stewardship-synthesis.json",
+        "file:artifacts/history/2026-11-27-dtr-knowledge-proposal-DRAFT.json",
+        "file:artifacts/history/2026-11-27-cumulative-developmental-reasoning.md",
+        "file:src/sensemaking_skills/semantic_architecture/stewardship_validation.py",
+        "file:src/sensemaking_skills/possibility_synthesis.py",
+        "file:docs/normal-use/2026-11-27-verified-first-use-handoff.md",
+        "file:docs/adr/0038-long-horizon-adaptive-strategic-development.md"
+      ],
+      "epistemic_status": "hypothetical",
+      "attributes": {
+        "conceptual_relation": "assumes",
+        "establishment": "authored"
+      }
+    }
+  ]
+}
