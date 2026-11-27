@@ -1,0 +1,176 @@
+{
+  "schema_version": 2,
+  "claims": [
+    {
+      "id": "domain_concept:cognitive-capability-integration",
+      "kind": "domain_concept",
+      "statement": "Cognitive capability integration is the decision-relevant exchange, interpretation, transformation and reconsideration of intellectual results toward a governing objective at acceptable total cost. Enabling, corrective, transformative and generative influence are descriptive modes, not mandatory stages or runtime predicates.",
+      "authority_kind": "document",
+      "authority_ref": "skills/using-sensemaking/references/adaptive-skill-composition-v1.md",
+      "evidence_refs": [
+        "file:skills/using-sensemaking/references/adaptive-skill-composition-v1.md",
+        "file:docs/research/cognitive-capability-integration-v1.md",
+        "file:docs/adr/0038-long-horizon-adaptive-strategic-development.md"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "scope": "Adaptive cooperation and development of existing intellectual operations under the single agent-owned controller.",
+        "decision_changed": "Evaluate what a consequential result changes or justifiably reaffirms in the actual premise, option, method or action; do not equate capability availability, invocation or artifact exchange with integrated judgment.",
+        "claim_ceiling": "Source-declared intellectual distinction, not demonstrated emergent competence, a new subsystem or a qualified effect."
+      }
+    },
+    {
+      "id": "cap:integrated-developmental-decision-context",
+      "kind": "capability",
+      "statement": "A consequential developmental decision can request authored goal or possibility context and historical method precedents, including opt-in question-matched trial pairs without a prior lesson link, at the same resolved committed revision. The active agent interprets their relevance and limitations.",
+      "authority_kind": "code",
+      "authority_ref": "src/sensemaking_skills/semantic_cli.py",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:src/sensemaking_skills/workspace_knowledge.py",
+        "file:src/sensemaking_skills/method_trial.py",
+        "file:docs/cli-reference.md",
+        "file:skills/using-sensemaking/references/adaptive-skill-composition-v1.md"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "scope": "Read-only workspace-query product-outline and possibility-ecology with method question; optional trial precedents use existing chronology projection.",
+        "claim_ceiling": "Implemented read consumer; lexical retrieval, authored possibility relations and trial projection do not establish applicability, choice, implementation authority or cognitive effect."
+      }
+    },
+    {
+      "id": "observation:cognitive-integration-actual-context-2026-11-27",
+      "kind": "observation",
+      "statement": "Exact-source run 46070374439 at 361efde0 returned four direct and nine descendant possibility records, three authored method matches and two historical trial matches at the same revision; the historical detached method replay reproduced the reviewed blob without activating the destination. Overall possibility relationship projection was truncated.",
+      "authority_kind": "document",
+      "authority_ref": "artifacts/history/2026-11-27-cognitive-integration-actual-use.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-cognitive-integration-actual-use.md",
+        "file:src/sensemaking_skills/workspace_knowledge.py",
+        "file:src/sensemaking_skills/method_trial.py",
+        "file:artifacts/history/2026-11-27-execution-substitution-method-application.json"
+      ],
+      "epistemic_status": "observed",
+      "attributes": {
+        "assessed_ref": "361efde0fcf6cdce463dc7e67627cedde0e73515",
+        "claim_ceiling": "One active-agent mechanical consumption and source-attributed downstream comparison; not independent use, causal benefit, completeness, or new method adaptation."
+      }
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel:cognitive-integration-ams",
+      "subject": "cap:adaptive-metareasoning",
+      "predicate": "references",
+      "object": "domain_concept:cognitive-capability-integration",
+      "evidence_refs": [
+        "file:skills/using-sensemaking/references/adaptive-skill-composition-v1.md",
+        "file:skills/using-sensemaking/references/metareasoning-policy-v0.md"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "scope": "AMS regulates when intellectual results can change questions, control moves and responsibility; an intended relation, not observed causal benefit."
+      }
+    },
+    {
+      "id": "rel:cognitive-integration-dtr",
+      "subject": "cap:developmental-trajectory-reasoning",
+      "predicate": "references",
+      "object": "domain_concept:cognitive-capability-integration",
+      "evidence_refs": [
+        "file:skills/using-sensemaking/references/adaptive-skill-composition-v1.md",
+        "file:skills/using-sensemaking/references/developmental-trajectory-reasoning-v1.md"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "scope": "DTR contributes prospective states, routes and enabling conditions to the decision; actual utility remains conditional."
+      }
+    },
+    {
+      "id": "rel:cognitive-integration-recall",
+      "subject": "cap:experience-lesson-recall",
+      "predicate": "references",
+      "object": "domain_concept:cognitive-capability-integration",
+      "evidence_refs": [
+        "file:skills/using-sensemaking/references/adaptive-skill-composition-v1.md",
+        "file:skills/using-sensemaking/references/method-trial-v1.md"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "scope": "Retained conditional method evidence and later trial results can inform composition; encounter does not establish application."
+      }
+    },
+    {
+      "id": "rel:cognitive-integration-warrant",
+      "subject": "cap:warrant-and-choice-guidance",
+      "predicate": "references",
+      "object": "domain_concept:cognitive-capability-integration",
+      "evidence_refs": [
+        "file:skills/using-sensemaking/references/adaptive-skill-composition-v1.md",
+        "file:skills/using-sensemaking/references/warrant-choice-policy-v0.md"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "scope": "Compare the contemplated commitment, credible alternatives and omission cost; synthesis does not grant authority."
+      }
+    },
+    {
+      "id": "rel:integrated-decision-context-serves-purpose",
+      "subject": "cap:integrated-developmental-decision-context",
+      "predicate": "serves_goal",
+      "object": "goal:domain-general-cognitive-development",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:src/sensemaking_skills/workspace_knowledge.py",
+        "file:docs/adr/0038-long-horizon-adaptive-strategic-development.md"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "scope": "Intended decision-time support for reciprocal domain and cognitive development, not proof of goal attainment."
+      }
+    },
+    {
+      "id": "rel:integrated-decision-context-implemented-by-plane",
+      "subject": "cap:integrated-developmental-decision-context",
+      "predicate": "implemented_by",
+      "object": "component:semantic-knowledge-plane",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:src/sensemaking_skills/workspace_knowledge.py",
+        "file:src/sensemaking_skills/method_trial.py"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "scope": "Actual read-only query composition in the existing semantic knowledge plane; not an implementation of autonomous judgment."
+      }
+    },
+    {
+      "id": "rel:integrated-decision-context-references-integration",
+      "subject": "cap:integrated-developmental-decision-context",
+      "predicate": "references",
+      "object": "domain_concept:cognitive-capability-integration",
+      "evidence_refs": [
+        "file:skills/using-sensemaking/references/adaptive-skill-composition-v1.md",
+        "file:src/sensemaking_skills/workspace_knowledge.py"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "scope": "Mechanical context delivery supports possible cooperation but is not itself decision influence."
+      }
+    },
+    {
+      "id": "rel:integrated-decision-context-references-actual-use",
+      "subject": "cap:integrated-developmental-decision-context",
+      "predicate": "references",
+      "object": "observation:cognitive-integration-actual-context-2026-11-27",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-cognitive-integration-actual-use.md",
+        "file:src/sensemaking_skills/workspace_knowledge.py"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "scope": "Actual source-pinned execution and disclosed limits."
+      }
+    }
+  ]
+}
