@@ -49,6 +49,49 @@ Start with the actual question, current revision, earlier analysis and latest va
 
 These commands project authored facts and candidates only. Source gaps, missing fields, omitted results, untracked work and old IDs limit coverage. Do not treat an empty result as absence. Re-read original artifacts and sources when material.
 
+## Cumulative developmental reasoning across actual episodes
+
+The developmental landscape is the object of continuity, not a queue of
+tasks. Recover prior selected and unselected futures and their original
+conditions before a consequential development choice. Distinguish five
+complementary intellectual contributions, using only those that can change
+the decision:
+
+- **Continuity:** reconstruct earlier state, route and rationale; inspect
+  original source before carrying a claim forward.
+- **Causality:** compare a proposed enabling mechanism, actual precondition,
+  supporting or substitutable condition, and counterexample. A changed
+  source, observed association or declared prerequisite is not causal proof.
+- **Emergence:** compare the previous and current capability landscape.
+  Ask what new beneficiary outcomes become plausible, whether earlier
+  opportunities can recombine, and what became less useful or unavailable.
+  A newly authored opportunity is not evidence of newly feasible value.
+- **Optionality:** compare immediate retained value, future options created
+  or foreclosed, cost of preserving them and reversible alternatives.
+  Do not treat every shared enabler as strategically superior.
+- **Reciprocal development:** compare what the product gained with what
+  the agent learned about its method. Recover a relevant prior SCL lesson,
+  check conditions and counterevidence, apply/adapt/reject if useful, and
+  retain only actual attributable experience.
+
+For a consequential return, the optional
+`semantic workspace-changes --base-ref OLD --ref NEW --json --include-possibility-evolution`
+consumer compares authored opportunities, direct relationships and linked
+claims across exact snapshots before display truncation. Use its before/after
+records and existing fingerprint classification to focus source reading.
+Without the CLI, inspect the original Git-authored packs at both revisions.
+Combine this with actual changes, existing revisit conditions, source-scoped
+strategy history, and conditional consequence reasoning. Mechanically added
+or changed records are not new opportunities or proven effects. A later
+agent can reaffirm, revise, defer, reject or discover a candidate; preserve
+the rationale and consider the lightest existing persistence surface.
+
+These contributions are not stages, required artifacts, scores, a new
+controller or a separate cognitive subsystem. Select valuable work anywhere
+within the beneficiary's authorized product landscape, including work with
+no DTR-specific code change. A single source-grounded continuation is not
+independent longitudinal improvement or cross-domain transfer.
+
 ## Construct and return consequential evidence
 
 After authorized real work, distinguish the actual outcome from expected transition and possible downstream effects. Ask:

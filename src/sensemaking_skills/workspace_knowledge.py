@@ -533,6 +533,7 @@ def run_workspace_changes(
     *, repo: str | Path, base_ref: str, ref: str = "HEAD",
     repository: str | None = None, index_dir: str | Path | None = None,
     refresh: bool = False, limit: int = 50, pr_merge_base: bool = False,
+    include_possibility_evolution: bool = False,
 ) -> dict[str, Any]:
     """Compare two committed semantic snapshots without manual multi-revision setup.
 
@@ -570,7 +571,7 @@ def run_workspace_changes(
         payload = query_knowledge(
             database, repository=label, target_ref=sha, operation="changes",
             base_ref=base_sha, base_db_path=base_db if base_sha != sha else None,
-            limit=limit,
+            limit=limit, include_possibility_evolution=include_possibility_evolution,
         )
     except sqlite3.Error as exc:
         raise ValueError(

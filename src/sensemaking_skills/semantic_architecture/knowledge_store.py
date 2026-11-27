@@ -21,7 +21,7 @@ from .knowledge_architecture import (
 )
 from .knowledge_retrieval import (
     assess_current_authored_record, bounded_kind_coverage, classify_indexed_changes,
-    context_workspace_overlap, lesson_recall_view, search_matches, validate_retrieval_options,
+    context_workspace_overlap, lesson_recall_view, possibility_evolution, search_matches, validate_retrieval_options,
     workspace_source_overlap,
 )
 
@@ -220,6 +220,7 @@ def query_knowledge(
     search_terms: tuple[str, ...] = (), expected_kinds: tuple[str, ...] = (),
     query_text: str | None = None, search_kinds: tuple[str, ...] = (),
     include_candidates: bool = False,
+    include_possibility_evolution: bool = False,
     candidate_changed_paths: frozenset[str] | None = None,
     workspace_changed_paths: frozenset[str] | None = None,
     workspace_untracked_directory_entries: frozenset[str] = frozenset(),
@@ -264,6 +265,8 @@ def query_knowledge(
         raise ValueError("candidate changed paths require product-outline with include_candidates")
     if operation == "product-outline" and subject is not None:
         raise ValueError("product-outline lists reviewed goals and does not accept --subject")
+    if include_possibility_evolution and operation != "changes":
+        raise ValueError("possibility evolution requires changes")
     if operation == "changes" and not base_ref:
         raise ValueError("changes requires explicit base_ref")
     if base_db_path is not None and operation != "changes":
@@ -423,6 +426,11 @@ def query_knowledge(
                     "Added/removed IDs are raw set differences; renames and replacements are NOT ASSESSED.",
                 ],
             }
+            if include_possibility_evolution:
+                extra["possibility_evolution"] = possibility_evolution(
+                    old_claims, claims, old_relations, new_relations, limit=limit,
+                )
+                extra_truncated = extra_truncated or extra["possibility_evolution"]["truncated"]
             extra["comparison_limit"] = "Snapshot set differences only; repository ancestry and semantic effects are NOT established."
         elif operation == "workspace-impact":
             assert workspace_changed_paths is not None
