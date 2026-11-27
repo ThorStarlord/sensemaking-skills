@@ -61,6 +61,7 @@ _LIMITS = (
     "Installed-Skill currency compares the copied tree with package source or the install record; it does not show what a harness loaded or will load.",
     "Receipt validation checks representation and current path references, not semantic correctness, applicability or authority.",
     "Continuity inventories describe the working tree, not a committed snapshot or a complete strategic model.",
+    "Detached proposal and historical JSON inventories are path hints, not validation, review state, relevance or unresolved work. No proposal contents are read.",
     "The generated prompt must be executed by a capable agent with repository access and its own authority.",
     "A stale or unrecorded Skill may differ from the package; resolve the actual source before consequential use.",
     "No semantic truth, decision authority or action authorization is established.",
@@ -337,8 +338,11 @@ def _prompt(
         "decision authority or actions beyond what is authorized.",
     ])
     ci = continuity["inventory"]
+    has_speculative_paths = bool(
+        ci["detached_proposal_files"]["total"] or ci["historical_json_records"]["total"]
+    )
     if (continuity["selected_receipts"] or ci["receipt_files"]["total"]
-            or ci["knowledge_files"]["total"]):
+            or ci["knowledge_files"]["total"] or has_speculative_paths):
         lines.extend([
             "",
             f"Returning engagement: inspect the continuity section of {output / 'handoff.json'}.",
@@ -352,6 +356,20 @@ def _prompt(
             "When available, use the existing semantic workspace-query search for",
             "the current question (source-pinned lexical candidates, not relevance proof),",
             "and product-outline or method context only when decision-relevant.",
+        ])
+    if has_speculative_paths:
+        lines.extend([
+            "",
+            "The continuity inventory also lists detached proposal paths and historical",
+            "JSON records separately from the knowledge directory. Inspect only records",
+            "relevant to the current choice; a historical JSON file may be a synthesis",
+            "input, an already integrated draft or unrelated evidence. A filename does",
+            "not establish review status, unresolved work or authority. Compare original",
+            "evidence and current reviewed knowledge before reusing a candidate.",
+            "If an actual detached pack warrants review, use the existing read-only",
+            "knowledge-proposal-check with an explicit new --destination, then follow",
+            "the ordinary authorized review and clean-commit build contract. Do not",
+            "automatically copy, promote, execute or select a candidate.",
         ])
     lines.extend([
         "For explicitly sustained development, load the long-horizon strategic",
@@ -451,7 +469,10 @@ def _render_markdown(payload: dict[str, Any]) -> str:
         "## Returning-engagement evidence",
         "",
         "Working-tree paths (not a currentness or adequacy judgment):",
-        f"- Reviewed knowledge: {ci['knowledge_files']['total']} files",
+        f"- Knowledge-directory JSON: {ci['knowledge_files']['total']} files",
+        f"- Detached proposal JSON: {ci['detached_proposal_files']['total']} files",
+        f"- Historical JSON records: {ci['historical_json_records']['total']} files",
+        "- Speculative-record review state: NOT_ASSESSED (paths only; not a pending-work list)",
         f"- Receipt files: {ci['receipt_files']['total']} files",
         "- Governing/strategic paths: " + (", ".join(ci["governing_paths"]) or "none detected"),
         "See handoff.json for bounded path lists and omissions.",

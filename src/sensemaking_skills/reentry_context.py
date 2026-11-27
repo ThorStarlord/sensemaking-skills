@@ -2,7 +2,9 @@
 
 Only explicitly selected receipts are opened. Inventories describe working-tree
 paths, not a committed snapshot, relevance, authority or semantic adequacy.
-The canonical validator owns receipt validity. No implicit history-wide scan.
+Detached proposals and historical JSON records are path hints only: neither
+review nor pending work is inferred. The canonical validator owns receipt
+validity. No implicit history-wide content scan.
 """
 from __future__ import annotations
 
@@ -62,6 +64,9 @@ def continuity_inventory(target: Path) -> dict[str, Any]:
     return {
         "basis": "WORKING_TREE_PATHS_ONLY",
         "knowledge_files": _paths(target, ".sensemaking/knowledge", (".json",)),
+        "detached_proposal_files": _paths(target, ".sensemaking/proposals", (".json",)),
+        "historical_json_records": _paths(target, "artifacts/history", (".json",)),
+        "speculative_record_review_state": "NOT_ASSESSED",
         "receipt_files": _paths(target, _RECEIPT_DIR, (".session.yaml", ".query.yaml")),
         "strategic_history": _paths(target, "artifacts/history", (".md",)),
         "governing_paths": [
