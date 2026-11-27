@@ -60,6 +60,33 @@ tombstone, not a failure of the receipt. Once `final`, a receipt is
 receipt and point back via `continuity.resumes` and
 `continuity.resolves_questions`.
 
+**Finalizing before integration.** A receipt committed on a feature branch
+before its PR is merged describes the work completed at that boundary, not
+the future canonical merge. A final receipt cannot contain an
+`in_progress` responsibility. Record a genuinely unfinished integration as
+`not_started` or `partial`, with its actual reason and remaining authority or
+evidence; do not invent `completed_with_limit` or a new stop/state enum. Use
+the appropriate existing terminal disposition: `GOAL_SATISFIED` only for a
+goal actually satisfied at that boundary. If canonical integration is still
+part of the goal, do not claim it completed in advance. The later observed
+PR/merge result remains in Git/PR evidence, or a linked successor receipt
+when consequential to continuation. Do not edit an immutable final receipt
+to make its historical state look current.
+
+Before committing a final receipt, use the available canonical validation:
+
+```bash
+sensemaking-skills validate --artifact PATH --target-repo TARGET --json
+```
+
+Use actual paths. If the CLI is unavailable, run the existing source-checkout
+validator when accessible, otherwise check the declared schema and disclose
+NOT_RUN. A malformed historical receipt is not reviewed knowledge and must
+not be silently admitted as valid. Preserve its original bytes and correct
+material findings or continuation through an authorized linked successor;
+recover relevant original source evidence when validation is unavailable.
+This is not a gate that requires changing unrelated historical files.
+
 Keep **one receipt per session**.
 A session resumed in a fresh context writes a **new** receipt with
 `continuity.resumes: <prior session_ref>` rather than editing an immutable
