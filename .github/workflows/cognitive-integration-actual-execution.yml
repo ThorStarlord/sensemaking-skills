@@ -36,13 +36,16 @@ jobs:
       - name: Recover historical closure context at canonical main
         run: |
           set -euo pipefail
-          python scripts/summarize-receipts.py --repo . --closure-context 2026-11-19-precommit-review-construction --closure-context 2026-11-19-method-v0-source-path-provenance --json > "$RUNNER_TEMP/actual-closure-context.json"
+          python scripts/summarize-receipts.py --repo . --closure-context 2026-11-19-precommit-review-construction --closure-context 2026-11-19-method-v0-source-path-provenance --closure-context 2026-11-27-cognitive-integration-actual-use-correction --json > "$RUNNER_TEMP/actual-closure-context.json"
           python - <<'PY'
           import os, json
           from pathlib import Path
           p = json.loads((Path(os.environ['RUNNER_TEMP']) / 'actual-closure-context.json').read_text())
           assert p['invalid'] == []
           ctx = p['closure_context']
+          print('LATEST_CANDIDATE=' + json.dumps(p['next']))
+          print('CLOSURE_CONTEXT_SESSIONS=' + json.dumps([s['from_session'] for s in ctx['sessions']]))
+          print('CLOSURE_CONTEXT_UNAVAILABLE=' + json.dumps(ctx['unavailable']))
           assert not ctx['unavailable']
           assert {'2026-11-19-precommit-review-construction', '2026-11-19-method-v0-source-path-provenance', '2026-11-27-cognitive-integration-actual-use-correction'} <= {s['from_session'] for s in ctx['sessions']}
           print('CANONICAL_CLOSURE_CONTEXT=PASS')
