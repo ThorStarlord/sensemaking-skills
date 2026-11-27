@@ -123,6 +123,9 @@ def _project(data: dict[str, Any]) -> dict[str, Any]:
     ):
         item = data.get(key) or {}
         projection[key] = {field: _scalar(item.get(field)) for field in fields}
+    blocked = (data.get("next") or {}).get("blocked_on") or []
+    projection["next"]["blocked_on"] = [_scalar(item) for item in blocked[:_MAX_ITEMS]]
+    projection["next"]["blocked_on_omitted"] = max(0, len(blocked) - _MAX_ITEMS)
     for key, fields in (
         ("findings", ("id", "statement", "epistemic_status", "disposition")),
         ("open_questions", ("id", "question", "source", "blocking", "durable_ref")),
@@ -133,6 +136,10 @@ def _project(data: dict[str, Any]) -> dict[str, Any]:
             for item in items[:_MAX_ITEMS]
         ]
         projection[key + "_omitted"] = max(0, len(items) - _MAX_ITEMS)
+    for index, finding in enumerate((data.get("findings") or [])[:_MAX_ITEMS]):
+        refs = finding.get("evidence_refs") or []
+        projection["findings"][index]["evidence_refs"] = [_scalar(ref) for ref in refs[:_MAX_ITEMS]]
+        projection["findings"][index]["evidence_refs_omitted"] = max(0, len(refs) - _MAX_ITEMS)
     return projection
 
 
@@ -170,6 +177,7 @@ def selected_receipts(target: Path, names: tuple[str, ...]) -> list[dict[str, An
             ],
             "errors_omitted": max(0, len(errors) - _MAX_ITEMS),
             "historical_projection": None,
+            "projection_status": "NOT_PROJECTED",
             "relevance_established": False,
             "action_authorized": False,
         }
@@ -178,6 +186,7 @@ def selected_receipts(target: Path, names: tuple[str, ...]) -> list[dict[str, An
                 data = yaml.safe_load(raw.decode("utf-8"))
                 if isinstance(data, dict) and data.get("artifact_id") == "sensemaking_session_receipt":
                     record["historical_projection"] = _project(data)
+                    record["projection_status"] = "AVAILABLE"
             except (UnicodeError, yaml.YAMLError, TypeError, ValueError, AttributeError):
                 pass  # Original remains readable; no projection is claimed.
         records.append(record)

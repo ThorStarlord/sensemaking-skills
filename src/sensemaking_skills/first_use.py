@@ -209,7 +209,7 @@ def _git_facts(target: Path) -> dict[str, Any]:
         return {"is_git": True, "head": None, "branch": None, "error": str(exc)[:240]}
 
 
-def _target_inventory(target: Path) -> dict[str, Any]:
+def _target_inventory(target: Path, continuity: dict[str, Any]) -> dict[str, Any]:
     top_level: list[dict[str, str]] = []
     for item in sorted(target.iterdir(), key=lambda path: path.name):
         if item.name == ".git":
@@ -218,10 +218,7 @@ def _target_inventory(target: Path) -> dict[str, Any]:
             break
         kind = "symlink" if item.is_symlink() else ("dir" if item.is_dir() else "file")
         top_level.append({"name": item.name, "kind": kind})
-    knowledge = target / ".sensemaking" / "knowledge"
-    knowledge_files = (
-        len(list(knowledge.glob("*.json"))) if knowledge.is_dir() else 0
-    )
+    knowledge = continuity["knowledge_files"]
     return {
         "top_level": top_level,
         "top_level_truncated": len(top_level) >= _MAX_TOP_LEVEL,
@@ -229,8 +226,9 @@ def _target_inventory(target: Path) -> dict[str, Any]:
             name for name in _ENTRY_DOCUMENTS if (target / name).is_file()
         ],
         "manifests": [name for name in _MANIFESTS if (target / name).is_file()],
-        "sensemaking_knowledge_present": knowledge.is_dir(),
-        "sensemaking_knowledge_file_count": knowledge_files,
+        "sensemaking_knowledge_present": knowledge["directory_status"] == "OBSERVED",
+        "sensemaking_knowledge_file_count": knowledge["total"],
+        "sensemaking_knowledge_directory_status": knowledge["directory_status"],
     }
 
 
@@ -287,6 +285,7 @@ def _source_expectation(skill: dict[str, Any], expected: str | None) -> dict[str
         status = "NOT_ESTABLISHED"
     return {"expected_source_ref": expected, "status": status,
             "committed_tree_comparison": comparison,
+            "scope": "ENTRY_SKILL_TREE_ONLY",
             "matching_tree_recorded_source_commit": recorded_commit,
             "loaded_skill_identity": "NOT_OBSERVED"}
 
@@ -306,7 +305,10 @@ def _prompt(
         f"Target repository: {target}",
     ]
     if git.get("head"):
-        lines.append(f"Target revision: {git['head']}")
+        lines.append(f"Target HEAD (working-tree overlay not indexed): {git['head']}")
+    if source_expectation["expected_source_ref"]:
+        lines.append(f"Requested Skill source: {source_expectation['expected_source_ref']}")
+        lines.append(f"Entry-Skill comparison only: {source_expectation['status']}")
     lines.extend([
         f"Output directory: {output}",
         f"Question: {asked}",
@@ -334,7 +336,9 @@ def _prompt(
         "Do not modify unrelated repositories. Do not claim semantic truth,",
         "decision authority or actions beyond what is authorized.",
     ])
-    if continuity["selected_receipts"] or continuity["inventory"]["receipt_files"]["total"]:
+    ci = continuity["inventory"]
+    if (continuity["selected_receipts"] or ci["receipt_files"]["total"]
+            or ci["knowledge_files"]["total"]):
         lines.extend([
             "",
             f"Returning engagement: inspect the continuity section of {output / 'handoff.json'}.",
@@ -343,9 +347,17 @@ def _prompt(
             "A valid prior receipt is historical evidence, not today's instructions",
             "or permission. Invalid/unavailable receipts require source recovery;",
             "do not silently treat them as absent or rewrite immutable history.",
-            "For sustained development, load the long-horizon strategic development",
-            "reference and establish explicit knowledge-edit authority before writing.",
+            "Use the receipt's evidence refs and unresolved blockers; verify them in",
+            "current sources. A valid receipt may be irrelevant, incomplete or stale.",
+            "When available, use the existing semantic workspace-query search for",
+            "the current question (source-pinned lexical candidates, not relevance proof),",
+            "and product-outline or method context only when decision-relevant.",
         ])
+    lines.extend([
+        "For explicitly sustained development, load the long-horizon strategic",
+        "development reference; establish or reuse adequate semantic knowledge",
+        "and explicit knowledge-edit authority. Keep clear isolated work light.",
+    ])
     if source_expectation["status"] not in {
         "NOT_REQUESTED", "MATCHES_INSTALL_RECORD", "MATCHES_COMMITTED_TREE",
     }:
@@ -502,6 +514,10 @@ def prepare_handoff(
     continuity = {"inventory": continuity_inventory(target),
                   "selected_receipts": selected_receipts(target, resume_from)}
     output_dir.mkdir(parents=True, exist_ok=True)
+    for name in ("handoff.json", "handoff.md"):
+        destination = output_dir / name
+        if destination.is_symlink() or (destination.exists() and not destination.is_file()):
+            raise ValueError(f"handoff output is not a regular file: {destination}")
     payload: dict[str, Any] = {
         "artifact_id": HANDOFF_ARTIFACT_ID,
         "schema_version": HANDOFF_SCHEMA_VERSION,
@@ -513,7 +529,7 @@ def prepare_handoff(
         "target": {
             "path": str(target),
             "git": _git_facts(target),
-            "inventory": _target_inventory(target),
+            "inventory": _target_inventory(target, continuity["inventory"]),
         },
         "installed_skill": skill,
         "output": {
