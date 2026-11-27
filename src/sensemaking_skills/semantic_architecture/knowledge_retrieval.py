@@ -631,3 +631,128 @@ def classify_indexed_changes(
         if len(entries) < limit:
             entries.append(detail)
     return entries, counts
+
+
+def possibility_evolution(
+    previous_claims: Mapping[str, dict], current_claims: Mapping[str, dict],
+    previous_relations: Mapping[str, dict], current_relations: Mapping[str, dict],
+    *, limit: int,
+) -> dict:
+    """Compare authored opportunity records and their direct authored context.
+
+    Read the complete indexed snapshots before applying display limits. The
+    same ID is a record-comparison key, not a semantic identity proof.
+    """
+    def authored(records: Mapping[str, dict]) -> dict[str, dict]:
+        return {key: row for key, row in records.items() if _authored_pack(row) is not None}
+
+    old_claims, new_claims = authored(previous_claims), authored(current_claims)
+    old_edges, new_edges = authored(previous_relations), authored(current_relations)
+    old_opps = {key for key, row in old_claims.items() if row.get("kind") == "opportunity"}
+    new_opps = {key for key, row in new_claims.items() if row.get("kind") == "opportunity"}
+    opportunity_ids = old_opps | new_opps
+
+    def neighborhood(edges: Mapping[str, dict], opportunities: set[str]):
+        incident = set()
+        neighbors: dict[str, set[str]] = {}
+        for rid, row in edges.items():
+            subject, obj = row["subject"], row["object"]
+            if subject in opportunities or obj in opportunities:
+                incident.add(rid)
+            if subject in opportunities and obj not in opportunity_ids:
+                neighbors.setdefault(obj, set()).add(subject)
+            if obj in opportunities and subject not in opportunity_ids:
+                neighbors.setdefault(subject, set()).add(obj)
+        return incident, neighbors
+
+    old_incident, old_neighbors = neighborhood(old_edges, old_opps)
+    new_incident, new_neighbors = neighborhood(new_edges, new_opps)
+
+    def record_view(row: dict | None) -> dict | None:
+        if row is None:
+            return None
+        fields = _authored_fields(row)
+        return None if fields is None else {**fields, "source_ref": row.get("source_ref")}
+
+    def delta(ids: set[str], old: Mapping[str, dict], new: Mapping[str, dict],
+              *, old_scope: set[str], new_scope: set[str],
+              link_context: bool = False) -> dict:
+        groups: dict[str, list[dict]] = {"added": [], "removed": [], "changed": []}
+        unchanged = 0
+        link_context_truncated = False
+        for identifier in sorted(ids):
+            before, after = old.get(identifier), new.get(identifier)
+            if before is None and after is None:
+                continue
+            membership_changed = (identifier in old_scope) != (identifier in new_scope)
+            links_before = sorted(old_neighbors.get(identifier, set())) if link_context else []
+            links_after = sorted(new_neighbors.get(identifier, set())) if link_context else []
+            if before == after and not membership_changed and links_before == links_after:
+                unchanged += 1
+                continue
+            kind = "added" if before is None else "removed" if after is None else "changed"
+            row = {
+                "id": identifier,
+                "before": record_view(before),
+                "after": record_view(after),
+                "in_scope_before": identifier in old_scope,
+                "in_scope_after": identifier in new_scope,
+                "classification": (
+                    _classify_record_change(before, after)
+                    if before is not None and after is not None and before != after else None
+                ),
+            }
+            if link_context:
+                row["linked_opportunity_ids_before"] = links_before[:limit]
+                row["linked_opportunity_ids_after"] = links_after[:limit]
+                row["linked_opportunity_counts"] = {
+                    "before": len(links_before), "after": len(links_after),
+                }
+                if len(links_before) > limit or len(links_after) > limit:
+                    link_context_truncated = True
+            groups[kind].append(row)
+
+        # Authored field, membership and adjacency changes remain visible ahead
+        # of pack-fingerprint-only changes. This is presentation, not value rank.
+        def display_key(row: dict) -> tuple[int, str]:
+            detail = row["classification"] or {}
+            substantive = (
+                detail.get("authored_fields_changed") is True
+                or row["in_scope_before"] != row["in_scope_after"]
+                or row.get("linked_opportunity_ids_before") != row.get("linked_opportunity_ids_after")
+            )
+            return (0 if substantive else 2 if detail.get("provenance_only") is True else 1,
+                    row["id"])
+
+        groups["changed"].sort(key=display_key)
+        counts = {kind: len(rows) for kind, rows in groups.items()}
+        return {
+            **{kind: rows[:limit] for kind, rows in groups.items()},
+            "counts": {**counts, "unchanged": unchanged},
+            "omitted": {kind: max(0, count - limit) for kind, count in counts.items()},
+            "truncated": link_context_truncated or any(count > limit for count in counts.values()),
+        }
+
+    opportunities = delta(opportunity_ids, old_claims, new_claims,
+                          old_scope=old_opps, new_scope=new_opps)
+    relations = delta(old_incident | new_incident, old_edges, new_edges,
+                      old_scope=old_incident, new_scope=new_incident)
+    linked_claims = delta(set(old_neighbors) | set(new_neighbors), old_claims, new_claims,
+                          old_scope=set(old_neighbors), new_scope=set(new_neighbors),
+                          link_context=True)
+    return {
+        "opportunities": opportunities,
+        "direct_authored_relations": relations,
+        "directly_linked_authored_claims": linked_claims,
+        "opportunity_count_before": len(old_opps),
+        "opportunity_count_after": len(new_opps),
+        "truncated": any(group["truncated"] for group in (opportunities, relations, linked_claims)),
+        "explicit_limits": [
+            "Only indexed Git-authored opportunities, incident authored relations and their directly linked authored claims are compared; no multi-hop or unindexed coverage.",
+            "Added/removed mean record presence in these indexed authored snapshots, not discovery, realization, rejection or invalidation. Scope flags distinguish changing membership from record existence.",
+            "Before/after show authored fields and original source pointers; classification reuses the indexed record/source fingerprint comparison.",
+            "Changes in linked claims or relations are reconsideration candidates, not proof of premise necessity, enabling effects, semantic correspondence or new opportunities.",
+            "Display order favors authored/membership/adjacency changes over pack-only fingerprint noise; no priority, feasibility, selection, causality or authority is inferred.",
+            "Each category is independently limited; unchanged or absent records do not establish that a possibility remains warranted.",
+        ],
+    }

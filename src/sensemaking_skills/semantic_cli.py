@@ -586,13 +586,17 @@ def register_semantic_commands(root_cli: click.Group) -> None:
     @click.option("--limit", type=click.IntRange(1, 250), default=50)
     @click.option("--pr-merge-base", is_flag=True,
                   help="Use the unique Git merge base of --base-ref and --ref as the baseline")
+    @click.option("--include-possibility-evolution", is_flag=True,
+                  help="Compare authored opportunities and their direct authored context (requires --json)")
     @click.option("--json", "output_json", is_flag=True)
     def semantic_workspace_changes(
         base_ref: str, ref: str, repo_dir: Path, repository_label: str | None,
         index_dir: Path | None, refresh: bool, limit: int, pr_merge_base: bool,
-        output_json: bool,
+        include_possibility_evolution: bool, output_json: bool,
     ) -> None:
         """Compare reviewed semantic knowledge at two commits without preparing a database."""
+        if include_possibility_evolution and not output_json:
+            raise click.UsageError("--include-possibility-evolution requires --json")
         from .workspace_knowledge import run_workspace_changes
 
         try:
@@ -600,6 +604,7 @@ def register_semantic_commands(root_cli: click.Group) -> None:
                 repo=repo_dir, base_ref=base_ref, ref=ref,
                 repository=repository_label, index_dir=index_dir,
                 refresh=refresh, limit=limit, pr_merge_base=pr_merge_base,
+                include_possibility_evolution=include_possibility_evolution,
             )
         except (ValueError, OSError, UnicodeError) as exc:
             raise click.ClickException(str(exc)) from exc
