@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 12
     env:
-      SOURCE: "be4b6929a0f98cad609e32a79781b99680cf8566"
+      SOURCE: "12d046aa7810c12411957fed949b2b60d1c92671"
     steps:
       - uses: actions/checkout@v4
         with:
@@ -35,7 +35,7 @@ jobs:
           E=.sensemaking/proposals/execution-substitution-method-application.json
           EDEST=.sensemaking/knowledge/execution-substitution-method-application.json
           test ! -e "$CDEST" && test ! -e "$EDEST" && test ! -e "$E"
-          test "$(git hash-object "$C")" = df23ffed05dd6166bd2f220146facfc401e27d6b
+          test "$(git hash-object "$C")" = b00d7dab420b3b747074b8a8dc5ef78318c46680
           sensemaking-skills semantic knowledge-proposal-check --repo . --proposal "$C" \
             --destination "$CDEST" --json | tee "$RUNNER_TEMP/actual-concept-detached.json"
           sensemaking-skills semantic method record --repo . \
