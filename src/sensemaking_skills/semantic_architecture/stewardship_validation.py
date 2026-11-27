@@ -74,10 +74,12 @@ def _safe_pack_path(root: Path, path: Path, *, detached: bool = False) -> tuple[
             raise ValueError("detached draft must be a JSON file under artifacts/history/ or .sensemaking/proposals/")
         raise ValueError("proposal must be a JSON file under .sensemaking/knowledge/")
     current = root
-    for part in relative.parts:
+    for index, part in enumerate(relative.parts):
         current = current / part
         if current.is_symlink():
             raise ValueError(f"symlink proposal refused: {relative}")
+        if index < len(relative.parts) - 1 and current.exists() and not current.is_dir():
+            raise ValueError(f"proposal parent is not a directory: {relative}")
     if not candidate.resolve().is_relative_to(root):
         raise ValueError("proposal escapes repository")
     return candidate, relative.as_posix()
@@ -110,16 +112,22 @@ def inspect_knowledge_proposal(
     target_ref = _git(root, "rev-parse", "HEAD")
     committed = set(filter(None, _git(root, "ls-tree", "-r", "-z", "--name-only", "HEAD").split(chr(0))))
     tracked = set(filter(None, _git(root, "ls-files", "-z").split("\0")))
-    if destination is not None and (
-        relative in committed or relative in tracked or destination_path.exists()
-        or (destination_path.parent.exists() and not destination_path.parent.is_dir())
-    ):
-        raise ValueError("detached draft requires a new unoccupied knowledge destination")
+    if destination is not None:
+        # Reject both existing pack paths and committed/indexed file-directory
+        # conflicts even if those paths have been removed in the worktree.
+        def conflicts(name: str) -> bool:
+            path_parts = Path(name).parts
+            destination_parts = Path(relative).parts
+            prefix_length = min(len(path_parts), len(destination_parts))
+            return Path(*path_parts[:prefix_length]) == Path(*destination_parts[:prefix_length])
+
+        if destination_path.exists() or any(conflicts(name) for name in committed | tracked):
+            raise ValueError("detached draft requires a new unoccupied knowledge destination")
     worktree_clean = not bool(_git(root, "--no-optional-locks", "status", "--porcelain", "--untracked-files=all"))
-    raw = path.read_bytes()
-    if len(raw) > _MAX_PROPOSAL_BYTES:
+    proposal_bytes = path.read_bytes()
+    if len(proposal_bytes) > _MAX_PROPOSAL_BYTES:
         raise ValueError("proposal exceeds 512 KiB")
-    data = json.loads(raw.decode("utf-8"))
+    data = json.loads(proposal_bytes.decode("utf-8"))
     if not isinstance(data, dict) or set(data) != {"schema_version", "claims", "relations"}:
         raise ValueError("proposal must contain exactly schema_version, claims and relations")
     if data["schema_version"] not in AUTHORED_SCHEMA_VERSIONS or not isinstance(data["claims"], list) or not isinstance(data["relations"], list):
@@ -306,7 +314,7 @@ def inspect_knowledge_proposal(
         **({
             "proposed_destination": relative,
             "destination_state": "ABSENT_AT_INSPECTION",
-            "proposal_sha256": hashlib.sha256(raw).hexdigest(),
+            "proposal_sha256": hashlib.sha256(proposal_bytes).hexdigest(),
             "detached_draft": True,
         } if destination is not None else {}),
         "head_sha": target_ref,
