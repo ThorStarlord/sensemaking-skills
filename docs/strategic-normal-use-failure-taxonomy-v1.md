@@ -6,10 +6,13 @@
 
 ## 1. Purpose
 
-The current repository strategy is `NO_CHANGE / NORMAL_USE_HANDOFF`.
-Normal use should therefore generate evidence about whether the integrated
-strategic-control surfaces fail repeatedly in material ways before another
-construction package is opened.
+This guide originated under the historical `NO_CHANGE / NORMAL_USE_HANDOFF`
+strategy. Current product purpose and continuation are governed by
+[ADR 0038](adr/0038-long-horizon-adaptive-strategic-development.md) and the
+[current Level-3 reconciliation](../artifacts/history/2026-11-27-long-horizon-strategic-development-reconciliation.md).
+Normal use and independently warranted construction should generate evidence
+about material failures; a taxonomy entry is not a construction or
+qualification gate.
 
 This taxonomy makes those failures easier to name without converting ordinary
 use into a synthetic benchmark or experiment program.
@@ -239,6 +242,29 @@ Examples:
 - legacy fog-to-workflow routing becomes current behavior;
 - deprecated registry entries are treated as supported product direction;
 - retained research machinery becomes shipped-product authority.
+
+## 2a. Cross-family responsibility and closure signals (2026-11-27)
+
+These are descriptive lenses, not additional runtime enums or a claim that
+one family causes another. Compare the [source-grounded historical
+reconciliation](normal-use/2026-11-27-adaptive-cognitive-failure-review.md).
+
+| Lens | Relationship to the existing families | Distinction |
+| --- | --- | --- |
+| Outcome-responsibility drift (ORD) | F5, F10, F13; may coexist with F1 | Mismatch between governing outcome and selected/closed responsibility |
+| Premature local closure | F12, F13, F16 | Inadequately warranted terminal stop; local success can be real |
+| Defensive minimalism | Possible contributor to F6/F8 or narrow F1/F4 | Hypothesized preference distortion, not a demonstrated cause or synonym for small work |
+| Constraint inversion | F5; may contribute to F8/F16 | A constraint or gate displaces the end it was meant to serve |
+| Local completion bias | Possible contributor to F12/F13 | Easy local observability can distort evaluation of broader outcomes |
+
+Premature convergence (F1) concerns commitment without adequate alternative
+coverage. It can contribute to these failures but is not their parent category.
+The #935 receipt explicitly acknowledged the wider objective; the disputed
+claim is its terminal stopping justification, not proof of unconscious goal
+loss. Apply the existing portable [AMS cognitive safeguards](../skills/using-sensemaking/references/metareasoning-policy-v0.md#5b-cognitive-failure-recognition-and-correction-conditional)
+only when relevant to a material choice. Preserve the symmetric risks of
+over-exploration and unnecessary construction. No rate or intrinsic tendency
+is established by the source-selected episodes.
 
 ## 3. Symmetric failure pairs
 

@@ -468,6 +468,17 @@ distinction would change the next move, load
 `references/metareasoning-policy-v0.md` for its bounded question/method
 fitness guidance. Do not add a checkpoint to routine, already well-scoped work.
 
+**Cognitive safeguards (conditional):** At a material responsibility selection,
+commitment or stop, challenge signs of premature convergence, goal/responsibility
+drift, defensive minimalism, proxy capture or premature local closure. Compare
+the delegated outcome, selected scope, credible alternatives and omission cost;
+distinguish a blocked responsibility from a blocked mission. An acknowledged
+remaining goal must affect continuation when warranted; a small repair or a
+justified stop is still valid. Use the existing AMS
+`references/metareasoning-policy-v0.md` section 5b, not a new reviewer or
+per-output gate. Preserve relevant counterevidence and use prior method
+experience when it could change the decision.
+
 **Scope-at-closure backstop:** compare the original requested target and
 outcome with the systems/relationships actually inspected and the final
 claim. A source-grounded result about one component does not establish that

@@ -1,0 +1,108 @@
+artifact_id: sensemaking_session_receipt
+schema_version: 1
+session_ref: 2026-11-27-adaptive-cognitive-correction
+state: final
+created_at: "2026-11-27T18:28:00Z"
+updated_at: "2026-11-27T18:33:00Z"
+target_repository: ThorStarlord/sensemaking-skills
+source_identity:
+  start_ref: a6291c2d4815dec585526e3f21f142375169b98c
+  end_ref: bfda3de72b3f4614e7241905dd1090639b0581dd
+  worktree_clean_at_end: null
+skill_identity:
+  load_mode: manual_explicit_load
+  sensemaking_source_ref: null
+goal:
+  statement: "Implement proportionate cognitive safeguards and investigate, select and construct warranted adaptive cognitive failure recognition and correction within the current product thesis."
+  source: owner_message
+  source_ref: null
+delegation:
+  granted: [read, local_write, run_local_commands, commit, push, open_pr, merge, knowledge_edit]
+  withheld: [release, deploy, tracker_write, external_publication]
+continuity:
+  resumes: 2026-11-19-precommit-review-construction
+  campaign_ref: null
+  resolves_questions: []
+responsibilities:
+  - id: R-1
+    responsibility: Reconcile historical failure claims and compare credible explanations
+    capability: using-sensemaking
+    status: completed
+    reason: "Original owner prompt, historical PRs and receipts, ADR 0038, prior methodological lessons and counterevidence support a bounded retrospective review; no universal causal or prevalence claim."
+    artifact_refs: [docs/normal-use/2026-11-27-adaptive-cognitive-failure-review.md, docs/strategic-normal-use-failure-taxonomy-v1.md]
+    validation:
+      - command: Compare original historical records with governing scope
+        result: PASS
+  - id: R-2
+    responsibility: Integrate conditional cognitive safeguards in the existing AMS and delegation surfaces
+    capability: ordinary_coding
+    status: completed
+    reason: "Activate only at consequential choices; reuse the existing controller, taxonomy and prompt instead of a new mandatory reviewer. Historical strategy wording reconciled."
+    artifact_refs: [skills/using-sensemaking/SKILL.md, skills/using-sensemaking/references/metareasoning-policy-v0.md, skills/strategic-sensemaking-loop/references/autonomous-terminal-mission-v1.md, CLAUDE.md]
+    validation:
+      - command: Exact branch source and diff review
+        result: PASS
+  - id: R-3
+    responsibility: Expose authored goal and closure evidence in the actual session reader
+    capability: ordinary_coding
+    status: completed
+    reason: "Reader suppressed goal, stop rationale and claim limits. Add mechanical context for latest candidates and explicitly selected historical sessions without a verdict or authority."
+    artifact_refs: [scripts/summarize-receipts.py, skills/using-sensemaking/references/session-receipt-v1.md, .github/workflows/semantic-context-reentry.yml]
+    validation:
+      - command: Exact source and diff review; inspect validator and existing consumers
+        result: PASS
+      - command: Local checkout, installed CLI and receipt validator execution
+        result: NOT_RUN
+  - id: R-4
+    responsibility: Carry bounded actual responsibilities into returning-engagement handoffs
+    capability: ordinary_coding
+    status: completed
+    reason: "Existing handoff already projects goal and stop but omitted responsibility reasons. Reuse bounded projection, retain omissions, and add a conditional decision cue."
+    artifact_refs: [src/sensemaking_skills/reentry_context.py, src/sensemaking_skills/first_use.py, docs/cli-reference.md]
+    validation:
+      - command: Exact source and diff review including hosted real-receipt checks
+        result: PASS
+      - command: Local unit and synthetic evidence tests
+        result: NOT_RUN
+  - id: R-5
+    responsibility: Exercise authentic decision-time correction using the new capability
+    capability: using-sensemaking
+    status: blocked
+    reason: "Local shell cannot resolve github.com; no genuine checkout or separate capable agent executor here. Hosted checks can verify projections, not authentic self-initiated correction."
+    artifact_refs: [docs/normal-use/2026-11-27-adaptive-cognitive-failure-review.md]
+    validation:
+      - command: Actual shell Git remote access
+        result: FAIL
+findings:
+  - id: F-1
+    statement: "Revises predecessor #935 stop inference: useful implementation is supported, exhaustion of owner scope is not established; no proof of a better feasible alternative or strict ORD."
+    epistemic_status: DERIVED
+    evidence_refs: [.sensemaking/receipts/2026-11-19-precommit-review-construction.session.yaml, docs/normal-use/2026-11-27-adaptive-cognitive-failure-review.md]
+    disposition: resolved
+  - id: F-2
+    statement: "Source inspection showed two distinct context delivery omissions; implementation now projects authored scope, responsibility and closure evidence without judging historical warrant."
+    epistemic_status: OBSERVED
+    evidence_refs: [scripts/summarize-receipts.py, src/sensemaking_skills/reentry_context.py]
+    disposition: resolved
+  - id: F-3
+    statement: "The prior separate-gates and execution-substitution lessons are relevant; source inspection informed the separation of ordinary build from behavioral evidence. No new reusable method or causal benefit is established."
+    epistemic_status: DERIVED
+    evidence_refs: [docs/normal-use/2026-11-17-construction-vs-qualification-selection-lesson.md, docs/normal-use/2026-11-27-adaptive-cognitive-failure-review.md]
+    disposition: no_action
+open_questions:
+  - id: Q-1
+    question: "Does a later capable agent encounter and use the integrated context and safeguards during a consequential actual decision, correct or reaffirm its approach, and retain genuine transferable experience when warranted?"
+    source: external_environment
+    blocking: true
+    options: []
+    durable_ref: docs/normal-use/2026-11-27-adaptive-cognitive-failure-review.md
+stop:
+  disposition: EXTERNAL_BLOCKER
+  reason: "Review and warranted construction source-reviewed before integration. Further authentic behavioral use needs a capable agent checkout; no specific additional mechanism is warranted without that consumer evidence. Not a repository-wide no-further-warrant claim."
+next:
+  warranted_responsibility: "Use the implemented surfaces during a genuine consequential engineering decision in a capable checkout; repair real barriers, preserve original evidence and consider conditional method adaptation."
+  blocked_on: [Q-1]
+persistence: committed
+claim_ceiling: "Source-grounded retrospective review and implementation; hosted mechanical checks pending at receipt authoring. No local runtime, native skill-load identity, autonomous correction, independent later reuse or comparative benefit established."
+action_authorized_by_receipt: false
+immutable: true

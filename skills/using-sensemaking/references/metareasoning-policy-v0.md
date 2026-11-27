@@ -293,6 +293,53 @@ why it is or is not currently warranted. Use existing question/frame and
 provenance semantics when durable continuity is necessary; no new machine
 record, status, score or automatic prompt chain follows.
 
+## 5b. Cognitive failure recognition and correction (conditional)
+
+When a material selection, commitment or stop is contested, repeatedly
+misaligned, or weakly supported, distinguish the **observed behavior** from
+the **hypothesized cause**. A review should change the current decision if
+warranted, not just improve the explanation afterward. These are lenses on
+existing metareasoning, warrant and reconciliation, not a universal taxonomy.
+
+| Signal | Question that could change the decision | Existing response |
+| --- | --- | --- |
+| Premature convergence | Which materially different question, explanation, scope or outcome was excluded before commitment? | EXPLORE or CHALLENGE; assess coverage proportionately |
+| Outcome-responsibility drift | Does the actual selected responsibility serve the original purpose, or has it effectively displaced it? | Recover goal/authority; compare responsibility scopes; correct or reaffirm |
+| Premature local closure | Is the completed local increment being used to justify terminal stopping without considering independent remaining work? | RECONCILE then re-warrant the mission-level STOP or CONTINUE |
+| Defensive minimalism (possible tendency) | Were omission cost, retained value and credible larger but feasible interventions compared alongside risk and cost? | Warrant / Choice; compare realistic alternatives including direct reversible BUILD |
+| Constraint inversion / proxy capture | Does an evidence, implementation or qualification constraint govern the objective or replace it? | Separate construction, claim and authorization gates; keep genuine prerequisites |
+| Local completion bias (possible contributor) | Does the evidence support only a local success, or the actual consumer and broader closure claim? | Output reconciliation; verify decision-changing downstream consequences |
+
+Do not infer a cause, prevalence, failure or correct larger intervention from
+a small diff, an unfinished long-term ambition, a green check, or the mere
+presence of a stop label. A well-supported narrow choice and a legitimate
+terminal stop are positive outcomes. Exhaustive search, ritual review and
+unwarranted construction are symmetric risks.
+
+At a naturally consequential boundary:
+
+1. Recover the actual governing intent, authority and current evidence; state
+   the contemplated decision (including whether the stop is local or terminal).
+2. Separate verified work, remaining outcome gaps and the reason for the
+   proposed choice. Identify the smallest decision-changing unknown; compare
+   credible alternatives only where the result could differ. For blockers,
+   identify their precise dependency and check independently warranted work.
+3. Use the existing AMS control moves and relevant specialist responsibilities.
+   A targeted challenge, source read, direct build, or independent review may
+   suffice; the critic supplies evidence, not a veto or another controller.
+4. Reconcile the returned result into the actual action or stop. Retain
+   original evidence in existing decision, PR, receipt or knowledge surfaces
+   when it matters for continuity. Consider a source-grounded prior method
+   and optional Method Adaptation or method trial only when genuinely
+   consequential; do not invent a procedure change or retroactive trace.
+
+A warning is a reason to assess, not a verdict. A local blocker can justify
+deferring the affected responsibility without making the mission terminal.
+A terminal stop must be warranted at the delegated scope; do not demand that
+every imaginable improvement be excluded. Independent later reuse,
+comparative improvement and transfer require separate evidence. Do not turn
+this guidance into mandatory reflection for each output or a new runtime.
+
 ## 6. Tie handling
 
 Several moves may be plausible.

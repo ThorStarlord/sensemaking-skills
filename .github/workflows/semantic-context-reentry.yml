@@ -17,6 +17,8 @@ on:
       - 'src/sensemaking_skills/first_use.py'
       - 'src/sensemaking_skills/reentry_context.py'
       - 'src/sensemaking_skills/cli.py'
+      - 'scripts/summarize-receipts.py'
+      - 'scripts/validate-receipt.py'
       - 'skills/strategic-repository-analysis/**'
       - 'skills/repository-semantic-steward/**'
       - '.github/workflows/semantic-context-reentry.yml'
@@ -40,6 +42,40 @@ jobs:
           python-version: '3.11'
       - name: Install this exact repository revision
         run: python -m pip install -e .
+      - name: Recover actual historical closure context (mechanics only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/summarize-receipts.py --repo . \
+            --closure-context 2026-11-19-precommit-review-construction \
+            --closure-context 2026-11-19-method-v0-source-path-provenance \
+            --json > "$RUNNER_TEMP/closure-context.json"
+          CLOSURE_RESULT="$RUNNER_TEMP/closure-context.json" python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import yaml
+
+          result = json.loads(Path(os.environ["CLOSURE_RESULT"]).read_text())
+          context = result["closure_context"]
+          sessions = {entry["from_session"]: entry for entry in context["sessions"]}
+          for ref in ("2026-11-19-precommit-review-construction",
+                      "2026-11-19-method-v0-source-path-provenance"):
+              source = yaml.safe_load(
+                  (Path(".sensemaking/receipts") / f"{ref}.session.yaml").read_text()
+              )
+              entry = sessions[ref]
+              for field in ("goal", "source_identity", "stop", "next", "claim_ceiling"):
+                  assert entry[field] == source[field], (ref, field)
+              assert entry["responsibilities"] == [
+                  {key: item[key] for key in
+                   ("id", "responsibility", "status", "reason", "artifact_refs")}
+                  for item in source["responsibilities"]
+              ]
+          assert not context["unavailable"]
+          assert "not an assessment of stop warrant" in context["note"]
+          print("Historical closure context preserved; cognitive judgment not evaluated.")
+          PY
       - name: Re-enter reviewed methodological experience (mechanics only)
         shell: bash
         run: |
@@ -1805,6 +1841,16 @@ jobs:
           assert prior["session_ref"] == "2026-11-27-long-horizon-strategic-development"
           assert prior["state"] == "final"
           assert "Episode 10C" in prior["next"]["warranted_responsibility"]
+          import yaml
+          source = yaml.safe_load(Path(record["path"]).read_text(encoding="utf-8"))
+          responsibilities = source["responsibilities"]
+          assert prior["responsibilities_omitted"] == max(0, len(responsibilities) - 12)
+          for projected, authored in zip(prior["responsibilities"], responsibilities[:12], strict=True):
+              for field in ("id", "responsibility", "capability", "status", "reason"):
+                  assert projected[field] == authored[field], field
+              assert projected["artifact_refs"] == authored["artifact_refs"][:12]
+              assert projected["artifact_refs_omitted"] == max(0, len(authored["artifact_refs"]) - 12)
+          assert "A completed local increment is not mission closure." in packet["prompt"]
           assert record["relevance_established"] is False and record["action_authorized"] is False
           assert packet["analysis_performed"] is False and packet["action_authorized"] is False
           print("Selected actual prior receipt validated and projected; no agent benefit or loading claim.")

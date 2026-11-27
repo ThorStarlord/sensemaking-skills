@@ -147,10 +147,20 @@ source-attributed task/decision evidence already useful to the work; a
 post-hoc report is not a contemporaneous decision trace. A small patch can
 be exactly right, and a `NO_CODE_CHANGE` decision can be justified.
 
-**Current continuation:** use the
-[Method Adaptation v0 construction-and-observation plan](../superpowers/plans/2026-11-19-method-adaptation-v0-continuation-ord-observation.md).
+**Historical continuation (2026-11-19):** the
+[Method Adaptation v0 construction-and-observation plan](../superpowers/plans/2026-11-19-method-adaptation-v0-continuation-ord-observation.md) sets the earlier construction-first context.
 ORD is a secondary observation lens, not a new controller, obligatory
 reflection checkpoint, qualification study, or reason to postpone construction.
+
+**Later reconciliation (2026-11-27):** the [historical cognitive-failure
+review](../normal-use/2026-11-27-adaptive-cognitive-failure-review.md) preserves
+#935's useful implementation while disputing the warrant for its
+`SCOPE_EXHAUSTED` stop under the broader delegation. The broader gap was
+acknowledged, so classical ORD under the narrow definition above is not
+conclusively established. The portable AMS safeguards and terminal prompt
+now support recognizing and correcting this kind of scope mismatch before a
+consequential selection or stop. This is not evidence that the guidance has
+already changed a later agent's cognition.
 
 ## Continue after a spike or merged increment
 
