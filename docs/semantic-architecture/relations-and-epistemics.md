@@ -451,6 +451,16 @@ particular, `mayProduce` and `mayEnable` are non-transitive hypotheses;
 endpoints; a response is not a verified repair; a proposed technical element
 is not implemented by appearing in a spec.
 
+### Developmental trajectory reasoning relationships (documentary)
+
+The [DTR ontology](developmental-trajectory-reasoning-ontology.md#3-relationship-meanings-and-epistemic-obligations)
+owns the documentary meanings for transitions changing conditions, shared
+enablers, path dependence, possible recombination and trajectory reassessment.
+Use existing prospective predicates only at their declared endpoints.
+Same-ID references across analyses do not establish identity; shared
+references do not establish causality, necessity or complementarity.
+Retain attributable scope, revision, mechanism, uncertainty and counterevidence.
+
 ## Temporal and scope rules
 
 ### Divergent inquiry relationships

@@ -204,6 +204,62 @@ def _trajectory_context(path: dict[str, Any]) -> dict[str, Any]:
     return {field: path[field] for field in _TRAJECTORY_FIELDS if field in path}
 
 
+def _shared_trajectory_context(data: dict[str, Any]) -> dict[str, Any]:
+    """Group literal typed references within this analysis, never infer relations."""
+    paths = _path_map(data)
+    states = _capability_map(data)
+    assumption_ids = {
+        item["assumption_id"] for item in _normalize_assumptions(data)
+        if isinstance(item.get("assumption_id"), str)
+    }
+    capabilities: dict[str, dict[str, set[str]]] = {}
+    assumptions: dict[str, set[str]] = {}
+    paths_without_typed_capability_fields = []
+
+    for pid, path in paths.items():
+        fields = ("builds_on_capability_ids", "required_capability_ids")
+        if not any(isinstance(path.get(field), list) for field in fields):
+            paths_without_typed_capability_fields.append(pid)
+        for field in fields:
+            refs = path.get(field)
+            if not isinstance(refs, list):
+                continue
+            for cid in refs:
+                if isinstance(cid, str):
+                    capabilities.setdefault(cid, {}).setdefault(field, set()).add(pid)
+        refs = path.get("assumptions")
+        if isinstance(refs, list):
+            for aid in refs:
+                if isinstance(aid, str) and aid in assumption_ids:
+                    assumptions.setdefault(aid, set()).add(pid)
+
+    shared_capabilities = []
+    for cid, uses in sorted(capabilities.items()):
+        builds_on = uses.get("builds_on_capability_ids", set())
+        required = uses.get("required_capability_ids", set())
+        if len(builds_on | required) > 1:
+            shared_capabilities.append({
+                "capability_id": cid,
+                "declared_state": states.get(cid),
+                "builds_on_path_ids": sorted(builds_on),
+                "required_by_path_ids": sorted(required),
+            })
+
+    return {
+        "shared_capability_refs": shared_capabilities,
+        "shared_declared_assumption_refs": [
+            {"assumption_id": aid, "path_ids": sorted(pids)}
+            for aid, pids in sorted(assumptions.items()) if len(pids) > 1
+        ],
+        "paths_without_typed_capability_fields": sorted(paths_without_typed_capability_fields),
+        "note": (
+            "Literal references within one analysis only. Undeclared state is null; "
+            "legacy prose and missing fields are unassessed. Shared references "
+            "do not establish causality, necessity, complementarity or priority."
+        ),
+    }
+
+
 def _path_transition_map(data: dict[str, Any]) -> dict[str, dict[str, Any]]:
     result: dict[str, dict[str, Any]] = {}
     for path in data.get("construction_paths", []) or []:
@@ -221,11 +277,6 @@ def _path_transition_map(data: dict[str, Any]) -> dict[str, dict[str, Any]]:
                     "path_id": path["path_id"],
                 }
     return result
-
-
-def _mermaid_id(prefix: str, value: Any) -> str:
-    normalized = re.sub(r"[^A-Za-z0-9_]", "_", str(value))
-    return f"{prefix}_{normalized}"
 
 
 def _mermaid_label(value: Any) -> str:
@@ -339,6 +390,7 @@ def show_paths(
         payload["capability_states"] = data.get("capability_states", [])
         payload["decision_assumptions"] = data.get("decision_assumptions", [])
         payload["architecture_synthesis_refs"] = data.get("architecture_synthesis_refs", [])
+        payload["shared_trajectory_context"] = _shared_trajectory_context(data)
         payload["consumer_note"] = (
             "Authored context only; missing fields are not evidence of absence. "
             "Inspect original evidence and compare alternatives semantically."
@@ -769,72 +821,96 @@ def show_graph(artifacts: tuple[Path, ...], output_json: bool) -> None:
     """Render declared strategic relationships as Mermaid without inference."""
     events = _history_events(artifacts)
     lines = ["graph TD"]
-    declared_nodes: set[str] = set()
+    # Use exact keys, not lossy normalized labels or globally reused local IDs.
+    nodes: dict[tuple[Any, ...], str] = {}
+    aliases: dict[str, set[int]] = {}
+    analysis_labels: dict[int, str] = {}
+    for event, artifact in zip(events, artifacts):
+        if event["artifact_id"] != "strategic_repository_analysis":
+            continue
+        seq = event["sequence"]
+        analysis_labels[seq] = event["ref"]
+        for alias in (event["ref"], artifact.as_posix(), artifact.resolve().as_posix()):
+            aliases.setdefault(alias, set()).add(seq)
 
-    def node(node_id: str, label: str) -> None:
-        if node_id not in declared_nodes:
+    def node(key: tuple[Any, ...], label: str) -> str:
+        if key not in nodes:
+            node_id = f"{key[0]}_{len(nodes) + 1}"
+            nodes[key] = node_id
             lines.append(f'  {node_id}["{_mermaid_label(label)}"]')
-            declared_nodes.add(node_id)
+        return nodes[key]
+
+    def prior_scope(ref: str, seq: int) -> tuple[tuple[Any, ...], str]:
+        matches = aliases.get(ref, set())
+        if not matches and _local_ref_path(ref) == ref:
+            matches = aliases.get(Path(ref).resolve().as_posix(), set())
+        if len(matches) == 1:
+            matched = next(iter(matches))
+            return ("SRA", matched), analysis_labels[matched]
+        # Do not equate two unresolved references or choose among collisions.
+        return ("UNRESOLVED", seq, ref), f"{ref} [unresolved analysis reference]"
+
+    def local_node(kind: str, scope: tuple[Any, ...], label: str, value: Any) -> str:
+        return node((kind, scope, value), f"{value} [{label}]")
 
     for event in events:
+        seq = event["sequence"]
         if event["artifact_id"] == "strategic_repository_analysis":
             current_ref = event["ref"]
-            current_id = _mermaid_id("SRA", current_ref)
-            node(current_id, current_ref)
+            scope = ("SRA", seq)
+            current_id = node(scope, current_ref)
             continuity = event.get("continuity")
             if isinstance(continuity, dict) and continuity.get("prior_analysis_ref"):
-                prior_ref = continuity["prior_analysis_ref"]
-                prior_id = _mermaid_id("SRA", prior_ref)
-                node(prior_id, prior_ref)
+                prior_key, prior_label = prior_scope(continuity["prior_analysis_ref"], seq)
+                prior_id = node(prior_key, prior_label)
                 lines.append(
                     f"  {prior_id} -->|{_mermaid_label(continuity.get('disposition'))}| {current_id}"
                 )
             selected_path = event.get("selected_path_id")
             if selected_path:
-                path_id = _mermaid_id("PATH", selected_path)
-                node(path_id, selected_path)
+                path_id = local_node("PATH", scope, current_ref, selected_path)
                 lines.append(f"  {current_id} -->|selected| {path_id}")
             for assumption in event.get("assumptions", []):
                 assumption_ref = assumption.get("assumption_id")
                 if assumption_ref:
-                    assumption_id = _mermaid_id("ASSUMPTION", assumption_ref)
-                    node(assumption_id, assumption_ref)
+                    assumption_id = local_node("ASSUMPTION", scope, current_ref, assumption_ref)
                     lines.append(f"  {current_id} -->|assumes| {assumption_id}")
             for transition in event.get("path_transitions", []):
                 transition_ref = transition.get("transition_ref")
                 if transition_ref:
-                    transition_id = _mermaid_id("TRANSITION", transition_ref)
-                    node(transition_id, transition_ref)
+                    transition_id = local_node("TRANSITION", scope, current_ref, transition_ref)
                     lines.append(f"  {current_id} -->|declares| {transition_id}")
         else:
-            rec_id = _mermaid_id("REC", event["sequence"])
-            node(rec_id, event["ref"])
+            rec_key = ("REC", seq)
+            rec_id = node(rec_key, event["ref"])
             prior_ref = event.get("prior_analysis_ref")
+            scope, label = prior_scope(prior_ref, seq) if prior_ref else (
+                ("UNRESOLVED", seq), "prior analysis unspecified"
+            )
             if prior_ref:
-                prior_id = _mermaid_id("SRA", prior_ref)
-                node(prior_id, prior_ref)
+                prior_id = node(scope, label)
                 lines.append(f"  {prior_id} -->|reconciled by| {rec_id}")
-            path_ref = event.get("current_path_id") or event.get("prior_path_id")
-            if path_ref:
-                path_id = _mermaid_id("PATH", path_ref)
-                node(path_id, path_ref)
+            prior_path = event.get("prior_path_id")
+            current_path = event.get("current_path_id")
+            if prior_path:
+                path_id = local_node("PATH", scope, label, prior_path)
                 lines.append(
                     f"  {rec_id} -->|path {_mermaid_label(event.get('path_disposition'))}| {path_id}"
                 )
+            if current_path and (current_path != prior_path or event.get("path_disposition") == "REVISE"):
+                # The contract supplies no new analysis reference for this declaration.
+                current_id = local_node("PATH", rec_key, event["ref"], current_path)
+                lines.append(f"  {rec_id} -->|declares current path| {current_id}")
             for update in event.get("assumption_updates", []) or []:
                 if not isinstance(update, dict) or not update.get("assumption_id"):
                     continue
-                assumption_ref = update["assumption_id"]
-                assumption_id = _mermaid_id("ASSUMPTION", assumption_ref)
-                node(assumption_id, assumption_ref)
+                assumption_id = local_node("ASSUMPTION", scope, label, update["assumption_id"])
                 lines.append(
                     f"  {rec_id} -->|assumption {_mermaid_label(update.get('disposition'))}| {assumption_id}"
                 )
             transition = event.get("path_transition_effect")
             if isinstance(transition, dict) and transition.get("transition_ref"):
-                transition_ref = transition["transition_ref"]
-                transition_id = _mermaid_id("TRANSITION", transition_ref)
-                node(transition_id, transition_ref)
+                transition_id = local_node("TRANSITION", scope, label, transition["transition_ref"])
                 lines.append(
                     f"  {rec_id} -->|transition {_mermaid_label(transition.get('disposition'))}| {transition_id}"
                 )
@@ -845,6 +921,11 @@ def show_graph(artifacts: tuple[Path, ...], output_json: bool) -> None:
         "code": "STRATEGY_GRAPH",
         "format": "mermaid",
         "mermaid": mermaid,
+        "identity_note": (
+            "Path, assumption and transition identifiers are analysis-local. "
+            "Exact supplied analysis references resolve mechanically; unresolved or "
+            "ambiguous references remain separate. No cross-analysis identity inferred."
+        ),
         "caller_order_preserved": True,
         "causality_inferred_by_command": False,
         "strategy_selected_by_command": False,

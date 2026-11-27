@@ -129,6 +129,10 @@ contradicts         != architecture violation
 
 Each consequential relationship keeps the provenance required by [`product-possibility-ontology.md`](product-possibility-ontology.md) section 6.1, plus its assessed revision and the conditions under which it would be reconsidered.
 
+For longer-horizon relationships across multiple paths and their changing
+conditions, use the [Developmental Trajectory Reasoning Ontology](developmental-trajectory-reasoning-ontology.md).
+It refines these roles without replacing their identities or contracts.
+
 ## 7. The pre-implementation loop and its feedback outcomes
 
 The loop is conditional and agent-controlled; no phase is mandatory for every task.

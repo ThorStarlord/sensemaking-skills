@@ -407,6 +407,17 @@ A retained representation of a potential future product state, capability, produ
 
 Proposed, not observed, structures and effects that connect possibilities to architecture, strategy and consequences: **ArchitectureOption** (a proposed coherent structural realization), **TargetArchitectureState** and **ArchitecturalTransition** (embedded in an option), **FutureCapabilityState** (a construction path's `future_state`), **ConsequenceHypothesis** (a conditional predicted effect; a Layer-4 Hypothesis), **ComparativeJudgment** and **ProvisionalPreference** (attributed, never a Decision). A proposed component or contract is never an observed one. Defined in [`prospective-reasoning-ontology.md`](prospective-reasoning-ontology.md).
 
+### Developmental trajectory reasoning specialization
+
+The [Developmental Trajectory Reasoning Ontology v1](developmental-trajectory-reasoning-ontology.md)
+defines developmental states, transitions, trajectories, landscapes, enabling
+conditions, optionality, path dependence, recombination and reassessment as
+explicit conceptual roles grounded in existing entities and source-scoped
+strategic artifacts. It extends the conceptual ontology without new persistent
+kinds, executable predicates, a second strategy state or control authority.
+Distinguish shared references from semantic enabling, and preserve original
+analysis-local identities.
+
 ### Connected prospective inquiry documentary roles
 
 [Connected Prospective Inquiry Ontology v1](connected-prospective-inquiry-ontology.md)
