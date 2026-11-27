@@ -679,9 +679,19 @@ then links the episode observation to that decision. Existing
 expose the resulting method-decision chain without a new query surface. The
 link is attribution, not causal proof. The section does not rank, select or
 establish applicability; a miss is `NOT_ASSESSED`. This composition is
-available on `workspace-query` `product-outline` only; use `semantic method
-context --path` for source-path-anchored method discovery. `--method-limit`
-bounds the returned method candidates.
+available on `workspace-query` `product-outline` and `possibility-ecology`;
+method precedents are read at the outer query's resolved commit rather than
+resolving a moving ref again. Use `semantic method context --path` for
+source-path-anchored lesson discovery. Add `--include-method-trials` with
+`--method-question` (or `semantic method context --include-trials`) to retrieve
+a separate `trial_precedents` section. This matches authored trial questions,
+procedures, assumptions, expectations and IDs lexically, even without a
+lesson link. Each candidate uses the existing exact trial projection; a
+truncated or invalid pair is marked NOT_ASSESSED rather than open. Legacy
+unanchored pairs remain limited. No trial is promoted to a lesson. The
+corpus is bounded at 250 trial decisions and discloses truncation and omitted
+matches. `--method-limit` (or method context `--limit`) bounds each candidate
+family independently. Without the flag, trial retrieval is not performed.
 
 Each visible goal/non-goal carries its statement, source reference and
 authority/epistemic labels. Each linked record carries its actual declared

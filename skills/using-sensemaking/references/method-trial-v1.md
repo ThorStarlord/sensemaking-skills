@@ -105,6 +105,24 @@ When a trial names a prior lesson, closing the trial also writes a
 then shows the result as a later record beside the decision, so a future
 retrieval does not stop at the predecision half.
 
+### Recover a precedent without its exact ID
+
+When a later consequential decision could benefit from prior trial
+experience, `semantic method context --repo . --ref HEAD --question QUESTION
+--include-trials --json` adds a separate `trial_precedents` family. The
+question matches reviewed trial decisions lexically, independent of whether
+a trial links to a lesson. Each candidate uses the existing exact-ID
+projection; incomplete or invalid projections are explicitly unassessed,
+not open trials. Unanchored legacy results retain their original limits.
+
+For a future-capability or responsibility choice, the same family can be
+requested with `workspace-query --operation product-outline` or
+`--operation possibility-ecology`, `--method-question QUESTION` and
+`--include-method-trials`. Both portions are pinned to the resolved source
+revision. The agent decides if the earlier question, procedure, assumptions
+and observation matter to the present composition. Neither discovery nor
+closure establishes applicability or improved cognition.
+
 ## Failure modes
 
 - **Retrospective trial:** opening after the outcome is not a predecision
