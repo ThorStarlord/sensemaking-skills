@@ -79,7 +79,7 @@ jobs:
           sensemaking-skills semantic decision record --repo "$TARGET" --episode "$EPISODE" --draft-only --output "$DRAFT" --json > "$RUNNER_TEMP/detached-result.json"
           cmp "$TARGET/$DRAFT" "$RUNNER_TEMP/old-pack.json"
           test ! -e "$TARGET/$DEST"
-          sensemaking-skills semantic knowledge-proposal-check --repo "$TARGET" --proposal "$DRAFT" --destination "$DEST" --json > "$RUNNER_TEMP/detached-preflight.json"
+          (cd "$TARGET" && sensemaking-skills semantic knowledge-proposal-check --repo "$TARGET" --proposal "$DRAFT" --destination "$DEST" --json) > "$RUNNER_TEMP/detached-preflight.json"
           sensemaking-skills semantic decision record --repo "$TARGET" --episode "$ARCH_EPISODE" --output "$ARCH_DEST" --json > "$RUNNER_TEMP/new-arch-result.json"
           cmp "$RUNNER_TEMP/old-arch-result.json" "$RUNNER_TEMP/new-arch-result.json"
           cmp "$TARGET/$ARCH_DEST" "$RUNNER_TEMP/old-arch-pack.json"
