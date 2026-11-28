@@ -11,139 +11,50 @@ jobs:
     timeout-minutes: 15
     env:
       BASE: "6a89e6cd7c1e138f7e04cbcd16c90b03b421f73e"
+      SOURCE: "8e3c85ed95aed81867113677a4a92e5548cd2520"
       CANDIDATE: "0521788a1882954838d8f86b345fa382e7e0f768"
       PACK: ".sensemaking/knowledge/committed-source-access-separation.json"
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ env.BASE }}
+          ref: ${{ env.SOURCE }}
           fetch-depth: 0
           persist-credentials: false
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Rehearse the actual eight-path transformation
+      - name: Verify reviewed knowledge and retained transformation
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$BASE"
+          test "$(git rev-parse HEAD)" = "$SOURCE"
           python -m pip install -e .
-          git diff --no-ext-diff --no-textconv --no-renames "$BASE" "$CANDIDATE" -- > "$RUNNER_TEMP/transformation.patch"
-          sensemaking-skills semantic patch-rehearsal --repo . --ref "$BASE" --patch-file "$RUNNER_TEMP/transformation.patch" --knowledge-proposal "$PACK" --limit 80 --json > "$RUNNER_TEMP/rehearsal.json"
+          DIR=src/sensemaking_skills/semantic_architecture
+          for name in knowledge_sources source_access source_relationships refactor_preview knowledge_architecture knowledge_store; do
+            test "$(git rev-parse "$SOURCE:$DIR/$name.py")" = "$(git rev-parse "$CANDIDATE:$DIR/$name.py")"
+          done
+          sensemaking-skills semantic knowledge-proposal-check --repo . --proposal "$PACK" --json > "$RUNNER_TEMP/preflight.json"
+          sensemaking-skills semantic workspace-query --repo . --ref "$SOURCE" --operation possibility-ecology --subject poss:committed-source-access-separation --limit 80 --json > "$RUNNER_TEMP/feedback.json"
           python - <<'PY'
-          import hashlib,json,os,subprocess
+          import json,os,subprocess
           from pathlib import Path
           p=Path(os.environ["RUNNER_TEMP"])
-          q=json.loads((p/"rehearsal.json").read_text())
-          assert q["base_ref"]==os.environ["BASE"] and q["status"]=="REHEARSED"
-          assert q["patch_sha256"]==hashlib.sha256((p/"transformation.patch").read_bytes()).hexdigest()
-          assert len(q["files"])==8 and sum(f["change_kind"]=="ADDED" for f in q["files"])==3
-          for f in q["files"]:
-              raw=subprocess.check_output(["git","show",os.environ["CANDIDATE"]+":"+f["path"]])
-              assert hashlib.sha256(raw).hexdigest()==f["after_sha256"]
-              if f["change_kind"]=="MODIFIED":
-                  old=subprocess.check_output(["git","show",os.environ["BASE"]+":"+f["path"]])
-                  assert hashlib.sha256(old).hexdigest()==f["before_sha256"]
-              else:
-                  assert f["before_sha256"] is None
-              if f["path"].endswith(".py"):
-                  assert f["python_syntax"]=="PASS"
-          k=q["candidate_knowledge"]
-          print("CODESIGN_PREFLIGHT="+json.dumps(k))
-          assert k["status"]=="MECHANICALLY_VALID" and not k["accepted"]
-          assert k["validation"]["claims_checked"]==4 and k["validation"]["relations_checked"]==8
-          review=q["review"]
-          assert review["base_ref"]==review["target_ref"]==os.environ["BASE"]
-          assert set(review["review_scope"]["selected_paths"])=={f["path"] for f in q["files"]}
-          assert not review["review_scope"]["working_changes_indexed"]
-          assert all(row["id"]!="cap:committed-source-access-separation" for row in review["product_claims"])
-          assert all(row["id"]!="component:committed-source-access" for ctx in review["contexts"] for row in ctx["claims"])
-          assert not any(q[x] for x in ("action_authorized","semantic_truth_established","active_checkout_patch_applied","target_code_executed","tests_executed","patched_bytes_indexed"))
-          print("CODESIGN="+json.dumps({"patch_sha256":q["patch_sha256"],"paths":[{"path":f["path"],"kind":f["change_kind"],"syntax":f["python_syntax"]} for f in q["files"]],"review_truncated":review["truncated"]}))
+          c=json.loads((p/"preflight.json").read_text())
+          assert c["valid"] and not c["action_authorized"]
+          print("REVIEWED_PREFLIGHT="+json.dumps({k:c[k] for k in ("claims_checked","relations_checked","existing_endpoints_checked")}))
+          old=json.loads(subprocess.check_output(["git","show",os.environ["CANDIDATE"]+":"+os.environ["PACK"]]))
+          new=json.loads(Path(os.environ["PACK"]).read_text())
+          assert old["claims"][1]==new["claims"][1] and old["relations"]==new["relations"][:len(old["relations"])]
+          q=json.loads((p/"feedback.json").read_text())
+          assert q["target_ref"]==os.environ["SOURCE"] and not q["action_authorized"]
+          eco=q["possibility_ecology"]
+          e=next(x for x in eco["value_feedback"]["entries"] if x["possibility_id"]=="poss:committed-source-access-separation")
+          f=e["predictions"][0]
+          assert f["standing"]=="PARTIALLY_OBSERVED" and f["assessment_total"]==1
+          assert eco["candidates"][0]["realization"]["value"]=="PARTIALLY_IMPLEMENTED"
+          assert f["prediction"]["attributes"]["value_frame"]==old["claims"][1]["attributes"]["value_frame"]
+          print("REVIEWED_FEEDBACK="+json.dumps({"standing":f["standing"],"assessments":f["assessment_total"],"original_prediction_preserved":True,"exact_tested_source":True,"realization":eco["candidates"][0]["realization"]["value"]}))
           PY
           test -z "$(git status --porcelain)"
-          test "$(git rev-parse HEAD)" = "$BASE"
-      - name: Compare existing operations on the exact same BASE
-        run: |
-          set -euo pipefail
-          DIR=src/sensemaking_skills/semantic_architecture
-          TARGET="$RUNNER_TEMP/comparison-target"
-          git worktree add --detach "$TARGET" "$BASE"
-          trap 'git worktree remove --force "$TARGET"' EXIT
-          for phase in before after; do
-            if [ "$phase" = after ]; then
-              git checkout --detach "$CANDIDATE"
-            fi
-            sensemaking-skills semantic source-route --repo "$TARGET" --ref "$BASE" --from-path "$DIR/refactor_preview.py" --to-path "$DIR/knowledge_sources.py" --json > "$RUNNER_TEMP/route-$phase.json"
-            sensemaking-skills semantic refactor-rename --repo "$TARGET" --ref "$BASE" --path "$DIR/source_relationships.py" --symbol _import_from_base --to _resolve_import_from_base --json > "$RUNNER_TEMP/rename-$phase.json"
-            sensemaking-skills semantic workspace-query --repo "$TARGET" --ref "$BASE" --operation context-for "$DIR/knowledge_sources.py" --include-source-relationships --symbol build_knowledge_snapshot --index-dir "$RUNNER_TEMP/index-$phase" --limit 80 --json > "$RUNNER_TEMP/context-$phase.json"
-            sensemaking-skills semantic knowledge-build --repo "$TARGET" --repository sensemaking-transformation --target-ref "$BASE" --db "$RUNNER_TEMP/knowledge-$phase.sqlite" --temporary-checkout --json > "$RUNNER_TEMP/build-$phase.json"
-            sensemaking-skills semantic knowledge-audit --repo "$TARGET" --repository sensemaking-transformation --indexed-ref "$BASE" --current-ref "$BASE" --db "$RUNNER_TEMP/knowledge-$phase.sqlite" --temporary-checkout --limit 100 --json > "$RUNNER_TEMP/audit-$phase.json"
-            test -z "$(git status --porcelain)"
-            test -z "$(git -C "$TARGET" status --porcelain)"
-            test "$(git -C "$TARGET" rev-parse HEAD)" = "$BASE"
-          done
-          python - <<'PY'
-          import ast,hashlib,json,os,subprocess
-          from pathlib import Path
-          p=Path(os.environ["RUNNER_TEMP"])
-          def read(name,phase): return json.loads((p/(name+"-"+phase+".json")).read_text())
-          for name in ("route","rename","context","build","audit"):
-              a,b=read(name,"before"),read(name,"after")
-              for q in (a,b):
-                  if name=="context":
-                      q["workspace_index"].pop("index_path",None)
-              if a!=b:
-                  print("DIFFERING_KEYS="+json.dumps({"operation":name,"keys":[key for key in sorted(set(a)|set(b)) if a.get(key)!=b.get(key)]}))
-              assert a==b, name+" result changed on same BASE"
-              print("COMPATIBILITY="+json.dumps({"operation":name,"equal_payload":True,"status":a.get("status"),"counts":a.get("counts"),"record_count":a.get("record_count"),"digest":a.get("digest"),"claim_count":a.get("claim_count"),"relation_count":a.get("relation_count"),"source_status_counts":a.get("source_status_counts")}))
-          directory=Path("src/sensemaking_skills/semantic_architecture")
-          old=subprocess.check_output(["git","show",os.environ["BASE"]+":"+(directory/"knowledge_sources.py").as_posix()]).decode()
-          new=(directory/"source_access.py").read_text()
-          defs=(" _git verified_tracked_sources _filtered_paths temporary_commit_checkout _source _local_evidence_path").split()
-          def functions(source): return {n.name:n for n in ast.parse(source).body if isinstance(n,ast.FunctionDef)}
-          left,right=functions(old),functions(new)
-          from sensemaking_skills.semantic_architecture import knowledge_sources,source_access
-          for name in defs:
-              assert ast.dump(left[name],include_attributes=False)==ast.dump(right[name],include_attributes=False)
-              assert getattr(knowledge_sources,name) is getattr(source_access,name)
-          print("MOVED_DEFINITIONS="+json.dumps({"count":len(defs),"unchanged_ast":True,"legacy_alias_identity":True}))
-          PY
-          git worktree remove --force "$TARGET"
-          trap - EXIT
-      - name: Inspect the transformed architecture with actual source route
-        run: |
-          set -euo pipefail
-          DIR=src/sensemaking_skills/semantic_architecture
-          for name in source_relationships refactor_preview knowledge_architecture knowledge_store; do
-            sensemaking-skills semantic source-route --repo . --ref "$CANDIDATE" --from-path "$DIR/$name.py" --to-path "$DIR/knowledge_sources.py" --json > "$RUNNER_TEMP/$name-builder.json"
-            sensemaking-skills semantic source-route --repo . --ref "$CANDIDATE" --from-path "$DIR/$name.py" --to-path "$DIR/source_access.py" --json > "$RUNNER_TEMP/$name-access.json"
-          done
-          sensemaking-skills semantic source-route --repo . --ref "$CANDIDATE" --from-path "$DIR/source_access.py" --to-path "$DIR/knowledge_sources.py" --json > "$RUNNER_TEMP/reverse.json"
-          sensemaking-skills semantic workspace-query --repo . --ref "$CANDIDATE" --operation context-for "$DIR/knowledge_sources.py" --include-source-relationships --limit 80 --json > "$RUNNER_TEMP/builder-context.json"
-          python - <<'PY'
-          import hashlib,json,os,subprocess
-          from pathlib import Path
-          p=Path(os.environ["RUNNER_TEMP"])
-          def read(n): return json.loads((p/(n+".json")).read_text())
-          for name in ("source_relationships","refactor_preview","knowledge_architecture","knowledge_store"):
-              a,b=read(name+"-builder"),read(name+"-access")
-              print("TRANSFORMED_ROUTE="+json.dumps({"name":name,"builder":a["status"],"builder_search":a["search"],"access":b["status"],"access_hops":b["hop_count"],"route":b["route"]}))
-              assert a["status"]=="NO_ROUTE_FOUND_WITHIN_BOUNDS" and not a["search"]["search_partial"]
-              assert b["status"]=="FOUND" and b["hop_count"]==1
-              for e in b["route"]:
-                  raw=subprocess.check_output(["git","show",os.environ["CANDIDATE"]+":"+e["from_path"]])
-                  assert hashlib.sha256(raw).hexdigest()==e["source_sha256"]
-          q=read("reverse")
-          print("REVERSE_ROUTE="+json.dumps({"status":q["status"],"search":q["search"]}))
-          assert q["status"]=="NO_ROUTE_FOUND_WITHIN_BOUNDS"
-          q=read("builder-context")
-          s=q["source_relationships"]
-          print("BUILDER_AFTER="+json.dumps({"counts":s["counts"],"importers":[x["path"] for x in s["direct_importers"]],"coverage":s["coverage_status"]}))
-          assert s["counts"]["direct_importers"]==4
-          print("ARCHITECTURAL_TRANSFORMATION=PASS")
-          PY
-          test -z "$(git status --porcelain)"
-          test "$(git rev-parse HEAD)" = "$CANDIDATE"
       - name: Retain actual evidence
         if: always()
         uses: actions/upload-artifact@v4
