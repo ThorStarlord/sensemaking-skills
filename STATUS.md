@@ -549,6 +549,21 @@ no unit or synthetic evidence tests were run.
 
 ## Current next step
 
+**2026-11-27 — Integrated self-development:** the owner explicitly directs
+use of Sensemaking on the Sensemaking repository with its recently integrated
+capabilities. [Actual self-use and selection](artifacts/history/2026-11-27-integrated-self-development.md) recovers the
+current governing intent, two validated predecessor receipts, opportunity
+landscapes and conditional method experience at the exact integrated source
+(run 46088336377). The old domain-general possibility alignment is
+reconciled against ADRs 0037/0038, with prior assessment preserved;
+cross-episode synthesis is reconciled with the actual detached-stewardship
+episode. Keep transfer exploratory and the standalone learning-analysis
+and construction-bridge extension deferred absent a distinct consumer need.
+Use the existing [self-development operating posture](docs/value-directed-continuous-construction.md#self-development-as-ordinary-beneficiary-use)
+for genuine product development, not sequential capability demos.
+Independent qualification remains separate; no Level-4 change.
+
+
 **2026-11-27 — Cognitive Capability Integration / adaptive intellectual organization:** [canonical continuation record](artifacts/history/2026-11-27-cognitive-integration-canonical-continuation.md) closes the outstanding exact-source verification after #998–1000. Run [46082001619](https://github.com/ThorStarlord/sensemaking-skills/actions/runs/46082001619) passed corrected receipt validation, explicitly selected closure-context retrieval and clean committed knowledge/method retrieval (820 claims / 897 relations). The earlier failure was a verification assumption about the latest receipt, not a product reader defect. #996 detached replay and actual same-agent method application are complete; do not rebuild them. Level-3 direction remains current. Next use integrated context in a genuine consequential development responsibility with a later authorized agent: compare actual alternatives, construct useful work, reconsider intellectual procedure and retain warranted experience. Independent cognitive improvement, comparative benefit and longitudinal compounding remain unestablished. No new projection without an actual consumer gap; local unit/synthetic tests NOT_RUN.
 
 **2026-11-27 — intellectual compounding / detached methodological experience:** [source-grounded selection and construction](artifacts/history/2026-11-27-intellectual-compounding-method-continuity.md) closes #995's exact clean-commit build and method recall (816 indexed claims / 888 relations; two method candidates, applicability NOT_ESTABLISHED). Recovered #880's prior activation condition and preserved its deferred disposition; #872/#874 remain open. Extend the existing method record producer with optional detached output and the existing explicit-destination preflight, preserving episode/provenance/identity checks and default behavior. Reuse actual historical method material to exercise the new path, not manufacture another learning episode. No new learning controller or automatic promotion.
