@@ -13,3 +13,26 @@ Method decision: recover `lesson:conditional-method-2026-11-28-fixed-target-comp
 ## Prospective discriminator
 
 On the actual #1020 revision (`868685766197e400ca1901a3863d22a6f3a4a54f` -> `75247e50e343f77b1e1cff2f124421bfa83c6852`), compare the exact `poss:capability-learning-analysis` focus. Both sides must preserve historical DEFERRED disposition with the appended second DEFERRED rationale, distinguish authored record changes and new linked lesson/evidence, and preserve original source pointers. At limit 1, focus and scope must remain explicit, even if generic comparison or scoped delta truncates. A same-ref comparison should retain both equal focus records and scoped unchanged counts; reverse the revision pair to preserve directional evidence. On actual #1019 (`bfa213c6617000df84f09a3a81486408e0000a3c` -> `868685766197e400ca1901a3863d22a6f3a4a54f`), select newly added `poss:existing-pack-source-knowledge-codesign`: show TARGET_ONLY and the direct earlier opportunity as an authored linked endpoint, then BASE_ONLY when reversed. Reject goal or missing opportunity IDs; do not silently broaden. Generic top-level raw deltas and all-opportunity projection unchanged; compare entire old/new payloads on identical fixed target and same index dir, no workspace-context exclusions (reuse cache state on both). Check actual candidate patch via canonical possibility-directed new-pack co-design (eight-path limit) and proposed knowledge; actual candidate and source-pinned execution only, local unit/synthetic tests NOT_RUN. Claim ceiling: scoped retrieval and compatibility observation, not necessary premise, semantic correctness, causal ranking or comparative cognition.
+
+## Returned evidence and integration
+
+[Actual run 46105019766](https://github.com/ThorStarlord/sensemaking-skills/actions/runs/46105019766) completed successfully at exact candidate `efbf05ecfbb9eb9e7d6152cf7dcdd6da3a821385`. Canonical #1020 rehearsal of the actual eight-path candidate verified exact source bytes, four Python syntax parses and a separate mechanically valid three-claim/five-relation proposal. Patch digest `bf1ea4fe6801cfa2c24e10915a6b70acf030bf30022f298695b173b7fd289d43`; proposed pack digest `9846297cdc3a18d206ba08d15778d173e4c08d710c1af16fe6020fdc96308388`. Generic BASE review truncated; selected possibility context did not. The original lesson was recovered with its indexed source observation, conditions and counterevidence.
+
+| Prospective criterion | Actual result |
+| --- | --- |
+| #1020 selected deferred possibility | BOTH; authored fields changed; original disposition preserved, second DEFERRED rationale appended |
+| Direct supporting evidence | New lesson and authored relation returned; linked delta 1 added, 1 changed, 1 unchanged |
+| Limit 1 vs 80 | Identical focus record; both small scoped and generic results truncated; full selected scope not truncated |
+| Reverse actual historical pair | Before/after reversed and lesson removed |
+| Same-ref | Equal focus records, no change classification, one unchanged opportunity |
+| Actual #1019 introduced opportunity | TARGET_ONLY, directly linked earlier opportunity record; BASE_ONLY on reverse |
+| Invalid inputs | Goal, candidate-only missing ID, missing opt-in flag refused |
+| Implementation compatibility | Both old/new default and whole-landscape payloads exactly equal (including workspace context); generic raw deltas preserved under focus |
+
+[PR #1021](https://github.com/ThorStarlord/sensemaking-skills/pull/1021) integrated at `2707b29a295cc49dc8b4df856f857cc2e9d351f0` after source/diff review and canonical actual patch preflight, before ordinary CI and separate historical feedback were awaited. Both checkouts remained clean. No target code or tests executed by rehearsal.
+
+Retain PARTIALLY_OBSERVED consequence feedback and the [later method application episode](2026-11-28-fixed-target-comparison-method-application.json). The active agent read the actual prior lesson before making the preconstruction choice, mechanically retrieved it later in the hosted run and exercised its unchanged conditions: vary intended historical operands for the target-evolution question; hold actual target and operands fixed for the implementation-comparison question. Exact old/new payload equality needed no metadata suppression. Same-agent attributed application, not a changed procedure or independent blind discovery. No new lesson or shared policy change; separate final-pack preflight and re-entry. Original prediction and all original relations retained. No measured productivity, broad causal or independent cognitive improvement. Local unit/synthetic tests NOT_RUN; ordinary CI unchanged. Strategy REAFFIRM.
+
+## Developmental continuation
+
+Next useful direction: **evidence-grounded strategic judgment across changed developmental contexts**. Select a real product responsibility where accumulated knowledge, changed possibilities and competing conditional methods can affect the choice of what to build, not merely how to verify it. Use the existing targeted evolution, possibility ecology, method recall and consequence feedback when relevant; prefer beneficiary-facing construction. Do not manufacture a learning episode, new ranker or additional comparison option by default.

@@ -39,9 +39,18 @@
             "basis": "Reuses existing delta projection and exact indexes."
           },
           "realization": {
-            "value": "HYPOTHETICAL",
-            "establishment": "inferred",
-            "basis": "Source candidate; actual comparison pending."
+            "value": "PARTIALLY_IMPLEMENTED",
+            "establishment": "observed",
+            "basis": "Actual hosted run 46105019766 at exact candidate efbf05ec compared real #1020 history: the authored focus was present on both sides, retained original DEFERRED disposition and appended second DEFERRED rationale, returned the added lesson and relation, and preserved direction on reversal. At limit 1 the focus record matched the full result; both generic and scoped deltas disclosed truncation. At limit 80 the focused result was complete within its one-hop scope. Same-ref returned equal focus records and one unchanged opportunity. Actual #1019 addition returned TARGET_ONLY with directly linked earlier opportunity, and reversal returned BASE_ONLY. Goal/missing focus and missing opt-in flag refused. The generic raw delta was preserved; old/new default and whole-landscape payloads were exactly equal, including workspace context, on one fixed target with warmed shared index cache. Canonical rehearsal verified eight paths, exact bytes, four Python parses and a separate valid three-claim/five-relation proposal.",
+            "observation_ref": "artifacts/history/2026-11-28-conditional-method-reuse-focused-evolution.md",
+            "history": [
+              {
+                "value": "HYPOTHETICAL",
+                "establishment": "inferred",
+                "basis": "Source candidate; actual comparison pending.",
+                "assessed_ref": "75247e50e343f77b1e1cff2f124421bfa83c6852"
+              }
+            ]
           }
         },
         "disposition_history": [
@@ -53,12 +62,12 @@
             "rationale": "Actual prior reconsideration requires one historical possibility and its changed evidence; focus existing projection rather than new query system."
           }
         ],
-        "assessed_ref": "75247e50e343f77b1e1cff2f124421bfa83c6852",
+        "assessed_ref": "efbf05ecfbb9eb9e7d6152cf7dcdd6da3a821385",
         "synthesis_basis": "Reuse exact indexed revision comparison and authored opportunity delta projection; narrow selected one-hop scope before limits and return focus record on both sides.",
         "value_hypothesis": "A returning development agent can reconstruct how one retained possibility and direct authored context changed between exact revisions without losing the focus to a landscape limit or treating unchanged records as absent.",
         "revisit_when": "A later actual focused historical comparison changes a decision, needs more than one-hop context, or file:src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py changes.",
         "counterevidence": "Manual exact-ref source/graph comparison remains viable. Indexed one-hop authored scope excludes unindexed or indirect evidence; actual decision value and independent cognition are not established.",
-        "claim_ceiling": "Candidate source-reviewed implementation; actual use pending; no semantic consequence, independent cognitive benefit or ranking.",
+        "claim_ceiling": "Actual bounded historical focus and compatibility on two authentic revision pairs plus reversal, same-ref and low-limit cases; no inferred premise necessity, causal effect, general semantic correctness, comparative productivity or independent cognitive improvement.",
         "agent_owned": true
       }
     },
@@ -110,7 +119,7 @@
       "id": "cap:focused-possibility-evolution",
       "kind": "capability",
       "statement": "Explicit optional workspace-changes possibility focus returns one authored opportunity at BASE/TARGET, direct authored neighborhood deltas and focus context even when unchanged.",
-      "epistemic_status": "declared",
+      "epistemic_status": "observed",
       "authority_kind": "code",
       "authority_ref": "src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py",
       "evidence_refs": [
@@ -124,7 +133,33 @@
       ],
       "attributes": {
         "scope": "Existing exact indexed revision comparison, explicit single opportunity, direct authored links and claims, independent display limits; no semantic inference.",
-        "claim_ceiling": "Candidate source-reviewed implementation; actual use pending; no semantic consequence, independent cognitive benefit or ranking."
+        "claim_ceiling": "Actual bounded historical focus and compatibility on two authentic revision pairs plus reversal, same-ref and low-limit cases; no inferred premise necessity, causal effect, general semantic correctness, comparative productivity or independent cognitive improvement."
+      }
+    },
+    {
+      "id": "observation:focused-possibility-evolution-20261128",
+      "kind": "observation",
+      "statement": "Scoped assessment (PARTIALLY_OBSERVED): Actual hosted run 46105019766 at exact candidate efbf05ec compared real #1020 history: the authored focus was present on both sides, retained original DEFERRED disposition and appended second DEFERRED rationale, returned the added lesson and relation, and preserved direction on reversal. At limit 1 the focus record matched the full result; both generic and scoped deltas disclosed truncation. At limit 80 the focused result was complete within its one-hop scope. Same-ref returned equal focus records and one unchanged opportunity. Actual #1019 addition returned TARGET_ONLY with directly linked earlier opportunity, and reversal returned BASE_ONLY. Goal/missing focus and missing opt-in flag refused. The generic raw delta was preserved; old/new default and whole-landscape payloads were exactly equal, including workspace context, on one fixed target with warmed shared index cache. Canonical rehearsal verified eight paths, exact bytes, four Python parses and a separate valid three-claim/five-relation proposal.",
+      "epistemic_status": "observed",
+      "authority_kind": "document",
+      "authority_ref": "artifacts/history/2026-11-28-conditional-method-reuse-focused-evolution.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-conditional-method-reuse-focused-evolution.md",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_store.py",
+        "file:src/sensemaking_skills/workspace_knowledge.py",
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:docs/cli-reference.md",
+        "file:artifacts/history/2026-11-28-premise-sensitive-developmental-reconsideration.md"
+      ],
+      "attributes": {
+        "consequence_ref": "conseq:focused-possibility-evolution-value",
+        "assessment_status": "PARTIALLY_OBSERVED",
+        "observed_effect": "Actual hosted run 46105019766 at exact candidate efbf05ec compared real #1020 history: the authored focus was present on both sides, retained original DEFERRED disposition and appended second DEFERRED rationale, returned the added lesson and relation, and preserved direction on reversal. At limit 1 the focus record matched the full result; both generic and scoped deltas disclosed truncation. At limit 80 the focused result was complete within its one-hop scope. Same-ref returned equal focus records and one unchanged opportunity. Actual #1019 addition returned TARGET_ONLY with directly linked earlier opportunity, and reversal returned BASE_ONLY. Goal/missing focus and missing opt-in flag refused. The generic raw delta was preserved; old/new default and whole-landscape payloads were exactly equal, including workspace context, on one fixed target with warmed shared index cache. Canonical rehearsal verified eight paths, exact bytes, four Python parses and a separate valid three-claim/five-relation proposal.",
+        "assessed_at_revision": "efbf05ecfbb9eb9e7d6152cf7dcdd6da3a821385",
+        "scope": "Exact candidate on #1020 and #1019 real committed history, same-ref and reverse operands, explicit limit 1 and 80, fixed-target compatibility and canonical co-design.",
+        "counterevidence": "Manual source/graph joins remain viable; generic review at limit 80 was truncated, selected rehearsal context was not. No independent later consumer, type-changing opportunity case, multi-hop inquiry or comparative cost measurement.",
+        "claim_ceiling": "Actual bounded historical focus and compatibility on two authentic revision pairs plus reversal, same-ref and low-limit cases; no inferred premise necessity, causal effect, general semantic correctness, comparative productivity or independent cognitive improvement."
       }
     }
   ],
@@ -184,6 +219,16 @@
       "predicate": "serves_goal",
       "object": "goal:compounding-product-knowledge",
       "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-conditional-method-reuse-focused-evolution.md"
+      ]
+    },
+    {
+      "id": "rel:focused-possibility-evolution-observation",
+      "subject": "observation:focused-possibility-evolution-20261128",
+      "predicate": "references",
+      "object": "conseq:focused-possibility-evolution-value",
+      "epistemic_status": "observed",
       "evidence_refs": [
         "file:artifacts/history/2026-11-28-conditional-method-reuse-focused-evolution.md"
       ]
