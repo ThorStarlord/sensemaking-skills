@@ -39,9 +39,18 @@
             "basis": "Existing detached preflight and method/possibility analogues."
           },
           "realization": {
-            "value": "HYPOTHETICAL",
-            "establishment": "inferred",
-            "basis": "Candidate implementation pending actual use."
+            "value": "PARTIALLY_IMPLEMENTED",
+            "establishment": "observed",
+            "basis": "Actual hosted run 46107084833 at exact candidate 26a00e84 reproduced the genuine focused-evolution decision review as ordinary old/new and detached output, with exact pack bytes and identical ordinary result payloads on a fixed target. Detached preflight passed one claim/four relations with named destination absent. Actual generated draft committed in a disposable worktree at 16adf33f remained outside active knowledge: focused ecology showed zero reviews and preserved the prior PARTIALLY_OBSERVED assessment. The actual historical architecture review also reproduced old/new default and detached bytes; active destination, occupied draft and traversal refused. Eight-path canonical co-design passed exact bytes, two Python parses and separate valid three-claim/six-relation proposal.",
+            "observation_ref": "artifacts/history/2026-11-28-evidence-grounded-strategic-judgment.md",
+            "history": [
+              {
+                "value": "HYPOTHETICAL",
+                "establishment": "inferred",
+                "basis": "Candidate implementation pending actual use.",
+                "assessed_ref": "051b872e5ebdd9b119469275d9bd81dbb496decc"
+              }
+            ]
           }
         },
         "disposition_history": [
@@ -53,12 +62,12 @@
             "rationale": "Actual partially observed detached stewardship value and current review-producer asymmetry, contrasted against further historical comparison and multi-pack rehearsal."
           }
         ],
-        "assessed_ref": "051b872e5ebdd9b119469275d9bd81dbb496decc",
+        "assessed_ref": "26a00e84df457d7f2fd929a8086d00adeb758618",
         "synthesis_basis": "Extend the existing exclusive decision-review producer with the detached output scope already used for methods/possibilities; reuse existing preflight and exact bytes.",
         "value_hypothesis": "A returning development agent can preserve a consequential source-attributed decision review outside active knowledge, mechanically check the exact candidate at a named unoccupied destination, and recover it after authorized reviewed integration without changing its original option or possibility.",
         "revisit_when": "Reconsider if actual decision draft bytes differ from ordinary generation, active knowledge changes prematurely, validation is weakened, or a real user cannot recover or safely preflight the review.",
         "counterevidence": "A disposable ordinary review or manual detached authoring remains viable. No measured effort savings, independent use, source-currentness audit, or proof of prevention of every accidental inclusion.",
-        "claim_ceiling": "Source-reviewed candidate; actual detached review and subsequent retrieval pending. No independent cognitive benefit or automatic authority.",
+        "claim_ceiling": "Actual bounded production and detached preflight, fixed-target byte compatibility, and committed detached index exclusion for one genuine possibility review; historical architecture producer compatibility only. No measured effort, comprehensive security, independent cognitive benefit or automatic authority.",
         "agent_owned": true
       }
     },
@@ -110,7 +119,7 @@
       "id": "cap:detached-decision-stewardship",
       "kind": "capability",
       "statement": "Explicit decision record --draft-only supports exclusive detached review generation using the existing validation and reviewed destination preflight lifecycle.",
-      "epistemic_status": "declared",
+      "epistemic_status": "observed",
       "authority_kind": "code",
       "authority_ref": "src/sensemaking_skills/decision_review.py",
       "evidence_refs": [
@@ -124,7 +133,33 @@
       ],
       "attributes": {
         "scope": "One actual source-attributed architecture-option or product-possibility review; new direct detached file, no active knowledge write.",
-        "claim_ceiling": "Source-reviewed candidate; actual detached review and subsequent retrieval pending. No independent cognitive benefit or automatic authority."
+        "claim_ceiling": "Actual bounded production and detached preflight, fixed-target byte compatibility, and committed detached index exclusion for one genuine possibility review; historical architecture producer compatibility only. No measured effort, comprehensive security, independent cognitive benefit or automatic authority."
+      }
+    },
+    {
+      "id": "observation:detached-decision-stewardship-20261128",
+      "kind": "observation",
+      "statement": "Scoped assessment (PARTIALLY_OBSERVED): Actual hosted run 46107084833 at exact candidate 26a00e84 reproduced the genuine focused-evolution decision review as ordinary old/new and detached output, with exact pack bytes and identical ordinary result payloads on a fixed target. Detached preflight passed one claim/four relations with named destination absent. Actual generated draft committed in a disposable worktree at 16adf33f remained outside active knowledge: focused ecology showed zero reviews and preserved the prior PARTIALLY_OBSERVED assessment. The actual historical architecture review also reproduced old/new default and detached bytes; active destination, occupied draft and traversal refused. Eight-path canonical co-design passed exact bytes, two Python parses and separate valid three-claim/six-relation proposal.",
+      "epistemic_status": "observed",
+      "authority_kind": "document",
+      "authority_ref": "artifacts/history/2026-11-28-evidence-grounded-strategic-judgment.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-evidence-grounded-strategic-judgment.md",
+        "file:artifacts/history/2026-11-28-focused-evolution-decision-review.json",
+        "file:src/sensemaking_skills/decision_review.py",
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:docs/cli-reference.md",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:.sensemaking/knowledge/detached-stewardship-value-review.json"
+      ],
+      "attributes": {
+        "consequence_ref": "conseq:detached-decision-stewardship-value",
+        "assessment_status": "PARTIALLY_OBSERVED",
+        "observed_effect": "Actual hosted run 46107084833 at exact candidate 26a00e84 reproduced the genuine focused-evolution decision review as ordinary old/new and detached output, with exact pack bytes and identical ordinary result payloads on a fixed target. Detached preflight passed one claim/four relations with named destination absent. Actual generated draft committed in a disposable worktree at 16adf33f remained outside active knowledge: focused ecology showed zero reviews and preserved the prior PARTIALLY_OBSERVED assessment. The actual historical architecture review also reproduced old/new default and detached bytes; active destination, occupied draft and traversal refused. Eight-path canonical co-design passed exact bytes, two Python parses and separate valid three-claim/six-relation proposal.",
+        "assessed_at_revision": "26a00e84df457d7f2fd929a8086d00adeb758618",
+        "scope": "Actual focused-evolution review; prior actual architecture review for compatibility; exact candidate and detached temporary committed snapshot.",
+        "counterevidence": "First execution failed at relative proposal path resolved from implementation rather than target; corrected execution-only invocation, no code change. Ordinary isolated generation/manual drafting remain viable; historical architecture preflight not repeated because original review already exists. Generic review truncated; no independent later consumer, comparative cost or proof against every erroneous promotion.",
+        "claim_ceiling": "Actual bounded production and detached preflight, fixed-target byte compatibility, and committed detached index exclusion for one genuine possibility review; historical architecture producer compatibility only. No measured effort, comprehensive security, independent cognitive benefit or automatic authority."
       }
     }
   ],
@@ -198,6 +233,16 @@
       "predicate": "serves_goal",
       "object": "goal:compounding-product-knowledge",
       "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-evidence-grounded-strategic-judgment.md"
+      ]
+    },
+    {
+      "id": "rel:detached-decision-stewardship-observation",
+      "subject": "observation:detached-decision-stewardship-20261128",
+      "predicate": "references",
+      "object": "conseq:detached-decision-stewardship-value",
+      "epistemic_status": "observed",
       "evidence_refs": [
         "file:artifacts/history/2026-11-28-evidence-grounded-strategic-judgment.md"
       ]

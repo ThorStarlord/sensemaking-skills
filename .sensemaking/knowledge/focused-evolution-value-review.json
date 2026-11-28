@@ -1,0 +1,112 @@
+{
+  "schema_version": 2,
+  "claims": [
+    {
+      "id": "decision:review-focused-evolution-value-20261128",
+      "kind": "decision",
+      "statement": "Consequence-informed decision review at 051b872e5e: retain_with_limitation for poss:focused-possibility-evolution. The actual #1021/#1022 focused-evolution result supports the bounded historical comparison: both deferred rationales and new linked lesson were recovered, direction and limits preserved, old/default and whole-landscape outputs equal on fixed target. Retain this capability rather than extend the comparison automatically. The current choice instead extends detached stewardship to real decision reviews, using existing partial detached value evidence and a source-inspected producer asymmetry. Multi-pack rehearsal and broader bridge work lack a present discriminating beneficiary need.",
+      "authority_kind": "delegated",
+      "authority_ref": "artifacts/history/2026-11-28-focused-evolution-decision-review.json",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-focused-evolution-decision-review.json",
+        "file:artifacts/history/2026-11-28-evidence-grounded-strategic-judgment.md",
+        "file:artifacts/history/2026-11-28-conditional-method-reuse-focused-evolution.md",
+        "file:.sensemaking/knowledge/focused-possibility-evolution.json",
+        "file:.sensemaking/knowledge/possibility-value-feedback-detached-stewardship.json",
+        "file:.sensemaking/knowledge/detached-stewardship-value-review.json",
+        "file:docs/normal-use/2026-11-17-construction-vs-qualification-selection-lesson.md",
+        "file:src/sensemaking_skills/decision_review.py"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "concept": "DecisionReview",
+        "review_of": "poss:focused-possibility-evolution",
+        "disposition": "retain_with_limitation",
+        "basis": "The actual #1021/#1022 focused-evolution result supports the bounded historical comparison: both deferred rationales and new linked lesson were recovered, direction and limits preserved, old/default and whole-landscape outputs equal on fixed target. Retain this capability rather than extend the comparison automatically. The current choice instead extends detached stewardship to real decision reviews, using existing partial detached value evidence and a source-inspected producer asymmetry. Multi-pack rehearsal and broader bridge work lack a present discriminating beneficiary need.",
+        "conditions": "Use explicit opportunity focus at exact committed BASE/TARGET, inspect actual source and bound disclosures. Treat one-hop authored context and partial observation as evidence, not semantic necessity or currentness. Reconsider broader views only when a real inquiry cannot recover decision-relevant context through existing source and queries.",
+        "counterevidence": "The prior evaluation was same-agent in one repository, not a measured comparative benefit; manual exact-ref ecology and source joins remain viable. Generic comparison may truncate, direct context excludes indirect or unindexed evidence, and no new independent use is established. The absence of returned prediction for the goal-family bridge does not imply lack of value.",
+        "claim_ceiling": "One attributable evidence-grounded selection and retrospective decision review of an actual prediction and scoped assessment. No source disposition mutation, independent cognition, causal benefit, priority score, or action authority inferred.",
+        "source_revision": "051b872e5ebdd9b119469275d9bd81dbb496decc",
+        "actor": "active ChatGPT coding agent",
+        "consequence_refs": [
+          "conseq:focused-possibility-evolution-value"
+        ],
+        "assessment_refs": [
+          "observation:focused-possibility-evolution-20261128"
+        ],
+        "method_ref": "lesson:separate-construction-from-learning-qualification-gates",
+        "agent_owned": true
+      }
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel:decision-review-focused-evolution-value-20261128-references-possibility",
+      "subject": "decision:review-focused-evolution-value-20261128",
+      "predicate": "references",
+      "object": "poss:focused-possibility-evolution",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-focused-evolution-decision-review.json",
+        "file:artifacts/history/2026-11-28-evidence-grounded-strategic-judgment.md",
+        "file:artifacts/history/2026-11-28-conditional-method-reuse-focused-evolution.md",
+        "file:.sensemaking/knowledge/focused-possibility-evolution.json",
+        "file:.sensemaking/knowledge/possibility-value-feedback-detached-stewardship.json",
+        "file:.sensemaking/knowledge/detached-stewardship-value-review.json",
+        "file:docs/normal-use/2026-11-17-construction-vs-qualification-selection-lesson.md",
+        "file:src/sensemaking_skills/decision_review.py"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:decision-review-focused-evolution-value-20261128-references-consequence-1",
+      "subject": "decision:review-focused-evolution-value-20261128",
+      "predicate": "references",
+      "object": "conseq:focused-possibility-evolution-value",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-focused-evolution-decision-review.json",
+        "file:artifacts/history/2026-11-28-evidence-grounded-strategic-judgment.md",
+        "file:artifacts/history/2026-11-28-conditional-method-reuse-focused-evolution.md",
+        "file:.sensemaking/knowledge/focused-possibility-evolution.json",
+        "file:.sensemaking/knowledge/possibility-value-feedback-detached-stewardship.json",
+        "file:.sensemaking/knowledge/detached-stewardship-value-review.json",
+        "file:docs/normal-use/2026-11-17-construction-vs-qualification-selection-lesson.md",
+        "file:src/sensemaking_skills/decision_review.py"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:decision-review-focused-evolution-value-20261128-references-assessment-1",
+      "subject": "decision:review-focused-evolution-value-20261128",
+      "predicate": "references",
+      "object": "observation:focused-possibility-evolution-20261128",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-focused-evolution-decision-review.json",
+        "file:artifacts/history/2026-11-28-evidence-grounded-strategic-judgment.md",
+        "file:artifacts/history/2026-11-28-conditional-method-reuse-focused-evolution.md",
+        "file:.sensemaking/knowledge/focused-possibility-evolution.json",
+        "file:.sensemaking/knowledge/possibility-value-feedback-detached-stewardship.json",
+        "file:.sensemaking/knowledge/detached-stewardship-value-review.json",
+        "file:docs/normal-use/2026-11-17-construction-vs-qualification-selection-lesson.md",
+        "file:src/sensemaking_skills/decision_review.py"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:decision-review-focused-evolution-value-20261128-learned-from-method",
+      "subject": "decision:review-focused-evolution-value-20261128",
+      "predicate": "learned_from",
+      "object": "lesson:separate-construction-from-learning-qualification-gates",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-focused-evolution-decision-review.json",
+        "file:artifacts/history/2026-11-28-evidence-grounded-strategic-judgment.md",
+        "file:artifacts/history/2026-11-28-conditional-method-reuse-focused-evolution.md",
+        "file:.sensemaking/knowledge/focused-possibility-evolution.json",
+        "file:.sensemaking/knowledge/possibility-value-feedback-detached-stewardship.json",
+        "file:.sensemaking/knowledge/detached-stewardship-value-review.json",
+        "file:docs/normal-use/2026-11-17-construction-vs-qualification-selection-lesson.md",
+        "file:src/sensemaking_skills/decision_review.py"
+      ],
+      "epistemic_status": "declared"
+    }
+  ]
+}
