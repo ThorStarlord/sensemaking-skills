@@ -1,8 +1,8 @@
 """Rehearse an explicit bounded source patch against committed product knowledge.
 
-This composition applies only existing regular-file text modifications in a
-disposable exact-commit checkout. It uses the existing BASE-only worktree
-review; patched bytes are not indexed as knowledge or executed.
+This composition applies bounded regular-file text modifications in a
+disposable exact-commit checkout. Explicit source/knowledge co-design admits
+new files and one proposed pack, without indexing or executing patched bytes.
 """
 from __future__ import annotations
 
@@ -17,6 +17,7 @@ from .semantic_architecture.knowledge_architecture import is_repository_file_pat
 from .semantic_architecture.knowledge_sources import (
     _source, temporary_commit_checkout, verified_tracked_sources,
 )
+from .semantic_architecture.stewardship_validation import inspect_knowledge_proposal
 from .semantic_architecture.worktree_context import (
     _configured_external_filters, changed_paths_since_indexed_ref,
     guarded_git_text,
@@ -59,11 +60,47 @@ def _apply_git(root: Path, patch: bytes, *args: str) -> bytes:
     return result.stdout
 
 
-def _patch_paths(root: Path, patch: bytes, tracked: set[str], sha: str) -> list[str]:
-    if _apply_git(root, patch, "--summary").strip():
+def _new_file_path(root: Path, path: str) -> None:
+    """Admit only absent files in existing contained, non-linked directories."""
+    candidate = root / path
+    if candidate.exists() or candidate.is_symlink():
+        raise ValueError("new candidate path already exists")
+    if not candidate.resolve().is_relative_to(root):
+        raise ValueError("new candidate path escapes checkout")
+    parent = root
+    for part in path.split("/")[:-1]:
+        parent /= part
+        if parent.is_symlink() or not parent.is_dir():
+            raise ValueError("new candidate file requires an existing non-linked directory")
+
+
+def _check_candidate_filters(root: Path, paths: list[str]) -> None:
+    # The clean BASE guard covers tracked paths. New paths can match a
+    # previously unused attribute pattern. Refuse any assigned filter before
+    # application or the single-pack steward's worktree inspection.
+    raw = guarded_git_text(root, "check-attr", "-z", "filter", "--", *paths)
+    fields = raw.split("\0")
+    if not fields or fields[-1] != "" or len(fields) != 3 * len(paths) + 1:
+        raise ValueError("cannot establish candidate filter scope")
+    rows = [tuple(fields[i:i + 3]) for i in range(0, len(fields) - 1, 3)]
+    if ({row[0] for row in rows} != set(paths)
+            or any(attribute != "filter" or value not in {"unspecified", "unset"}
+                   for _, attribute, value in rows)):
+        raise ValueError("candidate filter assignment or unavailable attribute inspection")
+
+
+def _patch_paths(
+    root: Path, patch: bytes, tracked: set[str], sha: str, *,
+    knowledge_proposal: str | None = None,
+) -> tuple[list[str], set[str]]:
+    summary = _apply_git(root, patch, "--summary").decode("utf-8").splitlines()
+    if summary and (knowledge_proposal is None or any(
+        not line.lstrip().startswith("create mode 100644 ") for line in summary
+    )):
         raise ValueError("patch rehearsal supports text modifications only, not structural changes")
     raw = _apply_git(root, patch, "--numstat", "-z")
     paths: list[str] = []
+    added: set[str] = set()
     for entry in raw.split(b"\0"):
         if not entry:
             continue
@@ -71,18 +108,33 @@ def _patch_paths(root: Path, patch: bytes, tracked: set[str], sha: str) -> list[
         if len(fields) != 3 or not all(value.isdigit() for value in fields[:2]):
             raise ValueError("patch rehearsal refuses binary or ambiguous file changes")
         path = fields[2].decode("utf-8")
-        if (not is_repository_file_path(path) or path not in tracked
+        if (not is_repository_file_path(path)
                 or "\\" in path or ":" in path
                 or any(ord(c) < 32 or ord(c) == 127 for c in path)
                 or any(part.casefold() in {".git", ".gitattributes", ".gitmodules"}
                        for part in path.split("/"))):
             raise ValueError("patch rehearsal requires contained existing tracked non-control files")
-        _source(root, tracked, path)
+        if path in tracked:
+            _source(root, tracked, path)
+        elif knowledge_proposal is not None:
+            _new_file_path(root, path)
+            added.add(path)
+        else:
+            raise ValueError("patch rehearsal requires contained existing tracked non-control files")
         paths.append(path)
     if not 1 <= len(paths) <= _MAX_FILES or len(set(paths)) != len(paths):
-        raise ValueError("patch rehearsal requires 1..8 distinct modified files")
-    tree = guarded_git_text(root, "--literal-pathspecs", "ls-tree", "-r", "-z",
-                            sha, "--", *paths)
+        raise ValueError("patch rehearsal requires 1..8 distinct changed files")
+    if len(summary) != len(added):
+        raise ValueError("patch rehearsal could not reconcile new-file scope")
+    if knowledge_proposal is not None:
+        pack_paths = {path for path in paths
+                      if path.casefold().startswith(".sensemaking/knowledge/")}
+        if pack_paths != {knowledge_proposal} or knowledge_proposal not in added:
+            raise ValueError("co-design requires exactly one new explicit knowledge pack")
+        _check_candidate_filters(root, paths)
+    existing = [path for path in paths if path not in added]
+    tree = (guarded_git_text(root, "--literal-pathspecs", "ls-tree", "-r", "-z",
+                             sha, "--", *existing) if existing else "")
     regular = set()
     for entry in tree.split("\0"):
         if not entry:
@@ -91,9 +143,36 @@ def _patch_paths(root: Path, patch: bytes, tracked: set[str], sha: str) -> list[
         if not separator or header.split(" ", 1)[0] not in {"100644", "100755"}:
             raise ValueError("patch rehearsal refuses non-regular Git tree entries")
         regular.add(path)
-    if regular != set(paths):
+    if regular != set(existing):
         raise ValueError("patch rehearsal could not establish the complete regular-file scope")
-    return sorted(paths)
+    return sorted(paths), added
+
+
+def _verify_staged_scope(root: Path, sha: str, paths: list[str], added: set[str]) -> None:
+    """Confirm the actual disposable-index delta contains only allowed modes."""
+    raw = guarded_git_text(
+        root, "diff", "--cached", "--raw", "--no-abbrev", "--no-renames",
+        "--no-ext-diff", "--no-textconv", "-z", sha, "--",
+    )
+    fields = raw.split("\0")
+    if fields[-1] != "" or (len(fields) - 1) % 2:
+        raise ValueError("cannot establish actual staged patch scope")
+    seen = set()
+    for i in range(0, len(fields) - 1, 2):
+        metadata, path = fields[i:i + 2]
+        parts = metadata.removeprefix(":").split()
+        if len(parts) != 5 or path in seen:
+            raise ValueError("ambiguous staged patch scope")
+        old_mode, new_mode, _, _, status = parts
+        if path in added:
+            valid = (old_mode, new_mode, status) == ("000000", "100644", "A")
+        else:
+            valid = old_mode == new_mode and old_mode in {"100644", "100755"} and status == "M"
+        if not valid:
+            raise ValueError("unsupported staged patch change or file mode")
+        seen.add(path)
+    if seen != set(paths):
+        raise ValueError("actual staged patch paths differ from declared scope")
 
 
 def _read_patch(path: Path) -> bytes:
@@ -182,10 +261,17 @@ def _definition_changes(before: bytes, after: bytes, limit: int) -> dict[str, An
 
 def rehearse_patch(
     *, repo: str | Path, ref: str, patch_file: str | Path, limit: int = 25,
+    knowledge_proposal: str | None = None,
 ) -> dict[str, Any]:
     """Apply a bounded candidate patch and compose existing BASE review evidence."""
     if not 1 <= limit <= 100:
         raise ValueError("patch rehearsal requires limit 1..100")
+    if knowledge_proposal is not None:
+        parts = knowledge_proposal.split("/")
+        if (not is_repository_file_path(knowledge_proposal)
+                or len(parts) != 3 or parts[:2] != [".sensemaking", "knowledge"]
+                or not parts[2].endswith(".json")):
+            raise ValueError("knowledge proposal must name one new direct .sensemaking/knowledge/*.json pack")
     _validate_ref_text(ref)
     root = _checkout_root(Path(repo).expanduser().resolve())
     sha = _resolve_commit(root, ref)
@@ -193,24 +279,40 @@ def rehearse_patch(
     patch = _read_patch(Path(patch_file).expanduser())
     with temporary_commit_checkout(root, sha) as checkout:
         checkout, tracked = verified_tracked_sources(checkout, sha)
-        paths = _patch_paths(checkout, patch, tracked, sha)
-        before = {path: _source(checkout, tracked, path).read_bytes() for path in paths}
-        _apply_git(checkout, patch, "--check")
-        _apply_git(checkout, patch)
+        paths, added = _patch_paths(
+            checkout, patch, tracked, sha, knowledge_proposal=knowledge_proposal,
+        )
+        before = {path: (None if path in added else _source(checkout, tracked, path).read_bytes())
+                  for path in paths}
+        # Only the disposable worktree's own index is modified in co-design.
+        # Git may retain candidate blobs in the shared object store.
+        apply_options = ("--index",) if knowledge_proposal is not None else ()
+        _apply_git(checkout, patch, *apply_options, "--check")
+        _apply_git(checkout, patch, *apply_options)
         changes = changed_paths_since_indexed_ref(checkout, sha)
-        if (changes["paths"] != frozenset(paths) or changes["staged"]
-                or changes["untracked"]
-                or guarded_git_text(checkout, "diff", "--no-ext-diff",
-                                    "--no-textconv", "--no-renames", "--summary", sha)):
-            raise ValueError("rehearsed patch changed paths or file modes outside the declared scope")
+        if changes["paths"] != frozenset(paths) or changes["untracked"]:
+            raise ValueError("rehearsed patch changed paths outside the declared scope")
+        if knowledge_proposal is not None:
+            if changes["staged"] != frozenset(paths) or changes["unstaged"]:
+                raise ValueError("co-design overlay differs from its verified disposable index")
+            _verify_staged_scope(checkout, sha, paths, added)
+            tracked = set(filter(None, guarded_git_text(checkout, "ls-files", "-z").split("\0")))
+        elif changes["staged"] or guarded_git_text(
+            checkout, "diff", "--no-ext-diff", "--no-textconv", "--no-renames", "--summary", sha,
+        ):
+            raise ValueError("rehearsed patch changed file modes or index outside the declared scope")
         files = []
         for path in paths:
             raw = _source(checkout, tracked, path).read_bytes()
             item: dict[str, Any] = {
-                "path": path, "before_sha256": hashlib.sha256(before[path]).hexdigest(),
+                "path": path, "before_sha256": (
+                    hashlib.sha256(before[path]).hexdigest() if before[path] is not None else None
+                ),
                 "after_sha256": hashlib.sha256(raw).hexdigest(),
                 "python_syntax": "NOT_ASSESSED",
             }
+            if knowledge_proposal is not None:
+                item["change_kind"] = "ADDED" if path in added else "MODIFIED"
             if item["after_sha256"] == item["before_sha256"]:
                 raise ValueError(f"rehearsed file has no byte change: {path}")
             if path.endswith(".py"):
@@ -221,7 +323,7 @@ def rehearse_patch(
                     item["syntax_error_line"] = getattr(exc, "lineno", None)
                 else:
                     item["python_syntax"] = "PASS"
-                item["definition_changes"] = _definition_changes(before[path], raw, limit)
+                item["definition_changes"] = _definition_changes(before[path] or b"", raw, limit)
             files.append(item)
         review = run_workspace_review_context(
             repo=checkout, base_ref=sha, ref=sha, repository=label,
@@ -236,6 +338,32 @@ def rehearse_patch(
         review["workspace_index"]["cache_lifetime"] = "DISPOSABLE_REHEARSAL"
         review["workspace_index"]["index_path"] = None
         review["workspace_index"]["repository_identity_source"] = label_source
+        candidate_knowledge = None
+        if knowledge_proposal is not None:
+            proposal_hash = next(item["after_sha256"] for item in files
+                                 if item["path"] == knowledge_proposal)
+            candidate_knowledge = {
+                "proposal": knowledge_proposal, "proposal_sha256": proposal_hash,
+                "status": "NOT_VALIDATED", "validation": None, "reason": None,
+                "accepted": False, "action_authorized": False,
+            }
+            try:
+                validation = inspect_knowledge_proposal(checkout, Path(knowledge_proposal))
+            except (ValueError, OSError, UnicodeError, RuntimeError, subprocess.TimeoutExpired) as exc:
+                candidate_knowledge["reason"] = str(exc)[:500]
+            else:
+                if (validation["head_sha"] != sha or not validation["valid"]
+                        or validation["other_packs_source"] != "committed_HEAD_only"
+                        or validation["dirty_other_packs_ignored"]
+                        or validation["staged_other_packs_ignored"]
+                        or validation["action_authorized"]):
+                    raise ValueError("candidate knowledge preflight did not preserve the intended scope")
+                candidate_knowledge["status"] = "MECHANICALLY_VALID"
+                candidate_knowledge["validation"] = validation
+            if (changed_paths_since_indexed_ref(checkout, sha) != changes
+                    or hashlib.sha256(_source(checkout, tracked, knowledge_proposal).read_bytes()).hexdigest()
+                    != proposal_hash):
+                raise ValueError("co-design overlay changed during proposal preflight")
         return {
             "code": "SEMANTIC_PATCH_REHEARSAL",
             "base_ref": sha, "repository": label,
@@ -246,8 +374,20 @@ def rehearse_patch(
                             "changed_paths_verified": True},
             "review_basis": "DISPOSABLE_PATCH_OVERLAY_BASE_KNOWLEDGE",
             "review": review,
+            **({"candidate_knowledge": candidate_knowledge,
+                "disposable_index_used": True,
+                "candidate_objects_may_remain_in_shared_git_store": True}
+               if knowledge_proposal is not None else {}),
             "active_checkout_patch_applied": False,
             "target_code_executed": False, "tests_executed": False,
             "patched_bytes_indexed": False, "semantic_truth_established": False,
-            "action_authorized": False, "explicit_limits": list(_LIMITS),
+            "action_authorized": False, "explicit_limits": (
+                list(_LIMITS) if knowledge_proposal is None else [
+                    "Co-design admits one new direct knowledge pack and contained non-executable regular-file additions in existing directories, within the existing eight-path and 256 KiB budget.",
+                    "Deletion, rename, copy, mode change, binary, linked, Git control and filter-assigned candidate paths are refused.",
+                    *list(_LIMITS[2:]),
+                    "The candidate index and worktree are disposable; Git candidate objects may remain in the shared object store.",
+                    "Single-pack preflight reads candidate index-tracked evidence and committed HEAD packs only. MECHANICALLY_VALID is not accepted knowledge, a whole-candidate build or semantic correctness; NOT_VALIDATED includes unavailable checks.",
+                ]
+            ),
         }
