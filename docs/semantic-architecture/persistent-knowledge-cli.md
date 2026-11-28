@@ -1098,6 +1098,37 @@ represented by a new assessment observation. `context-for` applies the same
 same-prediction supersession rule to an anchored assessment, adding `active`
 and `superseded_by` to its `consequence_assessment` view.
 
+#### Product possibility value feedback
+
+A product possibility may link a pre-existing or newly authored value
+prediction to a later assessment using the existing consequence lifecycle.
+The `conseq:` hypothesis carries `attributes.source_possibility` naming one
+`poss:` opportunity, with an explicit `references` edge from the hypothesis
+to that opportunity. Do not also set `source_option`. Keep the original
+prediction source and, if normalized retrospectively, disclose that fact
+rather than present the normalized record as a precommitted trial.
+
+Use the existing attributed consequence assessment (`observation` with
+`consequence_ref`, `assessment_status`, scope, observed effect, counterevidence,
+exact assessed revision and claim ceiling) and reference edge. The same
+supersession rules apply. The existing `possibility-ecology` query now adds
+`value_feedback` for its visible direct/descendant candidates; it joins up to
+eight predictions per possibility, eight assessments per prediction
+(active first), and five authored decision reviews per possibility.
+Omission counts are explicit. No prediction is NOT_ASSESSED, not negative
+evidence. The view does not perform a currency audit or infer realization,
+benefit, ranking, applicability or selection. It can be composed with
+`--method-question` and `--include-method-trials` at the same source revision.
+
+A tracked review episode for `semantic decision record` may use
+`source_possibility` **instead of** `source_option`. The producer requires
+the opportunity, each named consequence's explicit source link and any
+cited active assessments to resolve at the exact source revision. It
+reuses the existing review decision, source evidence, optional method
+lesson and proposal preflight. The review is a separate decision record:
+it never rewrites the possibility, its realization or disposition history.
+Architecture-option episodes and their existing result fields are unchanged.
+
 #### Decision review producer
 
 `semantic decision record` turns an agent-authored review into a new

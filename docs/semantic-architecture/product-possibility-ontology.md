@@ -22,6 +22,16 @@ Sensemaking can already explore possible futures and retain reviewed knowledge, 
 
 It is a Layer-6 concept whose statements are Layer-4 claims. Its value hypothesis is normally a Hypothesis; implementation evidence about it is an Observation; the judgment that something realizes it is an inferred claim; its dispositions are Decisions with their own authority.
 
+For consequential value feedback, use an explicit `conseq:` hypothesis with
+`source_possibility` and a `references` relation to the original `poss:`
+record, existing consequence assessments, and an optional separate decision
+review. This connects the prospective value claim to subsequent experience
+without treating the possibility as an ArchitectureOption or conflating
+realization with benefit. Preserve the original prediction and its source;
+later normalization is not evidence of prospective commitment. See the
+[CLI contract](persistent-knowledge-cli.md#product-possibility-value-feedback).
+
+
 ```text
 ProductPossibility != Feature, backlog item or implementation task
 ProductPossibility != Strategic Frontier item

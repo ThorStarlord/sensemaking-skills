@@ -364,3 +364,149 @@ def consequence_standing(
             "A revised prediction remains visible; inspect its epistemic_status and supersedes relations rather than treating a superseded prediction as current.",
         ],
     }
+
+
+
+def possibility_value_feedback(
+    claims: Mapping[str, Mapping[str, Any]],
+    relations: Iterable[Mapping[str, Any]],
+    *, possibility_ids: Iterable[str],
+) -> tuple[dict, list[str], list[str]]:
+    """Join visible possibilities to explicitly authored value predictions and reviews.
+
+    Reuse consequence standing, including same-prediction supersession. This
+    decision-time view does not perform a source-currency audit. Predictions,
+    assessments and reviews have separate display bounds; no outcome score or
+    change to the possibility's realization/disposition is inferred.
+    """
+    edges = list(relations)
+    visible_ids = sorted(set(possibility_ids))
+    visible_set = set(visible_ids)
+    prediction_edges: dict[str, dict[str, list[Mapping[str, Any]]]] = {}
+    references: dict[str, list[Mapping[str, Any]]] = {}
+    for edge in edges:
+        if edge.get("predicate") != "references":
+            continue
+        subject, target = edge.get("subject"), edge.get("object")
+        if not isinstance(subject, str) or not isinstance(target, str):
+            continue
+        references.setdefault(target, []).append(edge)
+        if target not in visible_set:
+            continue
+        prediction = claims.get(subject) or {}
+        attrs = prediction.get("attributes") or {}
+        if (subject.startswith("conseq:") and prediction.get("kind") == "hypothesis"
+                and attrs.get("source_possibility") == target and "source_option" not in attrs):
+            prediction_edges.setdefault(target, {}).setdefault(subject, []).append(edge)
+
+    def record(identifier: str) -> dict:
+        claim = claims[identifier]
+        return {key: claim.get(key) for key in (
+            "id", "kind", "statement", "epistemic_status", "authority_kind",
+            "authority_ref", "source_ref", "evidence_refs", "attributes",
+        )}
+
+    entries = []
+    selected_claims: set[str] = set()
+    selected_relations: set[str] = set()
+    truncated = False
+    for possibility_id in visible_ids:
+        linked = prediction_edges.get(possibility_id, {})
+        if not linked:
+            continue
+        prediction_ids = sorted(linked)
+        returned = prediction_ids[:8]
+        scoped = {identifier: claims[identifier] for identifier in returned}
+        assessment_links: dict[str, dict[str, list[Mapping[str, Any]]]] = {}
+        for identifier in returned:
+            for edge in references.get(identifier, ()):
+                assessment = claims.get(edge["subject"]) or {}
+                attrs = assessment.get("attributes") or {}
+                if (_assessment_status(assessment) is not None
+                        and attrs.get("consequence_ref") == identifier):
+                    aid = edge["subject"]
+                    scoped[aid] = assessment
+                    assessment_links.setdefault(identifier, {}).setdefault(aid, []).append(edge)
+
+        result = consequence_standing(scoped, edges, currency={}, limit=len(returned))
+        predictions = []
+        for row in result["consequences"]:
+            identifier = row["consequence_id"]
+            selected_claims.add(identifier)
+            links = linked[identifier]
+            selected_relations.update(edge["id"] for edge in links)
+            history = row["assessment_history"]
+            # Keep active assessments first, then historical inactive ones; neither
+            # order is a preference or chronology claim.
+            ordered = sorted(history, key=lambda item: (not item["active"], item["assessment_id"]))
+            assessments = []
+            for item in ordered[:8]:
+                aid = item["assessment_id"]
+                links_to_prediction = assessment_links[identifier][aid]
+                selected_claims.add(aid)
+                selected_relations.update(edge["id"] for edge in links_to_prediction)
+                assessments.append({
+                    **item, "record": record(aid),
+                    "reference_relation_ids": sorted(edge["id"] for edge in links_to_prediction),
+                })
+            omitted = len(history) - len(assessments)
+            truncated = truncated or bool(omitted)
+            predictions.append({
+                "prediction": record(identifier),
+                "possibility_reference_relation_ids": sorted(edge["id"] for edge in links),
+                "standing": row["standing"],
+                "assessment_statuses": row["assessment_statuses"],
+                "supersession_integrity": row["supersession_integrity"],
+                "assessments": assessments,
+                "assessment_total": len(history),
+                "assessment_omitted": omitted,
+                "source_currency": "NOT_ASSESSED",
+            })
+
+        reviews_by_id: dict[str, list[Mapping[str, Any]]] = {}
+        for edge in references.get(possibility_id, ()):
+            decision = claims.get(edge["subject"]) or {}
+            attrs = decision.get("attributes") or {}
+            cited = attrs.get("consequence_refs")
+            if (decision.get("kind") == "decision" and attrs.get("review_of") == possibility_id
+                    and isinstance(cited, list)
+                    and any(isinstance(cid, str) and cid in linked for cid in cited)):
+                reviews_by_id.setdefault(edge["subject"], []).append(edge)
+        reviews = []
+        for rid in sorted(reviews_by_id)[:_MAX_REVIEW_LIST]:
+            selected_claims.add(rid)
+            review_links = reviews_by_id[rid]
+            selected_relations.update(edge["id"] for edge in review_links)
+            reviews.append({
+                "record": record(rid),
+                "possibility_reference_relation_ids": sorted(edge["id"] for edge in review_links),
+            })
+        prediction_omitted = len(prediction_ids) - len(predictions)
+        review_omitted = len(reviews_by_id) - len(reviews)
+        truncated = truncated or bool(prediction_omitted or review_omitted)
+        entries.append({
+            "possibility_id": possibility_id,
+            "predictions": predictions,
+            "prediction_total": len(prediction_ids),
+            "prediction_omitted": prediction_omitted,
+            "reviews": reviews,
+            "review_total": len(reviews_by_id),
+            "review_omitted": review_omitted,
+            "reconsideration": "AGENT_OWNED",
+        })
+
+    return ({
+        "scope": "visible possibilities with explicit authored consequence links",
+        "visible_candidate_total": len(visible_ids),
+        "candidates_with_predictions": len(entries),
+        "candidates_without_predictions": len(visible_ids) - len(entries),
+        "unassessed_candidate_ids": [cid for cid in visible_ids if cid not in prediction_edges],
+        "entries": entries,
+        "truncated": truncated,
+        "explicit_limits": [
+            "Only conseq: hypotheses with source_possibility and an explicit references link are included.",
+            "No prediction is NOT_ASSESSED, not evidence of no value. Standing reports authored observations, not proven benefit.",
+            "Prediction, assessment and review order is deterministic, not ranking or chronology.",
+            "No current source audit, causal inference, realization change, disposition, selection or authorization is performed.",
+        ],
+    }, sorted(selected_claims), sorted(selected_relations))
