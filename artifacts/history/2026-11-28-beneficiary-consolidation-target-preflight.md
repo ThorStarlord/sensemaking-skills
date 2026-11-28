@@ -15,3 +15,22 @@ A: expand/reorder handoff inventories. Real knowledge omissions exist, but all s
 ## Prospective criterion
 
 Use the genuine #1023 focused-evolution review episode at the real pre-activation target af034081e02c47802517d601cc963216f20dafd9. Generate the detached review using canonical producer, retain exact bytes. Execute old CLI from its own implementation checkout with target-relative path absent there: reproduce prior refusal; old absolute-path and target-CWD relative invocations must agree. Candidate must return equal complete detached preflight payloads from implementation checkout, target checkout and an unrelated invocation directory using target-relative and contained absolute paths; same target, same actual draft and destination, same tracked evidence and worktree state. Also compare ordinary preflight of a real tracked pack with the same arguments, including old/new absolute/root invocations. A target-missing reviewed path that exists in caller must remain refused; traversal, external absolute, symlink draft and occupied destination remain refused using actual artifacts. Preserve exact digest, target identity, all validation payloads, read-only worktree state and existing product CI. Use actual canonical co-design of bounded source/docs/knowledge candidate. No local unit/synthetic tests. Scope: CLI argument/target consistency and actual mechanical preflight, not expanded authority, security certification, measured productivity or independent cognition.
+
+## Returned actual evidence and integration
+
+[Run 46108602938](https://github.com/ThorStarlord/sensemaking-skills/actions/runs/46108602938) succeeded at exact candidate `ab056850f053c2165613a1bc6ee1ec8abb2d391d`. Canonical rehearsal covered six actual paths, exact before/after bytes, one Python parse and a separate mechanically valid three-claim/five-relation proposal. Patch SHA-256 `527a328b2e42beb94b13ebd1afee7a984f4146f96fc7069efd7ae4d1064ad3a2`; candidate pack SHA-256 `4d2310a5ffdb021a41a15d339dc904f679188e54262444cc39e0bd8476d8169b`. Generic BASE review truncated, selected context not truncated. [PR #1025](https://github.com/ThorStarlord/sensemaking-skills/pull/1025) integrated at `521337650516ba0e404b6ddc7664fa5b7817e5b8` after source/diff review and actual canonical rehearsal; ordinary CI unchanged/not awaited.
+
+| Criterion | Actual result |
+| --- | --- |
+| Old relative failure | Reproduced: proposal exists in target but not implementation checkout; Click refused |
+| Actual detached draft | Original SHA-256 `0448550b5f4d94bd93a62b9617ac697766ad064a878e6528e6652f5c2a82a7a3` |
+| Corrected relative/absolute, varied caller | Full preflight payload identical to old correct invocations; 1 claim/4 relations |
+| Real ordinary pack | Full preflight payload identical to old correct invocations; 3 claims/6 relations; old unrelated-CWD call refused |
+| Target-missing caller-present, external, traversal, symlink, occupied | All refused |
+| Target source/worktree | Exact historical HEAD af034081; status and draft bytes unchanged, destination absent |
+
+This is actual same-agent repair of a concrete friction observed during preceding product development; the fixed-target lesson informed the comparison, while caller location was intentionally varied. No new lesson or adaptation is warranted solely by the technical fix. The old workaround is viable; retain current handoff and search rather than expand inventories without a consequential consumer miss. Preserve original prediction and relations; retain scoped PARTIALLY_OBSERVED feedback with separate final-path preflight and exact-source recovery. No measured time saving, general safety, independent cognition or cross-domain transfer. Local unit/synthetic tests NOT_RUN. Strategy REAFFIRM.
+
+## Developmental continuation
+
+Next frontier: **beneficiary-oriented construction beyond continuity infrastructure**. Use the recovered product context to identify an actual substantive repository-engineering outcome (e.g. a real capability understanding or implementation constraint that impedes valuable work), not automatically another handoff, preflight, receipt, or projection refinement. Compare direct source-based work and existing cognitive capabilities in normal use; prefer a useful domain increment with evidence about the integrated experience. A fresh independent agent or authorized second target would be valuable if genuinely available, but do not manufacture that evidence or block warranted construction on it.
