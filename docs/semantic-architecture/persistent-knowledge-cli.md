@@ -1184,6 +1184,25 @@ sensemaking-skills semantic decision record \
   --output .sensemaking/knowledge/decision-review.json --json
 ```
 
+To preserve an actual review outside the active namespace until authorized
+review, add `--draft-only` and choose a new direct detached path:
+
+```bash
+sensemaking-skills semantic decision record --repo . --episode path/to/review.json \
+  --draft-only --output artifacts/history/review-DRAFT.json --json
+sensemaking-skills semantic knowledge-proposal-check --repo . \
+  --proposal artifacts/history/review-DRAFT.json \
+  --destination .sensemaking/knowledge/decision-review.json --json
+```
+
+A new direct `.sensemaking/proposals/*.json` path is also allowed. Both
+architecture and possibility reviews use identical source-revision, active
+assessment, method and tracked-evidence checks; the producer never overwrites
+a file. A detached draft is not indexed reviewed knowledge. Inspect its
+original sources and destination separately, and only under review authority
+copy the exact checked bytes, run ordinary final-path preflight and integrate
+through Git. Default output and review meaning are unchanged.
+
 The output is an `UNREVIEWED_DRAFT` with `action_authorized: false`; ordinary
 `knowledge-proposal-check` and Git review remain necessary. After review,
 `knowledge-audit` shows the record in the link's `reviews` and
