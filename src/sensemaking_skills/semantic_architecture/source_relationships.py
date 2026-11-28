@@ -17,6 +17,7 @@ from __future__ import annotations
 import ast
 import hashlib
 import re
+from collections import deque
 from pathlib import Path, PurePosixPath
 from typing import Any, Callable, Iterable, Mapping
 
@@ -882,3 +883,148 @@ def build_source_review_comparison(
             "No uncommitted bytes, test coverage, change safety, transitive impact or authorization are established.",
         ],
     }
+
+
+_ROUTE_MAX_SOURCE_BYTES = 512 * 1024
+_ROUTE_DETAIL_LIMIT = 20
+_ROUTE_LIMITS = (
+    "Each edge is a Python AST import module-name candidate mapped to exactly one tracked path, not a verified import or runtime dependency.",
+    "Module names use the existing root/src and relative-import conventions; package-member candidates may be attributes or re-exports rather than modules actually imported.",
+    "The search follows outgoing import candidates only. Conditional, local and type-checking imports are included; dynamic imports, package initialization, reflection and external resolution are NOT ASSESSED.",
+    "The first witnessed path is a shortest-hop path in the explored candidate graph, not necessarily a globally shortest or unique dependency path.",
+    "A negative or partial result is not proof of independence, absence of cycles, architectural conformance or semantic impact.",
+    "No target code or tests are executed, no semantic knowledge is promoted, and no change is authorized.",
+)
+
+
+def _route_path(path: str) -> str:
+    """Require an explicit normalized repository-relative Python path."""
+    normalized = _safe_path(path)
+    if (normalized != path or not path.endswith(".py")
+            or "\\" in path or ":" in path or path.startswith("-")
+            or any(ord(c) < 32 or ord(c) == 127 for c in path)):
+        raise ValueError("source route requires normalized repository-relative .py paths")
+    return normalized
+
+
+def build_source_route(
+    root: str | Path, target_ref: str, from_path: str, to_path: str, *,
+    max_hops: int = 6, max_files: int = 80,
+) -> dict[str, Any]:
+    """Find one bounded directed witness in exact-source Python import syntax."""
+    if not re.fullmatch(r"[0-9a-f]{40}", target_ref):
+        raise ValueError("source route requires a full 40-character Git SHA")
+    if not 1 <= max_hops <= 6 or not 1 <= max_files <= 250:
+        raise ValueError("source route requires max_hops 1..6 and max_files 1..250")
+    start, destination = _route_path(from_path), _route_path(to_path)
+    if start == destination:
+        raise ValueError("source route requires two distinct source paths")
+    with temporary_commit_checkout(Path(root).resolve(), target_ref) as checkout:
+        checkout, tracked = verified_tracked_sources(checkout, target_ref)
+        for path in (start, destination):
+            _source(checkout, tracked, path)
+        modules: dict[str, list[str]] = {}
+        for path in sorted(tracked):
+            if path.endswith(".py"):
+                modules.setdefault(_module_for_path(path), []).append(path)
+        queue = deque([(start, 0)])
+        discovered = {start}
+        parent: dict[str, dict[str, Any]] = {}
+        failures: list[dict[str, str]] = []
+        ambiguities: list[dict[str, Any]] = []
+        inspected = 0
+        unresolved = 0
+        ambiguous_total = 0
+        hop_frontier = 0
+        found = False
+        while queue and inspected < max_files and not found:
+            current, depth = queue.popleft()
+            inspected += 1
+            try:
+                if _source(checkout, tracked, current).stat().st_size > _ROUTE_MAX_SOURCE_BYTES:
+                    raise ValueError("source exceeds 512 KiB parse budget")
+                tree, _, raw, error = _parse(checkout, tracked, current)
+            except (OSError, ValueError, RuntimeError, RecursionError) as exc:
+                failures.append({"path": current, "reason": str(exc)[:300]})
+                continue
+            if tree is None or raw is None or error is not None:
+                failures.append({"path": current, "reason": (error or "parse unavailable")[:300]})
+                continue
+            fingerprint = hashlib.sha256(raw).hexdigest()
+            # Deterministic source-order candidate expansion. Retain the first
+            # witnessed edge to each path; BFS never revisits a discovered path.
+            candidates = sorted(
+                (line, module, names, type(node).__name__)
+                for node in ast.walk(tree)
+                if isinstance(node, (ast.Import, ast.ImportFrom))
+                for module, line, names in _import_candidates(current, node)
+            )
+            for line, module, names, syntax_kind in candidates:
+                matches = modules.get(module, [])
+                if not matches:
+                    unresolved += 1
+                    continue
+                if len(matches) != 1:
+                    ambiguous_total += 1
+                    if len(ambiguities) < _ROUTE_DETAIL_LIMIT:
+                        ambiguities.append({
+                            "from_path": current, "line": line, "module_candidate": module,
+                            "candidate_path_count": len(matches), "candidate_paths": matches[:_ROUTE_DETAIL_LIMIT],
+                        })
+                    continue
+                next_path = matches[0]
+                if next_path in discovered:
+                    continue
+                discovered.add(next_path)
+                parent[next_path] = {
+                    "from_path": current, "to_path": next_path, "module_candidate": module,
+                    "line": line, "imported_names": list(names), "syntax_kind": syntax_kind,
+                    "source_sha256": fingerprint, "evidence_ref": f"file:{current}:line:{line}",
+                    "basis": "UNIQUE_TRACKED_MODULE_NAME_CANDIDATE",
+                }
+                if next_path == destination:
+                    found = True
+                    break
+                if depth + 1 < max_hops:
+                    queue.append((next_path, depth + 1))
+                else:
+                    hop_frontier += 1
+        route: list[dict[str, Any]] = []
+        if found:
+            current = destination
+            while current != start:
+                edge = parent[current]
+                route.append(edge)
+                current = edge["from_path"]
+            route.reverse()
+        budget_exhausted = bool(queue and not found and inspected >= max_files)
+        incomplete = bool(failures or ambiguous_total or budget_exhausted)
+        return {
+            "code": "SEMANTIC_SOURCE_ROUTE",
+            "target_ref": target_ref, "from_path": start, "to_path": destination,
+            "status": ("FOUND" if found else "NOT_ASSESSED" if incomplete
+                       else "NO_ROUTE_FOUND_WITHIN_BOUNDS"),
+            "route": route, "hop_count": len(route) if found else None,
+            "search": {
+                "max_hops": max_hops, "max_files": max_files,
+                "source_file_byte_limit": _ROUTE_MAX_SOURCE_BYTES,
+                "inspected_files": inspected, "discovered_paths": len(discovered),
+                "queued_uninspected_paths": len(queue),
+                "hop_frontier_paths": hop_frontier,
+                "file_budget_exhausted": budget_exhausted,
+                "parse_or_read_failure_total": len(failures),
+                "parse_or_read_failures": failures[:_ROUTE_DETAIL_LIMIT],
+                "ambiguous_candidate_total": ambiguous_total,
+                "ambiguous_candidates": ambiguities,
+                "unresolved_candidate_total": unresolved,
+                "search_partial": incomplete,
+                "detail_limit": _ROUTE_DETAIL_LIMIT,
+                "detail_truncated": (len(failures) > _ROUTE_DETAIL_LIMIT
+                                     or ambiguous_total > len(ambiguities)
+                                     or any(x["candidate_path_count"] > len(x["candidate_paths"])
+                                            for x in ambiguities)),
+            },
+            "runtime_dependency_established": False, "semantic_impact_established": False,
+            "tests_executed": False, "action_authorized": False,
+            "explicit_limits": list(_ROUTE_LIMITS),
+        }

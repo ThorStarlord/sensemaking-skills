@@ -1,0 +1,206 @@
+{
+  "schema_version": 2,
+  "claims": [
+    {
+      "id": "poss:architectural-source-route",
+      "kind": "opportunity",
+      "statement": "An agent answers an explicit architectural source-dependency question between two known Python modules by recovering one bounded source-qualified import-candidate route, retaining the distinction from runtime dependencies and architectural intent.",
+      "epistemic_status": "hypothetical",
+      "authority_kind": "hypothesis",
+      "authority_ref": "artifacts/history/2026-11-27-intent-to-intervention-development.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-intent-to-intervention-development.md",
+        "file:src/sensemaking_skills/semantic_architecture/source_relationships.py",
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:docs/normal-use/2026-11-25-symbol-usage-context.md",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ],
+      "attributes": {
+        "concept": "ProductPossibility",
+        "title": "Source-qualified architectural routes",
+        "origin": {
+          "ref": "artifacts/history/2026-11-27-intent-to-intervention-development.md",
+          "date": "2026-11-27",
+          "author": "active ChatGPT coding agent"
+        },
+        "dimensions": {
+          "alignment": {
+            "value": "ALIGNED",
+            "basis": "Compounding product knowledge and source-grounded intervention under ADR 0038."
+          },
+          "ambition": {
+            "value": "SUBSTANTIAL",
+            "basis": "Enables directed multi-hop inquiry beyond one-file source context without a general inference engine."
+          },
+          "horizon": {
+            "value": "FORESEEABLE",
+            "basis": "Reuses existing exact-commit source and Python import candidate mechanisms."
+          },
+          "realization": {
+            "value": "HYPOTHETICAL",
+            "establishment": "inferred",
+            "basis": "Existing context-for provides direct import and importer views; new route inquiry is not yet observed."
+          }
+        },
+        "disposition_history": [
+          {
+            "value": "SELECTED",
+            "date": "2026-11-27",
+            "authority": "agent construction selection within delegated self-development",
+            "source": "artifacts/history/2026-11-27-intent-to-intervention-development.md",
+            "rationale": "Select bounded directed witness rather than general transitive graph, additional goal bridge, or manual-only inspection."
+          }
+        ],
+        "assessed_ref": "eaf2f52215c03c213ac7f65cc8b85b2699250d79",
+        "synthesis_basis": "Reuse exact-source Python AST import candidate reading in bounded, explicit directed path search; unique tracked module candidates only, no semantic or runtime graph inference.",
+        "value_hypothesis": "An authorized software-development agent can recover a concrete directed source-qualified import-candidate route between two known Python modules to inform an architectural intervention without manually assembling every intermediate source context.",
+        "revisit_when": "Actual multi-hop source questions expose a material unsupported resolution case, or file:src/sensemaking_skills/semantic_architecture/source_relationships.py changes.",
+        "counterevidence": "Manual source inspection remains viable; static module-name candidates can differ from runtime resolution; bounds and unreadable/ambiguous paths limit absence claims. No independent benefit or efficiency measured.",
+        "claim_ceiling": "Proposed and source-grounded candidate, not verified implementation or beneficiary improvement.",
+        "agent_owned": true
+      }
+    },
+    {
+      "id": "conseq:architectural-source-route-value",
+      "kind": "hypothesis",
+      "statement": "An authorized software-development agent can recover a concrete directed source-qualified import-candidate route between two known Python modules to inform an architectural intervention without manually assembling every intermediate source context.",
+      "authority_kind": "hypothesis",
+      "authority_ref": "artifacts/history/2026-11-27-intent-to-intervention-development.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-intent-to-intervention-development.md",
+        "file:src/sensemaking_skills/semantic_architecture/source_relationships.py",
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:docs/normal-use/2026-11-25-symbol-usage-context.md",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ],
+      "epistemic_status": "hypothetical",
+      "attributes": {
+        "concept": "ConsequenceHypothesis",
+        "source_possibility": "poss:architectural-source-route",
+        "category": "benefit",
+        "analysis_ref": "artifacts/history/2026-11-27-intent-to-intervention-development.md",
+        "source_revision": "eaf2f52215c03c213ac7f65cc8b85b2699250d79",
+        "origin": {
+          "ref": "artifacts/history/2026-11-27-intent-to-intervention-development.md",
+          "date": "2026-11-27",
+          "author": "active ChatGPT coding agent"
+        },
+        "value_frame": {
+          "beneficiary": "An authorized agent choosing a source-level architectural intervention involving two known modules.",
+          "criterion": "Recover an actual directed, multi-hop source candidate route with exact revision/path/line evidence, not a general dependency graph or more unqualified context.",
+          "comparison_baseline": "Current direct source relationship view and manual recursive import inspection.",
+          "expected_observation": "The actual patch_rehearsal.py to semantic_architecture/verification_scenarios.py question produces a witnessed multi-hop candidate import route at BASE with source hashes and line citations; with hop budget one no such route is observed; the reverse worktree_context.py to patch_rehearsal.py inquiry does not find a route in the bounded static reader. Co-design rehearses actual new code, documentation, pack and supporting report together with separate candidate preflight.",
+          "would_change_decision_if": "Witness edges are not source-supported, ambiguity is silently resolved, boundaries are conflated, or later agents find manual inspection preferable.",
+          "cost_and_downside": "A disposable exact-commit checkout and bounded forward parse search; no full graph persistence or new schema. Manual inspection remains viable."
+        },
+        "assumptions": [
+          "con:agent-owns-semantic-control"
+        ],
+        "mechanism": "Reuse exact-source Python AST import candidate reading in bounded, explicit directed path search; unique tracked module candidates only, no semantic or runtime graph inference.",
+        "counterevidence": "Manual source inspection remains viable; static module-name candidates can differ from runtime resolution; bounds and unreadable/ambiguous paths limit absence claims. No independent benefit or efficiency measured.",
+        "would_change_decision_if": "Witness edges are not source-supported, ambiguity is silently resolved, boundaries are conflated, or later agents find manual inspection preferable.",
+        "claim_ceiling": "Original prospective frame from preconstruction report at aa02e53c; no outcome inferred."
+      }
+    },
+    {
+      "id": "cap:architectural-source-route",
+      "kind": "capability",
+      "statement": "The source-route command implements a bounded exact-commit directed Python AST import-candidate route inquiry with unique tracked module mapping, line and source digest evidence, and explicit search bounds.",
+      "epistemic_status": "declared",
+      "authority_kind": "code",
+      "authority_ref": "src/sensemaking_skills/semantic_architecture/source_relationships.py",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-intent-to-intervention-development.md",
+        "file:src/sensemaking_skills/semantic_architecture/source_relationships.py",
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:docs/normal-use/2026-11-25-symbol-usage-context.md",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ],
+      "attributes": {
+        "scope": "One explicit pair of distinct tracked Python files; max six hops, 250 inspected files and 512 KiB per file; no runtime import resolution.",
+        "claim_ceiling": "Source-authored capability, candidate execution and independent benefit not yet established."
+      }
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel:architectural-source-route-goal",
+      "subject": "poss:architectural-source-route",
+      "predicate": "candidate_opportunity_for",
+      "object": "goal:compounding-product-knowledge",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-intent-to-intervention-development.md"
+      ]
+    },
+    {
+      "id": "rel:architectural-source-route-goal-cognitive",
+      "subject": "poss:architectural-source-route",
+      "predicate": "candidate_opportunity_for",
+      "object": "goal:domain-general-cognitive-development",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-intent-to-intervention-development.md"
+      ]
+    },
+    {
+      "id": "rel:architectural-source-route-extends-context",
+      "subject": "poss:architectural-source-route",
+      "predicate": "derived_from",
+      "object": "poss:path-scoped-architecture-vocabulary",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-intent-to-intervention-development.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "combines",
+        "establishment": "authored"
+      }
+    },
+    {
+      "id": "rel:architectural-source-route-requires-context",
+      "subject": "poss:architectural-source-route",
+      "predicate": "requires_capability",
+      "object": "cap:path-scoped-architecture-context",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-intent-to-intervention-development.md"
+      ]
+    },
+    {
+      "id": "rel:architectural-source-route-prediction",
+      "subject": "conseq:architectural-source-route-value",
+      "predicate": "references",
+      "object": "poss:architectural-source-route",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-intent-to-intervention-development.md"
+      ]
+    },
+    {
+      "id": "rel:architectural-source-route-realization",
+      "subject": "poss:architectural-source-route",
+      "predicate": "implemented_by",
+      "object": "cap:architectural-source-route",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-intent-to-intervention-development.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "realizedBy",
+        "establishment": "inferred",
+        "scope": "Candidate source implementation pending observation."
+      }
+    },
+    {
+      "id": "rel:architectural-source-route-serves",
+      "subject": "cap:architectural-source-route",
+      "predicate": "serves_goal",
+      "object": "goal:compounding-product-knowledge",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-intent-to-intervention-development.md"
+      ]
+    }
+  ]
+}
