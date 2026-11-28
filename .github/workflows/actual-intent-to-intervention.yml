@@ -1,0 +1,52 @@
+name: Actual intent to intervention development (execution branch only)
+on:
+  push:
+    branches: [claude/intent-to-intervention-execution-20261127]
+permissions:
+  contents: read
+jobs:
+  actual-use:
+    if: github.ref == 'refs/heads/claude/intent-to-intervention-execution-20261127'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SOURCE: "eaf2f52215c03c213ac7f65cc8b85b2699250d79"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.SOURCE }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Recover governing intent and real engineering relationships
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE"
+          python -m pip install -e .
+          sensemaking-skills semantic workspace-query --repo . --ref "$SOURCE" --operation possibility-ecology --subject goal:compounding-product-knowledge --method-question "How should retained engineering evidence guide construction of useful architecture understanding without redundant retrieval?" --include-method-trials --limit 150 --json > "$RUNNER_TEMP/intent.json"
+          sensemaking-skills semantic workspace-query --repo . --ref "$SOURCE" --operation context-for src/sensemaking_skills/semantic_architecture/worktree_context.py --include-source-relationships --symbol guarded_git_text --limit 80 --json > "$RUNNER_TEMP/git-boundary.json"
+          sensemaking-skills semantic workspace-query --repo . --ref "$SOURCE" --operation context-for src/sensemaking_skills/patch_rehearsal.py --include-source-relationships --limit 80 --json > "$RUNNER_TEMP/rehearsal.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])
+          q=json.loads((p/"intent.json").read_text())
+          assert q["target_ref"]==os.environ["SOURCE"] and not q["action_authorized"]
+          e=q["possibility_ecology"]
+          print("GOAL_ECOLOGY="+json.dumps({"candidates":[{"id":x["claim_id"],"realization":x["realization"]["value"]} for x in e["candidates"]],"descendants":[x["claim_id"] for x in e.get("descendant_goal_candidates",[])],"feedback":[{"id":x["possibility_id"],"standing":[v["standing"] for v in x["predictions"]]} for x in e["value_feedback"]["entries"]],"methods":[x["id"] for x in q["method_precedents"]["method_candidates"]]}))
+          for name in ("git-boundary","rehearsal"):
+              q=json.loads((p/(name+".json")).read_text())
+              s=q["source_relationships"]
+              print("CONTEXT="+json.dumps({"name":name,"target":s["target"],"counts":s["counts"],"imports":[{"module":x["module"],"path":x["resolved_path"]} for x in s["direct_imports"] if x["resolved_path"]],"importers":[x["path"] for x in s["direct_importers"]],"coverage":s["coverage_status"]}))
+          print("INTENT_RECOVERY=PASS")
+          PY
+          test -z "$(git status --porcelain)"
+      - name: Retain actual intent evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: actual-intent-to-intervention
+          path: ${{ runner.temp }}/*.json
+          retention-days: 14
