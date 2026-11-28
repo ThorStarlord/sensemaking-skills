@@ -51,7 +51,7 @@ jobs:
           e=next(x for x in eco["value_feedback"]["entries"] if x["possibility_id"]=="poss:paired-architectural-source-routes")
           f=e["predictions"][0]
           assert f["standing"]=="PARTIALLY_OBSERVED" and f["assessment_total"]==1
-          candidate=next(x for x in eco["candidates"] if x["id"]=="poss:paired-architectural-source-routes")
+          candidate=next(x for x in eco["candidates"] if x["claim_id"]=="poss:paired-architectural-source-routes")
           assert candidate["realization"]["value"]=="PARTIALLY_IMPLEMENTED"
           assert f["prediction"]["attributes"]["value_frame"]==old["claims"][1]["attributes"]["value_frame"]
           print("REVIEWED_FEEDBACK="+json.dumps({"standing":f["standing"],"assessments":f["assessment_total"],"original_prediction_preserved":True,"exact_tested_source":True,"realization":candidate["realization"]["value"]}))
