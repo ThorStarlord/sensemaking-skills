@@ -3,7 +3,7 @@ schema_version: 1
 session_ref: 2026-11-27-adaptive-intellectual-organization-actual-use
 state: final
 created_at: "2026-11-27T23:56:00Z"
-updated_at: "2026-11-28T00:01:02Z"
+updated_at: "2026-11-28T00:02:21Z"
 target_repository: ThorStarlord/sensemaking-skills
 source_identity:
   start_ref: ab180ba627e1a0f95406b74eb432268a7f13875f
