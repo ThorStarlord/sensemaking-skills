@@ -141,9 +141,9 @@
     {
       "id": "rel:experience-grounded-possibility-evaluation-realized-in-part",
       "subject": "poss:experience-grounded-possibility-evaluation",
-      "predicate": "references",
+      "predicate": "implemented_by",
       "object": "cap:product-possibility-value-feedback",
-      "epistemic_status": "inferred",
+      "epistemic_status": "declared",
       "evidence_refs": [
         "file:src/sensemaking_skills/decision_review.py",
         "file:src/sensemaking_skills/semantic_architecture/consequence_standing.py",
@@ -155,7 +155,8 @@
       "attributes": {
         "conceptual_relation": "realizedBy",
         "establishment": "inferred",
-        "scope": "Bounded actual producer/query mechanism; not complete intended outcome."
+        "scope": "Bounded actual producer/query mechanism; not complete intended outcome.",
+        "realized_part": "Bounded actual producer/query mechanism; not complete intended outcome."
       }
     }
   ]
