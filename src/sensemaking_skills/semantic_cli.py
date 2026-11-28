@@ -296,16 +296,22 @@ def register_semantic_commands(root_cli: click.Group) -> None:
 
     @semantic_group.command(name="knowledge-proposal-check")
     @click.option("--repo", "repo_root", required=True, type=click.Path(exists=True, file_okay=False, path_type=Path))
-    @click.option("--proposal", required=True, type=click.Path(exists=True, dir_okay=False, path_type=Path))
-    @click.option("--destination", default=None, type=click.Path(dir_okay=False, path_type=Path),
-                  help="Check a detached artifacts/history or .sensemaking/proposals draft as a new knowledge pack; no writes")
+    @click.option("--proposal", required=True, type=str,
+                  help="Proposal path relative to --repo, or absolute within it")
+    @click.option("--destination", default=None, type=str,
+                  help="New logical knowledge path relative to --repo (or absolute within it); no writes")
     @click.option("--json", "output_json", is_flag=True)
     def semantic_knowledge_proposal_check(
-        repo_root: Path, proposal: Path, destination: Path | None, output_json: bool,
+        repo_root: Path, proposal: str, destination: str | None, output_json: bool,
     ) -> None:
         """Validate a dirty/untracked authored proposal without indexing it as fact."""
+        # The inspector owns target-rooted path resolution and validation.
+        # Click.Path existence/type checks would inspect the caller's CWD instead.
         try:
-            payload = inspect_knowledge_proposal(repo_root, proposal, destination=destination)
+            payload = inspect_knowledge_proposal(
+                repo_root, Path(proposal),
+                destination=Path(destination) if destination is not None else None,
+            )
         except (ValueError, OSError, UnicodeError, KeyError, TypeError, json.JSONDecodeError) as exc:
             raise click.ClickException(str(exc)) from exc
         _emit(payload, output_json=output_json)

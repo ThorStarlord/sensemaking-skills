@@ -1,0 +1,189 @@
+{
+  "schema_version": 2,
+  "claims": [
+    {
+      "id": "poss:target-rooted-proposal-preflight",
+      "kind": "opportunity",
+      "statement": "A development agent can mechanically preflight actual target-relative proposal and logical-destination paths against an explicitly chosen repository from a separate implementation checkout or other working directory, without redundant directory-dependent failures.",
+      "epistemic_status": "hypothetical",
+      "authority_kind": "hypothesis",
+      "authority_ref": "artifacts/history/2026-11-28-beneficiary-consolidation-target-preflight.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-beneficiary-consolidation-target-preflight.md",
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:docs/cli-reference.md",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:src/sensemaking_skills/semantic_architecture/stewardship_validation.py",
+        "file:artifacts/history/2026-11-28-evidence-grounded-strategic-judgment.md"
+      ],
+      "attributes": {
+        "concept": "ProductPossibility",
+        "title": "Target-rooted proposal preflight",
+        "origin": {
+          "ref": "artifacts/history/2026-11-28-beneficiary-consolidation-target-preflight.md",
+          "date": "2026-11-28",
+          "author": "active ChatGPT coding agent"
+        },
+        "dimensions": {
+          "alignment": {
+            "value": "ALIGNED",
+            "basis": "Improve concrete returning development execution under ADR 0038."
+          },
+          "ambition": {
+            "value": "INCREMENTAL",
+            "basis": "Remove mismatched front-end path check; reuse existing inspector."
+          },
+          "horizon": {
+            "value": "FORESEEABLE",
+            "basis": "Actual #1023 failure and viable target-rooted inspector."
+          },
+          "realization": {
+            "value": "HYPOTHETICAL",
+            "establishment": "inferred",
+            "basis": "Candidate implementation; actual repair verification pending."
+          }
+        },
+        "disposition_history": [
+          {
+            "value": "SELECTED",
+            "date": "2026-11-28",
+            "authority": "delegated agent construction selection",
+            "source": "artifacts/history/2026-11-28-beneficiary-consolidation-target-preflight.md",
+            "rationale": "Actual detached review validation failed because CLI inspected caller directory; existing search recovered selected re-entry context, so choose concrete execution repair over further inventory expansion."
+          }
+        ],
+        "assessed_ref": "aec0ff2eaed29c79d65ac2867aeb59fd58cd7495",
+        "synthesis_basis": "Pass raw path arguments to the existing target-rooted contained proposal inspector, instead of prematurely validating existence or file type in invocation directory.",
+        "value_hypothesis": "A development agent can mechanically preflight actual target-relative proposal and logical-destination paths against an explicitly chosen repository from a separate implementation checkout or other working directory, without redundant directory-dependent failures.",
+        "revisit_when": "Reconsider if actual target-relative validation differs by invocation directory, target-missing or unsafe files are accepted, or absolute/root-invoked preflight behavior changes.",
+        "counterevidence": "Absolute paths or changing directory already provide a viable workaround. Only proposal-check argument validation is addressed; no cross-repository promotion, complete security guarantee, measured time saving or independent learning.",
+        "claim_ceiling": "Source-reviewed candidate; actual repair verification pending. No changed validator semantics or authority, measured productivity or independent cognitive benefit.",
+        "agent_owned": true
+      }
+    },
+    {
+      "id": "conseq:target-rooted-proposal-preflight-value",
+      "kind": "hypothesis",
+      "statement": "A development agent can mechanically preflight actual target-relative proposal and logical-destination paths against an explicitly chosen repository from a separate implementation checkout or other working directory, without redundant directory-dependent failures.",
+      "epistemic_status": "hypothetical",
+      "authority_kind": "hypothesis",
+      "authority_ref": "artifacts/history/2026-11-28-beneficiary-consolidation-target-preflight.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-beneficiary-consolidation-target-preflight.md",
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:docs/cli-reference.md",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:src/sensemaking_skills/semantic_architecture/stewardship_validation.py",
+        "file:artifacts/history/2026-11-28-evidence-grounded-strategic-judgment.md"
+      ],
+      "attributes": {
+        "concept": "ConsequenceHypothesis",
+        "source_possibility": "poss:target-rooted-proposal-preflight",
+        "category": "benefit",
+        "analysis_ref": "artifacts/history/2026-11-28-beneficiary-consolidation-target-preflight.md",
+        "source_revision": "aec0ff2eaed29c79d65ac2867aeb59fd58cd7495",
+        "origin": {
+          "ref": "artifacts/history/2026-11-28-beneficiary-consolidation-target-preflight.md",
+          "date": "2026-11-28",
+          "author": "active ChatGPT coding agent"
+        },
+        "value_frame": {
+          "beneficiary": "Returning development agent using separate implementation and target worktrees.",
+          "criterion": "Actual prior detached review preflight fails under old relative caller invocation; new relative/absolute and target/caller invocation payloads agree with old correct target invocation; actual ordinary pack and unsafe cases preserve guards.",
+          "comparison_baseline": "Old producer/preflight with manual cd or contained absolute path.",
+          "expected_observation": "Exact real target preflight from multiple caller directories, old failure reproduced, new target-missing/caller-present and unsafe/occupied paths refused.",
+          "would_change_decision_if": "Reconsider if actual target-relative validation differs by invocation directory, target-missing or unsafe files are accepted, or absolute/root-invoked preflight behavior changes.",
+          "cost_and_downside": "Minimal existing CLI boundary change; no validator or path policy change."
+        },
+        "assumptions": [
+          "con:agent-owns-semantic-control"
+        ],
+        "mechanism": "Pass raw path arguments to the existing target-rooted contained proposal inspector, instead of prematurely validating existence or file type in invocation directory.",
+        "counterevidence": "Absolute paths or changing directory already provide a viable workaround. Only proposal-check argument validation is addressed; no cross-repository promotion, complete security guarantee, measured time saving or independent learning.",
+        "would_change_decision_if": "Reconsider if actual target-relative validation differs by invocation directory, target-missing or unsafe files are accepted, or absolute/root-invoked preflight behavior changes.",
+        "claim_ceiling": "Conditional criterion committed at 477c29ad before implementation."
+      }
+    },
+    {
+      "id": "cap:target-rooted-proposal-preflight",
+      "kind": "capability",
+      "statement": "Knowledge proposal preflight resolves both proposal and optional logical destination through the existing target-rooted inspector independently of invocation directory.",
+      "epistemic_status": "declared",
+      "authority_kind": "code",
+      "authority_ref": "src/sensemaking_skills/semantic_cli.py",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-beneficiary-consolidation-target-preflight.md",
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:docs/cli-reference.md",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:src/sensemaking_skills/semantic_architecture/stewardship_validation.py",
+        "file:artifacts/history/2026-11-28-evidence-grounded-strategic-judgment.md"
+      ],
+      "attributes": {
+        "scope": "Existing ordinary or detached single-pack validation at explicit target root, contained relative or absolute paths, all existing inspector guards.",
+        "claim_ceiling": "Source-reviewed candidate; actual repair verification pending. No changed validator semantics or authority, measured productivity or independent cognitive benefit."
+      }
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel:target-rooted-proposal-preflight-goal",
+      "subject": "poss:target-rooted-proposal-preflight",
+      "predicate": "candidate_opportunity_for",
+      "object": "goal:compounding-product-knowledge",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-beneficiary-consolidation-target-preflight.md"
+      ]
+    },
+    {
+      "id": "rel:target-rooted-proposal-preflight-lineage",
+      "subject": "poss:target-rooted-proposal-preflight",
+      "predicate": "derived_from",
+      "object": "poss:detached-decision-stewardship",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-beneficiary-consolidation-target-preflight.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "combines",
+        "establishment": "authored"
+      }
+    },
+    {
+      "id": "rel:target-rooted-proposal-preflight-prediction",
+      "subject": "conseq:target-rooted-proposal-preflight-value",
+      "predicate": "references",
+      "object": "poss:target-rooted-proposal-preflight",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-beneficiary-consolidation-target-preflight.md"
+      ]
+    },
+    {
+      "id": "rel:target-rooted-proposal-preflight-realization",
+      "subject": "poss:target-rooted-proposal-preflight",
+      "predicate": "implemented_by",
+      "object": "cap:target-rooted-proposal-preflight",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-beneficiary-consolidation-target-preflight.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "realizedBy",
+        "establishment": "inferred",
+        "scope": "Candidate pending actual use."
+      }
+    },
+    {
+      "id": "rel:target-rooted-proposal-preflight-serves",
+      "subject": "cap:target-rooted-proposal-preflight",
+      "predicate": "serves_goal",
+      "object": "goal:compounding-product-knowledge",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-beneficiary-consolidation-target-preflight.md"
+      ]
+    }
+  ]
+}
