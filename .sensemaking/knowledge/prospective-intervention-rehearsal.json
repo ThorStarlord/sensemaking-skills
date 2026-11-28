@@ -1,0 +1,418 @@
+{
+  "schema_version": 2,
+  "claims": [
+    {
+      "id": "poss:prospective-intervention-rehearsal",
+      "kind": "opportunity",
+      "statement": "An agent can turn a concrete proposed software change into a temporary source-qualified intervention, verify its mechanical applicability, and inspect the governing product knowledge and architecture that the intervention touches without applying it to the active checkout or adopting hypothetical source as reviewed truth.",
+      "authority_kind": "hypothesis",
+      "authority_ref": "artifacts/history/2026-11-27-prospective-intervention-rehearsal-synthesis.json",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-prospective-intervention-rehearsal-synthesis.json",
+        "file:docs/normal-use/2026-11-25-refactor-rename-preview.md",
+        "file:src/sensemaking_skills/semantic_architecture/refactor_preview.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_sources.py",
+        "file:src/sensemaking_skills/workspace_knowledge.py",
+        "file:docs/explorations/2026-11-02-generative-depth-repository-knowledge.md",
+        "file:artifacts/history/2026-11-27-experience-informed-strategic-selection.md",
+        "file:artifacts/history/2026-11-27-generative-strategic-intelligence.md",
+        "file:artifacts/history/2026-11-27-prospective-intervention-rehearsal-DRAFT.json"
+      ],
+      "epistemic_status": "hypothetical",
+      "attributes": {
+        "concept": "ProductPossibility",
+        "title": "Prospective intervention rehearsal",
+        "origin": {
+          "ref": "artifacts/history/2026-11-27-prospective-intervention-rehearsal-synthesis.json",
+          "date": "2026-11-27",
+          "author": "active ChatGPT coding agent"
+        },
+        "dimensions": {
+          "alignment": {
+            "value": "ALIGNED",
+            "basis": "ADR 0038 couples worthwhile prospective development with grounded engineering and agent-owned authority."
+          },
+          "ambition": {
+            "value": "SUBSTANTIAL",
+            "basis": "A new intervention workflow combines actual proposed source transformation and existing architectural/strategic review, instead of merely retrieving or recording a possibility."
+          },
+          "horizon": {
+            "value": "FORESEEABLE",
+            "basis": "Existing disposable exact-commit checkout, rename patch mechanics and worktree-aware review already supply the substrate."
+          },
+          "realization": {
+            "value": "PARTIALLY_IMPLEMENTED",
+            "establishment": "observed",
+            "basis": "Actual run 46092945771 exercised the source-pinned command on a genuine existing-file containment repair, verified the exact candidate bytes and syntax, returned BASE-only review with an uncited-path gap, and refused the actual inapplicable reverse and structural changes. More general interventions, runtime evidence and independent decision benefit remain unestablished.",
+            "observation_ref": "artifacts/history/2026-11-27-generative-strategic-intelligence.md",
+            "history": [
+              {
+                "value": "HYPOTHETICAL",
+                "basis": "Current refactor rename preview handles one transformation, and worktree review handles changes already present in a checkout; no direct input-patch rehearsal consumer exists at the source.",
+                "establishment": "inferred",
+                "assessed_ref": "a9fc89c718e6bac3ee13fa7c7f32618b4b95ce2b"
+              }
+            ]
+          }
+        },
+        "disposition_history": [
+          {
+            "value": "EXPLORATORY",
+            "date": "2026-11-27",
+            "authority": "agent-authored synthesis under current delegated mission",
+            "source": "artifacts/history/2026-11-27-prospective-intervention-rehearsal-synthesis.json",
+            "rationale": "Use architectural exaptation: recombine the proven patch-only rename preview with committed-baseline worktree review and candidate reconsideration. Instead of a new reasoning engine or applying an agent's design to its active worktree, rehearse an explicit bounded text patch in a disposable exact-source checkout; obtain mechanical applicability, actual changed paths, and original reviewed context. The real candidate at 8e93f127 fixes a source-containment omission discovered while exploring refactor preview. This is a substantive source-level construction responsibility, not another value or receipt display."
+          },
+          {
+            "value": "SELECTED",
+            "date": "2026-11-27",
+            "authority": "agent construction selection under owner's ongoing self-development mandate",
+            "source": "artifacts/history/2026-11-27-generative-strategic-intelligence.md",
+            "rationale": "Recombine existing rename preview and BASE-only worktree review into concrete bounded intervention rehearsal; use an independently warranted real repair, retain manual fallback and outcome limits."
+          }
+        ],
+        "assessed_ref": "b00daad1ccf8c0874c235117f3d2fbe117898399",
+        "synthesis_basis": "Use architectural exaptation: recombine the proven patch-only rename preview with committed-baseline worktree review and candidate reconsideration. Instead of a new reasoning engine or applying an agent's design to its active worktree, rehearse an explicit bounded text patch in a disposable exact-source checkout; obtain mechanical applicability, actual changed paths, and original reviewed context. The real candidate at 8e93f127 fixes a source-containment omission discovered while exploring refactor preview. This is a substantive source-level construction responsibility, not another value or receipt display.",
+        "value_hypothesis": "A coding agent assessing a concrete proposed intervention can obtain mechanically applied patch evidence and its reviewed baseline architecture/product context before changing its active checkout, without manually coordinating separate disposable-worktree and review operations.",
+        "revisit_when": "A real later agent compares alternative concrete interventions or encounters an unsupported patch class that materially changes a valuable decision; or file:src/sensemaking_skills/patch_rehearsal.py changes.",
+        "counterevidence": "Existing commands can be manually composed. The first exercise uses an already warranted repair, so the new tool cannot be credited with discovering the defect or improving independent strategic judgment. More powerful arbitrary patch execution would increase authority and security risks.",
+        "claim_ceiling": "Observed one actual patch rehearsal, explicit refusal behavior and prospective producer/preflight, not established runtime behavior, semantic correctness, improved judgment or comparative benefit.",
+        "agent_owned": true
+      }
+    },
+    {
+      "id": "conseq:prospective-intervention-rehearsal-value",
+      "kind": "hypothesis",
+      "statement": "A coding agent assessing a concrete proposed intervention can obtain mechanically applied patch evidence and its reviewed baseline architecture/product context before changing its active checkout, without manually coordinating separate disposable-worktree and review operations.",
+      "authority_kind": "hypothesis",
+      "authority_ref": "artifacts/history/2026-11-27-prospective-intervention-rehearsal-synthesis.json",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-prospective-intervention-rehearsal-synthesis.json",
+        "file:docs/normal-use/2026-11-25-refactor-rename-preview.md",
+        "file:src/sensemaking_skills/semantic_architecture/refactor_preview.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_sources.py",
+        "file:src/sensemaking_skills/workspace_knowledge.py",
+        "file:docs/explorations/2026-11-02-generative-depth-repository-knowledge.md",
+        "file:artifacts/history/2026-11-27-experience-informed-strategic-selection.md"
+      ],
+      "epistemic_status": "hypothetical",
+      "attributes": {
+        "concept": "ConsequenceHypothesis",
+        "source_possibility": "poss:prospective-intervention-rehearsal",
+        "category": "benefit",
+        "analysis_ref": "artifacts/history/2026-11-27-prospective-intervention-rehearsal-synthesis.json",
+        "source_revision": "a9fc89c718e6bac3ee13fa7c7f32618b4b95ce2b",
+        "origin": {
+          "ref": "artifacts/history/2026-11-27-prospective-intervention-rehearsal-synthesis.json",
+          "date": "2026-11-27",
+          "author": "active ChatGPT coding agent"
+        },
+        "value_frame": {
+          "beneficiary": "An authorized software-development agent exploring or reviewing a concrete intervention on an established repository.",
+          "criterion": "Expand what an agent can safely rehearse and decide before committing: one actual source intervention with preserved baseline evidence and no active checkout edit, not another context display alone.",
+          "comparison_baseline": "Existing manual detached checkout, git apply and workspace-review-context --include-worktree; or apply in the active checkout and then inspect existing context. The manual isolated route remains viable.",
+          "expected_observation": "An actual proposed patch for a real contained-source repair applies to the exact original base in an isolated worktree. The returned changed paths, before/after hashes, Python syntax status and BASE-only review context describe that actual intervention. The active checkout remains unchanged; a second non-applicable input fails closed. Existing source limitations and no authority remain explicit.",
+          "would_change_decision_if": "The mechanism cannot prove its changed-path scope, reads or changes unrelated files, treats hypothetical code as indexed intent, or subsequent agents find ordinary manual rehearsal equally suitable for the decision.",
+          "cost_and_downside": "A temporary checkout and derived index, bounded patch size and file count, plus Git application and syntax parsing; cannot handle additions, deletions, renames, binary patches, mode changes or Git control files in v1. Does not establish runtime behavior or execute target code."
+        },
+        "assumptions": [
+          "con:agent-owns-semantic-control"
+        ],
+        "mechanism": "Use architectural exaptation: recombine the proven patch-only rename preview with committed-baseline worktree review and candidate reconsideration. Instead of a new reasoning engine or applying an agent's design to its active worktree, rehearse an explicit bounded text patch in a disposable exact-source checkout; obtain mechanical applicability, actual changed paths, and original reviewed context. The real candidate at 8e93f127 fixes a source-containment omission discovered while exploring refactor preview. This is a substantive source-level construction responsibility, not another value or receipt display.",
+        "counterevidence": "Existing commands can be manually composed. The first exercise uses an already warranted repair, so the new tool cannot be credited with discovering the defect or improving independent strategic judgment. More powerful arbitrary patch execution would increase authority and security risks.",
+        "would_change_decision_if": "The mechanism cannot prove its changed-path scope, reads or changes unrelated files, treats hypothetical code as indexed intent, or subsequent agents find ordinary manual rehearsal equally suitable for the decision.",
+        "claim_ceiling": "Prospectively authored candidate and original evaluation frame; no implementation, measured value, causal improvement, semantic verification or action authorization inferred."
+      }
+    },
+    {
+      "id": "cap:prospective-intervention-rehearsal",
+      "kind": "capability",
+      "statement": "An agent can supply a bounded explicit text patch, apply it in a disposable exact-commit checkout, mechanically verify its scope and recover original BASE-only product/architectural review and candidate reconsideration signals without editing the active checkout.",
+      "authority_kind": "code",
+      "authority_ref": "src/sensemaking_skills/patch_rehearsal.py",
+      "epistemic_status": "observed",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/patch_rehearsal.py",
+        "file:src/sensemaking_skills/workspace_knowledge.py",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:artifacts/history/2026-11-27-generative-strategic-intelligence.md"
+      ],
+      "attributes": {
+        "scope": "1..8 existing tracked regular-file modifications, <=256 KiB UTF-8 patch, actual Git applicability and changed Python syntax; committed BASE knowledge only.",
+        "claim_ceiling": "Observed source and one source-pinned actual rehearsal; no runtime correctness, semantic validity, general security isolation, automatic decision or independent benefit."
+      }
+    },
+    {
+      "id": "cap:source-contained-rename-preview",
+      "kind": "capability",
+      "statement": "Patch-only Python top-level symbol rename preview computes and checks direct syntactic edits in a disposable committed checkout; non-Python mention inspection uses the same contained tracked source guard as Python parsing, refusing linked or unreadable source files.",
+      "authority_kind": "code",
+      "authority_ref": "src/sensemaking_skills/semantic_architecture/refactor_preview.py",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/refactor_preview.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_sources.py",
+        "file:docs/normal-use/2026-11-25-refactor-rename-preview.md",
+        "file:artifacts/history/2026-11-27-generative-strategic-intelligence.md"
+      ],
+      "attributes": {
+        "scope": "Direct syntactic rename and bounded non-Python mention inspection; source containment repair candidate checked by actual patch rehearsal and source review.",
+        "claim_ceiling": "Historical actual rename path and source-reviewed containment guard; no independent exploit reproduction, runtime safety guarantee or universal rename coverage."
+      }
+    },
+    {
+      "id": "observation:prospective-intervention-rehearsal-20261127",
+      "kind": "observation",
+      "statement": "Scoped assessment (PARTIALLY_OBSERVED): At exact feature revision b00daad1, actual run 46092945771 rehearsed the real containment repair against a9fc89c7 and matched the before/after file digests to the original and repair commits. Python syntax passed and BASE review returned the actual changed path without indexing patched bytes; the file had no reviewed source-fingerprint links. The reverse patch and structural feature patch were refused. The active feature checkout remained clean at its original HEAD.",
+      "epistemic_status": "observed",
+      "authority_kind": "document",
+      "authority_ref": "artifacts/history/2026-11-27-generative-strategic-intelligence.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-generative-strategic-intelligence.md",
+        "file:artifacts/history/2026-11-27-prospective-intervention-rehearsal-synthesis.json",
+        "file:src/sensemaking_skills/patch_rehearsal.py"
+      ],
+      "attributes": {
+        "consequence_ref": "conseq:prospective-intervention-rehearsal-value",
+        "assessment_status": "PARTIALLY_OBSERVED",
+        "observed_effect": "At exact feature revision b00daad1, actual run 46092945771 rehearsed the real containment repair against a9fc89c7 and matched the before/after file digests to the original and repair commits. Python syntax passed and BASE review returned the actual changed path without indexing patched bytes; the file had no reviewed source-fingerprint links. The reverse patch and structural feature patch were refused. The active feature checkout remained clean at its original HEAD.",
+        "assessed_at_revision": "b00daad1ccf8c0874c235117f3d2fbe117898399",
+        "scope": "One genuine single-file repair, its actual reverse and structural feature diff at the same exact base, using the current agent and isolated hosted execution.",
+        "counterevidence": "The actual repair warrant came from direct source reading before the command was built. BASE context had no reviewed fingerprint link to the repaired file, and a manual disposable checkout plus existing review is a viable alternative. No measured efficiency, cross-platform behavior, security exploit prevention or independent decision improvement.",
+        "claim_ceiling": "Actual patch application, exact byte evidence, refusal and scoped review recovery; not causal or comparative beneficiary benefit."
+      }
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel:possibility-prospective-intervention-rehearsal-candidate-for-1",
+      "subject": "poss:prospective-intervention-rehearsal",
+      "predicate": "candidate_opportunity_for",
+      "object": "goal:domain-general-cognitive-development",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-prospective-intervention-rehearsal-synthesis.json",
+        "file:docs/normal-use/2026-11-25-refactor-rename-preview.md",
+        "file:src/sensemaking_skills/semantic_architecture/refactor_preview.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_sources.py",
+        "file:src/sensemaking_skills/workspace_knowledge.py",
+        "file:docs/explorations/2026-11-02-generative-depth-repository-knowledge.md",
+        "file:artifacts/history/2026-11-27-experience-informed-strategic-selection.md"
+      ],
+      "epistemic_status": "hypothetical"
+    },
+    {
+      "id": "rel:possibility-prospective-intervention-rehearsal-candidate-for-2",
+      "subject": "poss:prospective-intervention-rehearsal",
+      "predicate": "candidate_opportunity_for",
+      "object": "goal:compounding-product-knowledge",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-prospective-intervention-rehearsal-synthesis.json",
+        "file:docs/normal-use/2026-11-25-refactor-rename-preview.md",
+        "file:src/sensemaking_skills/semantic_architecture/refactor_preview.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_sources.py",
+        "file:src/sensemaking_skills/workspace_knowledge.py",
+        "file:docs/explorations/2026-11-02-generative-depth-repository-knowledge.md",
+        "file:artifacts/history/2026-11-27-experience-informed-strategic-selection.md"
+      ],
+      "epistemic_status": "hypothetical"
+    },
+    {
+      "id": "rel:possibility-prospective-intervention-rehearsal-derived-from-1",
+      "subject": "poss:prospective-intervention-rehearsal",
+      "predicate": "derived_from",
+      "object": "poss:goal-family-construction-bridge",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-prospective-intervention-rehearsal-synthesis.json",
+        "file:docs/normal-use/2026-11-25-refactor-rename-preview.md",
+        "file:src/sensemaking_skills/semantic_architecture/refactor_preview.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_sources.py",
+        "file:src/sensemaking_skills/workspace_knowledge.py",
+        "file:docs/explorations/2026-11-02-generative-depth-repository-knowledge.md",
+        "file:artifacts/history/2026-11-27-experience-informed-strategic-selection.md"
+      ],
+      "epistemic_status": "hypothetical",
+      "attributes": {
+        "conceptual_relation": "combines",
+        "establishment": "authored"
+      }
+    },
+    {
+      "id": "rel:possibility-prospective-intervention-rehearsal-derived-from-2",
+      "subject": "poss:prospective-intervention-rehearsal",
+      "predicate": "derived_from",
+      "object": "poss:construction-time-possibility-reconciliation",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-prospective-intervention-rehearsal-synthesis.json",
+        "file:docs/normal-use/2026-11-25-refactor-rename-preview.md",
+        "file:src/sensemaking_skills/semantic_architecture/refactor_preview.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_sources.py",
+        "file:src/sensemaking_skills/workspace_knowledge.py",
+        "file:docs/explorations/2026-11-02-generative-depth-repository-knowledge.md",
+        "file:artifacts/history/2026-11-27-experience-informed-strategic-selection.md"
+      ],
+      "epistemic_status": "hypothetical",
+      "attributes": {
+        "conceptual_relation": "combines",
+        "establishment": "authored"
+      }
+    },
+    {
+      "id": "rel:possibility-prospective-intervention-rehearsal-derived-from-3",
+      "subject": "poss:prospective-intervention-rehearsal",
+      "predicate": "derived_from",
+      "object": "poss:possibility-reconsideration-from-change",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-prospective-intervention-rehearsal-synthesis.json",
+        "file:docs/normal-use/2026-11-25-refactor-rename-preview.md",
+        "file:src/sensemaking_skills/semantic_architecture/refactor_preview.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_sources.py",
+        "file:src/sensemaking_skills/workspace_knowledge.py",
+        "file:docs/explorations/2026-11-02-generative-depth-repository-knowledge.md",
+        "file:artifacts/history/2026-11-27-experience-informed-strategic-selection.md"
+      ],
+      "epistemic_status": "hypothetical",
+      "attributes": {
+        "conceptual_relation": "combines",
+        "establishment": "authored"
+      }
+    },
+    {
+      "id": "rel:possibility-prospective-intervention-rehearsal-requires-1",
+      "subject": "poss:prospective-intervention-rehearsal",
+      "predicate": "requires_capability",
+      "object": "cap:path-scoped-architecture-context",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-prospective-intervention-rehearsal-synthesis.json",
+        "file:docs/normal-use/2026-11-25-refactor-rename-preview.md",
+        "file:src/sensemaking_skills/semantic_architecture/refactor_preview.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_sources.py",
+        "file:src/sensemaking_skills/workspace_knowledge.py",
+        "file:docs/explorations/2026-11-02-generative-depth-repository-knowledge.md",
+        "file:artifacts/history/2026-11-27-experience-informed-strategic-selection.md"
+      ],
+      "epistemic_status": "hypothetical"
+    },
+    {
+      "id": "rel:possibility-prospective-intervention-rehearsal-requires-2",
+      "subject": "poss:prospective-intervention-rehearsal",
+      "predicate": "requires_capability",
+      "object": "cap:warrant-and-choice-guidance",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-prospective-intervention-rehearsal-synthesis.json",
+        "file:docs/normal-use/2026-11-25-refactor-rename-preview.md",
+        "file:src/sensemaking_skills/semantic_architecture/refactor_preview.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_sources.py",
+        "file:src/sensemaking_skills/workspace_knowledge.py",
+        "file:docs/explorations/2026-11-02-generative-depth-repository-knowledge.md",
+        "file:artifacts/history/2026-11-27-experience-informed-strategic-selection.md"
+      ],
+      "epistemic_status": "hypothetical"
+    },
+    {
+      "id": "rel:possibility-prospective-intervention-rehearsal-requires-3",
+      "subject": "poss:prospective-intervention-rehearsal",
+      "predicate": "requires_capability",
+      "object": "cap:product-possibility-value-feedback",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-prospective-intervention-rehearsal-synthesis.json",
+        "file:docs/normal-use/2026-11-25-refactor-rename-preview.md",
+        "file:src/sensemaking_skills/semantic_architecture/refactor_preview.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_sources.py",
+        "file:src/sensemaking_skills/workspace_knowledge.py",
+        "file:docs/explorations/2026-11-02-generative-depth-repository-knowledge.md",
+        "file:artifacts/history/2026-11-27-experience-informed-strategic-selection.md"
+      ],
+      "epistemic_status": "hypothetical"
+    },
+    {
+      "id": "rel:possibility-prospective-intervention-rehearsal-assumes-1",
+      "subject": "poss:prospective-intervention-rehearsal",
+      "predicate": "references",
+      "object": "con:agent-owns-semantic-control",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-prospective-intervention-rehearsal-synthesis.json",
+        "file:docs/normal-use/2026-11-25-refactor-rename-preview.md",
+        "file:src/sensemaking_skills/semantic_architecture/refactor_preview.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_sources.py",
+        "file:src/sensemaking_skills/workspace_knowledge.py",
+        "file:docs/explorations/2026-11-02-generative-depth-repository-knowledge.md",
+        "file:artifacts/history/2026-11-27-experience-informed-strategic-selection.md"
+      ],
+      "epistemic_status": "hypothetical",
+      "attributes": {
+        "conceptual_relation": "assumes",
+        "establishment": "authored"
+      }
+    },
+    {
+      "id": "rel:possibility-prospective-intervention-rehearsal-value-prediction",
+      "subject": "conseq:prospective-intervention-rehearsal-value",
+      "predicate": "references",
+      "object": "poss:prospective-intervention-rehearsal",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-prospective-intervention-rehearsal-synthesis.json",
+        "file:docs/normal-use/2026-11-25-refactor-rename-preview.md",
+        "file:src/sensemaking_skills/semantic_architecture/refactor_preview.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_sources.py",
+        "file:src/sensemaking_skills/workspace_knowledge.py",
+        "file:docs/explorations/2026-11-02-generative-depth-repository-knowledge.md",
+        "file:artifacts/history/2026-11-27-experience-informed-strategic-selection.md"
+      ],
+      "epistemic_status": "hypothetical"
+    },
+    {
+      "id": "rel:prospective-intervention-rehearsal-realized-in-part",
+      "subject": "poss:prospective-intervention-rehearsal",
+      "predicate": "implemented_by",
+      "object": "cap:prospective-intervention-rehearsal",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/patch_rehearsal.py",
+        "file:src/sensemaking_skills/workspace_knowledge.py",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:artifacts/history/2026-11-27-generative-strategic-intelligence.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "realizedBy",
+        "establishment": "inferred",
+        "scope": "Bounded actual implementation only; not proof of intended benefit."
+      }
+    },
+    {
+      "id": "rel:prospective-intervention-rehearsal-serves-development",
+      "subject": "cap:prospective-intervention-rehearsal",
+      "predicate": "serves_goal",
+      "object": "goal:domain-general-cognitive-development",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/patch_rehearsal.py",
+        "file:src/sensemaking_skills/workspace_knowledge.py",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:artifacts/history/2026-11-27-generative-strategic-intelligence.md"
+      ]
+    },
+    {
+      "id": "rel:source-contained-rename-preview-serves-development",
+      "subject": "cap:source-contained-rename-preview",
+      "predicate": "serves_goal",
+      "object": "goal:domain-general-cognitive-development",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/refactor_preview.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_sources.py",
+        "file:docs/normal-use/2026-11-25-refactor-rename-preview.md",
+        "file:artifacts/history/2026-11-27-generative-strategic-intelligence.md"
+      ]
+    },
+    {
+      "id": "rel:prospective-intervention-rehearsal-observation",
+      "subject": "observation:prospective-intervention-rehearsal-20261127",
+      "predicate": "references",
+      "object": "conseq:prospective-intervention-rehearsal-value",
+      "epistemic_status": "observed",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-generative-strategic-intelligence.md"
+      ]
+    }
+  ]
+}
