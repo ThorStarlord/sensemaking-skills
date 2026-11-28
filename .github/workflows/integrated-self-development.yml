@@ -29,7 +29,7 @@ jobs:
       - name: Recover current developmental possibilities and intellectual experience
         run: |
           set -euo pipefail
-          Q="How should Sensemaking choose valuable new product capabilities and combine persistent understanding, developmental trajectory reasoning and method learning in actual self-development without substituting verification or documentation for product value?"
+          Q="How should developmental possibilities and retained method experience inform valuable product construction without unnecessary process?"
           sensemaking-skills handoff --repo . --output "$RUNNER_TEMP/self-handoff" \
             --skill-path skills/using-sensemaking --expected-source-ref "$SOURCE" \
             --resume-from .sensemaking/receipts/2026-11-27-cumulative-verification-continuity.session.yaml \
