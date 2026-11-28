@@ -1,0 +1,63 @@
+name: Actual adaptive strategic value formation (execution branch only)
+on:
+  push:
+    branches: [claude/adaptive-value-formation-execution-20261127]
+permissions:
+  contents: read
+jobs:
+  actual-use:
+    if: github.ref == 'refs/heads/claude/adaptive-value-formation-execution-20261127'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      SOURCE: "6e07364d1bb88f9820c6df8fdc95ab5a076fcbf3"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.SOURCE }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install exact product source
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE"
+          python -m pip install -e .
+          test -z "$(git status --porcelain)"
+      - name: Use current value feedback for real next product decision
+        run: |
+          set -euo pipefail
+          sensemaking-skills semantic workspace-query --repo . --ref "$SOURCE" \
+            --operation possibility-ecology --subject goal:domain-general-cognitive-development \
+            --method-question "How should value hypotheses and observed outcomes inform choosing useful construction without unnecessary retrieval or qualification?" \
+            --include-method-trials --limit 150 --json > "$RUNNER_TEMP/family.json"
+          sensemaking-skills semantic workspace-query --repo . --ref "$SOURCE" \
+            --operation possibility-ecology --subject poss:experience-grounded-possibility-evaluation \
+            --limit 80 --json > "$RUNNER_TEMP/evaluation.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])
+          f=json.loads((p/"family.json").read_text())
+          assert f["target_ref"]==os.environ["SOURCE"] and f["action_authorized"] is False
+          e=f["possibility_ecology"]
+          print("FAMILY="+json.dumps({k:e[k] for k in ("candidate_total","descendant_candidate_total","candidate_omitted","descendant_candidate_omitted","relationship_omitted","truncated")}))
+          for c in e["candidates"]+e["descendant_goal_candidates"]:
+              print("CANDIDATE="+json.dumps({k:c.get(k) for k in ("claim_id","statement","realization","value_hypothesis","revisit_when","disposition_history")})[:2300])
+          feedback=e["value_feedback"]
+          print("FEEDBACK_TOTALS="+json.dumps({k:feedback[k] for k in ("visible_candidate_total","candidates_with_predictions","candidates_without_predictions","unassessed_candidate_ids")}))
+          for x in feedback["entries"]:
+              print("VALUE_FEEDBACK="+json.dumps(x)[:12000])
+          print("METHODS="+json.dumps([{"id":c["id"],"procedure":c.get("procedure"),"recall_conditions":c.get("recall_conditions"),"applicability":c.get("applicability_to_present_task")} for c in f["method_precedents"]["method_candidates"]])[:8000])
+          print("OWN_VALUE_STATE="+json.dumps(json.loads((p/"evaluation.json").read_text())["possibility_ecology"]["value_feedback"]))
+          PY
+          test -z "$(git status --porcelain)"
+      - name: Retain real query results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: adaptive-value-formation-actual-context
+          path: ${{ runner.temp }}/*.json
+          retention-days: 14
