@@ -14,8 +14,9 @@ from pathlib import Path
 from typing import Any
 
 from .semantic_architecture.knowledge_architecture import is_repository_file_path
-from .semantic_architecture.knowledge_sources import (
-    _source, temporary_commit_checkout, verified_tracked_sources,
+from .semantic_architecture.source_access import (
+    _local_evidence_path, _source, committed_regular_file_status,
+    temporary_commit_checkout, verified_tracked_sources,
 )
 from .semantic_architecture.stewardship_validation import inspect_knowledge_proposal
 from .semantic_architecture.worktree_context import (
@@ -24,7 +25,7 @@ from .semantic_architecture.worktree_context import (
 )
 from .workspace_knowledge import (
     _checkout_root, _repository_label, _resolve_commit, _validate_ref_text,
-    run_workspace_review_context,
+    run_workspace_query, run_workspace_review_context,
 )
 
 _MAX_PATCH_BYTES = 256 * 1024
@@ -259,9 +260,101 @@ def _definition_changes(before: bytes, after: bytes, limit: int) -> dict[str, An
     }
 
 
+def _possibility_rehearsal_context(
+    checkout: Path, sha: str, label: str, possibility: str,
+    files: list[dict[str, Any]], limit: int, review_index_path: str,
+) -> dict[str, Any]:
+    """Join a selected BASE opportunity's authored context to actual patch paths."""
+    query = run_workspace_query(
+        repo=checkout, ref=sha, operation="possibility-ecology",
+        subject=possibility, repository=label, limit=limit,
+        index_dir=checkout.parent / "rehearsal-index",
+    )
+    ecology = query["possibility_ecology"]
+    index = query["workspace_index"]
+    if (query["target_ref"] != sha or query["repository"] != label
+            or index["indexed_ref"] != sha or index["index_path"] != review_index_path):
+        raise ValueError("possibility context did not preserve the exact BASE review index")
+    if ecology["focus_kind"] != "opportunity" or ecology["focus"]["claim_id"] != possibility:
+        raise ValueError("--possibility requires an existing opportunity claim at BASE")
+
+    # Compare names only. Citations and explicit component ownership have
+    # different meanings and neither establishes a necessary implementation.
+    path_matches: dict[str, list[dict[str, Any]]] = {item["path"]: [] for item in files}
+
+    def record_match(
+        basis: str, record_id: str, refs: list[str], *, literal: bool = False,
+    ) -> None:
+        for path, matches in path_matches.items():
+            matching = sorted({
+                ref for ref in refs if isinstance(ref, str)
+                and (ref == path if literal else _local_evidence_path(ref) == path)
+            })
+            if matching:
+                matches.append({"basis": basis, "record_id": record_id,
+                                "references": matching})
+
+    def claim_matches(record: dict, prefix: str, basis: str, claim_id: str) -> None:
+        record_match(basis + "_EVIDENCE", claim_id, record[prefix + "evidence_refs"])
+        authority = record.get(prefix + "authority_ref")
+        if isinstance(authority, str):
+            record_match(basis + "_AUTHORITY", claim_id, [authority],
+                         literal=not authority.startswith("file:"))
+
+    focus = ecology["focus"]
+    claim_matches(focus, "", "POSSIBILITY", possibility)
+    for route in ecology["required_capability_routes"]:
+        capability = route["capability_claim_id"]
+        claim_matches(route, "capability_", "REQUIRED_CAPABILITY", capability)
+        record_match("REQUIRES_RELATION_EVIDENCE", route["requires_capability_relation_id"],
+                     route["requires_capability_relation_evidence_refs"])
+        for component in route["implementation_components"]:
+            cid = component["component_claim_id"]
+            claim_matches(component, "component_", "IMPLEMENTATION_COMPONENT", cid)
+            record_match("COMPONENT_OWNED_PATH", cid, component["component_owned_paths"],
+                         literal=True)
+            record_match("IMPLEMENTED_BY_RELATION_EVIDENCE",
+                         component["implemented_by_relation_id"],
+                         component["implemented_by_relation_evidence_refs"])
+
+    path_context = []
+    for item in files:
+        path = item["path"]
+        status = committed_regular_file_status(checkout, sha, path)
+        expected = "ABSENT_FROM_TREE" if item["before_sha256"] is None else "REGULAR_FILE"
+        if status != expected:
+            raise ValueError("possibility context BASE tree status disagrees with verified patch scope")
+        # The same component may occur along several declared requirement routes.
+        # Keep unique record/basis/reference matches; the full routes remain above.
+        matches = []
+        for match in path_matches[path]:
+            if match not in matches:
+                matches.append(match)
+        path_context.append({
+            "path": path, "base_tree_status": status,
+            "status": "AUTHORED_MATCH" if matches else "NOT_ASSESSED",
+            "matches": matches,
+        })
+    return {
+        "base_ref": sha, "possibility_id": possibility,
+        "possibility_ecology": ecology, "patch_path_context": path_context,
+        "review_index_reused": True, "index_state": index["index_state"],
+        "truncated": bool(query["truncated"] or ecology["truncated"]),
+        "coverage_complete": False, "implementation_verified": False,
+        "action_authorized": False,
+        "explicit_limits": [
+            "Only the selected BASE opportunity and returned direct prerequisite routes are joined to actual patch paths.",
+            "Matches are exact local citation/authority names or explicitly declared component owned paths, not inferred dependencies or necessary changes.",
+            "Citations are not ownership. Missing links or matches are NOT_ASSESSED, not irrelevance, readiness or evidence of no dependency.",
+            "BASE tree status describes the committed path, not candidate existence or behavior. Candidate bytes and proposed records are not indexed as BASE knowledge.",
+            "No feasibility, adequacy, implementation, selection or authorization is established.",
+        ],
+    }
+
+
 def rehearse_patch(
     *, repo: str | Path, ref: str, patch_file: str | Path, limit: int = 25,
-    knowledge_proposal: str | None = None,
+    knowledge_proposal: str | None = None, possibility: str | None = None,
 ) -> dict[str, Any]:
     """Apply a bounded candidate patch and compose existing BASE review evidence."""
     if not 1 <= limit <= 100:
@@ -335,6 +428,12 @@ def rehearse_patch(
                 or review["review_scope"]["working_changes_indexed"]
                 or review["review_scope"]["worktree_changed_paths_total"] != len(paths)):
             raise ValueError("rehearsal review did not preserve the verified patch scope and BASE")
+        possibility_context = (
+            _possibility_rehearsal_context(
+                checkout, sha, label, possibility, files, limit,
+                review["workspace_index"]["index_path"],
+            ) if possibility is not None else None
+        )
         review["workspace_index"]["cache_lifetime"] = "DISPOSABLE_REHEARSAL"
         review["workspace_index"]["index_path"] = None
         review["workspace_index"]["repository_identity_source"] = label_source
@@ -374,6 +473,8 @@ def rehearse_patch(
                             "changed_paths_verified": True},
             "review_basis": "DISPOSABLE_PATCH_OVERLAY_BASE_KNOWLEDGE",
             "review": review,
+            **({"possibility_context": possibility_context}
+               if possibility is not None else {}),
             **({"candidate_knowledge": candidate_knowledge,
                 "disposable_index_used": True,
                 "candidate_objects_may_remain_in_shared_git_store": True}
