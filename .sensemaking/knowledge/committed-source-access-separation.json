@@ -1,0 +1,244 @@
+{
+  "schema_version": 2,
+  "claims": [
+    {
+      "id": "poss:committed-source-access-separation",
+      "kind": "opportunity",
+      "statement": "A distinct exact-source access boundary allows source-only and semantic projection consumers to share source identity, materialization and containment without depending on snapshot construction.",
+      "epistemic_status": "hypothetical",
+      "authority_kind": "hypothesis",
+      "authority_ref": "artifacts/history/2026-11-27-architectural-transformation-reasoning.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-architectural-transformation-reasoning.md",
+        "file:src/sensemaking_skills/semantic_architecture/source_access.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_sources.py",
+        "file:src/sensemaking_skills/semantic_architecture/source_relationships.py",
+        "file:src/sensemaking_skills/semantic_architecture/refactor_preview.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_architecture.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_store.py"
+      ],
+      "attributes": {
+        "concept": "ProductPossibility",
+        "title": "Separate committed source access from knowledge construction",
+        "origin": {
+          "ref": "artifacts/history/2026-11-27-architectural-transformation-reasoning.md",
+          "date": "2026-11-27",
+          "author": "active ChatGPT coding agent"
+        },
+        "dimensions": {
+          "alignment": {
+            "value": "ALIGNED",
+            "basis": "Supports compounding product knowledge and coherent reciprocal engineering development under ADR 0038."
+          },
+          "ambition": {
+            "value": "INCREMENTAL",
+            "basis": "Refactors an actual shared low-level responsibility; no new product operation."
+          },
+          "horizon": {
+            "value": "FORESEEABLE",
+            "basis": "Six existing functions and four real direct import sites support a bounded reversible extraction."
+          },
+          "realization": {
+            "value": "HYPOTHETICAL",
+            "establishment": "inferred",
+            "basis": "Canonical route inquiry 46099682031 identified four direct avoidable edges; extracted module is a proposed intervention."
+          }
+        },
+        "disposition_history": [
+          {
+            "value": "SELECTED",
+            "date": "2026-11-27",
+            "authority": "agent construction selection within delegated self-development",
+            "source": "artifacts/history/2026-11-27-architectural-transformation-reasoning.md",
+            "rationale": "Separate the source boundary while retaining behavior, compatibility and existing authority; reject broad Git or materialization redesign."
+          }
+        ],
+        "assessed_ref": "6a89e6cd7c1e138f7e04cbcd16c90b03b421f73e",
+        "synthesis_basis": "Extract the six existing source-access and evidence-path functions verbatim into a shared low-level module, preserve old import names as aliases, and migrate the four real source-only consumers. Keep current checkout semantics, snapshot construction and review authority distinct.",
+        "value_hypothesis": "A software-development agent can extend source-only operations independently of the semantic snapshot builder by sharing a dedicated exact-source access boundary, without changing existing source-materialization or knowledge-query behavior.",
+        "revisit_when": "A later actual consumer encounters a consequential compatibility or boundary problem, or file:src/sensemaking_skills/semantic_architecture/source_access.py changes.",
+        "counterevidence": "The old shared module worked and aliases retain some imports by design. A module move does not prove global runtime independence, improved performance, easier future changes, or independent cognitive benefit; check actual source/knowledge operation outputs and remaining route candidates.",
+        "claim_ceiling": "Source-grounded prospective responsibility; no observed outcome yet.",
+        "agent_owned": true
+      }
+    },
+    {
+      "id": "conseq:committed-source-access-separation-value",
+      "kind": "hypothesis",
+      "statement": "A software-development agent can extend source-only operations independently of the semantic snapshot builder by sharing a dedicated exact-source access boundary, without changing existing source-materialization or knowledge-query behavior.",
+      "epistemic_status": "hypothetical",
+      "authority_kind": "hypothesis",
+      "authority_ref": "artifacts/history/2026-11-27-architectural-transformation-reasoning.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-architectural-transformation-reasoning.md",
+        "file:src/sensemaking_skills/semantic_architecture/source_access.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_sources.py",
+        "file:src/sensemaking_skills/semantic_architecture/source_relationships.py",
+        "file:src/sensemaking_skills/semantic_architecture/refactor_preview.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_architecture.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_store.py"
+      ],
+      "attributes": {
+        "concept": "ConsequenceHypothesis",
+        "source_possibility": "poss:committed-source-access-separation",
+        "category": "benefit",
+        "analysis_ref": "artifacts/history/2026-11-27-architectural-transformation-reasoning.md",
+        "source_revision": "6a89e6cd7c1e138f7e04cbcd16c90b03b421f73e",
+        "origin": {
+          "ref": "artifacts/history/2026-11-27-architectural-transformation-reasoning.md",
+          "date": "2026-11-27",
+          "author": "active ChatGPT coding agent"
+        },
+        "value_frame": {
+          "beneficiary": "A software-development agent extending source-only operations or semantic knowledge construction without unnecessary dependencies.",
+          "criterion": "Four existing source-only consumers no longer import or have a witnessed bounded candidate route to the snapshot-builder module, while each reaches the same extracted source-access boundary directly, original functions remain compatible, and actual existing source/knowledge operations on identical BASE source produce the same scoped results.",
+          "comparison_baseline": "Current mixed module and original four direct import edges.",
+          "expected_observation": "Six source-access functions move without body changes; all four consumers directly import source_access; bounded post-change source-route inquiries return FOUND to source_access and NO_ROUTE_FOUND_WITHIN_BOUNDS to knowledge_sources, no reverse route from source_access to builder. Existing real source-route, refactor-rename and context-for/knowledge projection operations on the same original source return equivalent payloads, except explicitly identified checkout/cache metadata. Canonical co-design rehearses the actual eight-path source/knowledge increment with separate candidate preflight.",
+          "would_change_decision_if": "Behavior changes, any selected consumer still reaches builder through examined static candidates, old import compatibility is lost, or new ownership creates inconsistent authority.",
+          "cost_and_downside": "One small module, four redirected import sites, compatibility aliases. No new command, schema or materialization contract."
+        },
+        "assumptions": [
+          "con:agent-owns-semantic-control"
+        ],
+        "mechanism": "Extract the six existing source-access and evidence-path functions verbatim into a shared low-level module, preserve old import names as aliases, and migrate the four real source-only consumers. Keep current checkout semantics, snapshot construction and review authority distinct.",
+        "counterevidence": "The old shared module worked and aliases retain some imports by design. A module move does not prove global runtime independence, improved performance, easier future changes, or independent cognitive benefit; check actual source/knowledge operation outputs and remaining route candidates.",
+        "would_change_decision_if": "Behavior changes, any selected consumer still reaches builder through examined static candidates, old import compatibility is lost, or new ownership creates inconsistent authority.",
+        "claim_ceiling": "Prospectively authored before outcome, based on a77c25df preconstruction record."
+      }
+    },
+    {
+      "id": "component:committed-source-access",
+      "kind": "component",
+      "statement": "Shared committed-source access: exact-source Git identity, disposable checkout materialization, tracked-file containment and local evidence-path normalization; does not construct or query semantic snapshots.",
+      "epistemic_status": "declared",
+      "authority_kind": "code",
+      "authority_ref": "src/sensemaking_skills/semantic_architecture/source_access.py",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/semantic_architecture/source_access.py",
+        "file:artifacts/history/2026-11-27-architectural-transformation-reasoning.md"
+      ],
+      "attributes": {
+        "owned_paths": [
+          "src/sensemaking_skills/semantic_architecture/source_access.py"
+        ],
+        "scope": "Source-boundary responsibility; existing snapshot and store components retain their other paths."
+      }
+    },
+    {
+      "id": "cap:committed-source-access-separation",
+      "kind": "capability",
+      "statement": "Source-only consumers and the snapshot builder share a dedicated exact-source access implementation while legacy knowledge_sources import names remain aliases.",
+      "epistemic_status": "declared",
+      "authority_kind": "code",
+      "authority_ref": "src/sensemaking_skills/semantic_architecture/source_access.py",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-architectural-transformation-reasoning.md",
+        "file:src/sensemaking_skills/semantic_architecture/source_access.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_sources.py",
+        "file:src/sensemaking_skills/semantic_architecture/source_relationships.py",
+        "file:src/sensemaking_skills/semantic_architecture/refactor_preview.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_architecture.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_store.py"
+      ],
+      "attributes": {
+        "scope": "Six extracted functions, four redirected consumers, preserved compatibility aliases and source semantics.",
+        "claim_ceiling": "Source-authored separation, execution outcome pending."
+      }
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel:committed-source-access-goal",
+      "subject": "poss:committed-source-access-separation",
+      "predicate": "candidate_opportunity_for",
+      "object": "goal:compounding-product-knowledge",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-architectural-transformation-reasoning.md",
+        "file:src/sensemaking_skills/semantic_architecture/source_access.py"
+      ]
+    },
+    {
+      "id": "rel:committed-source-access-route-inquiry",
+      "subject": "poss:committed-source-access-separation",
+      "predicate": "references",
+      "object": "poss:architectural-source-route",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-architectural-transformation-reasoning.md",
+        "file:src/sensemaking_skills/semantic_architecture/source_access.py"
+      ]
+    },
+    {
+      "id": "rel:committed-source-access-prediction",
+      "subject": "conseq:committed-source-access-separation-value",
+      "predicate": "references",
+      "object": "poss:committed-source-access-separation",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-architectural-transformation-reasoning.md",
+        "file:src/sensemaking_skills/semantic_architecture/source_access.py"
+      ]
+    },
+    {
+      "id": "rel:committed-source-access-realization",
+      "subject": "poss:committed-source-access-separation",
+      "predicate": "implemented_by",
+      "object": "cap:committed-source-access-separation",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-architectural-transformation-reasoning.md",
+        "file:src/sensemaking_skills/semantic_architecture/source_access.py"
+      ],
+      "attributes": {
+        "conceptual_relation": "realizedBy",
+        "establishment": "inferred",
+        "scope": "Candidate architecture separation pending observed outcome."
+      }
+    },
+    {
+      "id": "rel:committed-source-access-capability-owner",
+      "subject": "cap:committed-source-access-separation",
+      "predicate": "implemented_by",
+      "object": "component:committed-source-access",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-architectural-transformation-reasoning.md",
+        "file:src/sensemaking_skills/semantic_architecture/source_access.py"
+      ]
+    },
+    {
+      "id": "rel:committed-source-access-serves",
+      "subject": "cap:committed-source-access-separation",
+      "predicate": "serves_goal",
+      "object": "goal:compounding-product-knowledge",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-architectural-transformation-reasoning.md",
+        "file:src/sensemaking_skills/semantic_architecture/source_access.py"
+      ]
+    },
+    {
+      "id": "rel:committed-source-access-builder-dependency",
+      "subject": "component:semantic-knowledge-plane",
+      "predicate": "depends_on",
+      "object": "component:committed-source-access",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-architectural-transformation-reasoning.md",
+        "file:src/sensemaking_skills/semantic_architecture/source_access.py"
+      ]
+    },
+    {
+      "id": "rel:committed-source-access-layer",
+      "subject": "component:committed-source-access",
+      "predicate": "belongs_to",
+      "object": "layer:knowledge-plane",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-architectural-transformation-reasoning.md",
+        "file:src/sensemaking_skills/semantic_architecture/source_access.py"
+      ]
+    }
+  ]
+}

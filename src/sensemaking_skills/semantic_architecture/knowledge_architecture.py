@@ -12,7 +12,7 @@ from typing import Any, Iterable, Mapping
 
 from .consequence_standing import assessment_supersession, possibility_value_feedback
 from .knowledge import CONSEQUENCE_ASSESSMENT_KEYS, _valid_repo_path, is_path_scope
-from .knowledge_sources import _local_evidence_path
+from .source_access import _local_evidence_path
 
 OPERATIONS = frozenset({"rules-for", "term", "orientation-summary", "product-outline",
                         "possibility-ecology", "context-for"})
