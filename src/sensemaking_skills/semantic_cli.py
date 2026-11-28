@@ -710,6 +710,26 @@ def register_semantic_commands(root_cli: click.Group) -> None:
         _emit(payload, output_json=output_json)
 
 
+    @semantic_group.command(name="patch-rehearsal")
+    @click.option("--repo", "repo_dir", type=click.Path(exists=True, file_okay=False, path_type=Path),
+                  default=Path("."), show_default=True)
+    @click.option("--ref", default="HEAD", show_default=True, help="Committed patch base")
+    @click.option("--patch-file", required=True, type=click.Path(exists=True, dir_okay=False, path_type=Path))
+    @click.option("--limit", type=click.IntRange(1, 100), default=25, show_default=True)
+    @click.option("--json", "output_json", is_flag=True)
+    def semantic_patch_rehearsal(
+        repo_dir: Path, ref: str, patch_file: Path, limit: int, output_json: bool,
+    ) -> None:
+        """Rehearse an explicit text patch and inspect BASE-only review context."""
+        from .patch_rehearsal import rehearse_patch
+
+        try:
+            payload = rehearse_patch(repo=repo_dir, ref=ref, patch_file=patch_file, limit=limit)
+        except (ValueError, OSError, UnicodeError, RuntimeError) as exc:
+            raise click.ClickException(str(exc)) from exc
+        _emit(payload, output_json=output_json)
+
+
     @semantic_group.command(name="knowledge-view-export")
     @click.option("--db", "db_path", required=True, type=click.Path(exists=True, dir_okay=False, path_type=Path))
     @click.option("--repository", "repository_id", required=True)

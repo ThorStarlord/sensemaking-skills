@@ -1988,3 +1988,39 @@ runtime behavior, test coverage, API compatibility, generated-code safety,
 re-export completeness or repository-wide renaming. `not_rewritten` separately
 lists non-module attribute mentions and non-Python file mentions that were not
 modified.
+
+
+## Prospective patch rehearsal
+
+```bash
+sensemaking-skills semantic patch-rehearsal --repo . --ref BASE \
+  --patch-file proposed.patch --limit 25 --json
+```
+
+Use this when the concrete alternative is already an explicit unified Git patch,
+but the active checkout should not be changed merely to inspect it. The command
+resolves the base commit, validates the patch's text/file scope, checks and
+applies it in the existing disposable exact-commit worktree, verifies the actual
+changed paths and reports before/after SHA-256 digests and changed Python file
+syntax checks. It reuses `workspace-review-context` with the BASE commit as both
+committed operands and the actual patched overlay as working changes. All product
+claims, source fingerprints and architectural context are from BASE; candidate
+reconsiderations are explicit path-overlap prompts only. The derived index is
+temporary and no persistent index path is returned. The input patch remains the
+caller's source, not an authorized instruction to apply it.
+
+Version 1 deliberately supports only UTF-8 unified patch text up to 256 KiB
+modifying 1..8 distinct, existing tracked regular files. It refuses binary,
+add/delete/rename/copy/mode changes, symlinks, submodules, Git control files,
+unsafe paths, ambiguous scope and failed Git application. Git hooks, fsmonitor
+and configured external filter commands are disabled for application; the existing
+disposable checkout and guarded worktree readers govern source inspection.
+No target code or tests are run; a Python syntax failure is reported as FAIL,
+not hidden by the status REHEARSED. The worktree is disposable, not a security
+sandbox. Do not use this as an authorization or arbitrary code execution surface.
+
+`REHEARSED` means the patch applied and the scoped review returned; it does not
+establish runtime behavior, semantic correctness, architectural conformance,
+causal consequences, value, selection, or readiness. Manual isolated application
+and existing review remain alternatives. The agent owns evaluation and any
+separately authorized integration.
