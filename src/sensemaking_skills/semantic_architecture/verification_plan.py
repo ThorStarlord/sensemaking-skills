@@ -8,7 +8,8 @@ The plan is a mechanical projection over three already-returned surfaces:
   ``symbol_context.verification_scenarios``.
 
 The first two are merged into a deduplicated set of pytest target candidates.
-Guard scenarios stay separate because they are not executable tests. Explicit
+Authored workflow file pointers and guard scenarios stay separate from pytest
+candidates; neither is dispatched or executed. Explicit
 gaps disclose what the composition did not establish.
 
 It does not execute tests, generate test code, infer coverage, establish a
@@ -17,6 +18,7 @@ pass/fail status or authorize a change.
 
 from __future__ import annotations
 
+import re
 from collections.abc import Mapping
 from typing import Any
 
@@ -32,6 +34,8 @@ _LIMITS = (
     "NOT ASSESSED.",
     "Guard scenarios are source-level candidates from direct raise/assert guards. No "
     "executable test is generated or mapped; suggested inputs are heuristic hints.",
+    "Authored GitHub workflow file references are manual inspection candidates only; "
+    "workflow availability, job applicability, dispatch, and execution are NOT ASSESSED.",
     "A pytest target is an invocation candidate; pytest collection, execution, pass "
     "status and correctness are NOT ASSESSED.",
     "Only tracked Python source at the selected committed revision is inspected; "
@@ -80,6 +84,19 @@ def _test_target(reference: Any) -> str | None:
         return None
     path, node = parts
     return f"{path}::{node}" if node else path
+
+
+def _workflow_path(reference: Any) -> str | None:
+    """Recognize an explicit authored GitHub workflow file pointer, not a job."""
+    if not isinstance(reference, str):
+        return None
+    text = reference.strip()
+    if text.startswith("file:"):
+        text = text[5:]
+    text = text.split("#", 1)[0].split(":line:", 1)[0]
+    if re.fullmatch(r"\.github/workflows/[A-Za-z0-9_.-]+\.ya?ml", text):
+        return text
+    return None
 
 
 def _string_list(value: Any) -> list[str]:
@@ -202,6 +219,8 @@ def build_verification_plan(
             if reference not in candidate["evidence_refs"]:
                 candidate["evidence_refs"].append(reference)
 
+    workflow_candidates: dict[str, dict[str, Any]] = {}
+    workflow_mapped_authored = 0
     mapped_authored = 0
     file_scope_claim_ids: list[str] = []
     unmapped_authored: list[dict[str, Any]] = []
@@ -213,6 +232,28 @@ def build_verification_plan(
             if target is not None and target not in targets:
                 targets.append(target)
         claim_id = record.get("claim_id")
+        workflow_refs: dict[str, list[str]] = {}
+        for reference in references:
+            workflow_path = _workflow_path(reference)
+            if workflow_path is not None:
+                workflow_refs.setdefault(workflow_path, []).append(reference)
+        if workflow_refs:
+            workflow_mapped_authored += 1
+        source = _authored_source(record)
+        for workflow_path, matched_refs in workflow_refs.items():
+            workflow = workflow_candidates.setdefault(workflow_path, {
+                "path": workflow_path,
+                "scope": "WORKFLOW_FILE",
+                "sources": [],
+                "evidence_refs": [],
+                "inspection_status": "NOT_ASSESSED",
+                "execution_status": "NOT_RUN",
+            })
+            if source not in workflow["sources"]:
+                workflow["sources"].append(source)
+            for reference in matched_refs:
+                if reference not in workflow["evidence_refs"]:
+                    workflow["evidence_refs"].append(reference)
         if not targets:
             unmapped_authored.append({
                 "claim_id": claim_id,
@@ -224,7 +265,6 @@ def build_verification_plan(
         mapped_authored += 1
         if isinstance(claim_id, str) and all("::" not in target for target in targets):
             file_scope_claim_ids.append(claim_id)
-        source = _authored_source(record)
         for target in targets:
             add_candidate(target, source, references)
 
@@ -280,6 +320,8 @@ def build_verification_plan(
         "authored_verification_records": len(verification_records),
         "authored_verification_mapped_to_pytest": mapped_authored,
         "authored_verification_unmapped": len(unmapped_authored),
+        "authored_verification_mapped_to_workflow": workflow_mapped_authored,
+        "workflow_candidates": len(workflow_candidates),
         "authored_verification_file_scope": len(file_scope_claim_ids),
         "direct_test_functions": len(direct_candidates),
         "guard_scenarios": len(scenario_candidates),
@@ -411,6 +453,7 @@ def build_verification_plan(
             "guard_scenarios": "symbol_context.verification_scenarios.scenarios",
         },
         "pytest_candidates": pytest_candidates,
+        "workflow_candidates": [workflow_candidates[path] for path in sorted(workflow_candidates)],
         "suggested_pytest": {
             "test_files": file_targets,
             "test_functions": suggested_function_targets,

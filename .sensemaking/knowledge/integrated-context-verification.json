@@ -1,0 +1,50 @@
+{
+  "schema_version": 2,
+  "claims": [
+    {
+      "id": "verification:integrated-developmental-context-hosted-reentry",
+      "kind": "verification",
+      "statement": "The Semantic Context Re-entry workflow contains explicit hosted CLI checks of the product-outline method context and goal-family possibility ecology with retained method-trial precedents. It asserts resolved revision identity, method/trial evidence limits and no action authority. This is an authored verification route, not a claim of current workflow execution, full coverage, or cognitive benefit.",
+      "authority_kind": "test",
+      "authority_ref": ".github/workflows/semantic-context-reentry.yml",
+      "evidence_refs": [
+        "file:.github/workflows/semantic-context-reentry.yml",
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:src/sensemaking_skills/workspace_knowledge.py"
+      ],
+      "epistemic_status": "observed",
+      "attributes": {
+        "scope": "The workflow steps Product-outline selection context includes method precedents (mechanics only) and Compose retained trial precedents with actual developmental context (mechanics only).",
+        "claim_ceiling": "Source-observed authored verification procedure; actual run, applicability to another change, full coverage and independent cognitive benefit are not established by this record."
+      }
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel:semantic-cli-tested-by-integrated-context-workflow",
+      "subject": "component:semantic-cli",
+      "predicate": "tested_by",
+      "object": "verification:integrated-developmental-context-hosted-reentry",
+      "evidence_refs": [
+        "file:.github/workflows/semantic-context-reentry.yml"
+      ],
+      "epistemic_status": "observed",
+      "attributes": {
+        "scope": "Specific integrated developmental-context CLI checks, not full component coverage."
+      }
+    },
+    {
+      "id": "rel:integrated-developmental-context-tested-by-hosted-reentry",
+      "subject": "cap:integrated-developmental-decision-context",
+      "predicate": "tested_by",
+      "object": "verification:integrated-developmental-context-hosted-reentry",
+      "evidence_refs": [
+        "file:.github/workflows/semantic-context-reentry.yml"
+      ],
+      "epistemic_status": "observed",
+      "attributes": {
+        "scope": "Mechanical source identity and authored precedent projection checks only."
+      }
+    }
+  ]
+}
