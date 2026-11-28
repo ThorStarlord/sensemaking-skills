@@ -32,6 +32,7 @@ _LIMITS = (
     "Only explicit UTF-8 text patches to existing tracked regular files (at most 8 files and 256 KiB) are supported.",
     "Additions, deletions, renames, copies, binary patches, mode changes, symlinks, Git control files and submodules are refused.",
     "Git application and Python syntax parsing are mechanical observations, not runtime behavior or semantic correctness.",
+    "Definition comparison distinguishes AST and source-only changes, reports module-level AST/text differences, and does not infer runtime effects; duplicate names are NOT ASSESSED.",
     "Review uses committed BASE knowledge and observed patch-overlay path names only. Patched bytes are not indexed as product intent.",
     "The temporary worktree and derived cache are disposable, not a security sandbox. No target code or tests are executed.",
     "No change is applied to the active checkout and no decision, action or publication is authorized.",
@@ -106,6 +107,79 @@ def _read_patch(path: Path) -> bytes:
     return patch
 
 
+_DEFINITION_TYPES = (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)
+
+
+def _definition_source(raw: bytes, tree: ast.Module) -> tuple[dict[str, dict[str, Any]], list[Any]]:
+    """Inventory top-level definitions by unique name and preserve residual source."""
+    lines = raw.splitlines(keepends=True)
+    definitions: dict[str, dict[str, Any]] = {}
+    residual: list[Any] = []
+    cursor = 0
+    for node in tree.body:
+        if not isinstance(node, _DEFINITION_TYPES):
+            continue
+        if node.name in definitions:
+            raise ValueError("duplicate top-level definition name")
+        start = min([node.lineno, *(d.lineno for d in node.decorator_list)]) - 1
+        end = node.end_lineno
+        if end is None or not cursor <= start < end <= len(lines):
+            raise ValueError("definition source span unavailable")
+        residual.extend([b"".join(lines[cursor:start]), ("definition", node.name)])
+        cursor = end
+        definitions[node.name] = {
+            "kind": type(node).__name__, "line": start + 1, "end_line": end,
+            "source_sha256": hashlib.sha256(b"".join(lines[start:end])).hexdigest(),
+            "ast_sha256": hashlib.sha256(ast.dump(node, include_attributes=False).encode("utf-8")).hexdigest(),
+        }
+    residual.append(b"".join(lines[cursor:]))
+    return definitions, residual
+
+
+def _module_structure(tree: ast.Module) -> list[tuple[str, str]]:
+    """Compare non-definition AST plus definition order, not runtime semantics."""
+    return [
+        ("definition", node.name) if isinstance(node, _DEFINITION_TYPES)
+        else ("statement", ast.dump(node, include_attributes=False))
+        for node in tree.body
+    ]
+
+
+def _definition_changes(before: bytes, after: bytes, limit: int) -> dict[str, Any]:
+    """Compare unique top-level definitions in the actual disposable overlay."""
+    try:
+        left_tree, right_tree = ast.parse(before), ast.parse(after)
+        left, left_residual = _definition_source(before, left_tree)
+        right, right_residual = _definition_source(after, right_tree)
+        module_ast_changed = _module_structure(left_tree) != _module_structure(right_tree)
+    except (SyntaxError, ValueError, RecursionError) as exc:
+        return {"status": "NOT_ASSESSED", "reason": str(exc)[:240],
+                "changes": [], "change_total": None, "truncated": False}
+    rows = []
+    for name in sorted(left.keys() | right.keys()):
+        old, new = left.get(name), right.get(name)
+        if old is None:
+            change = "ADDED"
+        elif new is None:
+            change = "REMOVED"
+        elif old["ast_sha256"] != new["ast_sha256"]:
+            change = "AST_CHANGED"
+        elif old["source_sha256"] != new["source_sha256"]:
+            change = "SOURCE_ONLY_CHANGED"
+        else:
+            continue
+        rows.append({"name": name, "change": change, "before": old, "after": new})
+    return {
+        "status": "COMPARED_TOP_LEVEL_DEFINITIONS",
+        "comparison_basis": "TOP_LEVEL_AST_AND_EXACT_SOURCE",
+        "changes": rows[:limit], "change_total": len(rows),
+        "truncated": len(rows) > limit,
+        "module_context_source_changed": left_residual != right_residual,
+        "module_context_ast_changed": module_ast_changed,
+        "runtime_behavior_assessed": False,
+    }
+
+
 def rehearse_patch(
     *, repo: str | Path, ref: str, patch_file: str | Path, limit: int = 25,
 ) -> dict[str, Any]:
@@ -120,10 +194,7 @@ def rehearse_patch(
     with temporary_commit_checkout(root, sha) as checkout:
         checkout, tracked = verified_tracked_sources(checkout, sha)
         paths = _patch_paths(checkout, patch, tracked, sha)
-        before = {
-            path: hashlib.sha256(_source(checkout, tracked, path).read_bytes()).hexdigest()
-            for path in paths
-        }
+        before = {path: _source(checkout, tracked, path).read_bytes() for path in paths}
         _apply_git(checkout, patch, "--check")
         _apply_git(checkout, patch)
         changes = changed_paths_since_indexed_ref(checkout, sha)
@@ -136,11 +207,11 @@ def rehearse_patch(
         for path in paths:
             raw = _source(checkout, tracked, path).read_bytes()
             item: dict[str, Any] = {
-                "path": path, "before_sha256": before[path],
+                "path": path, "before_sha256": hashlib.sha256(before[path]).hexdigest(),
                 "after_sha256": hashlib.sha256(raw).hexdigest(),
                 "python_syntax": "NOT_ASSESSED",
             }
-            if item["after_sha256"] == before[path]:
+            if item["after_sha256"] == item["before_sha256"]:
                 raise ValueError(f"rehearsed file has no byte change: {path}")
             if path.endswith(".py"):
                 try:
@@ -150,6 +221,7 @@ def rehearse_patch(
                     item["syntax_error_line"] = getattr(exc, "lineno", None)
                 else:
                     item["python_syntax"] = "PASS"
+                item["definition_changes"] = _definition_changes(before[path], raw, limit)
             files.append(item)
         review = run_workspace_review_context(
             repo=checkout, base_ref=sha, ref=sha, repository=label,
