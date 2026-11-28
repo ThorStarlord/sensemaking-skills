@@ -38,9 +38,18 @@
             "basis": "Existing source-route and source-review tree classification supply direct implementation primitives."
           },
           "realization": {
-            "value": "HYPOTHETICAL",
-            "establishment": "inferred",
-            "basis": "Candidate code composed; actual historical-route comparison not yet observed."
+            "value": "PARTIALLY_IMPLEMENTED",
+            "establishment": "observed",
+            "basis": "At exact candidate 88c70753, hosted actual run 46102664225 rehearsed all eight contribution paths, matched before/after bytes, parsed all three Python modifications, and mechanically validated the proposed pack. On the fixed real #1014 target checkout, three pre/post operation payloads were identical (old and new single-ref routes and prior source-review comparison). The paired former-builder query retained the BASE one-hop witness and TARGET bounded no-witness, equal to standalone results. The new-boundary query reported BASE ABSENT_FROM_TREE/ENDPOINT_UNAVAILABLE and TARGET one-hop FOUND, with NOT_COMPARABLE; same-ref results were identical with zero hop delta; reverse comparison swapped the sides and disposition; one-file queries retained NOT_ASSESSED on both sides and NOT_COMPARABLE. Five returned witness occurrences matched committed SHA-256 source and actual import lines.",
+            "observation_ref": "artifacts/history/2026-11-28-architectural-evolution-reasoning.md",
+            "history": [
+              {
+                "value": "HYPOTHETICAL",
+                "establishment": "inferred",
+                "basis": "Candidate code composed; actual historical-route comparison not yet observed.",
+                "assessed_ref": "7eae25dbf5f29280b1c1473d0c41c43839f7b034"
+              }
+            ]
           }
         },
         "disposition_history": [
@@ -52,12 +61,12 @@
             "rationale": "Select paired bounded evidence over manual-only reconciliation or global dependency inference."
           }
         ],
-        "assessed_ref": "7eae25dbf5f29280b1c1473d0c41c43839f7b034",
+        "assessed_ref": "88c70753c98cbf196701d289b5520512aa136122",
         "synthesis_basis": "Compose the existing bounded source-route builder with an exact committed regular-file classifier in the separated source_access boundary, preserving separate full results and identical per-revision bounds.",
         "value_hypothesis": "A development agent can compare the same directed architectural question across actual committed transitions without manually joining separately resolved source-route results or mistaking a missing endpoint for a negative search.",
         "revisit_when": "An actual historical source inquiry needs renamed endpoint matching, non-Python resolution or materially different bounds, or file:src/sensemaking_skills/semantic_architecture/source_relationships.py changes.",
         "counterevidence": "Separate source-route calls and manual inspection remain viable. The former mixed module could have implemented comparison too. A separated source boundary is a supporting design condition, not a necessary causal prerequisite; static witnesses are bounded, not runtime dependency or impact.",
-        "claim_ceiling": "Source-authored candidate; live observation and comparative cost or cognitive benefit not established.",
+        "claim_ceiling": "Observed scoped real historical comparison and source compatibility; original prospective frame retained. BASE co-design review truncated; non-regular endpoints and other architectures were not executed in this episode. No complete route graph, runtime dependency or global equivalence, causal reduction in development cost, independent cognitive benefit or cross-domain transfer established.",
         "agent_owned": true
       }
     },
@@ -108,7 +117,7 @@
       "id": "cap:paired-architectural-source-routes",
       "kind": "capability",
       "statement": "The optional source-route --base-ref mode pairs exact committed import-candidate witness observations with endpoint classification, per-revision bounds and explicit noncomparability.",
-      "epistemic_status": "declared",
+      "epistemic_status": "observed",
       "authority_kind": "code",
       "authority_ref": "src/sensemaking_skills/semantic_architecture/source_relationships.py",
       "evidence_refs": [
@@ -121,7 +130,32 @@
       ],
       "attributes": {
         "scope": "Two explicit exact Python path endpoints and two commits, existing per-side bounds; full available route results preserved.",
-        "claim_ceiling": "Source-authored candidate; live observation and comparative cost or cognitive benefit not established."
+        "claim_ceiling": "Observed scoped real historical comparison and source compatibility; original prospective frame retained. BASE co-design review truncated; non-regular endpoints and other architectures were not executed in this episode. No complete route graph, runtime dependency or global equivalence, causal reduction in development cost, independent cognitive benefit or cross-domain transfer established."
+      }
+    },
+    {
+      "id": "observation:paired-architectural-source-routes-20261128",
+      "kind": "observation",
+      "statement": "Scoped assessment (PARTIALLY_OBSERVED): At exact candidate 88c70753, hosted actual run 46102664225 rehearsed all eight contribution paths, matched before/after bytes, parsed all three Python modifications, and mechanically validated the proposed pack. On the fixed real #1014 target checkout, three pre/post operation payloads were identical (old and new single-ref routes and prior source-review comparison). The paired former-builder query retained the BASE one-hop witness and TARGET bounded no-witness, equal to standalone results. The new-boundary query reported BASE ABSENT_FROM_TREE/ENDPOINT_UNAVAILABLE and TARGET one-hop FOUND, with NOT_COMPARABLE; same-ref results were identical with zero hop delta; reverse comparison swapped the sides and disposition; one-file queries retained NOT_ASSESSED on both sides and NOT_COMPARABLE. Five returned witness occurrences matched committed SHA-256 source and actual import lines.",
+      "epistemic_status": "observed",
+      "authority_kind": "document",
+      "authority_ref": "artifacts/history/2026-11-28-architectural-evolution-reasoning.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-architectural-evolution-reasoning.md",
+        "file:src/sensemaking_skills/semantic_architecture/source_relationships.py",
+        "file:src/sensemaking_skills/semantic_architecture/source_access.py",
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:artifacts/history/2026-11-27-architectural-transformation-reasoning.md"
+      ],
+      "attributes": {
+        "consequence_ref": "conseq:paired-architectural-source-routes-value",
+        "assessment_status": "PARTIALLY_OBSERVED",
+        "observed_effect": "At exact candidate 88c70753, hosted actual run 46102664225 rehearsed all eight contribution paths, matched before/after bytes, parsed all three Python modifications, and mechanically validated the proposed pack. On the fixed real #1014 target checkout, three pre/post operation payloads were identical (old and new single-ref routes and prior source-review comparison). The paired former-builder query retained the BASE one-hop witness and TARGET bounded no-witness, equal to standalone results. The new-boundary query reported BASE ABSENT_FROM_TREE/ENDPOINT_UNAVAILABLE and TARGET one-hop FOUND, with NOT_COMPARABLE; same-ref results were identical with zero hop delta; reverse comparison swapped the sides and disposition; one-file queries retained NOT_ASSESSED on both sides and NOT_COMPARABLE. Five returned witness occurrences matched committed SHA-256 source and actual import lines.",
+        "assessed_at_revision": "88c70753c98cbf196701d289b5520512aa136122",
+        "scope": "Actual #1014 parent/merge comparison at exact candidate, same active agent and hosted read-only product execution; prior single-ref and source-review payloads compared using one fixed target checkout.",
+        "counterevidence": "Manual joining remains viable. The former mixed module could have supported equivalent logic; the source-access separation supplied a coherent reusable owner for classification, not a necessary causal condition. Co-design BASE review was truncated, no nonregular endpoint example was run, and no independent agent decision or cost comparison was performed.",
+        "claim_ceiling": "Observed scoped real historical comparison and source compatibility; original prospective frame retained. BASE co-design review truncated; non-regular endpoints and other architectures were not executed in this episode. No complete route graph, runtime dependency or global equivalence, causal reduction in development cost, independent cognitive benefit or cross-domain transfer established."
       }
     }
   ],
@@ -191,6 +225,16 @@
       "predicate": "serves_goal",
       "object": "goal:compounding-product-knowledge",
       "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-architectural-evolution-reasoning.md"
+      ]
+    },
+    {
+      "id": "rel:paired-architectural-source-routes-observation",
+      "subject": "observation:paired-architectural-source-routes-20261128",
+      "predicate": "references",
+      "object": "conseq:paired-architectural-source-routes-value",
+      "epistemic_status": "observed",
       "evidence_refs": [
         "file:artifacts/history/2026-11-28-architectural-evolution-reasoning.md"
       ]
