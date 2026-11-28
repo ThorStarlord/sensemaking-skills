@@ -343,7 +343,10 @@
       "evidence_refs": [
         "file:docs/superpowers/plans/2026-10-28-product-possibility-idea-library.md:line:249",
         "file:skills/strategic-repository-analysis/references/strategic-exploration-funnel-v1.md:line:172",
-        "file:skills/strategic-repository-analysis/SKILL.md:line:83"
+        "file:skills/strategic-repository-analysis/SKILL.md:line:83",
+        "file:artifacts/history/2026-11-27-developmental-synthesis-detached-stewardship.md",
+        "file:artifacts/history/2026-11-27-dtr-actual-consumption-and-promotion.md",
+        "file:.sensemaking/knowledge/detached-possibility-stewardship.json"
       ],
       "attributes": {
         "concept": "ProductPossibility",
@@ -376,13 +379,20 @@
           },
           "realization": {
             "value": "PARTIALLY_IMPLEMENTED",
-            "establishment": "inferred",
-            "basis": "Since plan PR 4, funnel section 4 and strategic-repository-analysis section 1B tell agents to recall retained possibilities and retain new syntheses; one same-session exploration is recorded (plan PR 3). Cross-session use is not established.",
+            "establishment": "observed",
+            "basis": "Existing exploration guidance and source-linked possibility producer support synthesis. The November 27 detached-stewardship episode recovered earlier first-use, index and cross-episode possibilities and the actual DTR draft, combined them into detached possibility stewardship, and retained an explicit synthesis with a later actual producer/preflight and integrated pack. This is recorded same-agent cumulative synthesis and realized support, not independent agent learning or comparative benefit.",
+            "observation_ref": "artifacts/history/2026-11-27-developmental-synthesis-detached-stewardship.md",
             "history": [
               {
                 "value": "NOT_ASSESSED",
                 "assessed_ref": "d0af33beb52e94b375d6a471e9990df11c8c424d",
                 "basis": "No completeness basis; lexical search of skills/ found no guidance for synthesizing retained possibilities."
+              },
+              {
+                "value": "PARTIALLY_IMPLEMENTED",
+                "establishment": "inferred",
+                "assessed_ref": "274e585c0a594c25235f12f34074effa1837b631",
+                "basis": "Since plan PR 4, funnel section 4 and strategic-repository-analysis section 1B tell agents to recall retained possibilities and retain new syntheses; one same-session exploration is recorded (plan PR 3). Cross-session use is not established."
               }
             ]
           }
@@ -403,7 +413,9 @@
             "rationale": "Guidance for recall and retention built; cross-session behavior not claimed."
           }
         ],
-        "assessed_ref": "274e585c0a594c25235f12f34074effa1837b631"
+        "assessed_ref": "abd1845f558296a7e09f733f3f62a54da1abd396",
+        "revisit_when": "Reassess after a consequential later synthesis uses, corrects or rejects retained possibilities, or when file:src/sensemaking_skills/possibility_synthesis.py changes. Separate genuinely new combinations, reviewed implementation and independent outcome evidence.",
+        "claim_ceiling": "Recorded same-agent source-grounded recombination, reviewed synthesis producer and actual detached stewardship realization. Independent later-agent synthesis, comparative creativity, longitudinal cognitive improvement and causal benefit remain unestablished."
       }
     },
     {
@@ -587,7 +599,11 @@
       "authority_ref": "docs/research/control-model-research-agenda.md",
       "evidence_refs": [
         "file:docs/research/control-model-research-agenda.md:line:177",
-        "file:CONTEXT.md"
+        "file:CONTEXT.md",
+        "file:docs/adr/0037-domain-general-cognitive-development.md",
+        "file:docs/adr/0038-long-horizon-adaptive-strategic-development.md",
+        "file:artifacts/history/2026-11-13-domain-general-cognitive-thesis-reconciliation.md",
+        "file:artifacts/history/2026-11-27-long-horizon-strategic-development-reconciliation.md"
       ],
       "attributes": {
         "concept": "ProductPossibility",
@@ -600,12 +616,26 @@
         },
         "dimensions": {
           "alignment": {
-            "value": "COUNTERFACTUAL",
-            "basis": "Alters the software-engineering domain premise; listed as not ratified in CONTEXT.md; no accepted non-goal forbids it. Exploring needs no review."
+            "value": "ALIGNED",
+            "basis": "ADR 0037 ratifies domain-general cognitive development; ADR 0038 retains equal conceptual standing and software development as flagship. Application of shared control to non-software domains with appropriate domain-specific semantics is compatible with accepted intent. Neither ADR selects a generic runtime, universal ontology or immediate transfer implementation.",
+            "history": [
+              {
+                "value": "COUNTERFACTUAL",
+                "assessed_ref": "d0af33beb52e94b375d6a471e9990df11c8c424d",
+                "basis": "Alters the software-engineering domain premise; listed as not ratified in CONTEXT.md; no accepted non-goal forbids it. Exploring needs no review."
+              }
+            ]
           },
           "ambition": {
             "value": "TRANSFORMATIVE",
-            "basis": "Would change the product category."
+            "basis": "Realizing shared cognitive control in a substantially different domain would materially extend how the current software-specialized product is used; the intended category is already ratified.",
+            "history": [
+              {
+                "value": "TRANSFORMATIVE",
+                "assessed_ref": "d0af33beb52e94b375d6a471e9990df11c8c424d",
+                "basis": "Would change the product category."
+              }
+            ]
           },
           "horizon": {
             "value": "LONG_HORIZON",
@@ -626,8 +656,9 @@
             "rationale": "Transfer result does not warrant a generic framework."
           }
         ],
-        "assessed_ref": "d0af33beb52e94b375d6a471e9990df11c8c424d",
-        "revisit_when": "Materially new uncertainty or real use."
+        "assessed_ref": "abd1845f558296a7e09f733f3f62a54da1abd396",
+        "revisit_when": "Reassess strategic compatibility when claim:goal:domain-general-cognitive-development or file:docs/adr/0037-domain-general-cognitive-development.md or file:docs/adr/0038-long-horizon-adaptive-strategic-development.md changes. Reconsider implementation only when a real authorized non-software beneficiary need and relevant evidence warrant it; software development remains the practical priority.",
+        "claim_ceiling": "Alignment with accepted intended purpose only. Realization remains NOT_ASSESSED and disposition EXPLORATORY; no new domain package, generic runtime, independent transfer, comparative benefit or implementation commitment established."
       }
     },
     {
@@ -1927,6 +1958,22 @@
       "attributes": {
         "conceptual_relation": "potentiallyEnabledBy",
         "establishment": "hypothesized"
+      }
+    },
+    {
+      "id": "rel:domain-general-possibility-candidate-for-cognitive-development",
+      "subject": "poss:domain-general-sensemaking",
+      "predicate": "candidate_opportunity_for",
+      "object": "goal:domain-general-cognitive-development",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:docs/adr/0037-domain-general-cognitive-development.md",
+        "file:docs/adr/0038-long-horizon-adaptive-strategic-development.md",
+        "file:artifacts/history/2026-11-13-domain-general-cognitive-thesis-reconciliation.md",
+        "file:artifacts/history/2026-11-27-long-horizon-strategic-development-reconciliation.md"
+      ],
+      "attributes": {
+        "scope": "Long-horizon compatible candidate; not a selected implementation or proof of transfer."
       }
     },
     {

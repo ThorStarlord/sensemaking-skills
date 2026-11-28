@@ -19,6 +19,28 @@ The intended product outcome is twofold:
 
 Neither the number of commits, pull requests, Skills, ontology entries, tests, nor documents is itself a product-value metric. A small fix can be more valuable than a large abstraction; a warranted new capability can be more valuable than the most convenient local repair. No product benefit or longitudinal improvement is established merely by building or indexing it.
 
+### Self-development as ordinary beneficiary use
+
+For ongoing development of this repository, Sensemaking itself is both the
+target product and the source of cognitive infrastructure. Use the
+single entrypoint and existing integrated capabilities during consequential
+real product decisions: recover prior knowledge and intellectual experience,
+consider evolving possibilities, choose a worthwhile product contribution,
+construct it when authorized, and reconcile what changed. Prefer real
+beneficiary outcomes over additions to the cognitive machinery merely to
+exercise it. Select a non-code semantic correction when that is the actual
+highest-value warranted responsibility; use the whole product landscape for
+subsequent work. No requirement to invent a new method, projection or test
+at each increment.
+
+Keep framework/target source identity, loaded Skill identity and actual
+executor distinct even when framework and target are the same repository.
+Use an exact committed source or the available explicit source when the
+host cannot load or execute it natively. The self-development endeavor
+does not require independent actors to continue construction. Independent
+comparative cognition and cross-domain transfer remain separate evidence
+responsibilities, not prerequisites to ordinary valuable self-use.
+
 ## 2. Reconstruct the governing context before selecting work
 
 Read **selectively**, with current source identity and explicit authority:
