@@ -1,16 +1,25 @@
-name: Actual strategic judgment context (execution branch only)
+name: Actual detached decision stewardship (execution branch only)
 on:
   push:
     branches: [claude/strategic-judgment-execution-20261128]
 permissions:
   contents: read
 jobs:
-  context:
+  actual-review:
     if: github.ref == 'refs/heads/claude/strategic-judgment-execution-20261128'
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     env:
       BASE: "051b872e5ebdd9b119469275d9bd81dbb496decc"
+      CANDIDATE: "26a00e84df457d7f2fd929a8086d00adeb758618"
+      PACK: ".sensemaking/knowledge/detached-decision-stewardship.json"
+      EPISODE: "artifacts/history/2026-11-28-focused-evolution-decision-review.json"
+      DEST: ".sensemaking/knowledge/focused-evolution-value-review.json"
+      DRAFT: "artifacts/history/actual-focused-evolution-review-DRAFT.json"
+      ARCH_EPISODE: "artifacts/history/2026-11-22-local-memory-consequence-review.json"
+      ARCH_DEST: ".sensemaking/knowledge/actual-architecture-review-replay.json"
+      ARCH_DRAFT: ".sensemaking/proposals/actual-architecture-review-replay.json"
+      REVIEW: "decision:review-focused-evolution-value-20261128"
     steps:
       - uses: actions/checkout@v4
         with:
@@ -20,32 +29,105 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Recover current real candidate context
+      - name: Rehearse actual eight-path construction and record original producer behavior
+        shell: bash
         run: |
           set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$BASE"
           python -m pip install -e .
-          Q="Should I retain a useful bounded construction capability or wait for independent qualification evidence?"
-          for id in detached-possibility-stewardship focused-possibility-evolution existing-pack-source-knowledge-codesign goal-family-construction-bridge; do
-            sensemaking-skills semantic workspace-query --repo . --ref "$BASE" --operation possibility-ecology --subject "poss:$id" --method-question "$Q" --method-limit 25 --limit 80 --json > "$RUNNER_TEMP/$id.json"
-          done
-          sensemaking-skills semantic workspace-changes --repo . --base-ref 75247e50e343f77b1e1cff2f124421bfa83c6852 --ref "$BASE" --include-possibility-evolution --possibility poss:focused-possibility-evolution --limit 80 --json > "$RUNNER_TEMP/evolution.json"
+          git worktree add --detach "$RUNNER_TEMP/base-target" "$BASE"
+          git worktree add --detach "$RUNNER_TEMP/target" "$CANDIDATE"
+          TARGET="$RUNNER_TEMP/target"
+          git diff --no-ext-diff --no-textconv --no-renames "$BASE" "$CANDIDATE" -- > "$RUNNER_TEMP/actual.patch"
+          sensemaking-skills semantic patch-rehearsal --repo "$RUNNER_TEMP/base-target" --ref "$BASE" --patch-file "$RUNNER_TEMP/actual.patch" --knowledge-proposal "$PACK" --possibility poss:detached-possibility-stewardship --limit 80 --json > "$RUNNER_TEMP/rehearsal.json"
           python - <<'PY'
-          import json,os
+          import os,json,hashlib,subprocess
           from pathlib import Path
           p=Path(os.environ["RUNNER_TEMP"])
-          for id in ("detached-possibility-stewardship","focused-possibility-evolution","existing-pack-source-knowledge-codesign","goal-family-construction-bridge"):
-              q=json.loads((p/(id+".json")).read_text())
-              assert q["target_ref"]==os.environ["BASE"]
-              e=q["possibility_ecology"]
-              focus=e["focus"]
-              v=next((x for x in e["value_feedback"]["entries"] if x["possibility_id"]==focus["claim_id"]),{})
-              print("ACTUAL_CHOICE_CONTEXT="+json.dumps({"id":focus["claim_id"],"realization":focus["realization"]["value"],"predictions":[{"id":x["prediction"]["id"],"standing":x["standing"],"assessment_total":x["assessment_total"]} for x in v.get("predictions",[])],"reviews":[x.get("id") or x.get("review_id") or x.get("record",{}).get("id") for x in v.get("decision_reviews",v.get("reviews",[]))],"truncated":e["truncated"],"methods":[x["id"] for x in q["method_precedents"]["method_candidates"]]}))
-          e=json.loads((p/"evolution.json").read_text())["possibility_evolution"]
-          print("ACTUAL_EVOLUTION="+json.dumps({"presence":e["focus"]["opportunity_presence"],"scope_truncated":e["truncated"]}))
+          q=json.loads((p/"rehearsal.json").read_text())
+          assert q["status"]=="REHEARSED" and q["base_ref"]==os.environ["BASE"] and len(q["files"])==8
+          k=q["candidate_knowledge"]
+          assert k["status"]=="MECHANICALLY_VALID" and not k["accepted"] and not k["action_authorized"]
+          for f in q["files"]:
+              raw=subprocess.check_output(["git","show",os.environ["CANDIDATE"]+":"+f["path"]])
+              assert hashlib.sha256(raw).hexdigest()==f["after_sha256"]
+              if f["change_kind"]=="MODIFIED":
+                  raw=subprocess.check_output(["git","show",os.environ["BASE"]+":"+f["path"]])
+                  assert hashlib.sha256(raw).hexdigest()==f["before_sha256"]
+              else: assert f["before_sha256"] is None
+              if f["path"].endswith(".py"): assert f["python_syntax"]=="PASS"
+          print("ACTUAL_PATCH="+json.dumps({"paths":len(q["files"]),"patch_sha256":q["patch_sha256"],"proposal_sha256":k["proposal_sha256"],"claims":k["validation"]["claims_checked"],"relations":k["validation"]["relations_checked"],"review_truncated":q["review"]["truncated"],"focus_truncated":q["possibility_context"]["truncated"]}))
           PY
-      - uses: actions/upload-artifact@v4
+          test ! -e "$TARGET/$DEST"
+          sensemaking-skills semantic decision record --repo "$TARGET" --episode "$EPISODE" --output "$DEST" --json > "$RUNNER_TEMP/old-result.json"
+          cp "$TARGET/$DEST" "$RUNNER_TEMP/old-pack.json"
+          rm "$TARGET/$DEST"
+          sensemaking-skills semantic decision record --repo "$TARGET" --episode "$ARCH_EPISODE" --output "$ARCH_DEST" --json > "$RUNNER_TEMP/old-arch-result.json"
+          cp "$TARGET/$ARCH_DEST" "$RUNNER_TEMP/old-arch-pack.json"
+          rm "$TARGET/$ARCH_DEST"
+          test -z "$(git -C "$TARGET" status --porcelain)"
+      - name: Generate and inspect real detached reviews with candidate producer
+        shell: bash
+        run: |
+          set -euo pipefail
+          git checkout --detach "$CANDIDATE"
+          TARGET="$RUNNER_TEMP/target"
+          sensemaking-skills semantic decision record --repo "$TARGET" --episode "$EPISODE" --output "$DEST" --json > "$RUNNER_TEMP/new-result.json"
+          cmp "$TARGET/$DEST" "$RUNNER_TEMP/old-pack.json"
+          cmp "$RUNNER_TEMP/old-result.json" "$RUNNER_TEMP/new-result.json"
+          rm "$TARGET/$DEST"
+          sensemaking-skills semantic decision record --repo "$TARGET" --episode "$EPISODE" --draft-only --output "$DRAFT" --json > "$RUNNER_TEMP/detached-result.json"
+          cmp "$TARGET/$DRAFT" "$RUNNER_TEMP/old-pack.json"
+          test ! -e "$TARGET/$DEST"
+          sensemaking-skills semantic knowledge-proposal-check --repo "$TARGET" --proposal "$DRAFT" --destination "$DEST" --json > "$RUNNER_TEMP/detached-preflight.json"
+          sensemaking-skills semantic decision record --repo "$TARGET" --episode "$ARCH_EPISODE" --output "$ARCH_DEST" --json > "$RUNNER_TEMP/new-arch-result.json"
+          cmp "$RUNNER_TEMP/old-arch-result.json" "$RUNNER_TEMP/new-arch-result.json"
+          cmp "$TARGET/$ARCH_DEST" "$RUNNER_TEMP/old-arch-pack.json"
+          rm "$TARGET/$ARCH_DEST"
+          sensemaking-skills semantic decision record --repo "$TARGET" --episode "$ARCH_EPISODE" --draft-only --output "$ARCH_DRAFT" --json > "$RUNNER_TEMP/detached-arch-result.json"
+          cmp "$TARGET/$ARCH_DRAFT" "$RUNNER_TEMP/old-arch-pack.json"
+          rm "$TARGET/$ARCH_DRAFT"
+          if sensemaking-skills semantic decision record --repo "$TARGET" --episode "$EPISODE" --draft-only --output "$DEST" --json > /dev/null 2>"$RUNNER_TEMP/active.err"; then exit 1; fi
+          if sensemaking-skills semantic decision record --repo "$TARGET" --episode "$EPISODE" --draft-only --output "$DRAFT" --json > /dev/null 2>"$RUNNER_TEMP/occupied.err"; then exit 1; fi
+          if sensemaking-skills semantic decision record --repo "$TARGET" --episode "$EPISODE" --draft-only --output "artifacts/history/../review.json" --json > /dev/null 2>"$RUNNER_TEMP/unsafe.err"; then exit 1; fi
+          test ! -e "$TARGET/$DEST"
+          cmp "$TARGET/$DRAFT" "$RUNNER_TEMP/old-pack.json"
+          # Commit the actual generated detached record only in this disposable
+          # worktree and inspect the exact committed index before any activation.
+          git -C "$TARGET" add -- "$DRAFT"
+          git -C "$TARGET" -c user.name="Actual evidence runner" -c user.email="evidence@example.invalid" -c commit.gpgsign=false -c core.hooksPath=/dev/null commit -m "Actual detached review, no active namespace change"
+          REF=$(git -C "$TARGET" rev-parse HEAD)
+          sensemaking-skills semantic workspace-query --repo "$TARGET" --ref "$REF" --operation possibility-ecology --subject poss:focused-possibility-evolution --limit 80 --json > "$RUNNER_TEMP/detached-ecology.json"
+          python - <<'PY'
+          import os,json,hashlib
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])
+          def read(n): return json.loads((p/(n+".json")).read_text())
+          d=read("detached-result"); v=read("detached-preflight")
+          assert d["created"] and d["detached_draft"] and not d["inside_active_knowledge"] and not d["action_authorized"]
+          assert not d["decision_influence_established"] and d["review_state"]=="UNREVIEWED_DRAFT"
+          assert v["valid"] and v["detached_draft"] and v["destination_state"]=="ABSENT_AT_INSPECTION"
+          assert v["claims_checked"]==1 and v["relations_checked"]==4
+          assert v["proposal_sha256"]==hashlib.sha256((p/"old-pack.json").read_bytes()).hexdigest()
+          q=read("detached-ecology")
+          e=next(x for x in q["possibility_ecology"]["value_feedback"]["entries"] if x["possibility_id"]=="poss:focused-possibility-evolution")
+          assert e["review_total"]==0 and e["predictions"][0]["standing"]=="PARTIALLY_OBSERVED"
+          assert "draft-only output" in (p/"active.err").read_text()
+          assert "refusing to overwrite" in (p/"occupied.err").read_text()
+          assert "without traversal" in (p/"unsafe.err").read_text()
+          assert read("detached-arch-result")["detached_draft"]
+          print("DETACHED_DECISION="+json.dumps({"old_new_default_equal":True,"detached_bytes_equal":True,"sha256":v["proposal_sha256"],"claims":v["claims_checked"],"relations":v["relations_checked"],"destination_absent":True,"detached_commit":q["target_ref"],"indexed_review_total":e["review_total"],"standing":e["predictions"][0]["standing"],"historical_architecture_bytes_equal":True,"unsafe_and_occupied_refused":True,"source_revision":d["source_revision"],"evidence_paths_not_in_source_revision":d["evidence_paths_not_in_source_revision"]}))
+          PY
+          test -z "$(git -C "$TARGET" status --porcelain)"
+          test -z "$(git -C "$RUNNER_TEMP/base-target" status --porcelain)"
+          test -z "$(git status --porcelain)"
+      - name: Retain actual evidence
         if: always()
+        uses: actions/upload-artifact@v4
         with:
-          name: actual-strategic-choice-context
-          path: ${{ runner.temp }}/*.json
+          name: actual-detached-decision-stewardship
+          path: |
+            ${{ runner.temp }}/*.json
+            ${{ runner.temp }}/*.patch
+            ${{ runner.temp }}/*.err
           retention-days: 14
