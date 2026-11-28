@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 12
     env:
-      SOURCE: "79a2adc1a1fc1cb31d59a0c3af3c3bb21c427fd6"
+      SOURCE: "b4b7dd676aab2ee0eb2dbee3c33a783dffcfce72"
     steps:
       - uses: actions/checkout@v4
         with:
@@ -26,44 +26,60 @@ jobs:
           test "$(git rev-parse HEAD)" = "$SOURCE"
           python -m pip install -e .
           test -z "$(git status --porcelain)"
-      - name: Recover the preceding episode and its verification evidence
+      - name: Validate reviewed route and recover exact historical verification outcomes
         run: |
           set -euo pipefail
+          sensemaking-skills semantic knowledge-proposal-check --repo . \
+            --proposal .sensemaking/knowledge/sustained-reentry-verification.json --json > "$RUNNER_TEMP/preflight.json"
           RECEIPT=".sensemaking/receipts/2026-11-27-adaptive-intellectual-organization-actual-use.session.yaml"
+          PRIOR=".sensemaking/receipts/2026-11-27-adaptive-cognitive-correction.session.yaml"
           sensemaking-skills handoff --repo . --output "$RUNNER_TEMP/actual-handoff" \
             --skill-path skills/using-sensemaking --expected-source-ref "$SOURCE" \
-            --resume-from "$RECEIPT" \
-            --question "Which verified or unverified prior responsibilities govern the next cumulative development decision?" --json > "$RUNNER_TEMP/handoff-output.json"
-          sensemaking-skills semantic method context --repo . --ref "$SOURCE" \
-            --question "How should a later agent recover prior verification limits and preserve conditional methodological experience before choosing work?" \
-            --path src/sensemaking_skills/reentry_context.py --include-trials --limit 8 --json > "$RUNNER_TEMP/method-context.json"
-          sensemaking-skills semantic verification-plan --repo . --ref "$SOURCE" \
-            --path src/sensemaking_skills/semantic_cli.py --symbol register_semantic_commands --limit 60 --json > "$RUNNER_TEMP/previous-verification-plan.json"
+            --resume-from "$RECEIPT" --resume-from "$PRIOR" \
+            --question "Which prior verified and unverified responsibilities govern the next development decision?" --json > "$RUNNER_TEMP/handoff-output.json"
           sensemaking-skills semantic verification-plan --repo . --ref "$SOURCE" \
             --path src/sensemaking_skills/reentry_context.py --symbol _project --limit 60 --json > "$RUNNER_TEMP/current-verification-plan.json"
-          RECEIPT="$RECEIPT" python - <<'PY'
-          import json, os
+          python - <<'PY'
+          import json,os
           from pathlib import Path
           import yaml
           root=Path(os.environ["RUNNER_TEMP"])
-          receipt=yaml.safe_load(Path(os.environ["RECEIPT"]).read_text())
+          check=json.loads((root/"preflight.json").read_text())
+          assert check["valid"] is True and check["action_authorized"] is False
           packet=json.loads((root/"actual-handoff"/"handoff.json").read_text())
-          row=packet["continuity"]["selected_receipts"][0]
-          assert row["path"] == os.environ["RECEIPT"]
-          print("RECEIPT_VALIDATION="+json.dumps({k:row[k] for k in ("validation","projection_status","errors","errors_omitted")}))
-          print("AUTHORED_VALIDATIONS="+json.dumps([{"id":r["id"],"validation":r["validation"]} for r in receipt["responsibilities"]]))
-          if row["historical_projection"]:
-              print("PROJECTED_RESPONSIBILITIES="+json.dumps(row["historical_projection"]["responsibilities"]))
-          methods=json.loads((root/"method-context.json").read_text())
-          assert methods["target_ref"]==os.environ["SOURCE"]
-          print("METHOD_CANDIDATES="+json.dumps([{k:c[k] for k in ("id","procedure","recall_conditions","matched_paths","related_records_complete","applicability_to_present_task")} for c in methods["method_candidates"]]))
-          for name in ("previous-verification-plan.json","current-verification-plan.json"):
-              plan=json.loads((root/name).read_text())
-              assert plan["target_ref"]==os.environ["SOURCE"]
-              print(name+" CANDIDATES="+json.dumps({"pytest":plan["suggested_pytest"],"workflows":plan["workflow_candidates"],"counts":plan["counts"],"gaps":plan["gaps"]}))
-          test_entries=[v for r in receipt["responsibilities"] for v in r["validation"]]
-          print("AUTHORED_NOT_RUN_COUNT="+str(sum(v["result"]=="NOT_RUN" for v in test_entries)))
+          assert packet["target"]["git"]["head"]==os.environ["SOURCE"]
+          assert packet["source_expectation"]["status"]=="MATCHES_COMMITTED_TREE"
+          assert packet["action_authorized"] is False and packet["semantic_truth_established"] is False
+          assert len(packet["continuity"]["selected_receipts"])==2
+          results=set()
+          for row in packet["continuity"]["selected_receipts"]:
+              assert row["validation"]=="VALID" and row["projection_status"]=="AVAILABLE", row
+              assert row["action_authorized"] is False
+              source=yaml.safe_load(Path(row["path"]).read_text())
+              projection=row["historical_projection"]
+              assert projection["responsibilities_omitted"]==max(0,len(source["responsibilities"])-12)
+              print("RECEIPT="+row["path"])
+              for projected,authored in zip(projection["responsibilities"],source["responsibilities"][:12],strict=True):
+                  assert projected["id"]==authored["id"]
+                  assert projected["status"]==authored["status"]
+                  assert projected["artifact_refs"]==authored["artifact_refs"][:12]
+                  assert projected["validation"]==authored["validation"][:12]
+                  assert projected["validation_omitted"]==max(0,len(authored["validation"])-12)
+                  results.update(v["result"] for v in projected["validation"])
+                  print("VERIFICATION="+json.dumps({"id":projected["id"],"validation":projected["validation"],"omitted":projected["validation_omitted"]}))
+          assert results=={"PASS","FAIL","NOT_RUN"},results
+          assert "handoff does not rerun them." in packet["prompt"]
+          plan=json.loads((root/"current-verification-plan.json").read_text())
+          assert plan["target_ref"]==os.environ["SOURCE"]
+          route=next(c for c in plan["workflow_candidates"] if c["path"]==".github/workflows/semantic-context-reentry.yml")
+          assert route["inspection_status"]=="NOT_ASSESSED" and route["execution_status"]=="NOT_RUN"
+          assert "verification:sustained-reentry-hosted-context" in {s["claim_id"] for s in route["sources"]}
+          assert plan["action_authorized"] is False and plan["coverage_established"] is False
+          print("WORKFLOW_ROUTE="+json.dumps(route))
+          print("PREFLIGHT="+json.dumps({k:check[k] for k in ("valid","claims_checked","relations_checked","existing_endpoints_checked")}))
+          print("ACTUAL_HISTORICAL_VERIFICATION_CONTINUITY=PASS")
           PY
+          python -m compileall -q src/sensemaking_skills/reentry_context.py src/sensemaking_skills/first_use.py
           test -z "$(git status --porcelain)"
       - name: Retain actual output
         if: always()
@@ -72,6 +88,6 @@ jobs:
           name: actual-cumulative-reentry
           path: |
             ${{ runner.temp }}/actual-handoff/handoff.json
-            ${{ runner.temp }}/method-context.json
+            ${{ runner.temp }}/preflight.json
             ${{ runner.temp }}/*verification-plan.json
           retention-days: 14
