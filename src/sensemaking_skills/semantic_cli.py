@@ -758,11 +758,13 @@ def register_semantic_commands(root_cli: click.Group) -> None:
     @click.option("--patch-file", required=True, type=click.Path(exists=True, dir_okay=False, path_type=Path))
     @click.option("--knowledge-proposal", default=None,
                   help="Opt into co-design with one new direct .sensemaking/knowledge/*.json pack")
+    @click.option("--possibility", default=None,
+                  help="Existing BASE opportunity claim for prerequisite and patch-path context")
     @click.option("--limit", type=click.IntRange(1, 100), default=25, show_default=True)
     @click.option("--json", "output_json", is_flag=True)
     def semantic_patch_rehearsal(
         repo_dir: Path, ref: str, patch_file: Path, limit: int, output_json: bool,
-        knowledge_proposal: str | None,
+        knowledge_proposal: str | None, possibility: str | None,
     ) -> None:
         """Rehearse an explicit text patch and inspect BASE-only review context."""
         from .patch_rehearsal import rehearse_patch
@@ -770,7 +772,7 @@ def register_semantic_commands(root_cli: click.Group) -> None:
         try:
             payload = rehearse_patch(
                 repo=repo_dir, ref=ref, patch_file=patch_file, limit=limit,
-                knowledge_proposal=knowledge_proposal,
+                knowledge_proposal=knowledge_proposal, possibility=possibility,
             )
         except (ValueError, OSError, UnicodeError, RuntimeError) as exc:
             raise click.ClickException(str(exc)) from exc

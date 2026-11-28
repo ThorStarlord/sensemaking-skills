@@ -1,0 +1,212 @@
+{
+  "schema_version": 2,
+  "claims": [
+    {
+      "id": "poss:possibility-directed-intervention-rehearsal",
+      "kind": "opportunity",
+      "statement": "A selected committed opportunity and its declared prerequisite routes accompany a concrete actual intervention rehearsal, with explicit matches to the verified patch paths and separate candidate knowledge.",
+      "epistemic_status": "hypothetical",
+      "authority_kind": "hypothesis",
+      "authority_ref": "artifacts/history/2026-11-28-capability-directed-architectural-evolution.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-capability-directed-architectural-evolution.md",
+        "file:src/sensemaking_skills/patch_rehearsal.py",
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:src/sensemaking_skills/semantic_architecture/source_access.py",
+        "file:artifacts/history/2026-11-27-generative-architectural-synthesis.md",
+        "file:artifacts/history/2026-11-28-architectural-evolution-reasoning.md"
+      ],
+      "attributes": {
+        "concept": "ProductPossibility",
+        "title": "Possibility-directed intervention rehearsal",
+        "origin": {
+          "ref": "artifacts/history/2026-11-28-capability-directed-architectural-evolution.md",
+          "date": "2026-11-28",
+          "author": "active ChatGPT coding agent"
+        },
+        "dimensions": {
+          "alignment": {
+            "value": "ALIGNED",
+            "basis": "Supports purposeful long-horizon development and compounding product knowledge under ADR 0038."
+          },
+          "ambition": {
+            "value": "SUBSTANTIAL",
+            "basis": "Connects a selected prospective future to concrete construction evidence without automatic selection."
+          },
+          "horizon": {
+            "value": "FORESEEABLE",
+            "basis": "Reuses existing ecology, exact source access and disposable patch rehearsal."
+          },
+          "realization": {
+            "value": "HYPOTHETICAL",
+            "establishment": "inferred",
+            "basis": "Candidate source authored; live use pending."
+          }
+        },
+        "disposition_history": [
+          {
+            "value": "SELECTED",
+            "date": "2026-11-28",
+            "authority": "agent construction selection within delegated self-development",
+            "source": "artifacts/history/2026-11-28-capability-directed-architectural-evolution.md",
+            "rationale": "Select possibility-directed real intervention context over manual joining or automated readiness/synthesis."
+          }
+        ],
+        "assessed_ref": "3bccadb5c31b59ebe7d5d7f461bd673e3d6bd48c",
+        "synthesis_basis": "Compose an explicit selected BASE opportunity's existing possibility ecology and required-capability routes with actual patch path names, exact committed tree status and the existing disposable patch review; use the same BASE index and separate candidate preflight.",
+        "value_hypothesis": "A development agent can relate a concrete proposed intervention to a selected future and its authored prerequisite context without manually joining separate queries or treating candidate evidence as BASE intent.",
+        "revisit_when": "Actual interventions need more than direct prerequisite routes or file:src/sensemaking_skills/patch_rehearsal.py changes.",
+        "counterevidence": "Manual queries and source review remain viable. Authored prerequisites and citations need not be necessary or sufficient; ownership is a declared relationship. The dedicated source-access module supports coherent reuse but is not a necessary causal prerequisite.",
+        "claim_ceiling": "Source-authored candidate; actual use, comparative cost and independent cognitive benefit not established.",
+        "agent_owned": true
+      }
+    },
+    {
+      "id": "conseq:possibility-directed-intervention-rehearsal-value",
+      "kind": "hypothesis",
+      "statement": "A development agent can relate a concrete proposed intervention to a selected future and its authored prerequisite context without manually joining separate queries or treating candidate evidence as BASE intent.",
+      "epistemic_status": "hypothetical",
+      "authority_kind": "hypothesis",
+      "authority_ref": "artifacts/history/2026-11-28-capability-directed-architectural-evolution.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-capability-directed-architectural-evolution.md",
+        "file:src/sensemaking_skills/patch_rehearsal.py",
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:src/sensemaking_skills/semantic_architecture/source_access.py",
+        "file:artifacts/history/2026-11-27-generative-architectural-synthesis.md",
+        "file:artifacts/history/2026-11-28-architectural-evolution-reasoning.md"
+      ],
+      "attributes": {
+        "concept": "ConsequenceHypothesis",
+        "source_possibility": "poss:possibility-directed-intervention-rehearsal",
+        "category": "benefit",
+        "analysis_ref": "artifacts/history/2026-11-28-capability-directed-architectural-evolution.md",
+        "source_revision": "3bccadb5c31b59ebe7d5d7f461bd673e3d6bd48c",
+        "origin": {
+          "ref": "artifacts/history/2026-11-28-capability-directed-architectural-evolution.md",
+          "date": "2026-11-28",
+          "author": "active ChatGPT coding agent"
+        },
+        "value_frame": {
+          "beneficiary": "Development agent translating a selected valuable future into a concrete intervention.",
+          "criterion": "Actual co-design patch reports exact BASE opportunity, prerequisite and owned-path versus citation matches, preserves absent new files and default rehearsal evidence, refuses missing/goal focus.",
+          "comparison_baseline": "Separate exact-BASE possibility-ecology and patch-rehearsal with manually joined source names.",
+          "expected_observation": "Two cited prerequisite capabilities on actual patch_rehearsal.py; separate explicit component ownership on a real historical source patch; new candidate files absent at BASE, unchanged default result after removing opt-in context.",
+          "would_change_decision_if": "Reconsider if a candidate record enters BASE, evidence and ownership are conflated, source status disagrees with the actual patch, the default contract changes, or a later agent finds manual composition preferable.",
+          "cost_and_downside": "One optional flag and bounded composition in existing disposable index; no new ontology or inferential controller."
+        },
+        "assumptions": [
+          "con:agent-owns-semantic-control"
+        ],
+        "mechanism": "Compose an explicit selected BASE opportunity's existing possibility ecology and required-capability routes with actual patch path names, exact committed tree status and the existing disposable patch review; use the same BASE index and separate candidate preflight.",
+        "counterevidence": "Manual queries and source review remain viable. Authored prerequisites and citations need not be necessary or sufficient; ownership is a declared relationship. The dedicated source-access module supports coherent reuse but is not a necessary causal prerequisite.",
+        "would_change_decision_if": "Reconsider if a candidate record enters BASE, evidence and ownership are conflated, source status disagrees with the actual patch, the default contract changes, or a later agent finds manual composition preferable.",
+        "claim_ceiling": "Original prospective frame recorded before implementation at 9b08c0c9."
+      }
+    },
+    {
+      "id": "cap:possibility-directed-intervention-rehearsal",
+      "kind": "capability",
+      "statement": "The optional patch-rehearsal --possibility mode joins one selected committed opportunity, bounded explicit prerequisite routes and literal authored path matches to verified actual patch paths, preserving BASE and candidate separation.",
+      "epistemic_status": "declared",
+      "authority_kind": "code",
+      "authority_ref": "src/sensemaking_skills/patch_rehearsal.py",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-capability-directed-architectural-evolution.md",
+        "file:src/sensemaking_skills/patch_rehearsal.py",
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:src/sensemaking_skills/semantic_architecture/source_access.py",
+        "file:artifacts/history/2026-11-27-generative-architectural-synthesis.md",
+        "file:artifacts/history/2026-11-28-architectural-evolution-reasoning.md"
+      ],
+      "attributes": {
+        "scope": "One existing opportunity, existing bounded ecology, at most eight actual patch paths, same disposable BASE index.",
+        "claim_ceiling": "Source-authored candidate; actual use, comparative cost and independent cognitive benefit not established."
+      }
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel:possibility-directed-intervention-rehearsal-goal",
+      "subject": "poss:possibility-directed-intervention-rehearsal",
+      "predicate": "candidate_opportunity_for",
+      "object": "goal:compounding-product-knowledge",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-capability-directed-architectural-evolution.md"
+      ]
+    },
+    {
+      "id": "rel:possibility-directed-intervention-rehearsal-lineage",
+      "subject": "poss:possibility-directed-intervention-rehearsal",
+      "predicate": "derived_from",
+      "object": "poss:prospective-source-knowledge-codesign",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-capability-directed-architectural-evolution.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "combines",
+        "establishment": "authored"
+      }
+    },
+    {
+      "id": "rel:possibility-directed-intervention-rehearsal-context",
+      "subject": "poss:possibility-directed-intervention-rehearsal",
+      "predicate": "references",
+      "object": "poss:architectural-source-route",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-capability-directed-architectural-evolution.md"
+      ]
+    },
+    {
+      "id": "rel:possibility-directed-intervention-rehearsal-boundary",
+      "subject": "poss:possibility-directed-intervention-rehearsal",
+      "predicate": "references",
+      "object": "poss:committed-source-access-separation",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-capability-directed-architectural-evolution.md"
+      ]
+    },
+    {
+      "id": "rel:possibility-directed-intervention-rehearsal-prediction",
+      "subject": "conseq:possibility-directed-intervention-rehearsal-value",
+      "predicate": "references",
+      "object": "poss:possibility-directed-intervention-rehearsal",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-capability-directed-architectural-evolution.md"
+      ]
+    },
+    {
+      "id": "rel:possibility-directed-intervention-rehearsal-realization",
+      "subject": "poss:possibility-directed-intervention-rehearsal",
+      "predicate": "implemented_by",
+      "object": "cap:possibility-directed-intervention-rehearsal",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-capability-directed-architectural-evolution.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "realizedBy",
+        "establishment": "inferred",
+        "scope": "Candidate implementation; live use pending."
+      }
+    },
+    {
+      "id": "rel:possibility-directed-intervention-rehearsal-serves",
+      "subject": "cap:possibility-directed-intervention-rehearsal",
+      "predicate": "serves_goal",
+      "object": "goal:compounding-product-knowledge",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-capability-directed-architectural-evolution.md"
+      ]
+    }
+  ]
+}

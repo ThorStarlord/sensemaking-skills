@@ -174,6 +174,9 @@ Opt in with `--knowledge-proposal .sensemaking/knowledge/NAME.json`
 to rehearse a patch adding one new pack and its contained regular-file evidence,
 using a disposable index and the existing single-pack preflight. BASE review
 remains committed-only; the separate candidate validation is not acceptance.
+Add `--possibility POSS_ID` to bring one existing BASE opportunity, its
+declared prerequisite routes and exact citation/ownership matches for the
+actual patch paths into the rehearsal. Missing matches are NOT_ASSESSED.
 See the
 [patch rehearsal contract](semantic-architecture/persistent-knowledge-cli.md#prospective-patch-rehearsal).
 

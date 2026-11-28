@@ -2009,6 +2009,30 @@ reconsiderations are explicit path-overlap prompts only. The derived index is
 temporary and no persistent index path is returned. The input patch remains the
 caller's source, not an authorized instruction to apply it.
 
+For a concrete intervention directed at a previously authored opportunity:
+
+```bash
+sensemaking-skills semantic patch-rehearsal --repo . --ref BASE \
+  --patch-file proposed.patch --possibility poss:EXISTING --json
+```
+
+The optional `--possibility` selects one existing BASE opportunity (not a goal,
+a proposed new claim or a missing ID). The result adds `possibility_context`
+without changing the default rehearsal contract. It reuses the disposable BASE
+review index for the existing possibility ecology, including its bounded
+required-capability routes, implementation components, dispositions, value
+feedback and omission counts. Every actual patch path receives its literal
+committed tree status and exact matches against the selected opportunity,
+visible prerequisite capability/relationship citations and authority, and
+visible implementation component citations, authority and explicitly owned
+paths. `COMPONENT_OWNED_PATH` is distinct from evidence/authority references.
+New files remain `ABSENT_FROM_TREE` at BASE. `AUTHORED_MATCH` means a literal
+authored path match; `NOT_ASSESSED` does not mean irrelevant or independent.
+The context does not select a possibility, determine necessary edits, verify
+implementation or sufficiency, infer dependencies or authorize action.
+The option composes with `--knowledge-proposal`; candidate records cannot
+become BASE intent.
+
 For each modified Python file, `definition_changes` compares unique top-level
 function, async-function and class names on both sides of the actual applied
 overlay. It includes before/after line spans (including decorators) and SHA-256

@@ -549,6 +549,8 @@ no unit or synthetic evidence tests were run.
 
 ## Current next step
 
+**2026-11-28 — Capability-directed architectural evolution (construction candidate):** [possibility-directed intervention rehearsal](artifacts/history/2026-11-28-capability-directed-architectural-evolution.md) composes the existing exact-BASE patch rehearsal and selected opportunity's declared prerequisite routes, using the separated source-access boundary for committed path status and explicit citation/ownership matching. Actual use and reconciliation pending. No inferred dependency, readiness, action authority or independent cognitive benefit claim. Local unit/synthetic tests NOT_RUN. Strategy unchanged.
+
 **2026-11-28 — Architectural evolution reasoning:** [paired committed source-route evidence](artifacts/history/2026-11-28-architectural-evolution-reasoning.md) builds on the #1014 transformation using the separated source-access classifier and opt-in `source-route --base-ref`. Exact candidate run 46102664225 passed eight-path co-design (3 Python parses, valid proposed pack, BASE review truncated) and five historical paired comparisons: former-builder witness versus bounded no-witness, introduced endpoint explicitly unavailable versus one-hop witness, same-ref equality and zero hop delta, reversed direction of comparison, and two NOT_ASSESSED one-file searches. Three pre/post existing payload comparisons were identical on a fixed target checkout; five witness occurrences matched source hashes/import lines. #1015 merged; scoped PARTIALLY_OBSERVED feedback retained, final reviewed-pack preflight separate. No runtime dependency, causal cost reduction or independent cognitive benefit claimed. Strategy reaffirmed. Local unit/synthetic tests NOT_RUN.
 
 
