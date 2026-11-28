@@ -1,0 +1,59 @@
+name: Actual returning development handoff (execution branch only)
+on:
+  push:
+    branches: [claude/beneficiary-consolidation-execution-20261128]
+permissions:
+  contents: read
+jobs:
+  reentry:
+    if: github.ref == 'refs/heads/claude/beneficiary-consolidation-execution-20261128'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      BASE: "aec0ff2eaed29c79d65ac2867aeb59fd58cd7495"
+      QUESTION: "What should a returning agent understand about current strategic judgment and detached decision review stewardship before selecting the next useful product increment?"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BASE }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Recover actual returning-agent entry context
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install -e .
+          sensemaking-skills handoff --repo . --output "$RUNNER_TEMP/handoff" --skill-path skills/using-sensemaking --expected-source-ref "$BASE" --question "$QUESTION" --json > "$RUNNER_TEMP/handoff-result.json"
+          sensemaking-skills semantic workspace-orient --repo . --ref "$BASE" --json > "$RUNNER_TEMP/orient.json"
+          sensemaking-skills semantic workspace-query --repo . --ref "$BASE" --operation search --query-text "detached decision review strategic judgment stewardship" --limit 15 --json > "$RUNNER_TEMP/search.json"
+          sensemaking-skills semantic workspace-query --repo . --ref "$BASE" --operation possibility-ecology --subject poss:detached-decision-stewardship --method-question "Should I retain a useful bounded construction capability or wait for independent qualification evidence?" --method-limit 25 --limit 80 --json > "$RUNNER_TEMP/ecology.json"
+          python - <<'PY'
+          import os,json,subprocess
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])
+          h=json.loads((p/"handoff-result.json").read_text())
+          ci=h["continuity"]["inventory"]
+          q=json.loads((p/"search.json").read_text())
+          e=json.loads((p/"ecology.json").read_text())
+          o=json.loads((p/"orient.json").read_text())
+          tracked=set(subprocess.check_output(["git","ls-files","-z"]).decode().split(chr(0)))
+          focus={"knowledge_files":[".sensemaking/knowledge/focused-evolution-value-review.json",".sensemaking/knowledge/detached-decision-stewardship.json"],"historical_json_records":["artifacts/history/2026-11-28-focused-evolution-decision-review.json","artifacts/history/2026-11-28-fixed-target-comparison-method-application.json"],"strategic_history":["artifacts/history/2026-11-28-evidence-grounded-strategic-judgment.md","artifacts/history/2026-11-28-conditional-method-reuse-focused-evolution.md"]}
+          assert h["target"]["git"]["head"]==os.environ["BASE"]
+          for kind,paths in focus.items():
+              inv=ci[kind]
+              assert all(path in tracked for path in paths)
+              print("ACTUAL_HANDOFF_PATHS="+json.dumps({"group":kind,"total":inv["total"],"visible":len(inv["paths"]),"truncated":inv["truncated"],"first":inv["paths"][0],"last":inv["paths"][-1],"actual_source_paths":{path:path in inv["paths"] for path in paths}}))
+          print("ACTUAL_REENTRY="+json.dumps({"source_identity":h["source_expectation"]["status"],"status_next_step_line":Path("STATUS.md").read_text().splitlines().index("## Current next step")+1,"prompt_chars":len(h["prompt"]),"semantic_search_top":[x.get("id") for x in q.get("claims",[])[:5]],"search_truncated":q.get("truncated"),"ecology_focus":e["possibility_ecology"]["focus"]["claim_id"],"ecology_truncated":e["possibility_ecology"]["truncated"],"method_candidates":[x["id"] for x in e["method_precedents"]["method_candidates"]],"orient_code":o["code"],"action_authorized":h["action_authorized"]}))
+          PY
+          test -z "$(git status --porcelain)"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: actual-returning-development-context
+          path: |
+            ${{ runner.temp }}/*.json
+            ${{ runner.temp }}/handoff/
+          retention-days: 14
