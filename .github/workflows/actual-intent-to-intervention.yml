@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
-      SOURCE: "eaf2f52215c03c213ac7f65cc8b85b2699250d79"
+      SOURCE: "4e071b2f7b0576107e868889ec69777a95b1cd59"
       CANDIDATE: "107bdeb2d9bbc8abc518817e349b394c5acd6a21"
       PACK: ".sensemaking/knowledge/architectural-source-route.json"
     steps:
@@ -22,87 +22,37 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Rehearse actual new contribution with canonical co-design
+      - name: Check reviewed architectural route lineage
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE"
           python -m pip install -e .
-          test -z "$(git status --porcelain)"
-          git diff --no-ext-diff --no-textconv --no-renames "$SOURCE" "$CANDIDATE" -- > "$RUNNER_TEMP/intervention.patch"
-          sensemaking-skills semantic patch-rehearsal --repo . --ref "$SOURCE" --patch-file "$RUNNER_TEMP/intervention.patch" --knowledge-proposal "$PACK" --limit 80 --json > "$RUNNER_TEMP/rehearsal.json"
+          for path in src/sensemaking_skills/semantic_architecture/source_relationships.py src/sensemaking_skills/semantic_cli.py; do
+            test "$(git rev-parse "$SOURCE:$path")" = "$(git rev-parse "$CANDIDATE:$path")"
+          done
+          sensemaking-skills semantic knowledge-proposal-check --repo . --proposal "$PACK" --json > "$RUNNER_TEMP/preflight.json"
+          sensemaking-skills semantic workspace-query --repo . --ref "$SOURCE" --operation possibility-ecology --subject poss:architectural-source-route --limit 80 --json > "$RUNNER_TEMP/feedback.json"
           python - <<'PY'
-          import hashlib,json,os,subprocess
+          import json,os,subprocess
           from pathlib import Path
           p=Path(os.environ["RUNNER_TEMP"])
-          q=json.loads((p/"rehearsal.json").read_text())
-          assert q["base_ref"]==os.environ["SOURCE"] and q["status"]=="REHEARSED"
-          assert q["patch_sha256"]==hashlib.sha256((p/"intervention.patch").read_bytes()).hexdigest()
-          assert len(q["files"])==6 and sum(f["change_kind"]=="ADDED" for f in q["files"])==2
-          for f in q["files"]:
-              raw=subprocess.check_output(["git","show",os.environ["CANDIDATE"]+":"+f["path"]])
-              assert hashlib.sha256(raw).hexdigest()==f["after_sha256"]
-              if f["change_kind"]=="MODIFIED":
-                  old=subprocess.check_output(["git","show",os.environ["SOURCE"]+":"+f["path"]])
-                  assert hashlib.sha256(old).hexdigest()==f["before_sha256"]
-              else:
-                  assert f["before_sha256"] is None
-              if f["path"].endswith(".py"):
-                  assert f["python_syntax"]=="PASS"
-          k=q["candidate_knowledge"]
-          print("CODESIGN_PREFLIGHT="+json.dumps(k))
-          assert k["status"]=="MECHANICALLY_VALID" and not k["accepted"]
-          assert k["validation"]["claims_checked"]==3 and k["validation"]["relations_checked"]==7
-          review=q["review"]
-          assert review["base_ref"]==review["target_ref"]==os.environ["SOURCE"]
-          assert set(review["review_scope"]["selected_paths"])=={f["path"] for f in q["files"]}
-          assert not review["review_scope"]["working_changes_indexed"]
-          assert all(row["id"]!="cap:architectural-source-route" for row in review["product_claims"])
-          assert all(row["id"]!="cap:architectural-source-route" for ctx in review["contexts"] for row in ctx["claims"])
-          assert not any(q[x] for x in ("action_authorized","semantic_truth_established","active_checkout_patch_applied","target_code_executed","tests_executed","patched_bytes_indexed"))
-          print("CODESIGN="+json.dumps({"patch_sha256":q["patch_sha256"],"paths":[{"path":f["path"],"kind":f["change_kind"],"syntax":f["python_syntax"]} for f in q["files"]],"review_truncated":review["truncated"],"candidate_excluded_from_base":True}))
+          c=json.loads((p/"preflight.json").read_text())
+          assert c["valid"] and c["action_authorized"] is False
+          print("REVIEWED_PREFLIGHT="+json.dumps({k:c[k] for k in ("claims_checked","relations_checked","existing_endpoints_checked")}))
+          old=json.loads(subprocess.check_output(["git","show",os.environ["CANDIDATE"]+":"+os.environ["PACK"]]))
+          new=json.loads(Path(os.environ["PACK"]).read_text())
+          assert old["claims"][1]==new["claims"][1] and old["relations"]==new["relations"][:len(old["relations"])]
+          q=json.loads((p/"feedback.json").read_text())
+          assert q["target_ref"]==os.environ["SOURCE"] and not q["action_authorized"]
+          eco=q["possibility_ecology"]
+          e=next(x for x in eco["value_feedback"]["entries"] if x["possibility_id"]=="poss:architectural-source-route")
+          f=e["predictions"][0]
+          assert f["standing"]=="PARTIALLY_OBSERVED" and f["assessment_total"]==1
+          assert eco["candidates"][0]["realization"]["value"]=="PARTIALLY_IMPLEMENTED"
+          assert f["prediction"]["attributes"]["value_frame"]==old["claims"][1]["attributes"]["value_frame"]
+          print("REVIEWED_FEEDBACK="+json.dumps({"standing":f["standing"],"assessments":f["assessment_total"],"original_prediction_preserved":True,"exact_tested_source":True,"realization":eco["candidates"][0]["realization"]["value"]}))
           PY
           test -z "$(git status --porcelain)"
-          test "$(git rev-parse HEAD)" = "$SOURCE"
-      - name: Exercise exact candidate on the real architecture question
-        run: |
-          set -euo pipefail
-          git checkout --detach "$CANDIDATE"
-          test -z "$(git status --porcelain)"
-          START=src/sensemaking_skills/patch_rehearsal.py
-          END=src/sensemaking_skills/semantic_architecture/verification_scenarios.py
-          BOUNDARY=src/sensemaking_skills/semantic_architecture/worktree_context.py
-          sensemaking-skills semantic source-route --repo . --ref "$SOURCE" --from-path "$START" --to-path "$END" --json > "$RUNNER_TEMP/route.json"
-          sensemaking-skills semantic source-route --repo . --ref "$SOURCE" --from-path "$START" --to-path "$END" --max-hops 1 --json > "$RUNNER_TEMP/direct-only.json"
-          sensemaking-skills semantic source-route --repo . --ref "$SOURCE" --from-path "$BOUNDARY" --to-path "$START" --json > "$RUNNER_TEMP/reverse.json"
-          sensemaking-skills semantic source-route --repo . --ref "$SOURCE" --from-path "$START" --to-path "$END" --max-files 1 --json > "$RUNNER_TEMP/file-bound.json"
-          python - <<'PY'
-          import ast,hashlib,json,os,subprocess
-          from pathlib import Path
-          p=Path(os.environ["RUNNER_TEMP"])
-          read=lambda name:json.loads((p/(name+".json")).read_text())
-          for name in ("route","direct-only","reverse","file-bound"):
-              q=read(name)
-              assert q["target_ref"]==os.environ["SOURCE"] and q["action_authorized"] is False
-              assert not q["runtime_dependency_established"] and not q["semantic_impact_established"] and not q["tests_executed"]
-              print("ACTUAL_ROUTE="+json.dumps({"case":name,"status":q["status"],"hops":q["hop_count"],"route":q["route"],"search":q["search"]}))
-              for edge in q["route"]:
-                  raw=subprocess.check_output(["git","show",os.environ["SOURCE"]+":"+edge["from_path"]])
-                  assert hashlib.sha256(raw).hexdigest()==edge["source_sha256"]
-                  assert any(isinstance(n,(ast.Import,ast.ImportFrom)) and n.lineno==edge["line"] for n in ast.walk(ast.parse(raw)))
-                  print("EDGE_SOURCE="+raw.decode("utf-8").splitlines()[edge["line"]-1].strip())
-          q=read("route")
-          assert q["status"]=="FOUND" and q["hop_count"]>1
-          assert q["route"][0]["from_path"]==q["from_path"] and q["route"][-1]["to_path"]==q["to_path"]
-          assert all(a["to_path"]==b["from_path"] for a,b in zip(q["route"],q["route"][1:]))
-          assert read("direct-only")["status"]=="NO_ROUTE_FOUND_WITHIN_BOUNDS"
-          assert read("reverse")["status"]=="NO_ROUTE_FOUND_WITHIN_BOUNDS"
-          f=read("file-bound")
-          assert f["status"]=="NOT_ASSESSED" and f["search"]["file_budget_exhausted"]
-          print("INTENT_TO_INTERVENTION=PASS")
-          PY
-          python -m compileall -q src/sensemaking_skills/semantic_architecture/source_relationships.py src/sensemaking_skills/semantic_cli.py
-          test -z "$(git status --porcelain)"
-          test "$(git rev-parse HEAD)" = "$CANDIDATE"
       - name: Retain actual intent evidence
         if: always()
         uses: actions/upload-artifact@v4
