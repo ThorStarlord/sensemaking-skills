@@ -1195,7 +1195,11 @@ sensemaking-skills semantic knowledge-proposal-check --repo . \
   --destination .sensemaking/knowledge/decision-review.json --json
 ```
 
-A new direct `.sensemaking/proposals/*.json` path is also allowed. Both
+A new direct `.sensemaking/proposals/*.json` path is also allowed. For
+`knowledge-proposal-check`, both `--proposal` and `--destination` are relative
+to the explicit `--repo` root (or absolute paths inside that root), even when
+invoked from a different checkout. Existing path containment, symlink,
+file-type, occupied destination and tracked-evidence checks still apply. Both
 architecture and possibility reviews use identical source-revision, active
 assessment, method and tracked-evidence checks; the producer never overwrites
 a file. A detached draft is not indexed reviewed knowledge. Inspect its
