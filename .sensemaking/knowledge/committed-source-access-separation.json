@@ -39,9 +39,18 @@
             "basis": "Six existing functions and four real direct import sites support a bounded reversible extraction."
           },
           "realization": {
-            "value": "HYPOTHETICAL",
-            "establishment": "inferred",
-            "basis": "Canonical route inquiry 46099682031 identified four direct avoidable edges; extracted module is a proposed intervention."
+            "value": "PARTIALLY_IMPLEMENTED",
+            "establishment": "observed",
+            "basis": "At exact candidate 0521788a, actual run 46099891371 rehearsed the eight-path source-and-knowledge transformation, mechanically validated the new pack, and observed four direct source_access.py routes replacing the four former direct knowledge_sources.py routes. All four bounded searches to the former builder and the source_access-to-builder search returned NO_ROUTE_FOUND_WITHIN_BOUNDS without encountered parse/ambiguity/budget gaps. Direct builder importers fell from eight to four. Six moved functions retained identical attribute-free ASTs and legacy aliases were identical function objects. Five real operations on the same fixed original BASE checkout returned equivalent payloads (context cache path excluded only); the default knowledge snapshot digest was identical for 325 claims and 446 relations, and its audit reported all 771 source records unchanged.",
+            "observation_ref": "artifacts/history/2026-11-27-architectural-transformation-reasoning.md",
+            "history": [
+              {
+                "value": "HYPOTHETICAL",
+                "establishment": "inferred",
+                "basis": "Canonical route inquiry 46099682031 identified four direct avoidable edges; extracted module is a proposed intervention.",
+                "assessed_ref": "6a89e6cd7c1e138f7e04cbcd16c90b03b421f73e"
+              }
+            ]
           }
         },
         "disposition_history": [
@@ -53,12 +62,12 @@
             "rationale": "Separate the source boundary while retaining behavior, compatibility and existing authority; reject broad Git or materialization redesign."
           }
         ],
-        "assessed_ref": "6a89e6cd7c1e138f7e04cbcd16c90b03b421f73e",
+        "assessed_ref": "0521788a1882954838d8f86b345fa382e7e0f768",
         "synthesis_basis": "Extract the six existing source-access and evidence-path functions verbatim into a shared low-level module, preserve old import names as aliases, and migrate the four real source-only consumers. Keep current checkout semantics, snapshot construction and review authority distinct.",
         "value_hypothesis": "A software-development agent can extend source-only operations independently of the semantic snapshot builder by sharing a dedicated exact-source access boundary, without changing existing source-materialization or knowledge-query behavior.",
         "revisit_when": "A later actual consumer encounters a consequential compatibility or boundary problem, or file:src/sensemaking_skills/semantic_architecture/source_access.py changes.",
         "counterevidence": "The old shared module worked and aliases retain some imports by design. A module move does not prove global runtime independence, improved performance, easier future changes, or independent cognitive benefit; check actual source/knowledge operation outputs and remaining route candidates.",
-        "claim_ceiling": "Source-grounded prospective responsibility; no observed outcome yet.",
+        "claim_ceiling": "Observed scoped responsibility separation and same-source compatibility; no runtime independence, general equivalence, security improvement, future maintainability or independent cognitive benefit claim.",
         "agent_owned": true
       }
     },
@@ -128,7 +137,7 @@
       "id": "cap:committed-source-access-separation",
       "kind": "capability",
       "statement": "Source-only consumers and the snapshot builder share a dedicated exact-source access implementation while legacy knowledge_sources import names remain aliases.",
-      "epistemic_status": "declared",
+      "epistemic_status": "observed",
       "authority_kind": "code",
       "authority_ref": "src/sensemaking_skills/semantic_architecture/source_access.py",
       "evidence_refs": [
@@ -142,7 +151,33 @@
       ],
       "attributes": {
         "scope": "Six extracted functions, four redirected consumers, preserved compatibility aliases and source semantics.",
-        "claim_ceiling": "Source-authored separation, execution outcome pending."
+        "claim_ceiling": "Observed four redirected consumers, six unchanged ASTs/alias identities, five scoped equivalent real operations, bounded route results and mechanical co-design; no global behavioral equivalence or independent benefit."
+      }
+    },
+    {
+      "id": "observation:committed-source-access-separation-20261127",
+      "kind": "observation",
+      "statement": "Scoped assessment (PARTIALLY_OBSERVED): At exact candidate 0521788a, actual run 46099891371 rehearsed the eight-path source-and-knowledge transformation, mechanically validated the new pack, and observed four direct source_access.py routes replacing the four former direct knowledge_sources.py routes. All four bounded searches to the former builder and the source_access-to-builder search returned NO_ROUTE_FOUND_WITHIN_BOUNDS without encountered parse/ambiguity/budget gaps. Direct builder importers fell from eight to four. Six moved functions retained identical attribute-free ASTs and legacy aliases were identical function objects. Five real operations on the same fixed original BASE checkout returned equivalent payloads (context cache path excluded only); the default knowledge snapshot digest was identical for 325 claims and 446 relations, and its audit reported all 771 source records unchanged.",
+      "epistemic_status": "observed",
+      "authority_kind": "document",
+      "authority_ref": "artifacts/history/2026-11-27-architectural-transformation-reasoning.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-architectural-transformation-reasoning.md",
+        "file:src/sensemaking_skills/semantic_architecture/source_access.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_sources.py",
+        "file:src/sensemaking_skills/semantic_architecture/source_relationships.py",
+        "file:src/sensemaking_skills/semantic_architecture/refactor_preview.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_architecture.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_store.py"
+      ],
+      "attributes": {
+        "consequence_ref": "conseq:committed-source-access-separation-value",
+        "assessment_status": "PARTIALLY_OBSERVED",
+        "observed_effect": "At exact candidate 0521788a, actual run 46099891371 rehearsed the eight-path source-and-knowledge transformation, mechanically validated the new pack, and observed four direct source_access.py routes replacing the four former direct knowledge_sources.py routes. All four bounded searches to the former builder and the source_access-to-builder search returned NO_ROUTE_FOUND_WITHIN_BOUNDS without encountered parse/ambiguity/budget gaps. Direct builder importers fell from eight to four. Six moved functions retained identical attribute-free ASTs and legacy aliases were identical function objects. Five real operations on the same fixed original BASE checkout returned equivalent payloads (context cache path excluded only); the default knowledge snapshot digest was identical for 325 claims and 446 relations, and its audit reported all 771 source records unchanged.",
+        "assessed_at_revision": "0521788a1882954838d8f86b345fa382e7e0f768",
+        "scope": "One actual eight-path transformation, five matched real operation outputs and five bounded negative/four positive source-route queries; same active agent, hosted execution on exact revisions.",
+        "counterevidence": "The first run 46099812162 failed context comparison because its setup switched the active target checkout as well as the implementation; the changed HEAD could alter working-overlay context. The corrected run held the target checkout fixed and compared complete results except cache paths. This supports the controlled comparison, not a claim that every previous difference was isolated. The source-route reader does not resolve all runtime imports or package initialization; the BASE review was truncated, four builder consumers intentionally remain, historical line references and untested callers may require later inspection. No measured maintainability, performance or independent cognitive benefit established.",
+        "claim_ceiling": "Observed scope-specific architectural separation, not global runtime independence or proof of easier future development."
       }
     }
   ],
@@ -238,6 +273,16 @@
       "evidence_refs": [
         "file:artifacts/history/2026-11-27-architectural-transformation-reasoning.md",
         "file:src/sensemaking_skills/semantic_architecture/source_access.py"
+      ]
+    },
+    {
+      "id": "rel:committed-source-access-observation",
+      "subject": "observation:committed-source-access-separation-20261127",
+      "predicate": "references",
+      "object": "conseq:committed-source-access-separation-value",
+      "epistemic_status": "observed",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-architectural-transformation-reasoning.md"
       ]
     }
   ]
