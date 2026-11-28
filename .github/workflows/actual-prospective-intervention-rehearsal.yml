@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
-      SOURCE: "b00daad1ccf8c0874c235117f3d2fbe117898399"
+      SOURCE: "97d4618445b24f6c9bc677254495ed9d47385092"
       BASE: "a9fc89c718e6bac3ee13fa7c7f32618b4b95ce2b"
       REPAIR: "8e93f127fce4f52a2f4943006e43e60df09104b5"
     steps:
@@ -28,85 +28,43 @@ jobs:
           test "$(git rev-parse HEAD)" = "$SOURCE"
           python -m pip install -e .
           test -z "$(git status --porcelain)"
-      - name: Recover prior experience and rehearse actual containment repair
+      - name: Verify reviewed intervention lineage and exact repair integration
         run: |
           set -euo pipefail
-          sensemaking-skills semantic knowledge-proposal-check --repo . --proposal .sensemaking/knowledge/bounded-reentry-discovery.json --json > "$RUNNER_TEMP/prior-preflight.json"
-          sensemaking-skills semantic workspace-query --repo . --ref "$BASE" \
-            --operation possibility-ecology --subject goal:domain-general-cognitive-development \
-            --method-question "How should actual interventions and experience guide useful construction rather than redundant retrieval?" \
-            --include-method-trials --limit 150 --json > "$RUNNER_TEMP/prior-context.json"
-          git diff --no-ext-diff --no-textconv --no-renames "$BASE" "$REPAIR" -- > "$RUNNER_TEMP/actual-repair.patch"
-          sensemaking-skills semantic patch-rehearsal --repo . --ref "$BASE" --patch-file "$RUNNER_TEMP/actual-repair.patch" --limit 80 --json > "$RUNNER_TEMP/rehearsal.json"
-          git diff --no-ext-diff --no-textconv --no-renames "$REPAIR" "$BASE" -- > "$RUNNER_TEMP/reversed-repair.patch"
-          if sensemaking-skills semantic patch-rehearsal --repo . --ref "$BASE" --patch-file "$RUNNER_TEMP/reversed-repair.patch" --json > "$RUNNER_TEMP/reversed.json" 2> "$RUNNER_TEMP/reversed.err"; then
-            echo "Actual reversed patch unexpectedly applied to original base"
-            exit 1
-          fi
-          grep -F "git apply failed" "$RUNNER_TEMP/reversed.err"
-          git diff --no-ext-diff --no-textconv --no-renames "$BASE" "$SOURCE" -- > "$RUNNER_TEMP/actual-feature.patch"
-          if sensemaking-skills semantic patch-rehearsal --repo . --ref "$BASE" --patch-file "$RUNNER_TEMP/actual-feature.patch" --json > "$RUNNER_TEMP/structural.json" 2> "$RUNNER_TEMP/structural.err"; then
-            echo "Actual structural patch unexpectedly accepted"
-            exit 1
-          fi
-          grep -F "not structural changes" "$RUNNER_TEMP/structural.err"
-          EPISODE="artifacts/history/2026-11-27-prospective-intervention-rehearsal-synthesis.json"
           DRAFT="artifacts/history/2026-11-27-prospective-intervention-rehearsal-DRAFT.json"
-          DEST=".sensemaking/knowledge/prospective-intervention-rehearsal.json"
-          git show "9f32081ec72a7111a0309a3873c8cc276222648f:$EPISODE" > "$RUNNER_TEMP/original-episode.json"
-          cmp "$EPISODE" "$RUNNER_TEMP/original-episode.json"
-          sensemaking-skills semantic possibility record --repo . --episode "$EPISODE" --output "$DRAFT" --draft-only --json > "$RUNNER_TEMP/producer.json"
-          sensemaking-skills semantic knowledge-proposal-check --repo . --proposal "$DRAFT" --destination "$DEST" --json > "$RUNNER_TEMP/draft-preflight.json"
-          test ! -e "$DEST"
-          cp "$DRAFT" "$DEST"
-          sensemaking-skills semantic knowledge-proposal-check --repo . --proposal "$DEST" --json > "$RUNNER_TEMP/final-preflight.json"
-          cp "$DRAFT" "$RUNNER_TEMP/generated-pack.json"
-          EPISODE="$EPISODE" DRAFT="$DRAFT" python - <<'PY'
-          import json,os,hashlib,base64,subprocess
+          echo "acff445de7dac32957c088d17a8e463c90fd322f00b07b09c3c46fdcd2d557c2  $DRAFT" | sha256sum -c -
+          FIX="src/sensemaking_skills/semantic_architecture/refactor_preview.py"
+          test "$(git rev-parse "$SOURCE:$FIX")" = "$(git rev-parse "$REPAIR:$FIX")"
+          sensemaking-skills semantic knowledge-proposal-check --repo . --proposal .sensemaking/knowledge/prospective-intervention-rehearsal.json --json > "$RUNNER_TEMP/preflight.json"
+          sensemaking-skills semantic workspace-query --repo . --ref "$SOURCE" --operation possibility-ecology --subject poss:prospective-intervention-rehearsal --limit 80 --json > "$RUNNER_TEMP/feedback.json"
+          sensemaking-skills semantic workspace-query --repo . --ref "$SOURCE" --operation explain --subject cap:source-contained-rename-preview --limit 80 --json > "$RUNNER_TEMP/containment-capability.json"
+          python - <<'PY'
+          import os,json
           from pathlib import Path
           p=Path(os.environ["RUNNER_TEMP"])
-          read=lambda n:json.loads((p/n).read_text())
-          for name in ("prior-preflight.json","draft-preflight.json","final-preflight.json"):
-              c=read(name)
-              assert c["valid"] and not c["action_authorized"]
-              print("PREFLIGHT="+json.dumps({"name":name,**{k:c[k] for k in ("claims_checked","relations_checked","existing_endpoints_checked")}}))
-          prior=read("prior-context.json")
-          assert prior["target_ref"]==os.environ["BASE"] and prior["action_authorized"] is False
-          print("PRIOR_FEEDBACK="+json.dumps([{"id":x["possibility_id"],"standing":[y["standing"] for y in x["predictions"]]} for x in prior["possibility_ecology"]["value_feedback"]["entries"]]))
-          print("METHODS="+json.dumps([x["id"] for x in prior["method_precedents"]["method_candidates"]]))
-          q=read("rehearsal.json")
-          assert q["status"]=="REHEARSED" and q["base_ref"]==os.environ["BASE"]
-          assert q["patch_sha256"]==hashlib.sha256((p/"actual-repair.patch").read_bytes()).hexdigest()
-          assert q["application"]["git_apply"]=="PASS" and q["application"]["changed_paths_verified"]
-          assert len(q["files"])==1
-          f=q["files"][0]
-          path="src/sensemaking_skills/semantic_architecture/refactor_preview.py"
-          assert f["path"]==path and f["python_syntax"]=="PASS"
-          for field,ref in (("before_sha256","BASE"),("after_sha256","REPAIR")):
-              raw=subprocess.check_output(["git","show",os.environ[ref]+":"+path])
-              assert f[field]==hashlib.sha256(raw).hexdigest()
-          assert not any(q[k] for k in ("active_checkout_patch_applied","target_code_executed","tests_executed","patched_bytes_indexed","semantic_truth_established","action_authorized"))
-          review=q["review"]
-          assert review["base_ref"]==review["target_ref"]==os.environ["BASE"]
-          assert review["review_scope"]["selected_paths"]==[path]
-          assert review["review_scope"]["working_changes_indexed"] is False
-          assert review["workspace_index"]["index_path"] is None
-          print("ACTUAL_INTERVENTION="+json.dumps({"files":q["files"],"base_ref":q["base_ref"],"patch_sha256":q["patch_sha256"],"scope":review["review_scope"],"working_overlap":review["working_evidence_reinspection"],"review_truncated":review["truncated"]})[:7000])
-          print("REFUSED_ACTUAL_REVERSE=PASS")
-          print("REFUSED_ACTUAL_STRUCTURAL_PATCH=PASS")
-          ep=json.loads(Path(os.environ["EPISODE"]).read_text())
-          raw=Path(os.environ["DRAFT"]).read_bytes()
-          pack=json.loads(raw)
-          assert len(pack["claims"])==2 and pack["claims"][1]["attributes"]["value_frame"]==ep["value_prediction"]
-          assert pack["claims"][1]["statement"]==ep["value_hypothesis"]
-          print("PACK_SHA256="+hashlib.sha256(raw).hexdigest())
-          print("PACK_BASE64="+base64.b64encode(raw).decode())
-          print("ACTUAL_REHEARSAL=PASS")
+          old=json.loads(Path("artifacts/history/2026-11-27-prospective-intervention-rehearsal-DRAFT.json").read_text())
+          reviewed=json.loads(Path(".sensemaking/knowledge/prospective-intervention-rehearsal.json").read_text())
+          assert old["claims"][1]==reviewed["claims"][1]
+          assert old["relations"]==reviewed["relations"][:len(old["relations"])]
+          c=json.loads((p/"preflight.json").read_text())
+          assert c["valid"] is True and c["action_authorized"] is False
+          print("REVIEWED_PREFLIGHT="+json.dumps({k:c[k] for k in ("claims_checked","relations_checked","existing_endpoints_checked")}))
+          f=json.loads((p/"feedback.json").read_text())
+          assert f["target_ref"]==os.environ["SOURCE"] and f["action_authorized"] is False
+          e=f["possibility_ecology"]
+          row=e["value_feedback"]["entries"][0]
+          assert row["possibility_id"]=="poss:prospective-intervention-rehearsal"
+          pred=row["predictions"][0]
+          assert pred["standing"]=="PARTIALLY_OBSERVED" and pred["assessment_total"]==1
+          assert pred["prediction"]["attributes"]["value_frame"]==old["claims"][1]["attributes"]["value_frame"]
+          assert e["candidates"][0]["realization"]["value"]=="PARTIALLY_IMPLEMENTED"
+          q=json.loads((p/"containment-capability.json").read_text())
+          cap=next(x for x in q["claims"] if x["id"]=="cap:source-contained-rename-preview")
+          assert "file:src/sensemaking_skills/semantic_architecture/refactor_preview.py" in cap["evidence_refs"]
+          print("ACTUAL_REVIEWED_FEEDBACK="+json.dumps({"standing":pred["standing"],"assessments":pred["assessment_total"],"original_frame_preserved":True,"realization":e["candidates"][0]["realization"]["value"],"repaired_file_cited":True}))
+          print("REVIEWED_INTERVENTION=PASS")
           PY
-          rm "$DRAFT" "$DEST"
-          python -m compileall -q src/sensemaking_skills/patch_rehearsal.py src/sensemaking_skills/semantic_cli.py
           test -z "$(git status --porcelain)"
-          test "$(git rev-parse HEAD)" = "$SOURCE"
       - name: Retain actual outputs
         if: always()
         uses: actions/upload-artifact@v4
