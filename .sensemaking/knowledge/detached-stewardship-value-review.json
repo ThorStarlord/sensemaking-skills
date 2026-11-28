@@ -1,0 +1,97 @@
+{
+  "schema_version": 2,
+  "claims": [
+    {
+      "id": "decision:review-detached-stewardship-value-20261127",
+      "kind": "decision",
+      "statement": "Consequence-informed decision review at 3895c8f9cc: retain_with_limitation for poss:detached-possibility-stewardship. The original pre-outcome value hypothesis is partially supported by the actual detached preflight with absent destination and subsequent explicit reviewed integration of identical bytes. The later discovery limitation was real and has its own delivered handoff improvement. Retain this useful narrow capability rather than extend into automatic promotion or another locator solely to manufacture more evidence.",
+      "authority_kind": "delegated",
+      "authority_ref": "artifacts/history/2026-11-27-detached-stewardship-value-review.json",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-detached-stewardship-value-review.json",
+        "file:artifacts/history/2026-11-27-detached-possibility-stewardship-synthesis.json",
+        "file:artifacts/history/2026-11-27-dtr-actual-consumption-and-promotion.md",
+        "file:artifacts/history/2026-11-27-cumulative-strategic-creativity.md",
+        "file:artifacts/history/2026-11-27-possibility-value-feedback.md"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "concept": "DecisionReview",
+        "review_of": "poss:detached-possibility-stewardship",
+        "disposition": "retain_with_limitation",
+        "basis": "The original pre-outcome value hypothesis is partially supported by the actual detached preflight with absent destination and subsequent explicit reviewed integration of identical bytes. The later discovery limitation was real and has its own delivered handoff improvement. Retain this useful narrow capability rather than extend into automatic promotion or another locator solely to manufacture more evidence.",
+        "conditions": "Use actual tracked detached source, exact logical destination, authorized equivalent execution where needed, ordinary review and final-path preflight. The old recovery limitation does not imply a remaining need after its separate repair.",
+        "counterevidence": "An isolated worktree and ordinary preflight are a viable alternative. The earlier agent knew the draft path; no comparative time saving, prevention of accidental inclusion, independent later-agent behavior or improved strategic judgment has been measured.",
+        "claim_ceiling": "One source-grounded agent-owned retrospective review of a genuine historic prediction and scoped actual assessment. No causal or comparative benefit, permission, method adaptation or independent cognition established.",
+        "source_revision": "3895c8f9cc2dc8e5297c59eb6438faa8670ccc65",
+        "actor": "active ChatGPT coding agent",
+        "consequence_refs": [
+          "conseq:detached-stewardship-value"
+        ],
+        "assessment_refs": [
+          "observation:detached-stewardship-value-20261127"
+        ],
+        "method_ref": "lesson:separate-construction-from-learning-qualification-gates",
+        "agent_owned": true
+      }
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel:decision-review-detached-stewardship-value-20261127-references-possibility",
+      "subject": "decision:review-detached-stewardship-value-20261127",
+      "predicate": "references",
+      "object": "poss:detached-possibility-stewardship",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-detached-stewardship-value-review.json",
+        "file:artifacts/history/2026-11-27-detached-possibility-stewardship-synthesis.json",
+        "file:artifacts/history/2026-11-27-dtr-actual-consumption-and-promotion.md",
+        "file:artifacts/history/2026-11-27-cumulative-strategic-creativity.md",
+        "file:artifacts/history/2026-11-27-possibility-value-feedback.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:decision-review-detached-stewardship-value-20261127-references-consequence-1",
+      "subject": "decision:review-detached-stewardship-value-20261127",
+      "predicate": "references",
+      "object": "conseq:detached-stewardship-value",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-detached-stewardship-value-review.json",
+        "file:artifacts/history/2026-11-27-detached-possibility-stewardship-synthesis.json",
+        "file:artifacts/history/2026-11-27-dtr-actual-consumption-and-promotion.md",
+        "file:artifacts/history/2026-11-27-cumulative-strategic-creativity.md",
+        "file:artifacts/history/2026-11-27-possibility-value-feedback.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:decision-review-detached-stewardship-value-20261127-references-assessment-1",
+      "subject": "decision:review-detached-stewardship-value-20261127",
+      "predicate": "references",
+      "object": "observation:detached-stewardship-value-20261127",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-detached-stewardship-value-review.json",
+        "file:artifacts/history/2026-11-27-detached-possibility-stewardship-synthesis.json",
+        "file:artifacts/history/2026-11-27-dtr-actual-consumption-and-promotion.md",
+        "file:artifacts/history/2026-11-27-cumulative-strategic-creativity.md",
+        "file:artifacts/history/2026-11-27-possibility-value-feedback.md"
+      ],
+      "epistemic_status": "declared"
+    },
+    {
+      "id": "rel:decision-review-detached-stewardship-value-20261127-learned-from-method",
+      "subject": "decision:review-detached-stewardship-value-20261127",
+      "predicate": "learned_from",
+      "object": "lesson:separate-construction-from-learning-qualification-gates",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-detached-stewardship-value-review.json",
+        "file:artifacts/history/2026-11-27-detached-possibility-stewardship-synthesis.json",
+        "file:artifacts/history/2026-11-27-dtr-actual-consumption-and-promotion.md",
+        "file:artifacts/history/2026-11-27-cumulative-strategic-creativity.md",
+        "file:artifacts/history/2026-11-27-possibility-value-feedback.md"
+      ],
+      "epistemic_status": "declared"
+    }
+  ]
+}
