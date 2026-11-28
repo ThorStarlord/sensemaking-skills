@@ -1,0 +1,64 @@
+name: Actual package-interface evidence inquiry (execution branch only)
+on:
+  push:
+    branches: [claude/package-reexport-evidence-execution-20261128]
+permissions:
+  contents: read
+jobs:
+  inquiry:
+    if: github.ref == 'refs/heads/claude/package-reexport-evidence-execution-20261128'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      BASE: "e9b710f65aba957287d37d78928458dbf0330079"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BASE }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Inspect actual public-package consumers of implementation symbols
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install -e .
+          for pair in "probes:probe_python_imports" "map:build_repository_semantic_map"; do
+            module="${pair%%:*}"
+            symbol="${pair#*:}"
+            path="src/sensemaking_skills/semantic_architecture/$module.py"
+            sensemaking-skills semantic workspace-query --repo . --ref "$BASE" --operation context-for --subject "$path" --include-source-relationships --symbol "$symbol" --limit 80 --json > "$RUNNER_TEMP/$module-context.json"
+            sensemaking-skills semantic verification-plan --repo . --ref "$BASE" --path "$path" --symbol "$symbol" --limit 80 --json > "$RUNNER_TEMP/$module-plan.json"
+          done
+          python - <<'PY'
+          import ast,json,os
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])
+          package=Path("src/sensemaking_skills/semantic_architecture/__init__.py")
+          cli=Path("src/sensemaking_skills/semantic_cli.py")
+          tests=Path("tests/test_semantic_substrate.py")
+          for module,symbol in (("probes","probe_python_imports"),("map","build_repository_semantic_map")):
+              s=json.loads((p/(module+"-context.json")).read_text())["source_relationships"]["symbol_context"]
+              plan=json.loads((p/(module+"-plan.json")).read_text())
+              imp=next(n for n in ast.parse(package.read_text()).body if isinstance(n,ast.ImportFrom) and n.level==1 and n.module==module and any(a.name==symbol for a in n.names))
+              use={}
+              for path in (cli,tests):
+                  t=ast.parse(path.read_text())
+                  bindings=[n.lineno for n in ast.walk(t) if isinstance(n,ast.ImportFrom) and (n.module or "").endswith("semantic_architecture") and any(a.name==symbol for a in n.names)]
+                  references=[n.lineno for n in ast.walk(t) if isinstance(n,ast.Name) and n.id==symbol and isinstance(n.ctx,ast.Load)]
+                  assert bindings and references
+                  use[str(path)]={"package_import_lines":bindings,"symbol_reference_lines":references}
+              reported=[r for r in s["direct_references"] if r["path"]==str(cli)]
+              test_hits=[r for r in s["test_candidates"] if r["path"]==str(tests)]
+              assert not reported and not test_hits
+              print("ACTUAL_INTERFACE_GAP="+json.dumps({"symbol":symbol,"definition":s["definitions"][0]["line"],"package_reexport_line":imp.lineno,"consumers":use,"direct_cli_refs":len(reported),"direct_substrate_tests":len(test_hits),"plan_targets":[x["pytest_target"] for x in plan["pytest_candidates"] if str(tests) in x["pytest_target"]],"truncated":s["truncated"],"tests_executed":plan["tests_executed"]}))
+          PY
+          test -z "$(git status --porcelain)"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: actual-package-interface-gap
+          path: ${{ runner.temp }}/*.json
+          retention-days: 14
