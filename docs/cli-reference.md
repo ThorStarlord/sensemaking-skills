@@ -148,6 +148,13 @@ sites. A `READY` result is not runtime correctness, test coverage, API
 compatibility or complete repository-wide renaming; star imports, rebinding,
 dynamic strings/calls and name collisions block the patch.
 
+For a directed architectural source inquiry between two known tracked Python
+files, `sensemaking-skills semantic source-route --repo . --ref HEAD --from-path FILE --to-path FILE --json`
+finds one bounded import-candidate witness using exact committed AST source.
+It reports edge lines, source digests, ambiguity and search bounds; it is not
+a runtime dependency, impact or absence-of-coupling verdict. See the
+[source-route contract](semantic-architecture/persistent-knowledge-cli.md#source-qualified-architectural-routes).
+
 For an explicit proposed text patch that has not been applied to the active checkout,
 `sensemaking-skills semantic patch-rehearsal --repo . --ref BASE --patch-file FILE --json`
 applies it in a disposable exact-commit worktree and composes the existing

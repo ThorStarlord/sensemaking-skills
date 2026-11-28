@@ -549,6 +549,9 @@ no unit or synthetic evidence tests were run.
 
 ## Current next step
 
+**2026-11-27 — Intent-to-intervention development:** [source-qualified architectural routes](artifacts/history/2026-11-27-intent-to-intervention-development.md) uses recovered goal ecology and actual source context to select a new product contribution beyond rehearsal infrastructure. Existing co-design rehearsed the real six-path source/knowledge contribution at canonical #1012 with a separate valid proposed pack; exact candidate run 46099125071 returned a three-hop source-qualified import-candidate witness with matched source hashes, explicit bounded negatives and a file-budget NOT_ASSESSED response. Retain the new `semantic source-route` command and scoped opportunity/assessment. Static candidates are not runtime dependencies, the search is not exhaustive, manual source inspection remains valid. No independent cognitive benefit claim; ADR 0038 and current Level-3 direction reaffirmed. Local unit/synthetic tests NOT_RUN.
+
+
 **2026-11-27 — Generative architectural synthesis:** [prospective source and knowledge co-design](artifacts/history/2026-11-27-generative-architectural-synthesis.md) recombines concrete intervention rehearsal, definition comparison and single-pack stewardship. Actual run 46094915471 rehearsed the full six-path #1011 change, including two additions and four modifications. The proposed knowledge mechanically validated with its newly added supporting evidence; identical pack-only bytes failed for missing evidence. Original BASE review remains separate and truncated, no automatic acceptance, no active checkout change. Retain the scoped possibility, lineage, capability and partial observation. Default existing-file-only behavior remains; opt-in one-pack co-design admits new non-executable files within the same limits. No independent cognitive benefit claim; manual fallback available. ADR 0038 and current Level-3 direction reaffirmed.
 
 

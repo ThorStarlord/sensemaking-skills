@@ -2073,3 +2073,38 @@ validation). `REHEARSED` describes application and review, not pack validity.
 Neither status accepts/promotes the pack, establishes semantic truth, validates
 a whole prospective snapshot, executes code/tests, or authorizes integration.
 Use ordinary source review and exact committed build before accepting knowledge.
+
+
+## Source-qualified architectural routes
+
+```bash
+sensemaking-skills semantic source-route --repo . --ref HEAD \
+  --from-path src/sensemaking_skills/patch_rehearsal.py \
+  --to-path src/sensemaking_skills/semantic_architecture/verification_scenarios.py \
+  --max-hops 6 --max-files 80 --json
+```
+
+Use this for an explicitly selected directional architectural inquiry, not a
+repository-wide inferred impact graph. The existing Python import-candidate
+reader is applied lazily to reachable tracked files in a disposable exact
+committed checkout. Each returned edge has importer path, candidate target
+path, candidate module, import syntax/line, source SHA-256 and file citation.
+Root/src and relative-import conventions are the same bounded conventions as
+source relationships; a package-member candidate may be an attribute or
+re-export rather than an actual import. Ambiguous module-to-file mappings are
+skipped and disclosed, never resolved by arbitrary first-match choice.
+
+Breadth-first search returns one witnessed path, with hop count, or
+`NO_ROUTE_FOUND_WITHIN_BOUNDS` when no witness was found without encountered
+read/parse/ambiguity/file-budget gaps. `NOT_ASSESSED` means no witness and at
+least one such gap. A found witness remains a positive syntactic observation
+even when other explored branches were partial. Search bounds are 1..6 hops
+and 1..250 inspected files (defaults 6/80); source parsing is limited to 512
+KiB per file. The result discloses counts, queue/frontier, unresolved imports,
+parse/read gaps and ambiguous candidates, with bounded detail. It does not
+establish global shortestness, complete Python import resolution, actual runtime
+coupling, absence of cycles, architectural conformance or semantic impact.
+Local/conditional imports are included; dynamic imports, package initialization,
+re-exports, non-Python and runtime behavior are not resolved. No target code or
+tests are run and no action is authorized. Manual source inspection and
+`context-for --include-source-relationships` remain complementary tools.
