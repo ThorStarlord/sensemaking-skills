@@ -2009,6 +2009,23 @@ reconsiderations are explicit path-overlap prompts only. The derived index is
 temporary and no persistent index path is returned. The input patch remains the
 caller's source, not an authorized instruction to apply it.
 
+For each modified Python file, `definition_changes` compares unique top-level
+function, async-function and class names on both sides of the actual applied
+overlay. It includes before/after line spans (including decorators) and SHA-256
+digests of exact definition source and attribute-free AST. Classifications are
+`ADDED`, `REMOVED`, `AST_CHANGED` and `SOURCE_ONLY_CHANGED`; the last
+means only that the parsed AST is equal, not that behavior is equivalent.
+`module_context_source_changed` compares residual source outside these spans
+and definition order; `module_context_ast_changed` compares non-definition
+top-level statements and definition-name order. These signals are independent
+of the definition rows, and a file-level change can occur with no changed
+definition. Duplicate names, unavailable spans or parse failures return
+`NOT_ASSESSED`, not an empty successful comparison. Change rows are bounded
+by `--limit`, with total and truncation. Nested-definition identity, dynamic
+effects, rename attribution, AST-omitted comments/type comments and semantic
+equivalence are not established. AST digests are meaningful within the same
+parser runtime, not a cross-Python-version identity contract.
+
 Version 1 deliberately supports only UTF-8 unified patch text up to 256 KiB
 modifying 1..8 distinct, existing tracked regular files. It refuses binary,
 add/delete/rename/copy/mode changes, symlinks, submodules, Git control files,

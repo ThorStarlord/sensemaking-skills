@@ -1,0 +1,84 @@
+{
+  "schema_version": 2,
+  "claims": [
+    {
+      "id": "cap:prospective-definition-comparison",
+      "kind": "capability",
+      "statement": "A concrete Python intervention rehearsal reports bounded changes to uniquely named top-level definitions using both exact definition-source and normalized AST digests, with separate module-level source and AST comparisons, while retaining the committed BASE review and never executing or indexing the overlay as reviewed intent.",
+      "epistemic_status": "observed",
+      "authority_kind": "code",
+      "authority_ref": "src/sensemaking_skills/patch_rehearsal.py",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/patch_rehearsal.py",
+        "file:artifacts/history/2026-11-27-comparative-prospective-construction.md",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ],
+      "attributes": {
+        "scope": "Existing tracked Python files in the bounded patch rehearsal; unique top-level function, async function or class definitions by name; bounded changed rows; separate non-definition module syntax and order indicators.",
+        "claim_ceiling": "Observed two actual historical patches on exact alternative implementations; no semantic equivalence, nested-scope identity, independent cognitive benefit or measured efficiency."
+      }
+    },
+    {
+      "id": "observation:prospective-intervention-comparative-use-20261127",
+      "kind": "observation",
+      "statement": "Scoped subsequent assessment (PARTIALLY_OBSERVED): The exact canonical patch-rehearsal command rehearsed both actual alternative source patches against the same base, then both candidate implementations compared the same two genuine historical engineering changes in disposable overlays. Both identified five changed top-level definitions across three files; the selected AST-and-source candidate classified all five AST_CHANGED and separately distinguished module-level changes in the containment repair from definition-local changes in the receipt inventory repair. Patched byte digests matched across candidates and the active checkout remained clean.",
+      "epistemic_status": "observed",
+      "authority_kind": "document",
+      "authority_ref": "artifacts/history/2026-11-27-comparative-prospective-construction.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-comparative-prospective-construction.md",
+        "file:src/sensemaking_skills/patch_rehearsal.py",
+        "file:artifacts/history/2026-11-27-generative-strategic-intelligence.md"
+      ],
+      "attributes": {
+        "consequence_ref": "conseq:prospective-intervention-rehearsal-value",
+        "assessment_status": "PARTIALLY_OBSERVED",
+        "observed_effect": "The exact canonical patch-rehearsal command rehearsed both actual alternative source patches against the same base, then both candidate implementations compared the same two genuine historical engineering changes in disposable overlays. Both identified five changed top-level definitions across three files; the selected AST-and-source candidate classified all five AST_CHANGED and separately distinguished module-level changes in the containment repair from definition-local changes in the receipt inventory repair. Patched byte digests matched across candidates and the active checkout remained clean.",
+        "assessed_at_revision": "d03f3ee8810fc254405db94f57ba1249f6ebd167",
+        "scope": "One same-agent comparative selection, two actual alternative patches and two real historical engineering patches; source-pinned hosted execution.",
+        "counterevidence": "Both alternatives returned the same changed-definition names, all actual cases had AST changes, no source-only example or time comparison was observed, and manual diff review remains viable. The same active agent authored both candidates and made the choice.",
+        "claim_ceiling": "Actual comparative rehearsal and source-based selection; no independent improved judgment, general coverage or runtime equivalence."
+      }
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel:prospective-definition-comparison-realizes-rehearsal",
+      "subject": "poss:prospective-intervention-rehearsal",
+      "predicate": "implemented_by",
+      "object": "cap:prospective-definition-comparison",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-comparative-prospective-construction.md",
+        "file:src/sensemaking_skills/patch_rehearsal.py"
+      ],
+      "attributes": {
+        "conceptual_relation": "realizedBy",
+        "establishment": "inferred",
+        "scope": "Bounded definition-level extension to the realized intervention-rehearsal possibility."
+      }
+    },
+    {
+      "id": "rel:prospective-definition-comparison-serves-development",
+      "subject": "cap:prospective-definition-comparison",
+      "predicate": "serves_goal",
+      "object": "goal:domain-general-cognitive-development",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:src/sensemaking_skills/patch_rehearsal.py",
+        "file:artifacts/history/2026-11-27-comparative-prospective-construction.md",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ]
+    },
+    {
+      "id": "rel:prospective-intervention-comparative-use",
+      "subject": "observation:prospective-intervention-comparative-use-20261127",
+      "predicate": "references",
+      "object": "conseq:prospective-intervention-rehearsal-value",
+      "epistemic_status": "observed",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-comparative-prospective-construction.md"
+      ]
+    }
+  ]
+}

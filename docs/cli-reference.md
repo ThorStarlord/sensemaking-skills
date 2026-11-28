@@ -153,7 +153,10 @@ For an explicit proposed text patch that has not been applied to the active chec
 applies it in a disposable exact-commit worktree and composes the existing
 BASE-only worktree review with candidate reconsideration. It reports patch digest,
 actual changed paths, before/after file digests and Python syntax results, not a
-runtime or semantic verdict. Version 1 accepts at most eight existing tracked
+runtime or semantic verdict. For modified Python files, it also compares uniquely named top-level definitions
+using exact source and normalized AST digests, with separate module-level source
+and AST indicators; these are syntactic review signals, not runtime equivalence.
+Version 1 accepts at most eight existing tracked
 regular-file modifications and 256 KiB UTF-8 patch text; structural changes,
 links, binary changes and Git control files are refused. No target code/test
 execution, active-checkout application or automatic acceptance. See the
