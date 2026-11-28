@@ -1,17 +1,24 @@
-name: Actual returning development handoff (execution branch only)
+name: Actual target-rooted preflight repair (execution branch only)
 on:
   push:
     branches: [claude/beneficiary-consolidation-execution-20261128]
 permissions:
   contents: read
 jobs:
-  reentry:
+  actual-preflight:
     if: github.ref == 'refs/heads/claude/beneficiary-consolidation-execution-20261128'
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     env:
       BASE: "aec0ff2eaed29c79d65ac2867aeb59fd58cd7495"
-      QUESTION: "What should a returning agent understand about current strategic judgment and detached decision review stewardship before selecting the next useful product increment?"
+      CANDIDATE: "ab056850f053c2165613a1bc6ee1ec8abb2d391d"
+      TARGET_REF: "af034081e02c47802517d601cc963216f20dafd9"
+      PACK: ".sensemaking/knowledge/target-rooted-proposal-preflight.json"
+      EPISODE: "artifacts/history/2026-11-28-focused-evolution-decision-review.json"
+      DRAFT: "artifacts/history/actual-focused-evolution-review-DRAFT.json"
+      DEST: ".sensemaking/knowledge/focused-evolution-value-review.json"
+      ORDINARY: ".sensemaking/knowledge/detached-decision-stewardship.json"
+      DRAFT_SHA: "0448550b5f4d94bd93a62b9617ac697766ad064a878e6528e6652f5c2a82a7a3"
     steps:
       - uses: actions/checkout@v4
         with:
@@ -21,39 +28,105 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Recover actual returning-agent entry context
+      - name: Reproduce actual friction and correct old invocation
         shell: bash
         run: |
           set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$BASE"
           python -m pip install -e .
-          sensemaking-skills handoff --repo . --output "$RUNNER_TEMP/handoff" --skill-path skills/using-sensemaking --expected-source-ref "$BASE" --question "$QUESTION" --json > "$RUNNER_TEMP/handoff-result.json"
-          sensemaking-skills semantic workspace-orient --repo . --ref "$BASE" --json > "$RUNNER_TEMP/orient.json"
-          sensemaking-skills semantic workspace-query --repo . --ref "$BASE" --operation search --query-text "detached decision review strategic judgment stewardship" --limit 15 --json > "$RUNNER_TEMP/search.json"
-          sensemaking-skills semantic workspace-query --repo . --ref "$BASE" --operation possibility-ecology --subject poss:detached-decision-stewardship --method-question "Should I retain a useful bounded construction capability or wait for independent qualification evidence?" --method-limit 25 --limit 80 --json > "$RUNNER_TEMP/ecology.json"
+          git worktree add --detach "$RUNNER_TEMP/base-target" "$BASE"
+          git worktree add --detach "$RUNNER_TEMP/target" "$TARGET_REF"
+          TARGET="$RUNNER_TEMP/target"
+          mkdir "$RUNNER_TEMP/unrelated"
+          git diff --no-ext-diff --no-textconv --no-renames "$BASE" "$CANDIDATE" -- > "$RUNNER_TEMP/actual.patch"
+          sensemaking-skills semantic patch-rehearsal --repo "$RUNNER_TEMP/base-target" --ref "$BASE" --patch-file "$RUNNER_TEMP/actual.patch" --knowledge-proposal "$PACK" --possibility poss:detached-decision-stewardship --limit 80 --json > "$RUNNER_TEMP/rehearsal.json"
           python - <<'PY'
-          import os,json,subprocess
+          import os,json,hashlib,subprocess
+          from pathlib import Path
+          q=json.loads((Path(os.environ["RUNNER_TEMP"])/"rehearsal.json").read_text())
+          assert q["status"]=="REHEARSED" and q["base_ref"]==os.environ["BASE"] and len(q["files"])==6
+          k=q["candidate_knowledge"]
+          assert k["status"]=="MECHANICALLY_VALID" and not k["accepted"] and not k["action_authorized"]
+          for f in q["files"]:
+              raw=subprocess.check_output(["git","show",os.environ["CANDIDATE"]+":"+f["path"]])
+              assert hashlib.sha256(raw).hexdigest()==f["after_sha256"]
+              if f["change_kind"]=="MODIFIED":
+                  raw=subprocess.check_output(["git","show",os.environ["BASE"]+":"+f["path"]])
+                  assert hashlib.sha256(raw).hexdigest()==f["before_sha256"]
+              else: assert f["before_sha256"] is None
+              if f["path"].endswith(".py"): assert f["python_syntax"]=="PASS"
+          print("ACTUAL_PATCH="+json.dumps({"paths":len(q["files"]),"patch_sha256":q["patch_sha256"],"proposal_sha256":k["proposal_sha256"],"claims":k["validation"]["claims_checked"],"relations":k["validation"]["relations_checked"],"review_truncated":q["review"]["truncated"],"focus_truncated":q["possibility_context"]["truncated"]}))
+          PY
+          sensemaking-skills semantic decision record --repo "$TARGET" --episode "$EPISODE" --draft-only --output "$DRAFT" --json > "$RUNNER_TEMP/producer.json"
+          test "$(sha256sum "$TARGET/$DRAFT" | cut -d' ' -f1)" = "$DRAFT_SHA"
+          test ! -e "$TARGET/$DEST"
+          test ! -e "$DRAFT"
+          check() { sensemaking-skills semantic knowledge-proposal-check --repo "$TARGET" "$@" --json; }
+          if check --proposal "$DRAFT" --destination "$DEST" > /dev/null 2>"$RUNNER_TEMP/old-relative.err"; then exit 1; fi
+          grep -F "does not exist" "$RUNNER_TEMP/old-relative.err"
+          check --proposal "$TARGET/$DRAFT" --destination "$TARGET/$DEST" > "$RUNNER_TEMP/old-absolute.json"
+          (cd "$TARGET" && check --proposal "$DRAFT" --destination "$DEST") > "$RUNNER_TEMP/old-root.json"
+          cmp "$RUNNER_TEMP/old-absolute.json" "$RUNNER_TEMP/old-root.json"
+          check --proposal "$TARGET/$ORDINARY" > "$RUNNER_TEMP/old-ordinary-absolute.json"
+          (cd "$TARGET" && check --proposal "$ORDINARY") > "$RUNNER_TEMP/old-ordinary-root.json"
+          cmp "$RUNNER_TEMP/old-ordinary-absolute.json" "$RUNNER_TEMP/old-ordinary-root.json"
+          if (cd "$RUNNER_TEMP/unrelated" && check --proposal "$ORDINARY") > /dev/null 2>"$RUNNER_TEMP/old-ordinary-relative.err"; then exit 1; fi
+          git -C "$TARGET" status --porcelain > "$RUNNER_TEMP/target-status-before"
+      - name: Compare same actual target under corrected CLI and varied caller directories
+        shell: bash
+        run: |
+          set -euo pipefail
+          git checkout --detach "$CANDIDATE"
+          TARGET="$RUNNER_TEMP/target"
+          check() { sensemaking-skills semantic knowledge-proposal-check --repo "$TARGET" "$@" --json; }
+          check --proposal "$DRAFT" --destination "$DEST" > "$RUNNER_TEMP/new-caller.json"
+          (cd "$TARGET" && check --proposal "$DRAFT" --destination "$DEST") > "$RUNNER_TEMP/new-root.json"
+          (cd "$RUNNER_TEMP/unrelated" && check --proposal "$DRAFT" --destination "$DEST") > "$RUNNER_TEMP/new-unrelated.json"
+          check --proposal "$TARGET/$DRAFT" --destination "$TARGET/$DEST" > "$RUNNER_TEMP/new-absolute.json"
+          for mode in caller root unrelated absolute; do
+            cmp "$RUNNER_TEMP/old-root.json" "$RUNNER_TEMP/new-$mode.json"
+          done
+          (cd "$RUNNER_TEMP/unrelated" && check --proposal "$ORDINARY") > "$RUNNER_TEMP/new-ordinary-relative.json"
+          check --proposal "$TARGET/$ORDINARY" > "$RUNNER_TEMP/new-ordinary-absolute.json"
+          cmp "$RUNNER_TEMP/old-ordinary-root.json" "$RUNNER_TEMP/new-ordinary-relative.json"
+          cmp "$RUNNER_TEMP/old-ordinary-root.json" "$RUNNER_TEMP/new-ordinary-absolute.json"
+          # Existing actual reviewed path in the caller is absent in this
+          # pre-activation target. It must never become the proposal source.
+          test -f "$DEST"
+          if check --proposal "$DEST" > /dev/null 2>"$RUNNER_TEMP/missing.err"; then exit 1; fi
+          if check --proposal "$PWD/$DEST" > /dev/null 2>"$RUNNER_TEMP/external.err"; then exit 1; fi
+          if check --proposal "$DRAFT" --destination "$ORDINARY" > /dev/null 2>"$RUNNER_TEMP/occupied.err"; then exit 1; fi
+          if check --proposal "artifacts/history/../history/actual-focused-evolution-review-DRAFT.json" --destination "$DEST" > /dev/null 2>"$RUNNER_TEMP/traversal.err"; then exit 1; fi
+          ln -s "$(basename "$DRAFT")" "$TARGET/artifacts/history/actual-review-link.json"
+          if check --proposal "artifacts/history/actual-review-link.json" --destination "$DEST" > /dev/null 2>"$RUNNER_TEMP/symlink.err"; then exit 1; fi
+          rm "$TARGET/artifacts/history/actual-review-link.json"
+          test ! -e "$TARGET/$DEST"
+          test "$(sha256sum "$TARGET/$DRAFT" | cut -d' ' -f1)" = "$DRAFT_SHA"
+          git -C "$TARGET" status --porcelain > "$RUNNER_TEMP/target-status-after"
+          cmp "$RUNNER_TEMP/target-status-before" "$RUNNER_TEMP/target-status-after"
+          test "$(git -C "$TARGET" rev-parse HEAD)" = "$TARGET_REF"
+          test -z "$(git status --porcelain)"
+          python - <<'PY'
+          import json,os
           from pathlib import Path
           p=Path(os.environ["RUNNER_TEMP"])
-          h=json.loads((p/"handoff-result.json").read_text())
-          ci=h["continuity"]["inventory"]
-          q=json.loads((p/"search.json").read_text())
-          e=json.loads((p/"ecology.json").read_text())
-          o=json.loads((p/"orient.json").read_text())
-          tracked=set(subprocess.check_output(["git","ls-files","-z"]).decode().split(chr(0)))
-          focus={"knowledge_files":[".sensemaking/knowledge/focused-evolution-value-review.json",".sensemaking/knowledge/detached-decision-stewardship.json"],"historical_json_records":["artifacts/history/2026-11-28-focused-evolution-decision-review.json","artifacts/history/2026-11-28-fixed-target-comparison-method-application.json"],"strategic_history":["artifacts/history/2026-11-28-evidence-grounded-strategic-judgment.md","artifacts/history/2026-11-28-conditional-method-reuse-focused-evolution.md"]}
-          assert h["target"]["git"]["head"]==os.environ["BASE"]
-          for kind,paths in focus.items():
-              inv=ci[kind]
-              assert all(path in tracked for path in paths)
-              print("ACTUAL_HANDOFF_PATHS="+json.dumps({"group":kind,"total":inv["total"],"visible":len(inv["paths"]),"truncated":inv["truncated"],"first":inv["paths"][0],"last":inv["paths"][-1],"actual_source_paths":{path:path in inv["paths"] for path in paths}}))
-          print("ACTUAL_REENTRY="+json.dumps({"source_identity":h["source_expectation"]["status"],"status_next_step_line":Path("STATUS.md").read_text().splitlines().index("## Current next step")+1,"prompt_chars":len(h["prompt"]),"semantic_search_top":[x.get("id") for x in q.get("claims",[])[:5]],"search_truncated":q.get("truncated"),"ecology_focus":e["possibility_ecology"]["focus"]["claim_id"],"ecology_truncated":e["possibility_ecology"]["truncated"],"method_candidates":[x["id"] for x in e["method_precedents"]["method_candidates"]],"orient_code":o["code"],"action_authorized":h["action_authorized"]}))
+          d=json.loads((p/"new-caller.json").read_text())
+          a=json.loads((p/"new-ordinary-relative.json").read_text())
+          assert d["valid"] and a["valid"] and not d["action_authorized"] and not a["action_authorized"]
+          assert d["detached_draft"] and d["destination_state"]=="ABSENT_AT_INSPECTION"
+          assert d["proposal_sha256"]==os.environ["DRAFT_SHA"]
+          assert d["claims_checked"]==1 and d["relations_checked"]==4
+          assert "proposal missing" in (p/"missing.err").read_text()
+          assert "unoccupied" in (p/"occupied.err").read_text()
+          assert "symlink proposal refused" in (p/"symlink.err").read_text()
+          print("ACTUAL_TARGET_PREFLIGHT="+json.dumps({"old_relative_failure_reproduced":True,"detached_full_payloads_equal":True,"ordinary_full_payloads_equal":True,"target_ref":os.environ["TARGET_REF"],"draft_sha256":d["proposal_sha256"],"detached_claims":d["claims_checked"],"detached_relations":d["relations_checked"],"ordinary_claims":a["claims_checked"],"ordinary_relations":a["relations_checked"],"missing_caller_present_refused":True,"external_traversal_symlink_occupied_refused":True,"target_status_preserved":True,"destination_absent":True}))
           PY
-          test -z "$(git status --porcelain)"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: actual-returning-development-context
+          name: actual-target-rooted-preflight
           path: |
             ${{ runner.temp }}/*.json
-            ${{ runner.temp }}/handoff/
+            ${{ runner.temp }}/*.patch
+            ${{ runner.temp }}/*.err
           retention-days: 14
