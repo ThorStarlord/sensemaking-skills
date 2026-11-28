@@ -1,0 +1,93 @@
+name: Actual comparative prospective construction (execution branch only)
+on:
+  push:
+    branches: [claude/comparative-prospective-construction-execution-20261127]
+permissions:
+  contents: read
+jobs:
+  actual-use:
+    if: github.ref == 'refs/heads/claude/comparative-prospective-construction-execution-20261127'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      BASE: "c1f95ed50a0791a57faa4e96bba2e6415df446e8"
+      A: "5b610b350edce8497a39d44cd6d9adcd6a9a02b1"
+      B: "d03f3ee8810fc254405db94f57ba1249f6ebd167"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BASE }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Compare both concrete alternatives using current product
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$BASE"
+          python -m pip install -e .
+          test -z "$(git status --porcelain)"
+          sensemaking-skills semantic workspace-query --repo . --ref "$BASE" --operation possibility-ecology --subject poss:prospective-intervention-rehearsal --limit 80 --json > "$RUNNER_TEMP/prior.json"
+          for variant in A B; do
+            sha="${!variant}"
+            test "$(git merge-base "$BASE" "$sha")" = "$BASE"
+            git diff --no-ext-diff --no-textconv --no-renames "$BASE" "$sha" -- > "$RUNNER_TEMP/$variant.patch"
+            sensemaking-skills semantic patch-rehearsal --repo . --ref "$BASE" --patch-file "$RUNNER_TEMP/$variant.patch" --limit 80 --json > "$RUNNER_TEMP/preview-$variant.json"
+            git diff --stat "$BASE" "$sha"
+          done
+          test -z "$(git status --porcelain)"
+          test "$(git rev-parse HEAD)" = "$BASE"
+      - name: Exercise both actual candidate implementations on retained engineering changes
+        run: |
+          set -euo pipefail
+          RBASE=a9fc89c718e6bac3ee13fa7c7f32618b4b95ce2b
+          REPAIR=8e93f127fce4f52a2f4943006e43e60df09104b5
+          IBASE=d6758a2816c6269d7ad0b7b9e77e4cf51f029418
+          INV=0d6671cce1d0083dd6411c15e1be4efb568bdce9
+          git diff --no-ext-diff --no-textconv --no-renames "$RBASE" "$REPAIR" -- > "$RUNNER_TEMP/repair.patch"
+          git diff --no-ext-diff --no-textconv --no-renames "$IBASE" "$INV" -- src/sensemaking_skills/reentry_context.py src/sensemaking_skills/first_use.py > "$RUNNER_TEMP/inventory.patch"
+          for variant in A B; do
+            sha="${!variant}"
+            git checkout --detach "$sha"
+            test -z "$(git status --porcelain)"
+            sensemaking-skills semantic patch-rehearsal --repo . --ref "$RBASE" --patch-file "$RUNNER_TEMP/repair.patch" --limit 80 --json > "$RUNNER_TEMP/repair-$variant.json"
+            sensemaking-skills semantic patch-rehearsal --repo . --ref "$IBASE" --patch-file "$RUNNER_TEMP/inventory.patch" --limit 80 --json > "$RUNNER_TEMP/inventory-$variant.json"
+            test -z "$(git status --porcelain)"
+            test "$(git rev-parse HEAD)" = "$sha"
+          done
+          git checkout --detach "$BASE"
+          python - <<'PY'
+          import hashlib,json,os
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])
+          read=lambda n:json.loads((p/n).read_text())
+          q=read("prior.json")
+          assert q["target_ref"]==os.environ["BASE"]
+          for variant in ("A","B"):
+              preview=read("preview-"+variant+".json")
+              assert preview["status"]=="REHEARSED" and preview["base_ref"]==os.environ["BASE"]
+              assert preview["patch_sha256"]==hashlib.sha256((p/(variant+".patch")).read_bytes()).hexdigest()
+              assert not preview["action_authorized"] and not preview["active_checkout_patch_applied"]
+              assert len(preview["files"])==1 and preview["files"][0]["python_syntax"]=="PASS"
+              print("CANDIDATE="+json.dumps({"variant":variant,"sha":os.environ[variant],"patch_sha256":preview["patch_sha256"],"files":preview["files"],"overlap":preview["review"]["working_evidence_reinspection"]["affected_record_total"]}))
+          for case in ("repair","inventory"):
+              reports=[read(case+"-"+variant+".json") for variant in ("A","B")]
+              for variant,q in zip(("A","B"),reports):
+                  assert q["status"]=="REHEARSED" and not q["action_authorized"]
+                  assert all(f["python_syntax"]=="PASS" for f in q["files"])
+                  assert all(f["definition_changes"]["status"]=="COMPARED_TOP_LEVEL_DEFINITIONS" and not f["definition_changes"]["truncated"] for f in q["files"])
+                  print("COMPARISON="+json.dumps({"case":case,"variant":variant,"files":[{"path":f["path"],"comparison":f["definition_changes"]} for f in q["files"]]}))
+              for left,right in zip(reports[0]["files"],reports[1]["files"]):
+                  assert left["path"]==right["path"] and left["after_sha256"]==right["after_sha256"]
+                  assert {x["name"] for x in left["definition_changes"]["changes"]}=={x["name"] for x in right["definition_changes"]["changes"]}
+          print("COMPARATIVE_ACTUAL_USE=PASS")
+          PY
+          test -z "$(git status --porcelain)"
+      - name: Retain actual comparative evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: actual-comparative-prospective-construction
+          path: ${{ runner.temp }}/*.json
+          retention-days: 14
