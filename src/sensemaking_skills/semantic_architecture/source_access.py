@@ -115,6 +115,26 @@ def temporary_commit_checkout(repo_root: str | Path, target_ref: str) -> Iterato
         shutil.rmtree(parent, ignore_errors=True)
 
 
+def committed_regular_file_status(root: Path, ref: str, path: str) -> str:
+    """Classify a literal tree entry at an exact commit without materializing it.
+
+    Callers establish a normalized repository-relative path. Absence and
+    non-regular entries are not empty source inventories.
+    """
+    if not re.fullmatch(r"[0-9a-f]{40}", ref):
+        raise ValueError("committed file status requires a full 40-character Git SHA")
+    entry = _git(root, "--literal-pathspecs", "ls-tree", "-z", "--full-tree", ref, "--", path)
+    if not entry:
+        return "ABSENT_FROM_TREE"
+    metadata, separator, name = entry.rstrip("\0").partition("\t")
+    if not separator or name != path or len(metadata.split()) != 3:
+        raise ValueError("cannot establish the exact committed source review entry")
+    mode, kind, _ = metadata.split()
+    if kind != "blob" or mode not in {"100644", "100755"}:
+        return "NOT_REGULAR_FILE"
+    return "REGULAR_FILE"
+
+
 def _source(root: Path, tracked: set[str], relative: str) -> Path:
     if relative not in tracked:
         raise ValueError(f"source not tracked at target Git revision: {relative}")
