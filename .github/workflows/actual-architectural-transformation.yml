@@ -1,0 +1,56 @@
+name: Actual architectural transformation (execution branch only)
+on:
+  push:
+    branches: [claude/architectural-transformation-execution-20261127]
+permissions:
+  contents: read
+jobs:
+  actual-use:
+    if: github.ref == 'refs/heads/claude/architectural-transformation-execution-20261127'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      BASE: "6a89e6cd7c1e138f7e04cbcd16c90b03b421f73e"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BASE }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Inspect actual coupling before selecting a transformation
+        run: |
+          set -euo pipefail
+          python -m pip install -e .
+          DIR=src/sensemaking_skills/semantic_architecture
+          for name in source_relationships refactor_preview knowledge_architecture knowledge_store; do
+            sensemaking-skills semantic source-route --repo . --ref "$BASE" --from-path "$DIR/$name.py" --to-path "$DIR/knowledge_sources.py" --json > "$RUNNER_TEMP/$name.json"
+          done
+          sensemaking-skills semantic workspace-query --repo . --ref "$BASE" --operation context-for "$DIR/knowledge_sources.py" --include-source-relationships --limit 80 --json > "$RUNNER_TEMP/builder-context.json"
+          python - <<'PY'
+          import hashlib,json,os,subprocess
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])
+          for name in ("source_relationships","refactor_preview","knowledge_architecture","knowledge_store"):
+              q=json.loads((p/(name+".json")).read_text())
+              assert q["target_ref"]==os.environ["BASE"] and not q["action_authorized"]
+              for e in q["route"]:
+                  b=subprocess.check_output(["git","show",os.environ["BASE"]+":"+e["from_path"]])
+                  assert hashlib.sha256(b).hexdigest()==e["source_sha256"]
+              print("BASE_ROUTE="+json.dumps({"name":name,"status":q["status"],"hops":q["hop_count"],"route":q["route"],"search":q["search"]}))
+          q=json.loads((p/"builder-context.json").read_text())
+          s=q["source_relationships"]
+          print("BUILDER_CONTEXT="+json.dumps({"counts":s["counts"],"importers":s["direct_importers"],"coverage":s["coverage_status"]}))
+          assert q["target_ref"]==os.environ["BASE"]
+          PY
+          test -z "$(git status --porcelain)"
+          test "$(git rev-parse HEAD)" = "$BASE"
+      - name: Retain actual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: actual-architectural-transformation
+          path: ${{ runner.temp }}/*.json
+          retention-days: 14
