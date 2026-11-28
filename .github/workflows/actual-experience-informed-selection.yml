@@ -1,0 +1,65 @@
+name: Actual experience-informed selection (execution branch only)
+on:
+  push:
+    branches: [claude/experience-informed-selection-execution-20261127]
+permissions:
+  contents: read
+jobs:
+  actual-use:
+    if: github.ref == 'refs/heads/claude/experience-informed-selection-execution-20261127'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      SOURCE: "d6758a2816c6269d7ad0b7b9e77e4cf51f029418"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.SOURCE }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install exact source
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE"
+          python -m pip install -e .
+          test -z "$(git status --porcelain)"
+      - name: Recover prospective criteria and inspect actual returning engagement
+        run: |
+          set -euo pipefail
+          sensemaking-skills semantic workspace-query --repo . --ref "$SOURCE" \
+            --operation possibility-ecology --subject goal:domain-general-cognitive-development \
+            --method-question "How should experience and observed obstacles guide useful returning agent work without adding redundant context?" \
+            --include-method-trials --limit 150 --json > "$RUNNER_TEMP/family.json"
+          sensemaking-skills handoff --repo . --output "$RUNNER_TEMP/returning" \
+            --skill-path skills/using-sensemaking --expected-source-ref "$SOURCE" \
+            --resume-from .sensemaking/receipts/2026-11-27-integrated-self-development.session.yaml \
+            --question "Continue Sensemaking self-development using recent value and synthesis evidence." --json > "$RUNNER_TEMP/handoff.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])
+          q=json.loads((p/"family.json").read_text())
+          assert q["target_ref"]==os.environ["SOURCE"] and not q["action_authorized"]
+          f=q["possibility_ecology"]["value_feedback"]
+          for x in f["entries"]:
+              print("FEEDBACK="+json.dumps({"id":x["possibility_id"],"predictions":[{"statement":a["prediction"]["statement"],"value_frame":a["prediction"]["attributes"].get("value_frame"),"standing":a["standing"],"assessments":a["assessment_total"]} for a in x["predictions"]],"reviews":[v["record"]["attributes"]["disposition"] for v in x["reviews"]]}))
+          print("METHODS="+json.dumps([x["id"] for x in q["method_precedents"]["method_candidates"]]))
+          h=json.loads((p/"handoff.json").read_text())
+          assert h["target"]["git"]["head"]==os.environ["SOURCE"]
+          ci=h["continuity"]["inventory"]
+          for k in ("knowledge_files","historical_json_records","receipt_files","strategic_history"):
+              print("INVENTORY="+json.dumps({"name":k,**ci[k]}))
+          print("RECEIPT_VALID="+json.dumps([x["validation"] for x in h["continuity"]["selected_receipts"]]))
+          print("CURRENT_PRODUCT_ENTRY="+json.dumps(h["source_expectation"]))
+          PY
+          test -z "$(git status --porcelain)"
+      - name: Retain results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: actual-selection-context
+          path: ${{ runner.temp }}/*.json
+          retention-days: 14
