@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 12
     env:
-      SOURCE: "abd1845f558296a7e09f733f3f62a54da1abd396"
+      SOURCE: "cb184ceff4248bf17e2397f8ad11679d2795acd1"
     steps:
       - uses: actions/checkout@v4
         with:
@@ -26,54 +26,53 @@ jobs:
           test "$(git rev-parse HEAD)" = "$SOURCE"
           python -m pip install -e .
           test -z "$(git status --porcelain)"
-      - name: Recover current developmental possibilities and intellectual experience
+      - name: Review exact reconciled knowledge and recover changed possibilities
         run: |
           set -euo pipefail
-          Q="How should developmental possibilities and retained method experience inform valuable product construction without unnecessary process?"
-          sensemaking-skills handoff --repo . --output "$RUNNER_TEMP/self-handoff" \
-            --skill-path skills/using-sensemaking --expected-source-ref "$SOURCE" \
-            --resume-from .sensemaking/receipts/2026-11-27-cumulative-verification-continuity.session.yaml \
-            --resume-from .sensemaking/receipts/2026-11-27-adaptive-intellectual-organization-actual-use.session.yaml \
-            --question "$Q" --json > "$RUNNER_TEMP/handoff.json"
-          sensemaking-skills semantic workspace-query --repo . --ref "$SOURCE" \
-            --operation product-outline --include-candidates --limit 150 --method-question "$Q" \
-            --include-method-trials --method-limit 12 --json > "$RUNNER_TEMP/outline.json"
+          sensemaking-skills semantic knowledge-proposal-check --repo . \
+            --proposal .sensemaking/knowledge/possibilities.json --json > "$RUNNER_TEMP/preflight.json"
           sensemaking-skills semantic workspace-query --repo . --ref "$SOURCE" \
             --operation possibility-ecology --subject goal:domain-general-cognitive-development \
-            --limit 150 --method-question "$Q" --include-method-trials --method-limit 12 \
-            --json > "$RUNNER_TEMP/landscape.json"
-          sensemaking-skills semantic workspace-query --repo . --ref "$SOURCE" \
-            --operation possibility-ecology --subject goal:compounding-product-knowledge \
-            --limit 150 --json > "$RUNNER_TEMP/stewardship-landscape.json"
+            --limit 150 --json > "$RUNNER_TEMP/reconciled-landscape.json"
+          sensemaking-skills semantic workspace-changes --repo . \
+            --base-ref "abd1845f558296a7e09f733f3f62a54da1abd396" --ref "$SOURCE" --include-possibility-evolution --limit 150 --json > "$RUNNER_TEMP/possibility-evolution.json"
           python - <<'PY'
           import json,os
           from pathlib import Path
           root=Path(os.environ["RUNNER_TEMP"])
-          h=json.loads((root/"handoff.json").read_text())
-          assert h["target"]["git"]["head"]==os.environ["SOURCE"]
-          print("HANDOFF="+json.dumps({"source":h["source_expectation"]["status"],"receipts":[{"path":x["path"],"validation":x["validation"],"responsibilities":[{"id":y["id"],"status":y["status"],"validation":y.get("validation",[])} for y in (x["historical_projection"] or {}).get("responsibilities",[])]} for x in h["continuity"]["selected_receipts"]]}))
-          for name in ("outline.json","landscape.json","stewardship-landscape.json"):
-              x=json.loads((root/name).read_text())
-              assert x["target_ref"]==os.environ["SOURCE"] and x["action_authorized"] is False
-              print("QUERY="+name+" KEYS="+json.dumps(list(x)))
-              def walk(o,p=""):
-                  if isinstance(o,dict):
-                      if "claim_id" in o or "id" in o:
-                          kind=o.get("kind","")
-                          if kind in ("goal","capability","opportunity","hypothesis","constraint","non_goal") or ("method_candidates" in p):
-                              a=o.get("attributes") or {}
-                              dims=a.get("dimensions") or {}
-                              print("ITEM "+name+" "+p+" "+json.dumps({**{k:o[k] for k in ("id","claim_id","kind","statement","procedure","applicability_to_present_task") if k in o},"realization":dims.get("realization",o.get("realization")),"value":a.get("value_hypothesis"),"revisit":a.get("revisit_when"),"disposition":(a.get("disposition_history") or [None])[-1],"conditions":o.get("recall_conditions")})[:2200])
-                      for k,v in o.items():
-                          if k not in ("relations","evidence_refs","recorded_conditions","recall_conditions","attributes","trial_precedents","citing_records"):
-                              walk(v,p+"."+k)
-                  elif isinstance(o,list):
-                      for y in o: walk(y,p+"[]")
-              walk(x)
-              print("LIMITS="+json.dumps({k:v for k,v in x.items() if "truncat" in k or "omitted" in k})[:3000])
-              if "method_precedents" in x:
-                  methods=x["method_precedents"]
-                  print("METHODS="+json.dumps({"ids":[c["id"] for c in methods["method_candidates"]],"trial_ids":[c.get("id") for c in methods["trial_precedents"]["trial_candidates"]],"truncated":methods.get("lesson_corpus_truncated")}))
+          check=json.loads((root/"preflight.json").read_text())
+          assert check["valid"] is True and check["action_authorized"] is False
+          print("PREFLIGHT="+json.dumps({k:check[k] for k in ("valid","claims_checked","relations_checked","existing_endpoints_checked")}))
+          q=json.loads((root/"reconciled-landscape.json").read_text())
+          assert q["target_ref"]==os.environ["SOURCE"] and q["action_authorized"] is False
+          byid={c["id"]:c for c in q["claims"]}
+          dg=byid["poss:domain-general-sensemaking"]
+          syn=byid["poss:cross-episode-possibility-synthesis"]
+          dim=dg["attributes"]["dimensions"]
+          assert dim["alignment"]["value"]=="ALIGNED"
+          assert dim["alignment"]["history"][-1]["value"]=="COUNTERFACTUAL"
+          assert dim["realization"]["value"]=="NOT_ASSESSED"
+          assert dg["attributes"]["disposition_history"][-1]["value"]=="EXPLORATORY"
+          assert syn["attributes"]["dimensions"]["realization"]["value"]=="PARTIALLY_IMPLEMENTED"
+          assert syn["attributes"]["dimensions"]["realization"]["history"][-1]["assessed_ref"]=="274e585c0a594c25235f12f34074effa1837b631"
+          assert any(r["subject"]==dg["id"] and r["predicate"]=="candidate_opportunity_for" and r["object"]=="goal:domain-general-cognitive-development" for r in q["relations"])
+          print("RECONCILED_ALIGNMENT="+json.dumps(dim["alignment"]))
+          print("SYNTHESIS_REALIZATION="+json.dumps(syn["attributes"]["dimensions"]["realization"]))
+          changes=json.loads((root/"possibility-evolution.json").read_text())
+          print("CHANGE_KEYS="+json.dumps(list(changes)))
+          evo=changes.get("possibility_evolution",{})
+          print("EVOLUTION_KEYS="+json.dumps(list(evo)))
+          print("EVOLUTION_SUMMARY="+json.dumps({k:v for k,v in evo.items() if not isinstance(v,list)})[:3000])
+          def walk(o):
+              if isinstance(o,dict):
+                  if o.get("claim_id") in (dg["id"],syn["id"]) or o.get("id") in (dg["id"],syn["id"]):
+                      print("CHANGED_POSSIBILITY="+json.dumps(o)[:4000])
+                  else:
+                      for v in o.values(): walk(v)
+              elif isinstance(o,list):
+                  for v in o: walk(v)
+          walk(evo)
+          print("ACTUAL_RECONCILED_DEVELOPMENTAL_CONTEXT=PASS")
           PY
           test -z "$(git status --porcelain)"
       - name: Retain real query outputs
