@@ -1454,8 +1454,19 @@ sensemaking-skills semantic verification-plan --repo . --ref HEAD \
   --symbol build_knowledge_snapshot --json
 ```
 
+A selected symbol now has a separate `package_reexport_context` for one-hop
+explicit package initializer imports from its uniquely mapped defining module.
+It retains import names, source SHA-256, package import line, consumer binding
+lines, syntactic consumer references and test candidates, with route/list bounds
+and omissions. Direct reference and direct test lists remain distinct. An
+initializer's literal `__all__` membership is recorded, not interpreted as
+proof of runtime binding or API stability. Multi-hop, wildcard, dynamic and
+lexical-binding resolution are not assessed.
+
 - `pytest_candidates` merges test targets derived from
-  `context.verification_refs` with `symbol_context.test_candidates`. Each entry
+  `context.verification_refs` with `symbol_context.test_candidates` and the
+  separate `symbol_context.package_reexport_context.test_candidates` (source
+  kind `PACKAGE_REEXPORT_TEST_FUNCTION`). Each entry
   carries a `pytest_target` (`tests/test_x.py` or
   `tests/test_x.py::test_name`), `scope` (`FILE` or `TEST_FUNCTION`), the
   contributing `sources`, the union of their evidence references and

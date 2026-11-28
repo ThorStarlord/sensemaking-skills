@@ -1,13 +1,14 @@
 """Compose one change-scoped verification plan from existing query evidence.
 
-The plan is a mechanical projection over three already-returned surfaces:
+The plan is a mechanical projection over already-returned surfaces:
 
 - authored verification records from ``context.verification_refs``;
 - direct test-function candidates from ``symbol_context.test_candidates``;
+- separate explicit package re-export test candidates;
 - guard-derived scenario candidates from
   ``symbol_context.verification_scenarios``.
 
-The first two are merged into a deduplicated set of pytest target candidates.
+Authored and syntactic test candidates merge into a deduplicated set of pytest target candidates.
 Authored workflow file pointers and guard scenarios stay separate from pytest
 candidates; neither is dispatched or executed. Explicit
 gaps disclose what the composition did not establish.
@@ -32,6 +33,8 @@ _LIMITS = (
     "Direct test candidates are test functions/methods whose own body syntactically "
     "mentions the symbol; fixture, helper, parameterized and indirect coverage is "
     "NOT ASSESSED.",
+    "One-hop explicit package re-export test candidates retain their import-syntax "
+    "provenance; no runtime binding, indirect coverage or test result is established.",
     "Guard scenarios are source-level candidates from direct raise/assert guards. No "
     "executable test is generated or mapped; suggested inputs are heuristic hints.",
     "Authored GitHub workflow file references are manual inspection candidates only; "
@@ -284,6 +287,27 @@ def build_verification_plan(
             f"{path}::{name}", _direct_source(candidate), evidence_refs,
         )
 
+    reexport_context = (
+        symbol_context.get("package_reexport_context") if symbol_context is not None else None
+    )
+    reexport_context = reexport_context if isinstance(reexport_context, Mapping) else {}
+    reexport_candidates = [
+        item for item in (reexport_context.get("test_candidates") or [])
+        if isinstance(item, Mapping)
+    ]
+    for candidate in reexport_candidates:
+        path, name = candidate.get("path"), candidate.get("test_name")
+        if not isinstance(path, str) or not isinstance(name, str):
+            continue
+        source = _direct_source(candidate)
+        source.update({
+            "kind": "PACKAGE_REEXPORT_TEST_FUNCTION",
+            "package_reexport": candidate.get("package_reexport"),
+            "consumer_import_lines": candidate.get("consumer_import_lines"),
+            "consumer_import_line_total": candidate.get("consumer_import_line_total"),
+        })
+        add_candidate(f"{path}::{name}", source, _string_list(candidate.get("evidence_refs")))
+
     scenario_context = (
         symbol_context.get("verification_scenarios")
         if symbol_context is not None else None
@@ -324,6 +348,7 @@ def build_verification_plan(
         "workflow_candidates": len(workflow_candidates),
         "authored_verification_file_scope": len(file_scope_claim_ids),
         "direct_test_functions": len(direct_candidates),
+        "package_reexport_test_candidates": len(reexport_candidates),
         "guard_scenarios": len(scenario_candidates),
         "pytest_candidates": len(pytest_candidates),
         "pytest_file_candidates": sum(
@@ -399,6 +424,13 @@ def build_verification_plan(
             "note": "No test function directly mentions the symbol in its own body. "
                     "Fixture, helper, parameterized and indirect coverage is NOT ASSESSED.",
         })
+    if reexport_context.get("status") in {"NOT_ASSESSED", "PARTIAL"}:
+        gaps.append({
+            "category": "package_reexport",
+            "status": reexport_context["status"],
+            "note": "The bounded one-hop package syntax inquiry is incomplete or "
+                    "unavailable. Inspect original source; absence is not proof of no use.",
+        })
     if scenario_candidates:
         gaps.append({
             "category": "guard_scenarios",
@@ -450,6 +482,7 @@ def build_verification_plan(
         "selection_basis": {
             "authored_verification": "context.verification_refs",
             "direct_test_functions": "symbol_context.test_candidates",
+            "package_reexport_test_functions": "symbol_context.package_reexport_context.test_candidates",
             "guard_scenarios": "symbol_context.verification_scenarios.scenarios",
         },
         "pytest_candidates": pytest_candidates,
