@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 12
     env:
-      SOURCE: "d73fbae74c32981b878e5dcbd582a15f07f46976"
+      SOURCE: "71cf3c285fa81e6f9a1b8e28b5c33e210507788e"
     steps:
       - uses: actions/checkout@v4
         with:
@@ -26,54 +26,51 @@ jobs:
           test "$(git rev-parse HEAD)" = "$SOURCE"
           python -m pip install -e .
           test -z "$(git status --porcelain)"
-      - name: Materialize actual preconstruction synthesis
+      - name: Recover reviewed original value frame before any later outcome
         run: |
           set -euo pipefail
-          EPISODE="artifacts/history/2026-11-27-prospective-value-commitment-synthesis.json"
           DRAFT="artifacts/history/2026-11-27-prospective-value-commitment-DRAFT.json"
-          DEST=".sensemaking/knowledge/prospective-value-commitment.json"
-          test ! -e "$DEST"
-          git merge-base --is-ancestor 8dc725402dc30005332dd2408432d7ccb3142ff3 "$SOURCE"
-          git show "8dc725402dc30005332dd2408432d7ccb3142ff3:$EPISODE" > "$RUNNER_TEMP/original-episode.json"
-          cmp "$EPISODE" "$RUNNER_TEMP/original-episode.json"
-          sensemaking-skills semantic possibility record --repo . --episode "$EPISODE" --output "$DRAFT" --draft-only --json > "$RUNNER_TEMP/producer.json"
-          sensemaking-skills semantic knowledge-proposal-check --repo . --proposal "$DRAFT" --destination "$DEST" --json > "$RUNNER_TEMP/detached-check.json"
-          test ! -e "$DEST"
-          cp "$DRAFT" "$DEST"
-          sensemaking-skills semantic knowledge-proposal-check --repo . --proposal "$DEST" --json > "$RUNNER_TEMP/final-check.json"
-          cmp "$DRAFT" "$DEST"
-          cp "$DRAFT" "$RUNNER_TEMP/generated-pack.json"
-          EPISODE="$EPISODE" DRAFT="$DRAFT" python - <<'PY'
-          import os,json,hashlib,base64
+          echo "6a5bb268c794cdc8d6a441a285668b236e139f50d841223b9a2f556fe79eb22e  $DRAFT" | sha256sum -c -
+          sensemaking-skills semantic knowledge-proposal-check --repo . \
+            --proposal .sensemaking/knowledge/prospective-value-commitment.json --json > "$RUNNER_TEMP/preflight.json"
+          sensemaking-skills semantic workspace-query --repo . --ref "$SOURCE" \
+            --operation possibility-ecology --subject poss:prospective-value-commitment --limit 80 \
+            --json > "$RUNNER_TEMP/focused.json"
+          sensemaking-skills semantic workspace-query --repo . --ref "$SOURCE" \
+            --operation possibility-ecology --subject goal:domain-general-cognitive-development \
+            --method-question "How should value hypotheses and observed outcomes inform choosing useful construction without unnecessary retrieval or qualification?" \
+            --include-method-trials --limit 150 --json > "$RUNNER_TEMP/family.json"
+          python - <<'PY'
+          import os,json
           from pathlib import Path
-          root=Path(os.environ["RUNNER_TEMP"])
-          e=json.loads(Path(os.environ["EPISODE"]).read_text())
-          raw=Path(os.environ["DRAFT"]).read_bytes()
-          p=json.loads(raw)
-          assert len(p["claims"])==2
-          c,pred=p["claims"]
-          assert c["id"]=="poss:prospective-value-commitment"
-          assert pred["id"]=="conseq:prospective-value-commitment-value"
-          assert c["epistemic_status"]==pred["epistemic_status"]=="hypothetical"
-          assert c["attributes"]["value_hypothesis"]==pred["statement"]==e["value_hypothesis"]
-          assert pred["attributes"]["value_frame"]==e["value_prediction"]
-          assert pred["attributes"]["source_possibility"]==c["id"]
-          assert any(x["subject"]==pred["id"] and x["object"]==c["id"] and x["predicate"]=="references" for x in p["relations"])
-          assert not any(x["kind"]=="observation" for x in p["claims"])
-          result=json.loads((root/"producer.json").read_text())
-          assert result["review_state"]=="UNREVIEWED_DRAFT" and result["action_authorized"] is False
-          assert result["value_prediction_id"]==pred["id"]
-          for name in ("detached-check.json","final-check.json"):
-              result=json.loads((root/name).read_text())
-              assert result["valid"] is True and result["action_authorized"] is False
-              print("PACK_CHECK="+json.dumps({"path":name,**{k:result[k] for k in ("claims_checked","relations_checked","existing_endpoints_checked")}}))
-          print("ACTUAL_FRAME="+json.dumps(pred["attributes"]["value_frame"]))
-          print("PACK_SHA256="+hashlib.sha256(raw).hexdigest())
-          print("PACK_BASE64="+base64.b64encode(raw).decode())
-          print("ACTUAL_PROSPECTIVE_PRODUCER=PASS")
+          p=Path(os.environ["RUNNER_TEMP"])
+          old=json.loads(Path("artifacts/history/2026-11-27-prospective-value-commitment-DRAFT.json").read_text())
+          reviewed=json.loads(Path(".sensemaking/knowledge/prospective-value-commitment.json").read_text())
+          assert old["claims"][1]==reviewed["claims"][1] and old["relations"]==reviewed["relations"]
+          check=json.loads((p/"preflight.json").read_text())
+          assert check["valid"] is True and check["action_authorized"] is False
+          print("REVIEWED_PREFLIGHT="+json.dumps({k:check[k] for k in ("claims_checked","relations_checked","existing_endpoints_checked")}))
+          for name in ("focused.json","family.json"):
+              q=json.loads((p/name).read_text())
+              assert q["target_ref"]==os.environ["SOURCE"] and q["action_authorized"] is False
+              e=q["possibility_ecology"]
+              f=e["value_feedback"]
+              x=next(v for v in f["entries"] if v["possibility_id"]=="poss:prospective-value-commitment")
+              row=x["predictions"][0]
+              assert row["prediction"]["statement"]==old["claims"][1]["statement"]
+              assert row["prediction"]["attributes"]["value_frame"]==old["claims"][1]["attributes"]["value_frame"]
+              assert row["standing"]=="NO_ASSESSMENT" and row["assessment_total"]==0
+              assert row["prediction"]["epistemic_status"]=="hypothetical" and x["review_total"]==0
+              cand=next(c for c in e["candidates"]+e["descendant_goal_candidates"] if c["claim_id"]=="poss:prospective-value-commitment")
+              assert cand["realization"]["value"]=="PARTIALLY_IMPLEMENTED"
+              assert cand["realization"]["history"][-1]["value"]=="HYPOTHETICAL"
+              print("VALUE_COMMITMENT="+json.dumps({"query":name,"candidates":f["visible_candidate_total"],"with_prediction":f["candidates_with_predictions"],"unassessed_candidates":f["candidates_without_predictions"],"standing":row["standing"],"assessment_total":row["assessment_total"],"original_frame_preserved":True,"realization":cand["realization"]["value"]}))
+              if name=="family.json":
+                  print("METHOD_PRECEDENTS="+json.dumps([c["id"] for c in q["method_precedents"]["method_candidates"]]))
+                  other=next(v for v in f["entries"] if v["possibility_id"]=="poss:detached-possibility-stewardship")
+                  assert other["predictions"][0]["standing"]=="PARTIALLY_OBSERVED" and other["review_total"]==1
+          print("ACTUAL_PROSPECTIVE_FEEDBACK=PASS")
           PY
-          rm "$DRAFT" "$DEST"
-          python -m compileall -q src/sensemaking_skills/possibility_synthesis.py
           test -z "$(git status --porcelain)"
       - name: Retain actual output
         if: always()
