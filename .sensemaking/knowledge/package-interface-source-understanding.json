@@ -41,9 +41,18 @@
             "basis": "Actual package re-export and downstream consumers in current source."
           },
           "realization": {
-            "value": "HYPOTHETICAL",
-            "establishment": "inferred",
-            "basis": "Candidate implementation; actual construction evidence pending."
+            "value": "PARTIALLY_IMPLEMENTED",
+            "establishment": "observed",
+            "basis": "Actual hosted run 46109120263 at exact candidate d0ddf702 compared old/new source relationships and verification plans on fixed actual BASE e9b710f6. For probe_python_imports the explicit initializer import at line 25, CLI reference at 979, and two substrate tests at 21 and 34 were recovered. For build_repository_semantic_map the initializer import at line 9, CLI reference at 1029 and two substrate tests at 65 and 83 were recovered. Both routes carried the exact initializer SHA-256, literal __all__ membership, consumer binding lines 13/7 and separate PACKAGE_REEXPORT_TEST_FUNCTION provenance in deduplicated pytest candidates. Prior direct source fields, authored context, target identity and old plan targets/evidence were preserved. No-route real committed_regular_file_status retained identical candidate list. Limit one disclosed one of two actual test candidates omitted; complete selected package scopes were not truncated at 80. Existing public verification-plan CLI matched composed result. No tests executed or coverage inferred. Six-path canonical rehearsal verified exact source bytes, two Python parses and valid three-claim/six-relation proposal.",
+            "observation_ref": "artifacts/history/2026-11-28-package-interface-source-understanding.md",
+            "history": [
+              {
+                "value": "HYPOTHETICAL",
+                "establishment": "inferred",
+                "basis": "Candidate implementation; actual construction evidence pending.",
+                "assessed_ref": "e9b710f65aba957287d37d78928458dbf0330079"
+              }
+            ]
           }
         },
         "disposition_history": [
@@ -55,12 +64,12 @@
             "rationale": "Actual package re-export use and absent direct references/test candidates; bounded one-hop syntax over generalized runtime resolution."
           }
         ],
-        "assessed_ref": "e9b710f65aba957287d37d78928458dbf0330079",
+        "assessed_ref": "d0ddf702ecb4d821a003ed90be026fd6d8b94420",
         "synthesis_basis": "Read top-level explicit ImportFrom syntax in uniquely mapped package initializers, preserve source digest and import/consumer reference evidence in a distinct bounded channel, and merge candidate test identities into the existing plan.",
         "value_hypothesis": "A coding agent changing a concrete Python implementation symbol can recover otherwise missed syntactic consumers through a one-hop explicit package re-export and inspect the corresponding existing verification candidates, without treating those references as runtime binding or test coverage.",
         "revisit_when": "Reconsider if actual package candidate syntax is misattributed, direct results or test identity semantics change, limits conceal omissions, or a real consumer requires a different resolution scope.",
         "counterevidence": "Manual inspection and grep remain viable; dynamic exports, multi-hop routes, lexical binding, runtime use and indirect coverage not assessed. No measured comparative benefit or independent cognitive improvement.",
-        "claim_ceiling": "Source-reviewed candidate; actual candidate observations pending. No runtime or coverage claim, measured productivity or independent cognition.",
+        "claim_ceiling": "Actual one-hop source syntax and verification-candidate improvement for two real public package symbols on one fixed repository, with one real negative case and actual bound. No runtime binding, call graph, coverage, measured productivity or independent cognition.",
         "agent_owned": true
       }
     },
@@ -114,7 +123,7 @@
       "id": "cap:package-interface-source-understanding",
       "kind": "capability",
       "statement": "Selected Python symbol source context supplies separate bounded explicit one-hop package import-syntax candidates, and existing verification plan composes their test targets with distinct provenance.",
-      "epistemic_status": "declared",
+      "epistemic_status": "observed",
       "authority_kind": "code",
       "authority_ref": "src/sensemaking_skills/semantic_architecture/source_relationships.py",
       "evidence_refs": [
@@ -130,7 +139,35 @@
       ],
       "attributes": {
         "scope": "Unique top-level definition and module, tracked package initializer explicit ImportFrom, syntactic named consumer references and test scopes; no runtime resolution.",
-        "claim_ceiling": "Source-reviewed candidate; actual candidate observations pending. No runtime or coverage claim, measured productivity or independent cognition."
+        "claim_ceiling": "Actual one-hop source syntax and verification-candidate improvement for two real public package symbols on one fixed repository, with one real negative case and actual bound. No runtime binding, call graph, coverage, measured productivity or independent cognition."
+      }
+    },
+    {
+      "id": "observation:package-interface-source-understanding-20261128",
+      "kind": "observation",
+      "statement": "Scoped assessment (PARTIALLY_OBSERVED): Actual hosted run 46109120263 at exact candidate d0ddf702 compared old/new source relationships and verification plans on fixed actual BASE e9b710f6. For probe_python_imports the explicit initializer import at line 25, CLI reference at 979, and two substrate tests at 21 and 34 were recovered. For build_repository_semantic_map the initializer import at line 9, CLI reference at 1029 and two substrate tests at 65 and 83 were recovered. Both routes carried the exact initializer SHA-256, literal __all__ membership, consumer binding lines 13/7 and separate PACKAGE_REEXPORT_TEST_FUNCTION provenance in deduplicated pytest candidates. Prior direct source fields, authored context, target identity and old plan targets/evidence were preserved. No-route real committed_regular_file_status retained identical candidate list. Limit one disclosed one of two actual test candidates omitted; complete selected package scopes were not truncated at 80. Existing public verification-plan CLI matched composed result. No tests executed or coverage inferred. Six-path canonical rehearsal verified exact source bytes, two Python parses and valid three-claim/six-relation proposal.",
+      "epistemic_status": "observed",
+      "authority_kind": "document",
+      "authority_ref": "artifacts/history/2026-11-28-package-interface-source-understanding.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-package-interface-source-understanding.md",
+        "file:src/sensemaking_skills/semantic_architecture/source_relationships.py",
+        "file:src/sensemaking_skills/semantic_architecture/verification_plan.py",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:src/sensemaking_skills/semantic_architecture/__init__.py",
+        "file:src/sensemaking_skills/semantic_architecture/probes.py",
+        "file:src/sensemaking_skills/semantic_architecture/map.py",
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:tests/test_semantic_substrate.py"
+      ],
+      "attributes": {
+        "consequence_ref": "conseq:package-interface-source-understanding-value",
+        "assessment_status": "PARTIALLY_OBSERVED",
+        "observed_effect": "Actual hosted run 46109120263 at exact candidate d0ddf702 compared old/new source relationships and verification plans on fixed actual BASE e9b710f6. For probe_python_imports the explicit initializer import at line 25, CLI reference at 979, and two substrate tests at 21 and 34 were recovered. For build_repository_semantic_map the initializer import at line 9, CLI reference at 1029 and two substrate tests at 65 and 83 were recovered. Both routes carried the exact initializer SHA-256, literal __all__ membership, consumer binding lines 13/7 and separate PACKAGE_REEXPORT_TEST_FUNCTION provenance in deduplicated pytest candidates. Prior direct source fields, authored context, target identity and old plan targets/evidence were preserved. No-route real committed_regular_file_status retained identical candidate list. Limit one disclosed one of two actual test candidates omitted; complete selected package scopes were not truncated at 80. Existing public verification-plan CLI matched composed result. No tests executed or coverage inferred. Six-path canonical rehearsal verified exact source bytes, two Python parses and valid three-claim/six-relation proposal.",
+        "assessed_at_revision": "d0ddf702ecb4d821a003ed90be026fd6d8b94420",
+        "scope": "Exact candidate compared on fixed BASE; two existing package re-exports and real CLI/test source references, one actual no-route definition and limit one, public verification-plan composition.",
+        "counterevidence": "Manual source reading remains viable. Syntax-only aliases collected file-wide, no lexical rebinding, runtime exports, indirect helpers, wildcard or multi-hop routes assessed. Generic BASE review truncated; only selected focused scope complete. No independent consumer, actual test execution or comparative performance measured.",
+        "claim_ceiling": "Actual one-hop source syntax and verification-candidate improvement for two real public package symbols on one fixed repository, with one real negative case and actual bound. No runtime binding, call graph, coverage, measured productivity or independent cognition."
       }
     }
   ],
@@ -204,6 +241,16 @@
       "predicate": "serves_goal",
       "object": "goal:compounding-product-knowledge",
       "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-package-interface-source-understanding.md"
+      ]
+    },
+    {
+      "id": "rel:package-interface-source-understanding-observation",
+      "subject": "observation:package-interface-source-understanding-20261128",
+      "predicate": "references",
+      "object": "conseq:package-interface-source-understanding-value",
+      "epistemic_status": "observed",
       "evidence_refs": [
         "file:artifacts/history/2026-11-28-package-interface-source-understanding.md"
       ]
