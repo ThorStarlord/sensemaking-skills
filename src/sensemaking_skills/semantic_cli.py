@@ -595,15 +595,20 @@ def register_semantic_commands(root_cli: click.Group) -> None:
                   help="Use the unique Git merge base of --base-ref and --ref as the baseline")
     @click.option("--include-possibility-evolution", is_flag=True,
                   help="Compare authored opportunities and their direct authored context (requires --json)")
+    @click.option("--possibility", "possibility_focus", default=None,
+                  help="Focus the evolution projection on one BASE or TARGET authored opportunity")
     @click.option("--json", "output_json", is_flag=True)
     def semantic_workspace_changes(
         base_ref: str, ref: str, repo_dir: Path, repository_label: str | None,
         index_dir: Path | None, refresh: bool, limit: int, pr_merge_base: bool,
         include_possibility_evolution: bool, output_json: bool,
+        possibility_focus: str | None,
     ) -> None:
         """Compare reviewed semantic knowledge at two commits without preparing a database."""
         if include_possibility_evolution and not output_json:
             raise click.UsageError("--include-possibility-evolution requires --json")
+        if possibility_focus is not None and not include_possibility_evolution:
+            raise click.UsageError("--possibility requires --include-possibility-evolution")
         from .workspace_knowledge import run_workspace_changes
 
         try:
@@ -612,6 +617,7 @@ def register_semantic_commands(root_cli: click.Group) -> None:
                 repository=repository_label, index_dir=index_dir,
                 refresh=refresh, limit=limit, pr_merge_base=pr_merge_base,
                 include_possibility_evolution=include_possibility_evolution,
+                possibility_focus=possibility_focus,
             )
         except (ValueError, OSError, UnicodeError) as exc:
             raise click.ClickException(str(exc)) from exc

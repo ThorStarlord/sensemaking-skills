@@ -221,6 +221,7 @@ def query_knowledge(
     query_text: str | None = None, search_kinds: tuple[str, ...] = (),
     include_candidates: bool = False,
     include_possibility_evolution: bool = False,
+    possibility_focus: str | None = None,
     candidate_changed_paths: frozenset[str] | None = None,
     workspace_changed_paths: frozenset[str] | None = None,
     workspace_untracked_directory_entries: frozenset[str] = frozenset(),
@@ -267,6 +268,8 @@ def query_knowledge(
         raise ValueError("product-outline lists reviewed goals and does not accept --subject")
     if include_possibility_evolution and operation != "changes":
         raise ValueError("possibility evolution requires changes")
+    if possibility_focus is not None and not include_possibility_evolution:
+        raise ValueError("possibility focus requires possibility evolution")
     if operation == "changes" and not base_ref:
         raise ValueError("changes requires explicit base_ref")
     if base_db_path is not None and operation != "changes":
@@ -429,6 +432,7 @@ def query_knowledge(
             if include_possibility_evolution:
                 extra["possibility_evolution"] = possibility_evolution(
                     old_claims, claims, old_relations, new_relations, limit=limit,
+                    focus=possibility_focus,
                 )
                 extra_truncated = extra_truncated or extra["possibility_evolution"]["truncated"]
             extra["comparison_limit"] = "Snapshot set differences only; repository ancestry and semantic effects are NOT established."
