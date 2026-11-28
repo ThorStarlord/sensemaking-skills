@@ -152,7 +152,10 @@ For a directed architectural source inquiry between two known tracked Python
 files, `sensemaking-skills semantic source-route --repo . --ref HEAD --from-path FILE --to-path FILE --json`
 finds one bounded import-candidate witness using exact committed AST source.
 It reports edge lines, source digests, ambiguity and search bounds; it is not
-a runtime dependency, impact or absence-of-coupling verdict. See the
+a runtime dependency, impact or absence-of-coupling verdict. Add
+`--base-ref OLD` to compare the same question at two exact commits, with
+separate endpoint and search status for each revision. A missing endpoint or
+incomplete negative search is not an observed dependency change. See the
 [source-route contract](semantic-architecture/persistent-knowledge-cli.md#source-qualified-architectural-routes).
 
 For an explicit proposed text patch that has not been applied to the active checkout,

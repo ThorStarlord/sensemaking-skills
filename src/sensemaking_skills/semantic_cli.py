@@ -714,26 +714,38 @@ def register_semantic_commands(root_cli: click.Group) -> None:
     @click.option("--repo", "repo_dir", type=click.Path(exists=True, file_okay=False, path_type=Path),
                   default=Path("."), show_default=True)
     @click.option("--ref", default="HEAD", show_default=True, help="Exact committed source revision")
+    @click.option("--base-ref", default=None, help="Optional committed revision for paired route evidence")
     @click.option("--from-path", required=True, help="Repository-relative starting Python file")
     @click.option("--to-path", required=True, help="Repository-relative destination Python file")
     @click.option("--max-hops", type=click.IntRange(1, 6), default=6, show_default=True)
     @click.option("--max-files", type=click.IntRange(1, 250), default=80, show_default=True)
     @click.option("--json", "output_json", is_flag=True)
     def semantic_source_route(
-        repo_dir: Path, ref: str, from_path: str, to_path: str,
+        repo_dir: Path, ref: str, base_ref: str | None, from_path: str, to_path: str,
         max_hops: int, max_files: int, output_json: bool,
     ) -> None:
-        """Find one bounded source-qualified Python import-candidate route."""
-        from .semantic_architecture.source_relationships import build_source_route
+        """Find or compare bounded source-qualified Python import-candidate routes."""
+        from .semantic_architecture.source_relationships import (
+            build_source_route, build_source_route_comparison,
+        )
         from .workspace_knowledge import _checkout_root, _resolve_commit, _validate_ref_text
 
         try:
             _validate_ref_text(ref)
+            if base_ref is not None:
+                _validate_ref_text(base_ref)
             root = _checkout_root(repo_dir.resolve())
             sha = _resolve_commit(root, ref)
-            payload = build_source_route(
-                root, sha, from_path, to_path, max_hops=max_hops, max_files=max_files,
-            )
+            if base_ref is None:
+                payload = build_source_route(
+                    root, sha, from_path, to_path, max_hops=max_hops, max_files=max_files,
+                )
+            else:
+                base_sha = _resolve_commit(root, base_ref)
+                payload = build_source_route_comparison(
+                    root, base_sha, sha, from_path, to_path,
+                    max_hops=max_hops, max_files=max_files,
+                )
         except (ValueError, OSError, UnicodeError, RuntimeError) as exc:
             raise click.ClickException(str(exc)) from exc
         _emit(payload, output_json=output_json)

@@ -21,7 +21,9 @@ from collections import deque
 from pathlib import Path, PurePosixPath
 from typing import Any, Callable, Iterable, Mapping
 
-from .source_access import _git, _source, temporary_commit_checkout, verified_tracked_sources
+from .source_access import (
+    _source, committed_regular_file_status, temporary_commit_checkout, verified_tracked_sources,
+)
 from .verification_scenarios import build_guard_scenarios
 
 _MAX_LIMIT = 250
@@ -685,15 +687,9 @@ def _review_side(
 ) -> dict[str, Any]:
     """Classify the exact committed tree entry before inspecting its source."""
 
-    entry = _git(root, "--literal-pathspecs", "ls-tree", "-z", "--full-tree", ref, "--", path)
-    if not entry:
-        return {"ref": ref, "status": "ABSENT_FROM_TREE", "relationships": None}
-    metadata, separator, name = entry.rstrip("\0").partition("\t")
-    if not separator or name != path or len(metadata.split()) != 3:
-        raise ValueError("cannot establish the exact committed source review entry")
-    mode, kind, _ = metadata.split()
-    if kind != "blob" or mode not in {"100644", "100755"}:
-        return {"ref": ref, "status": "NOT_REGULAR_FILE", "relationships": None}
+    status = committed_regular_file_status(root, ref, path)
+    if status != "REGULAR_FILE":
+        return {"ref": ref, "status": status, "relationships": None}
     return {
         "ref": ref, "status": "REGULAR_FILE",
         "relationships": build_source_relationships(
@@ -1028,3 +1024,80 @@ def build_source_route(
             "tests_executed": False, "action_authorized": False,
             "explicit_limits": list(_ROUTE_LIMITS),
         }
+
+
+def _route_comparison_side(
+    root: Path, ref: str, start: str, destination: str, max_hops: int, max_files: int,
+) -> dict[str, Any]:
+    endpoints = {
+        "from_path": committed_regular_file_status(root, ref, start),
+        "to_path": committed_regular_file_status(root, ref, destination),
+    }
+    if any(status != "REGULAR_FILE" for status in endpoints.values()):
+        return {"ref": ref, "endpoint_status": endpoints,
+                "status": "ENDPOINT_UNAVAILABLE", "result": None}
+    result = build_source_route(
+        root, ref, start, destination, max_hops=max_hops, max_files=max_files,
+    )
+    return {"ref": ref, "endpoint_status": endpoints,
+            "status": result["status"], "result": result}
+
+
+def build_source_route_comparison(
+    root: str | Path, base_ref: str, target_ref: str, from_path: str, to_path: str, *,
+    max_hops: int = 6, max_files: int = 80,
+) -> dict[str, Any]:
+    """Compare two bounded witnesses, retaining each exact committed observation.
+
+    The absence of an endpoint or an incomplete negative search is not an
+    observed disappearance of an import route. No rename matching is attempted.
+    """
+    if any(not re.fullmatch(r"[0-9a-f]{40}", ref) for ref in (base_ref, target_ref)):
+        raise ValueError("source route comparison requires two full 40-character Git SHAs")
+    if not 1 <= max_hops <= 6 or not 1 <= max_files <= 250:
+        raise ValueError("source route requires max_hops 1..6 and max_files 1..250")
+    start, destination = _route_path(from_path), _route_path(to_path)
+    if start == destination:
+        raise ValueError("source route requires two distinct source paths")
+    root = Path(root).resolve()
+    # Both revisions are independently classified; a missing or non-regular
+    # endpoint must never be presented as a completed negative search.
+    base = _route_comparison_side(root, base_ref, start, destination, max_hops, max_files)
+    target = (base if base_ref == target_ref else
+              _route_comparison_side(root, target_ref, start, destination, max_hops, max_files))
+    statuses = (base["status"], target["status"])
+    dispositions = {
+        ("FOUND", "FOUND"): "WITNESS_ON_BOTH",
+        ("FOUND", "NO_ROUTE_FOUND_WITHIN_BOUNDS"): "BASE_WITNESS_TARGET_NO_WITNESS_WITHIN_BOUNDS",
+        ("NO_ROUTE_FOUND_WITHIN_BOUNDS", "FOUND"): "TARGET_WITNESS_BASE_NO_WITNESS_WITHIN_BOUNDS",
+        ("NO_ROUTE_FOUND_WITHIN_BOUNDS", "NO_ROUTE_FOUND_WITHIN_BOUNDS"): "NO_WITNESS_WITHIN_BOUNDS_ON_EITHER",
+    }
+    comparison = dispositions.get(statuses, "NOT_COMPARABLE")
+    same_sequence = None
+    hop_delta = None
+    if comparison == "WITNESS_ON_BOTH":
+        base_result, target_result = base["result"], target["result"]
+        base_sequence = [(edge["from_path"], edge["to_path"]) for edge in base_result["route"]]
+        target_sequence = [(edge["from_path"], edge["to_path"]) for edge in target_result["route"]]
+        same_sequence = base_sequence == target_sequence
+        hop_delta = target_result["hop_count"] - base_result["hop_count"]
+    return {
+        "code": "SEMANTIC_SOURCE_ROUTE_COMPARISON",
+        "base_ref": base_ref, "target_ref": target_ref,
+        "from_path": start, "to_path": destination,
+        "max_hops_per_revision": max_hops, "max_files_per_revision": max_files,
+        "base": base, "target": target,
+        "comparison_status": comparison,
+        "same_witness_path_sequence": same_sequence,
+        "witness_hop_count_delta": hop_delta,
+        "runtime_dependency_established": False, "semantic_impact_established": False,
+        "tests_executed": False, "action_authorized": False,
+        "explicit_limits": [
+            *_ROUTE_LIMITS,
+            "The same exact path names and search bounds are used on both revisions; rename matching is NOT ASSESSED.",
+            "An absent or non-regular endpoint is not searched and does not imply a route was added or removed.",
+            "NOT_COMPARABLE includes unavailable endpoints and incomplete negative searches; inspect each side.",
+            "Witness differences compare returned observations only; they do not establish dependency addition or removal.",
+            "Path-sequence equality and hop delta concern the selected witnesses, not equivalence of source, all routes or architecture.",
+        ],
+    }

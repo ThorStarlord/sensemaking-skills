@@ -2108,3 +2108,35 @@ Local/conditional imports are included; dynamic imports, package initialization,
 re-exports, non-Python and runtime behavior are not resolved. No target code or
 tests are run and no action is authorized. Manual source inspection and
 `context-for --include-source-relationships` remain complementary tools.
+
+### Compare architectural source routes across commits
+
+```bash
+sensemaking-skills semantic source-route --repo . --base-ref BASE --ref TARGET \
+  --from-path src/sensemaking_skills/semantic_architecture/source_relationships.py \
+  --to-path src/sensemaking_skills/semantic_architecture/knowledge_sources.py --json
+```
+
+The optional `--base-ref` selects `SEMANTIC_SOURCE_ROUTE_COMPARISON`.
+Without it the existing single-revision contract is unchanged. Both sides
+use the same explicit normalized path pair and the same per-revision search
+bounds; the full existing route result is retained at `base.result` and
+`target.result` when both endpoints at that revision are regular files.
+Each side reports literal committed endpoint status (`REGULAR_FILE`,
+`ABSENT_FROM_TREE` or `NOT_REGULAR_FILE`). If either is unavailable,
+that side is `ENDPOINT_UNAVAILABLE` and its result is null, not an empty
+search. Same-ref comparisons reuse one observation.
+
+The comparison status is `WITNESS_ON_BOTH`,
+`BASE_WITNESS_TARGET_NO_WITNESS_WITHIN_BOUNDS`,
+`TARGET_WITNESS_BASE_NO_WITNESS_WITHIN_BOUNDS`,
+`NO_WITNESS_WITHIN_BOUNDS_ON_EITHER`, or `NOT_COMPARABLE` for an
+unavailable endpoint or incomplete negative search. A positive witness
+remains positive even if its search disclosed other gaps. With witnesses on
+both sides, `same_witness_path_sequence` compares only the ordered path pairs
+and `witness_hop_count_delta` is target minus base; otherwise both are null.
+Inspect the preserved source hashes, cited lines and search limitations
+before making an architectural judgment. This does not match renamed files,
+establish all routes, infer dependency addition/removal or establish runtime
+behavior, architectural conformance or semantic effects. No snapshot is
+constructed by the comparison builder; no target code is executed.
