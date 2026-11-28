@@ -1,0 +1,167 @@
+name: Actual alternative intervention comparison (execution branch only)
+on:
+  push:
+    branches: [claude/existing-pack-codesign-execution-20261128]
+permissions:
+  contents: read
+jobs:
+  compare:
+    if: github.ref == 'refs/heads/claude/existing-pack-codesign-execution-20261128'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      BASE: "bfa213c6617000df84f09a3a81486408e0000a3c"
+      A: "58d9a153bacddff53f1f9c24170911b5353716a2"
+      B: "6b654cfbfde0af15b44525fe5c729750c0ef7873"
+      PREVIOUS: "ec75a460de4bbac9090158327fb55841fc8f00a1"
+      NEW_BASE: "3bccadb5c31b59ebe7d5d7f461bd673e3d6bd48c"
+      PACK: ".sensemaking/knowledge/prospective-source-knowledge-codesign.json"
+      PREVIOUS_PACK: ".sensemaking/knowledge/possibility-directed-intervention-rehearsal.json"
+      FOCUS: "poss:prospective-source-knowledge-codesign"
+      HISTORY: "artifacts/history/2026-11-28-alternative-intervention-construction.md"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BASE }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Rehearse both real source alternatives with the canonical implementation
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$BASE"
+          python -m pip install -e .
+          git worktree add --detach "$RUNNER_TEMP/target" "$BASE"
+          TARGET="$RUNNER_TEMP/target"
+          git diff --no-ext-diff --no-textconv --no-renames "$BASE" "$A" -- > "$RUNNER_TEMP/full.patch"
+          git diff --no-ext-diff --no-textconv --no-renames "$BASE" "$A" -- "$PACK" > "$RUNNER_TEMP/pack-only.patch"
+          git diff --no-ext-diff --no-textconv --no-renames "$PREVIOUS" "$BASE" -- > "$RUNNER_TEMP/pr1018.patch"
+          git diff --no-ext-diff --no-textconv --no-renames "$NEW_BASE" "$PREVIOUS" -- > "$RUNNER_TEMP/pr1017.patch"
+          for variant in A B; do
+            git diff --no-ext-diff --no-textconv --no-renames "$BASE" "${!variant}" -- src/sensemaking_skills/patch_rehearsal.py src/sensemaking_skills/semantic_cli.py > "$RUNNER_TEMP/$variant-source.patch"
+            sensemaking-skills semantic patch-rehearsal --repo "$TARGET" --ref "$BASE" --patch-file "$RUNNER_TEMP/$variant-source.patch" --possibility "$FOCUS" --limit 80 --json > "$RUNNER_TEMP/$variant-source.json"
+          done
+          sensemaking-skills semantic patch-rehearsal --repo "$TARGET" --ref "$NEW_BASE" --patch-file "$RUNNER_TEMP/pr1017.patch" --knowledge-proposal "$PREVIOUS_PACK" --possibility "$FOCUS" --limit 80 --json > "$RUNNER_TEMP/old-new-pack.json"
+          sensemaking-skills semantic workspace-query --repo "$TARGET" --ref "$BASE" --operation possibility-ecology --subject "$FOCUS" --limit 80 --index-dir "$RUNNER_TEMP/standalone" --json > "$RUNNER_TEMP/standalone.json"
+          python - <<'PY'
+          import json,hashlib,os,subprocess
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])
+          stand=json.loads((p/"standalone.json").read_text())["possibility_ecology"]
+          result={}
+          for v in ("A","B"):
+              q=json.loads((p/(v+"-source.json")).read_text())
+              assert q["base_ref"]==os.environ["BASE"] and len(q["files"])==2
+              assert q["possibility_context"]["possibility_ecology"]==stand
+              for f in q["files"]:
+                  for ref,key in (("BASE","before_sha256"),(v,"after_sha256")):
+                      raw=subprocess.check_output(["git","show",os.environ[ref]+":"+f["path"]])
+                      assert hashlib.sha256(raw).hexdigest()==f[key]
+                  assert f["python_syntax"]=="PASS"
+              result[v]={"patch_sha256":q["patch_sha256"],"patch_bytes":q["patch_bytes"],"definitions":[{"path":f["path"],"change_total":f["definition_changes"]["change_total"]} for f in q["files"]],"context_truncated":q["possibility_context"]["truncated"],"review_truncated":q["review"]["truncated"]}
+          print("SOURCE_ALTERNATIVES="+json.dumps(result))
+          PY
+      - name: Exercise unstaged alternative on actual pack revision and added evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          git checkout --detach "$B"
+          TARGET="$RUNNER_TEMP/target"
+          sensemaking-skills semantic patch-rehearsal --repo "$TARGET" --ref "$PREVIOUS" --patch-file "$RUNNER_TEMP/pr1018.patch" --knowledge-update "$PREVIOUS_PACK" --possibility "$FOCUS" --limit 80 --json > "$RUNNER_TEMP/B-historical.json"
+          if sensemaking-skills semantic patch-rehearsal --repo "$TARGET" --ref "$BASE" --patch-file "$RUNNER_TEMP/full.patch" --knowledge-update "$PACK" --possibility "$FOCUS" --limit 80 --json > "$RUNNER_TEMP/B-full.json" 2>"$RUNNER_TEMP/B-full.err"; then
+            echo "Unstaged candidate unexpectedly accepted an added evidence path"
+            exit 1
+          fi
+          cat "$RUNNER_TEMP/B-full.err"
+          grep -q "text modifications only, not structural changes" "$RUNNER_TEMP/B-full.err"
+      - name: Exercise staged alternative and preserve earlier contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          git checkout --detach "$A"
+          TARGET="$RUNNER_TEMP/target"
+          run() { sensemaking-skills semantic patch-rehearsal --repo "$TARGET" --limit 80 --json "$@"; }
+          run --ref "$PREVIOUS" --patch-file "$RUNNER_TEMP/pr1018.patch" --knowledge-update "$PREVIOUS_PACK" --possibility "$FOCUS" > "$RUNNER_TEMP/A-historical.json"
+          run --ref "$BASE" --patch-file "$RUNNER_TEMP/full.patch" --knowledge-update "$PACK" --possibility "$FOCUS" > "$RUNNER_TEMP/A-full.json"
+          run --ref "$BASE" --patch-file "$RUNNER_TEMP/pack-only.patch" --knowledge-update "$PACK" --possibility "$FOCUS" > "$RUNNER_TEMP/A-pack-only.json"
+          run --ref "$NEW_BASE" --patch-file "$RUNNER_TEMP/pr1017.patch" --knowledge-proposal "$PREVIOUS_PACK" --possibility "$FOCUS" > "$RUNNER_TEMP/A-new-pack.json"
+          run --ref "$BASE" --patch-file "$RUNNER_TEMP/A-source.patch" --possibility "$FOCUS" > "$RUNNER_TEMP/A-default.json"
+          if run --ref "$PREVIOUS" --patch-file "$RUNNER_TEMP/pr1018.patch" --knowledge-proposal "$PREVIOUS_PACK" > /dev/null 2>"$RUNNER_TEMP/wrong-new.err"; then exit 1; fi
+          if run --ref "$NEW_BASE" --patch-file "$RUNNER_TEMP/pr1017.patch" --knowledge-update "$PREVIOUS_PACK" > /dev/null 2>"$RUNNER_TEMP/wrong-update.err"; then exit 1; fi
+          if run --ref "$PREVIOUS" --patch-file "$RUNNER_TEMP/pr1018.patch" --knowledge-proposal "$PREVIOUS_PACK" --knowledge-update "$PREVIOUS_PACK" > /dev/null 2>"$RUNNER_TEMP/both.err"; then exit 1; fi
+          python - <<'PY'
+          import json,hashlib,os,subprocess,re
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])
+          def read(n): return json.loads((p/(n+".json")).read_text())
+          def norm(x):
+              if isinstance(x,dict): return {k:norm(v) for k,v in x.items()}
+              if isinstance(x,list): return [norm(v) for v in x]
+              if isinstance(x,str): return re.sub(r'/tmp/sensemaking-[^/\s]+/[^/\s]+','<DISPOSABLE_CHECKOUT>',x)
+              return x
+          def check(q,base,target,pack):
+              assert q["base_ref"]==os.environ[base] and q["status"]=="REHEARSED"
+              for f in q["files"]:
+                  raw=subprocess.check_output(["git","show",os.environ[target]+":"+f["path"]])
+                  assert hashlib.sha256(raw).hexdigest()==f["after_sha256"]
+                  if f["change_kind"]=="MODIFIED":
+                      raw=subprocess.check_output(["git","show",os.environ[base]+":"+f["path"]])
+                      assert hashlib.sha256(raw).hexdigest()==f["before_sha256"]
+                  else: assert f["before_sha256"] is None
+                  if f["path"].endswith(".py"): assert f["python_syntax"]=="PASS"
+              k=q["candidate_knowledge"]
+              assert k["operation"]=="UPDATE_EXISTING" and k["proposal"]==os.environ[pack]
+              f=next(f for f in q["files"] if f["path"]==k["proposal"])
+              assert k["base_proposal_sha256"]==f["before_sha256"] and k["proposal_sha256"]==f["after_sha256"]
+              assert not k["accepted"] and not k["action_authorized"]
+              assert q["review"]["base_ref"]==q["review"]["target_ref"]==os.environ[base]
+              assert not q["review"]["review_scope"]["working_changes_indexed"]
+              assert set(q["review"]["review_scope"]["selected_paths"])=={f["path"] for f in q["files"]}
+              assert not any(q[x] for x in ("active_checkout_patch_applied","target_code_executed","tests_executed","patched_bytes_indexed","semantic_truth_established","action_authorized"))
+              return k
+          ah,bh=read("A-historical"),read("B-historical")
+          ka,kb=check(ah,"PREVIOUS","BASE","PREVIOUS_PACK"),check(bh,"PREVIOUS","BASE","PREVIOUS_PACK")
+          assert len(ah["files"])==3 and ah["files"]==bh["files"]
+          assert ka==kb and ka["status"]=="MECHANICALLY_VALID", (ka,kb)
+          assert ah["possibility_context"]["possibility_ecology"]==bh["possibility_context"]["possibility_ecology"]
+          assert ah["disposable_index_used"] and not bh["disposable_index_used"]
+          f=read("A-full")
+          k=check(f,"BASE","A","PACK")
+          print("FULL_PREFLIGHT="+json.dumps(k))
+          assert k["status"]=="MECHANICALLY_VALID" and len(f["files"])==7
+          assert k["validation"]["claims_checked"]==7 and k["validation"]["relations_checked"]==17
+          assert k["validation"]["affected_incoming_relations_checked"]>=1
+          assert os.environ["HISTORY"] in k["validation"]["local_evidence_paths_checked"]
+          assert f["possibility_context"]["possibility_ecology"]==read("standalone")["possibility_ecology"]
+          paths={x["path"]:x for x in f["possibility_context"]["patch_path_context"]}
+          assert paths[os.environ["HISTORY"]]["base_tree_status"]=="ABSENT_FROM_TREE"
+          assert paths[os.environ["PACK"]]["base_tree_status"]=="REGULAR_FILE"
+          old=json.loads(subprocess.check_output(["git","show",os.environ["BASE"]+":"+os.environ["PACK"]]))
+          candidate=json.loads(subprocess.check_output(["git","show",os.environ["A"]+":"+os.environ["PACK"]]))
+          assert old["claims"]==candidate["claims"][:len(old["claims"])] and old["relations"]==candidate["relations"][:len(old["relations"])]
+          slice_q=read("A-pack-only")
+          sk=check(slice_q,"BASE","A","PACK")
+          assert sk["status"]=="NOT_VALIDATED" and sk["proposal_sha256"]==k["proposal_sha256"] and os.environ["HISTORY"] in sk["reason"]
+          assert norm(read("old-new-pack"))==norm(read("A-new-pack")), "new pack compatibility changed"
+          assert norm(read("A-source"))==norm(read("A-default")), "default compatibility changed"
+          assert "exactly one new explicit knowledge pack" in (p/"wrong-new.err").read_text()
+          assert "exactly one existing explicit knowledge pack" in (p/"wrong-update.err").read_text()
+          assert "mutually exclusive" in (p/"both.err").read_text()
+          print("ACTUAL_COMPARISON="+json.dumps({"historical_paths":len(ah["files"]),"historical_pack_sha256":ka["proposal_sha256"],"historical_preflight_equal":True,"historical_context_equal":True,"A_staged":True,"B_staged":False,"B_full_refused":True,"A_full_paths":len(f["files"]),"A_full_patch_sha256":f["patch_sha256"],"A_full_pack_sha256":k["proposal_sha256"],"A_full_prior_pack_sha256":k["base_proposal_sha256"],"A_full_claims":k["validation"]["claims_checked"],"A_full_relations":k["validation"]["relations_checked"],"A_full_affected_incoming_relations":k["validation"]["affected_incoming_relations_checked"],"A_full_candidate_valid":True,"A_pack_only_status":sk["status"],"A_pack_only_reason":sk["reason"],"original_records_preserved":True,"BASE_ecology_equal":True,"review_truncated":f["review"]["truncated"],"selected_context_truncated":f["possibility_context"]["truncated"],"old_new_pack_equal":True,"old_default_equal":True,"wrong_modes_refused":True}))
+          PY
+          test "$(git -C "$TARGET" rev-parse HEAD)" = "$BASE"
+          test -z "$(git -C "$TARGET" status --porcelain)"
+          test -z "$(git status --porcelain)"
+      - name: Retain actual comparison artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: actual-alternative-intervention-comparison
+          path: |
+            ${{ runner.temp }}/*.json
+            ${{ runner.temp }}/*.patch
+            ${{ runner.temp }}/*.err
+          retention-days: 14
