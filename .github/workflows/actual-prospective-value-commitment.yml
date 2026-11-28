@@ -1,0 +1,84 @@
+name: Actual prospective value commitment (execution branch only)
+on:
+  push:
+    branches: [claude/prospective-value-commitment-execution-20261127]
+permissions:
+  contents: read
+jobs:
+  actual-use:
+    if: github.ref == 'refs/heads/claude/prospective-value-commitment-execution-20261127'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      SOURCE: "d73fbae74c32981b878e5dcbd582a15f07f46976"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.SOURCE }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install exact source
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE"
+          python -m pip install -e .
+          test -z "$(git status --porcelain)"
+      - name: Materialize actual preconstruction synthesis
+        run: |
+          set -euo pipefail
+          EPISODE="artifacts/history/2026-11-27-prospective-value-commitment-synthesis.json"
+          DRAFT="artifacts/history/2026-11-27-prospective-value-commitment-DRAFT.json"
+          DEST=".sensemaking/knowledge/prospective-value-commitment.json"
+          test ! -e "$DEST"
+          git merge-base --is-ancestor 8dc725402dc30005332dd2408432d7ccb3142ff3 "$SOURCE"
+          git show "8dc725402dc30005332dd2408432d7ccb3142ff3:$EPISODE" > "$RUNNER_TEMP/original-episode.json"
+          cmp "$EPISODE" "$RUNNER_TEMP/original-episode.json"
+          sensemaking-skills semantic possibility record --repo . --episode "$EPISODE" --output "$DRAFT" --draft-only --json > "$RUNNER_TEMP/producer.json"
+          sensemaking-skills semantic knowledge-proposal-check --repo . --proposal "$DRAFT" --destination "$DEST" --json > "$RUNNER_TEMP/detached-check.json"
+          test ! -e "$DEST"
+          cp "$DRAFT" "$DEST"
+          sensemaking-skills semantic knowledge-proposal-check --repo . --proposal "$DEST" --json > "$RUNNER_TEMP/final-check.json"
+          cmp "$DRAFT" "$DEST"
+          cp "$DRAFT" "$RUNNER_TEMP/generated-pack.json"
+          EPISODE="$EPISODE" DRAFT="$DRAFT" python - <<'PY'
+          import os,json,hashlib,base64
+          from pathlib import Path
+          root=Path(os.environ["RUNNER_TEMP"])
+          e=json.loads(Path(os.environ["EPISODE"]).read_text())
+          raw=Path(os.environ["DRAFT"]).read_bytes()
+          p=json.loads(raw)
+          assert len(p["claims"])==2
+          c,pred=p["claims"]
+          assert c["id"]=="poss:prospective-value-commitment"
+          assert pred["id"]=="conseq:prospective-value-commitment-value"
+          assert c["epistemic_status"]==pred["epistemic_status"]=="hypothetical"
+          assert c["attributes"]["value_hypothesis"]==pred["statement"]==e["value_hypothesis"]
+          assert pred["attributes"]["value_frame"]==e["value_prediction"]
+          assert pred["attributes"]["source_possibility"]==c["id"]
+          assert any(x["subject"]==pred["id"] and x["object"]==c["id"] and x["predicate"]=="references" for x in p["relations"])
+          assert not any(x["kind"]=="observation" for x in p["claims"])
+          result=json.loads((root/"producer.json").read_text())
+          assert result["review_state"]=="UNREVIEWED_DRAFT" and result["action_authorized"] is False
+          assert result["value_prediction_id"]==pred["id"]
+          for name in ("detached-check.json","final-check.json"):
+              result=json.loads((root/name).read_text())
+              assert result["valid"] is True and result["action_authorized"] is False
+              print("PACK_CHECK="+json.dumps({"path":name,**{k:result[k] for k in ("claims_checked","relations_checked","existing_endpoints_checked")}}))
+          print("ACTUAL_FRAME="+json.dumps(pred["attributes"]["value_frame"]))
+          print("PACK_SHA256="+hashlib.sha256(raw).hexdigest())
+          print("PACK_BASE64="+base64.b64encode(raw).decode())
+          print("ACTUAL_PROSPECTIVE_PRODUCER=PASS")
+          PY
+          rm "$DRAFT" "$DEST"
+          python -m compileall -q src/sensemaking_skills/possibility_synthesis.py
+          test -z "$(git status --porcelain)"
+      - name: Retain actual output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: actual-prospective-value-commitment
+          path: ${{ runner.temp }}/*.json
+          retention-days: 14
