@@ -1,0 +1,48 @@
+{
+  "schema_version": 2,
+  "claims": [
+    {
+      "id": "conseq:bounded-reentry-receipt-discovery",
+      "kind": "hypothesis",
+      "statement": "A returning agent on the current mature repository can discover the previously omitted November 27 receipt through the ordinary unselected handoff at the existing forty-path budget, without implicit receipt reading or predecessor selection.",
+      "epistemic_status": "hypothetical",
+      "authority_kind": "hypothesis",
+      "authority_ref": "artifacts/history/2026-11-27-experience-informed-strategic-selection.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-experience-informed-strategic-selection.md",
+        "file:src/sensemaking_skills/reentry_context.py",
+        "file:artifacts/history/2026-11-27-adaptive-strategic-value-formation.md"
+      ],
+      "attributes": {
+        "concept": "ConsequenceHypothesis",
+        "source_possibility": "poss:verified-first-use-handoff",
+        "category": "benefit",
+        "analysis_ref": "artifacts/history/2026-11-27-experience-informed-strategic-selection.md",
+        "source_revision": "d6758a2816c6269d7ad0b7b9e77e4cf51f029418",
+        "value_frame": {
+          "beneficiary": "Returning coding agent on a mature target repository.",
+          "criterion": "Remove the observed receipt-path discovery blind spot at the existing forty-path budget without implicit content reading or semantic predecessor selection.",
+          "comparison_baseline": "Current first-forty alphabetical path inventory, with manual Git or directory enumeration as an available fallback.",
+          "expected_observation": "An actual no-resume handoff includes the previously omitted November 27 receipt, retains the first twenty paths, returns forty distinct paths, discloses omitted count and selects zero receipts; explicit selection still validates.",
+          "would_change_decision_if": "A decisive middle-range path is hidden, the new ordering implies priority/currentness, or manual enumeration is more appropriate.",
+          "cost_and_downside": "Trade twenty prefix hints for twenty tail hints, within the existing limit; middle remains omitted."
+        },
+        "would_change_decision_if": "A decisive middle-range path is hidden, or the selection suggests recency, authority or relevance beyond filename ordering.",
+        "mechanism": "Use both lexicographic ends of the existing receipt path list rather than only its prefix.",
+        "claim_ceiling": "Prospective conditional value hypothesis for the exact observed path gap. No established benefit or independent use."
+      }
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel:bounded-reentry-receipt-discovery-prediction",
+      "subject": "conseq:bounded-reentry-receipt-discovery",
+      "predicate": "references",
+      "object": "poss:verified-first-use-handoff",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-experience-informed-strategic-selection.md"
+      ]
+    }
+  ]
+}
