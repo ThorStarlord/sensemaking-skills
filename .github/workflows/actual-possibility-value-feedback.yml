@@ -1,0 +1,94 @@
+name: Actual possibility value feedback (execution branch only)
+on:
+  push:
+    branches: [claude/possibility-value-feedback-execution-20261127]
+permissions:
+  contents: read
+jobs:
+  actual-use:
+    if: github.ref == 'refs/heads/claude/possibility-value-feedback-execution-20261127'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      SOURCE: "eda01cbf2a0c796064b8ae21e0b823b1a101498d"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.SOURCE }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install exact product source
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE"
+          python -m pip install -e .
+          test -z "$(git status --porcelain)"
+      - name: Recover actual value evidence and produce the agent-authored review
+        run: |
+          set -euo pipefail
+          sensemaking-skills semantic knowledge-proposal-check --repo . \
+            --proposal .sensemaking/knowledge/possibility-value-feedback-detached-stewardship.json --json > "$RUNNER_TEMP/value-preflight.json"
+          sensemaking-skills semantic workspace-query --repo . --ref "$SOURCE" \
+            --operation possibility-ecology --subject goal:domain-general-cognitive-development \
+            --method-question "How should construction and qualification gates inform evaluating a valuable possibility after actual outcomes?" \
+            --include-method-trials --limit 150 --json > "$RUNNER_TEMP/actual-family.json"
+          sensemaking-skills semantic workspace-query --repo . --ref "$SOURCE" \
+            --operation possibility-ecology --subject poss:detached-possibility-stewardship --limit 80 \
+            --json > "$RUNNER_TEMP/actual-focused.json"
+          sensemaking-skills semantic workspace-query --repo . --ref "$SOURCE" \
+            --operation possibility-ecology --subject poss:domain-general-sensemaking --limit 80 \
+            --json > "$RUNNER_TEMP/unassessed-focused.json"
+          PROPOSAL=".sensemaking/knowledge/detached-stewardship-value-review.json"
+          sensemaking-skills semantic decision record --repo . \
+            --episode artifacts/history/2026-11-27-detached-stewardship-value-review.json \
+            --output "$PROPOSAL" --json > "$RUNNER_TEMP/decision-output.json"
+          sensemaking-skills semantic knowledge-proposal-check --repo . --proposal "$PROPOSAL" --json > "$RUNNER_TEMP/review-preflight.json"
+          cp "$PROPOSAL" "$RUNNER_TEMP/actual-review-pack.json"
+          PROPOSAL="$PROPOSAL" python - <<'PY'
+          import json,os,hashlib,base64,subprocess
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])
+          read=lambda n:json.loads((p/n).read_text())
+          original=json.loads(subprocess.check_output(["git","show","acc912a7fdde760884adf589a48510759036f1ef:artifacts/history/2026-11-27-detached-possibility-stewardship-synthesis.json"],text=True))
+          for name in ("actual-family.json","actual-focused.json"):
+              q=read(name)
+              assert q["target_ref"]==os.environ["SOURCE"]
+              assert q["action_authorized"] is False
+              f=q["possibility_ecology"]["value_feedback"]
+              row=next(x for x in f["entries"] if x["possibility_id"]=="poss:detached-possibility-stewardship")
+              pred=row["predictions"][0]
+              assert pred["prediction"]["statement"]==original["value_hypothesis"]
+              assert pred["standing"]=="PARTIALLY_OBSERVED"
+              assert pred["assessment_total"]==1 and pred["assessment_omitted"]==0
+              assert pred["assessments"][0]["active"] is True
+              assert pred["source_currency"]=="NOT_ASSESSED"
+              print("ACTUAL_VALUE_FEEDBACK="+json.dumps({"query":name,"candidate_total":f["visible_candidate_total"],"candidates_with_predictions":f["candidates_with_predictions"],"standing":pred["standing"],"assessment":pred["assessments"][0]["record"]["attributes"],"review_total":row["review_total"]}))
+          missing=read("unassessed-focused.json")["possibility_ecology"]["value_feedback"]
+          assert missing["unassessed_candidate_ids"]==["poss:domain-general-sensemaking"] and not missing["entries"]
+          print("UNASSESSED_VALUE="+json.dumps(missing))
+          for name in ("value-preflight.json","review-preflight.json"):
+              q=read(name)
+              assert q["valid"] is True and q["action_authorized"] is False
+              print(name+"="+json.dumps({k:q[k] for k in ("valid","claims_checked","relations_checked","existing_endpoints_checked")}))
+          review=read("decision-output.json")
+          assert review["source_possibility"]=="poss:detached-possibility-stewardship"
+          assert review["review_state"]=="UNREVIEWED_DRAFT" and review["action_authorized"] is False
+          assert review["disposition"]=="retain_with_limitation"
+          pack=Path(os.environ["PROPOSAL"]).read_bytes()
+          print("REVIEW_PACK_SHA256="+hashlib.sha256(pack).hexdigest())
+          print("REVIEW_PACK_BASE64="+base64.b64encode(pack).decode())
+          print("ACTUAL_VALUE_REVIEW=PASS")
+          PY
+          rm "$PROPOSAL"
+          python -m compileall -q src/sensemaking_skills/decision_review.py src/sensemaking_skills/semantic_architecture/consequence_standing.py src/sensemaking_skills/semantic_architecture/knowledge_architecture.py src/sensemaking_skills/semantic_architecture/knowledge.py
+          test -z "$(git status --porcelain)"
+      - name: Retain actual outputs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: actual-possibility-value-feedback
+          path: ${{ runner.temp }}/*.json
+          retention-days: 14
