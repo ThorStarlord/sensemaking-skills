@@ -2030,8 +2030,8 @@ New files remain `ABSENT_FROM_TREE` at BASE. `AUTHORED_MATCH` means a literal
 authored path match; `NOT_ASSESSED` does not mean irrelevant or independent.
 The context does not select a possibility, determine necessary edits, verify
 implementation or sufficiency, infer dependencies or authorize action.
-The option composes with `--knowledge-proposal`; candidate records cannot
-become BASE intent.
+The option composes with `--knowledge-proposal` or `--knowledge-update`;
+candidate records cannot become BASE intent.
 
 For each modified Python file, `definition_changes` compares unique top-level
 function, async-function and class names on both sides of the actual applied
@@ -2097,6 +2097,32 @@ validation). `REHEARSED` describes application and review, not pack validity.
 Neither status accepts/promotes the pack, establishes semantic truth, validates
 a whole prospective snapshot, executes code/tests, or authorizes integration.
 Use ordinary source review and exact committed build before accepting knowledge.
+
+### Opt-in existing-pack co-design
+
+```bash
+sensemaking-skills semantic patch-rehearsal --repo . --ref BASE \
+  --patch-file proposed.patch \
+  --knowledge-update .sensemaking/knowledge/existing-capability.json \
+  --possibility poss:EXISTING --json
+```
+
+Use this alternative to `--knowledge-proposal` when an explicit candidate
+revises one existing direct knowledge pack. The two flags are mutually
+exclusive, and neither accepts the other's new/existing pack state. No other
+pack may change. The same patch bounds, disposable index, regular-file
+additions, filter restrictions and BASE-only review apply. The selected pack
+must be an actual modified tracked regular file at BASE. Its separate
+`candidate_knowledge` adds `operation: UPDATE_EXISTING` and
+`base_proposal_sha256`, alongside the candidate digest. The existing steward
+checks affected incoming relations and removed claim references against other
+committed BASE packs; newly added supporting evidence is available only in the
+verified candidate index/worktree. Existing original claims and candidate
+records remain distinct from the BASE review, including an optional
+possibility context. A pack-only patch that omits required newly cited evidence
+returns `NOT_VALIDATED`, not acceptance. No multi-pack overlay, deletion,
+rename, mode change, whole-snapshot validation, semantic acceptance or action
+authority is implied.
 
 
 ## Source-qualified architectural routes
