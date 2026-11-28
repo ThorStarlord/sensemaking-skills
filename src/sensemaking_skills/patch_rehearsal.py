@@ -3,6 +3,7 @@
 This composition applies bounded regular-file text modifications in a
 disposable exact-commit checkout. Explicit source/knowledge co-design admits
 new files and one proposed pack, without indexing or executing patched bytes.
+An explicit existing-pack update uses only an unstaged modification overlay.
 """
 from __future__ import annotations
 
@@ -355,15 +356,22 @@ def _possibility_rehearsal_context(
 def rehearse_patch(
     *, repo: str | Path, ref: str, patch_file: str | Path, limit: int = 25,
     knowledge_proposal: str | None = None, possibility: str | None = None,
+    knowledge_update: str | None = None,
 ) -> dict[str, Any]:
     """Apply a bounded candidate patch and compose existing BASE review evidence."""
     if not 1 <= limit <= 100:
         raise ValueError("patch rehearsal requires limit 1..100")
-    if knowledge_proposal is not None:
-        parts = knowledge_proposal.split("/")
-        if (not is_repository_file_path(knowledge_proposal)
+    if knowledge_proposal is not None and knowledge_update is not None:
+        raise ValueError("--knowledge-proposal and --knowledge-update are mutually exclusive")
+    selected_pack = knowledge_update if knowledge_update is not None else knowledge_proposal
+    updating = knowledge_update is not None
+    if selected_pack is not None:
+        parts = selected_pack.split("/")
+        if (not is_repository_file_path(selected_pack)
                 or len(parts) != 3 or parts[:2] != [".sensemaking", "knowledge"]
                 or not parts[2].endswith(".json")):
+            if updating:
+                raise ValueError("knowledge update must name one existing direct .sensemaking/knowledge/*.json pack")
             raise ValueError("knowledge proposal must name one new direct .sensemaking/knowledge/*.json pack")
     _validate_ref_text(ref)
     root = _checkout_root(Path(repo).expanduser().resolve())
@@ -375,6 +383,12 @@ def rehearse_patch(
         paths, added = _patch_paths(
             checkout, patch, tracked, sha, knowledge_proposal=knowledge_proposal,
         )
+        if updating:
+            pack_paths = {path for path in paths
+                          if path.casefold().startswith(".sensemaking/knowledge/")}
+            if pack_paths != {selected_pack} or selected_pack not in tracked:
+                raise ValueError("co-design update requires exactly one existing explicit knowledge pack")
+            _check_candidate_filters(checkout, paths)
         before = {path: (None if path in added else _source(checkout, tracked, path).read_bytes())
                   for path in paths}
         # Only the disposable worktree's own index is modified in co-design.
@@ -404,7 +418,7 @@ def rehearse_patch(
                 "after_sha256": hashlib.sha256(raw).hexdigest(),
                 "python_syntax": "NOT_ASSESSED",
             }
-            if knowledge_proposal is not None:
+            if selected_pack is not None:
                 item["change_kind"] = "ADDED" if path in added else "MODIFIED"
             if item["after_sha256"] == item["before_sha256"]:
                 raise ValueError(f"rehearsed file has no byte change: {path}")
@@ -438,16 +452,18 @@ def rehearse_patch(
         review["workspace_index"]["index_path"] = None
         review["workspace_index"]["repository_identity_source"] = label_source
         candidate_knowledge = None
-        if knowledge_proposal is not None:
-            proposal_hash = next(item["after_sha256"] for item in files
-                                 if item["path"] == knowledge_proposal)
+        if selected_pack is not None:
+            selected_file = next(item for item in files if item["path"] == selected_pack)
+            proposal_hash = selected_file["after_sha256"]
             candidate_knowledge = {
-                "proposal": knowledge_proposal, "proposal_sha256": proposal_hash,
+                "proposal": selected_pack, "proposal_sha256": proposal_hash,
+                **({"operation": "UPDATE_EXISTING",
+                    "base_proposal_sha256": selected_file["before_sha256"]} if updating else {}),
                 "status": "NOT_VALIDATED", "validation": None, "reason": None,
                 "accepted": False, "action_authorized": False,
             }
             try:
-                validation = inspect_knowledge_proposal(checkout, Path(knowledge_proposal))
+                validation = inspect_knowledge_proposal(checkout, Path(selected_pack))
             except (ValueError, OSError, UnicodeError, RuntimeError, subprocess.TimeoutExpired) as exc:
                 candidate_knowledge["reason"] = str(exc)[:500]
             else:
@@ -460,7 +476,7 @@ def rehearse_patch(
                 candidate_knowledge["status"] = "MECHANICALLY_VALID"
                 candidate_knowledge["validation"] = validation
             if (changed_paths_since_indexed_ref(checkout, sha) != changes
-                    or hashlib.sha256(_source(checkout, tracked, knowledge_proposal).read_bytes()).hexdigest()
+                    or hashlib.sha256(_source(checkout, tracked, selected_pack).read_bytes()).hexdigest()
                     != proposal_hash):
                 raise ValueError("co-design overlay changed during proposal preflight")
         return {
@@ -476,18 +492,20 @@ def rehearse_patch(
             **({"possibility_context": possibility_context}
                if possibility is not None else {}),
             **({"candidate_knowledge": candidate_knowledge,
-                "disposable_index_used": True,
-                "candidate_objects_may_remain_in_shared_git_store": True}
-               if knowledge_proposal is not None else {}),
+                "disposable_index_used": not updating,
+                "candidate_objects_may_remain_in_shared_git_store": not updating}
+               if selected_pack is not None else {}),
             "active_checkout_patch_applied": False,
             "target_code_executed": False, "tests_executed": False,
             "patched_bytes_indexed": False, "semantic_truth_established": False,
             "action_authorized": False, "explicit_limits": (
-                list(_LIMITS) if knowledge_proposal is None else [
-                    "Co-design admits one new direct knowledge pack and contained non-executable regular-file additions in existing directories, within the existing eight-path and 256 KiB budget.",
+                list(_LIMITS) if selected_pack is None else [
+                    ("Co-design update admits one existing direct knowledge pack and existing regular-file modifications only, within the existing eight-path and 256 KiB budget." if updating else
+                     "Co-design admits one new direct knowledge pack and contained non-executable regular-file additions in existing directories, within the existing eight-path and 256 KiB budget."),
                     "Deletion, rename, copy, mode change, binary, linked, Git control and filter-assigned candidate paths are refused.",
                     *list(_LIMITS[2:]),
-                    "The candidate index and worktree are disposable; Git candidate objects may remain in the shared object store.",
+                    ("The update uses only the disposable worktree overlay, not staged candidate objects." if updating else
+                     "The candidate index and worktree are disposable; Git candidate objects may remain in the shared object store."),
                     "Single-pack preflight reads candidate index-tracked evidence and committed HEAD packs only. MECHANICALLY_VALID is not accepted knowledge, a whole-candidate build or semantic correctness; NOT_VALIDATED includes unavailable checks.",
                 ]
             ),
