@@ -1,0 +1,192 @@
+{
+  "schema_version": 2,
+  "claims": [
+    {
+      "id": "poss:focused-possibility-evolution",
+      "kind": "opportunity",
+      "statement": "A returning development agent can reconstruct how one retained possibility and direct authored context changed between exact revisions without losing the focus to a landscape limit or treating unchanged records as absent.",
+      "epistemic_status": "hypothetical",
+      "authority_kind": "hypothesis",
+      "authority_ref": "artifacts/history/2026-11-28-conditional-method-reuse-focused-evolution.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-conditional-method-reuse-focused-evolution.md",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_store.py",
+        "file:src/sensemaking_skills/workspace_knowledge.py",
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:docs/cli-reference.md",
+        "file:artifacts/history/2026-11-28-premise-sensitive-developmental-reconsideration.md"
+      ],
+      "attributes": {
+        "concept": "ProductPossibility",
+        "title": "Focused historical possibility evolution",
+        "origin": {
+          "ref": "artifacts/history/2026-11-28-conditional-method-reuse-focused-evolution.md",
+          "date": "2026-11-28",
+          "author": "active ChatGPT coding agent"
+        },
+        "dimensions": {
+          "alignment": {
+            "value": "ALIGNED",
+            "basis": "Supports DTR and persistent reconsideration under ADR 0038."
+          },
+          "ambition": {
+            "value": "INCREMENTAL",
+            "basis": "Focused refinement of existing revision evolution."
+          },
+          "horizon": {
+            "value": "FORESEEABLE",
+            "basis": "Reuses existing delta projection and exact indexes."
+          },
+          "realization": {
+            "value": "HYPOTHETICAL",
+            "establishment": "inferred",
+            "basis": "Source candidate; actual comparison pending."
+          }
+        },
+        "disposition_history": [
+          {
+            "value": "SELECTED",
+            "date": "2026-11-28",
+            "authority": "agent construction selection under delegated self-development",
+            "source": "artifacts/history/2026-11-28-conditional-method-reuse-focused-evolution.md",
+            "rationale": "Actual prior reconsideration requires one historical possibility and its changed evidence; focus existing projection rather than new query system."
+          }
+        ],
+        "assessed_ref": "75247e50e343f77b1e1cff2f124421bfa83c6852",
+        "synthesis_basis": "Reuse exact indexed revision comparison and authored opportunity delta projection; narrow selected one-hop scope before limits and return focus record on both sides.",
+        "value_hypothesis": "A returning development agent can reconstruct how one retained possibility and direct authored context changed between exact revisions without losing the focus to a landscape limit or treating unchanged records as absent.",
+        "revisit_when": "A later actual focused historical comparison changes a decision, needs more than one-hop context, or file:src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py changes.",
+        "counterevidence": "Manual exact-ref source/graph comparison remains viable. Indexed one-hop authored scope excludes unindexed or indirect evidence; actual decision value and independent cognition are not established.",
+        "claim_ceiling": "Candidate source-reviewed implementation; actual use pending; no semantic consequence, independent cognitive benefit or ranking.",
+        "agent_owned": true
+      }
+    },
+    {
+      "id": "conseq:focused-possibility-evolution-value",
+      "kind": "hypothesis",
+      "statement": "A returning development agent can reconstruct how one retained possibility and direct authored context changed between exact revisions without losing the focus to a landscape limit or treating unchanged records as absent.",
+      "epistemic_status": "hypothetical",
+      "authority_kind": "hypothesis",
+      "authority_ref": "artifacts/history/2026-11-28-conditional-method-reuse-focused-evolution.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-conditional-method-reuse-focused-evolution.md",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_store.py",
+        "file:src/sensemaking_skills/workspace_knowledge.py",
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:docs/cli-reference.md",
+        "file:artifacts/history/2026-11-28-premise-sensitive-developmental-reconsideration.md"
+      ],
+      "attributes": {
+        "concept": "ConsequenceHypothesis",
+        "source_possibility": "poss:focused-possibility-evolution",
+        "category": "benefit",
+        "analysis_ref": "artifacts/history/2026-11-28-conditional-method-reuse-focused-evolution.md",
+        "source_revision": "75247e50e343f77b1e1cff2f124421bfa83c6852",
+        "origin": {
+          "ref": "artifacts/history/2026-11-28-conditional-method-reuse-focused-evolution.md",
+          "date": "2026-11-28",
+          "author": "active ChatGPT coding agent"
+        },
+        "value_frame": {
+          "beneficiary": "Returning product development agent reconsidering one previously authored possibility.",
+          "criterion": "Show actual #1020 focus before/after, added lesson and relation, same-ref equal focus, reversed direction, #1019 introduced linked opportunity, bounds and unchanged default/all comparison.",
+          "comparison_baseline": "Whole landscape evolution plus separate exact-ref queries and manual join.",
+          "expected_observation": "Actual #1020 selected DEFERRED to DEFERRED rationale and new lesson visible; same-ref retains focus, #1019 TARGET_ONLY and BASE_ONLY on reversal with direct other opportunity record; scoped limits disclose omissions, defaults equivalent on fixed target.",
+          "would_change_decision_if": "Reconsider if focus/linked context hides relevant scope, before/after loses provenance, or existing all-opportunity/default behavior changes.",
+          "cost_and_downside": "Additional explicit option and bounded one-hop projection; manual comparison remains viable."
+        },
+        "assumptions": [
+          "con:agent-owns-semantic-control"
+        ],
+        "mechanism": "Reuse exact indexed revision comparison and authored opportunity delta projection; narrow selected one-hop scope before limits and return focus record on both sides.",
+        "counterevidence": "Manual exact-ref source/graph comparison remains viable. Indexed one-hop authored scope excludes unindexed or indirect evidence; actual decision value and independent cognition are not established.",
+        "would_change_decision_if": "Reconsider if focus/linked context hides relevant scope, before/after loses provenance, or existing all-opportunity/default behavior changes.",
+        "claim_ceiling": "Prediction recorded before implementation at d0845ffe."
+      }
+    },
+    {
+      "id": "cap:focused-possibility-evolution",
+      "kind": "capability",
+      "statement": "Explicit optional workspace-changes possibility focus returns one authored opportunity at BASE/TARGET, direct authored neighborhood deltas and focus context even when unchanged.",
+      "epistemic_status": "declared",
+      "authority_kind": "code",
+      "authority_ref": "src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-conditional-method-reuse-focused-evolution.md",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py",
+        "file:src/sensemaking_skills/semantic_architecture/knowledge_store.py",
+        "file:src/sensemaking_skills/workspace_knowledge.py",
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:docs/cli-reference.md",
+        "file:artifacts/history/2026-11-28-premise-sensitive-developmental-reconsideration.md"
+      ],
+      "attributes": {
+        "scope": "Existing exact indexed revision comparison, explicit single opportunity, direct authored links and claims, independent display limits; no semantic inference.",
+        "claim_ceiling": "Candidate source-reviewed implementation; actual use pending; no semantic consequence, independent cognitive benefit or ranking."
+      }
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel:focused-possibility-evolution-goal",
+      "subject": "poss:focused-possibility-evolution",
+      "predicate": "candidate_opportunity_for",
+      "object": "goal:compounding-product-knowledge",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-conditional-method-reuse-focused-evolution.md"
+      ]
+    },
+    {
+      "id": "rel:focused-possibility-evolution-lineage",
+      "subject": "poss:focused-possibility-evolution",
+      "predicate": "derived_from",
+      "object": "poss:possibility-reconsideration-from-change",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-conditional-method-reuse-focused-evolution.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "combines",
+        "establishment": "authored"
+      }
+    },
+    {
+      "id": "rel:focused-possibility-evolution-prediction",
+      "subject": "conseq:focused-possibility-evolution-value",
+      "predicate": "references",
+      "object": "poss:focused-possibility-evolution",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-conditional-method-reuse-focused-evolution.md"
+      ]
+    },
+    {
+      "id": "rel:focused-possibility-evolution-realization",
+      "subject": "poss:focused-possibility-evolution",
+      "predicate": "implemented_by",
+      "object": "cap:focused-possibility-evolution",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-conditional-method-reuse-focused-evolution.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "realizedBy",
+        "establishment": "inferred",
+        "scope": "Candidate implementation pending observation."
+      }
+    },
+    {
+      "id": "rel:focused-possibility-evolution-serves",
+      "subject": "cap:focused-possibility-evolution",
+      "predicate": "serves_goal",
+      "object": "goal:compounding-product-knowledge",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-conditional-method-reuse-focused-evolution.md"
+      ]
+    }
+  ]
+}

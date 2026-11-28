@@ -636,7 +636,7 @@ def classify_indexed_changes(
 def possibility_evolution(
     previous_claims: Mapping[str, dict], current_claims: Mapping[str, dict],
     previous_relations: Mapping[str, dict], current_relations: Mapping[str, dict],
-    *, limit: int,
+    *, limit: int, focus: str | None = None,
 ) -> dict:
     """Compare authored opportunity records and their direct authored context.
 
@@ -651,6 +651,12 @@ def possibility_evolution(
     old_opps = {key for key, row in old_claims.items() if row.get("kind") == "opportunity"}
     new_opps = {key for key, row in new_claims.items() if row.get("kind") == "opportunity"}
     opportunity_ids = old_opps | new_opps
+    if focus is not None:
+        if focus not in opportunity_ids:
+            raise ValueError("possibility focus must identify an authored opportunity at BASE or TARGET")
+        old_opps &= {focus}
+        new_opps &= {focus}
+        opportunity_ids = {focus}
 
     def neighborhood(edges: Mapping[str, dict], opportunities: set[str]):
         incident = set()
@@ -740,7 +746,24 @@ def possibility_evolution(
     linked_claims = delta(set(old_neighbors) | set(new_neighbors), old_claims, new_claims,
                           old_scope=set(old_neighbors), new_scope=set(new_neighbors),
                           link_context=True)
+    focus_context = {}
+    if focus is not None:
+        before, after = old_claims.get(focus), new_claims.get(focus)
+        presence = ("BOTH" if focus in old_opps and focus in new_opps else
+                    "BASE_ONLY" if focus in old_opps else "TARGET_ONLY")
+        focus_context = {
+            "focus": {
+                "id": focus, "opportunity_presence": presence,
+                "before": record_view(before), "after": record_view(after),
+                "classification": (
+                    _classify_record_change(before, after)
+                    if before is not None and after is not None and before != after else None
+                ),
+            },
+            "scope": "one selected authored opportunity and direct authored neighborhood",
+        }
     return {
+        **focus_context,
         "opportunities": opportunities,
         "direct_authored_relations": relations,
         "directly_linked_authored_claims": linked_claims,
@@ -754,5 +777,9 @@ def possibility_evolution(
             "Changes in linked claims or relations are reconsideration candidates, not proof of premise necessity, enabling effects, semantic correspondence or new opportunities.",
             "Display order favors authored/membership/adjacency changes over pack-only fingerprint noise; no priority, feasibility, selection, causality or authority is inferred.",
             "Each category is independently limited; unchanged or absent records do not establish that a possibility remains warranted.",
+            *([
+                "Focus is explicit at either indexed revision and shown even when unchanged. Presence describes opportunity kind, not semantic validity.",
+                "Only the selected opportunity's incident authored relations and directly linked authored claims (including other opportunities) are in scope. Counts and limits apply within this scope; unrelated records are NOT_ASSESSED here.",
+            ] if focus is not None else []),
         ],
     }
