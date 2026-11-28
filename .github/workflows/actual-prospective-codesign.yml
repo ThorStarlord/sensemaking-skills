@@ -69,7 +69,7 @@ jobs:
           assert k["status"]=="MECHANICALLY_VALID" and k["accepted"] is False
           v=k["validation"]
           assert v["valid"] and v["head_sha"]==base
-          assert v["claims_checked"]==2 and v["relations_checked"]==3 and v["existing_endpoints_checked"]==2
+          assert v["claims_checked"]==2 and v["relations_checked"]==3 and v["existing_endpoints_checked"]==3
           assert "artifacts/history/2026-11-27-comparative-prospective-construction.md" in v["local_evidence_paths_checked"]
           assert v["other_packs_source"]=="committed_HEAD_only"
           review=q["review"]
@@ -77,6 +77,8 @@ jobs:
           assert set(review["review_scope"]["selected_paths"])=={f["path"] for f in files}
           assert review["review_scope"]["worktree_changed_paths_total"]==6
           assert review["review_scope"]["working_changes_indexed"] is False
+          assert all(row["id"]!="cap:prospective-definition-comparison" for row in review["product_claims"])
+          assert all(row["id"]!="cap:prospective-definition-comparison" for ctx in review["contexts"] for row in ctx["claims"])
           assert not any(q[x] for x in ("action_authorized","semantic_truth_established","active_checkout_patch_applied","target_code_executed","tests_executed","patched_bytes_indexed"))
           assert q["disposable_index_used"] and q["candidate_objects_may_remain_in_shared_git_store"]
           print("FULL_INTERVENTION="+json.dumps({"patch_sha256":q["patch_sha256"],"files":[{"path":f["path"],"kind":f["change_kind"],"before":f["before_sha256"],"after":f["after_sha256"],"syntax":f["python_syntax"]} for f in files],"review_scope":review["review_scope"],"review_truncated":review["truncated"]}))
