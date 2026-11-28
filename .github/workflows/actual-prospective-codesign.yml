@@ -1,0 +1,100 @@
+name: Actual prospective source and knowledge co-design (execution branch only)
+on:
+  push:
+    branches: [claude/prospective-codesign-execution-20261127]
+permissions:
+  contents: read
+jobs:
+  actual-use:
+    if: github.ref == 'refs/heads/claude/prospective-codesign-execution-20261127'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SOURCE: "a175b9d925ae724030146e7dfc1061cc4da94ee7"
+      BASE: "c1f95ed50a0791a57faa4e96bba2e6415df446e8"
+      CANDIDATE: "44d2d695dc94e5cbf013292c201eb06e4a47bf15"
+      PACK: ".sensemaking/knowledge/comparative-prospective-construction.json"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.SOURCE }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Rehearse actual complete construction and its pack-only slice
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE"
+          python -m pip install -e .
+          test -z "$(git status --porcelain)"
+          git diff --no-ext-diff --no-textconv --no-renames "$BASE" "$CANDIDATE" -- > "$RUNNER_TEMP/full.patch"
+          git diff --no-ext-diff --no-textconv --no-renames "$BASE" "$CANDIDATE" -- "$PACK" > "$RUNNER_TEMP/pack-only.patch"
+          git diff --no-ext-diff --no-textconv --no-renames "$CANDIDATE" "$BASE" -- > "$RUNNER_TEMP/reverse.patch"
+          if sensemaking-skills semantic patch-rehearsal --repo . --ref "$BASE" --patch-file "$RUNNER_TEMP/full.patch" --json > "$RUNNER_TEMP/default.json" 2> "$RUNNER_TEMP/default.err"; then
+            echo "Unexpected default structural acceptance"; exit 1
+          fi
+          grep -F "not structural changes" "$RUNNER_TEMP/default.err"
+          sensemaking-skills semantic patch-rehearsal --repo . --ref "$BASE" --patch-file "$RUNNER_TEMP/full.patch" --knowledge-proposal "$PACK" --limit 80 --json > "$RUNNER_TEMP/full.json"
+          sensemaking-skills semantic patch-rehearsal --repo . --ref "$BASE" --patch-file "$RUNNER_TEMP/pack-only.patch" --knowledge-proposal "$PACK" --limit 80 --json > "$RUNNER_TEMP/pack-only.json"
+          if sensemaking-skills semantic patch-rehearsal --repo . --ref "$CANDIDATE" --patch-file "$RUNNER_TEMP/reverse.patch" --knowledge-proposal "$PACK" --json > "$RUNNER_TEMP/reverse.json" 2> "$RUNNER_TEMP/reverse.err"; then
+            echo "Unexpected deletion acceptance"; exit 1
+          fi
+          grep -F "not structural changes" "$RUNNER_TEMP/reverse.err"
+          python - <<'PY'
+          import hashlib,json,os,subprocess
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])
+          base,head,pack=(os.environ[k] for k in ("BASE","CANDIDATE","PACK"))
+          q=json.loads((p/"full.json").read_text())
+          assert q["base_ref"]==base and q["status"]=="REHEARSED"
+          assert q["patch_sha256"]==hashlib.sha256((p/"full.patch").read_bytes()).hexdigest()
+          files=q["files"]
+          assert len(files)==6
+          assert sum(f["change_kind"]=="ADDED" for f in files)==2
+          assert sum(f["change_kind"]=="MODIFIED" for f in files)==4
+          for f in files:
+              blob=subprocess.check_output(["git","show",head+":"+f["path"]])
+              assert f["after_sha256"]==hashlib.sha256(blob).hexdigest()
+              if f["change_kind"]=="ADDED":
+                  assert f["before_sha256"] is None
+              else:
+                  old=subprocess.check_output(["git","show",base+":"+f["path"]])
+                  assert f["before_sha256"]==hashlib.sha256(old).hexdigest()
+              if f["path"].endswith(".py"):
+                  assert f["python_syntax"]=="PASS"
+          k=q["candidate_knowledge"]
+          print("FULL_PREFLIGHT="+json.dumps(k))
+          assert k["status"]=="MECHANICALLY_VALID" and k["accepted"] is False
+          v=k["validation"]
+          assert v["valid"] and v["head_sha"]==base
+          assert v["claims_checked"]==2 and v["relations_checked"]==3 and v["existing_endpoints_checked"]==2
+          assert "artifacts/history/2026-11-27-comparative-prospective-construction.md" in v["local_evidence_paths_checked"]
+          assert v["other_packs_source"]=="committed_HEAD_only"
+          review=q["review"]
+          assert review["base_ref"]==review["target_ref"]==base
+          assert set(review["review_scope"]["selected_paths"])=={f["path"] for f in files}
+          assert review["review_scope"]["worktree_changed_paths_total"]==6
+          assert review["review_scope"]["working_changes_indexed"] is False
+          assert not any(q[x] for x in ("action_authorized","semantic_truth_established","active_checkout_patch_applied","target_code_executed","tests_executed","patched_bytes_indexed"))
+          assert q["disposable_index_used"] and q["candidate_objects_may_remain_in_shared_git_store"]
+          print("FULL_INTERVENTION="+json.dumps({"patch_sha256":q["patch_sha256"],"files":[{"path":f["path"],"kind":f["change_kind"],"before":f["before_sha256"],"after":f["after_sha256"],"syntax":f["python_syntax"]} for f in files],"review_scope":review["review_scope"],"review_truncated":review["truncated"]}))
+          other=json.loads((p/"pack-only.json").read_text())
+          k2=other["candidate_knowledge"]
+          print("PACK_ONLY="+json.dumps(k2))
+          assert other["status"]=="REHEARSED" and k2["status"]=="NOT_VALIDATED" and not k2["accepted"]
+          assert k["proposal_sha256"]==k2["proposal_sha256"]
+          assert "comparative-prospective-construction.md" in k2["reason"]
+          print("ACTUAL_CO_DESIGN=PASS")
+          PY
+          python -m compileall -q src/sensemaking_skills/patch_rehearsal.py src/sensemaking_skills/semantic_cli.py
+          test -z "$(git status --porcelain)"
+          test "$(git rev-parse HEAD)" = "$SOURCE"
+      - name: Retain actual co-design evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: actual-prospective-codesign
+          path: ${{ runner.temp }}/*.json
+          retention-days: 14
