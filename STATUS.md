@@ -549,6 +549,9 @@ no unit or synthetic evidence tests were run.
 
 ## Current next step
 
+**2026-11-27 — Comparative prospective construction:** [actual alternative rehearsal](artifacts/history/2026-11-27-comparative-prospective-construction.md) used the merged patch-rehearsal product to compare two concrete definition-comparison implementations from the same canonical BASE, then exercised both on the real containment and receipt-inventory engineering changes. Run 46094250281 passed: both found the same five changed definitions; B additionally classified AST changes and module-level structure while preserving source hashes. Retain B as the bounded definition-level rehearsal increment, A as an alternative commit, and the scoped subsequent observation. No generic comparison subsystem, new strategy or independent cognitive benefit claim. Continue concrete value-generating construction; use direct review for unsupported cases. Local unit/synthetic tests NOT_RUN.
+
+
 **2026-11-27 — Generative strategic intelligence:** [prospective intervention rehearsal](artifacts/history/2026-11-27-generative-strategic-intelligence.md) recombines existing disposable patch application and BASE-only worktree review into a useful constructive activity. The actual containment-repair rehearsal in run 46092945771 passed exact scope/byte checks and Python syntax, exposed one uncited source path, and refused the actual reverse and structural patches. Retain the reviewed real repair, capability/source lineage, original prospective value frame and scoped partial assessment. Initial scope: 1..8 existing regular-file text modifications, no active-checkout application, runtime execution or hypothetical source indexing. Prefer actual alternative interventions and beneficiary outcomes over more process layers; manual isolated composition remains viable. ADR 0038 and current Level-3 direction reaffirmed. No independent cognitive benefit or release claim; local unit/synthetic tests NOT_RUN.
 
 
