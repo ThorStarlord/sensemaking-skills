@@ -2041,3 +2041,35 @@ establish runtime behavior, semantic correctness, architectural conformance,
 causal consequences, value, selection, or readiness. Manual isolated application
 and existing review remain alternatives. The agent owns evaluation and any
 separately authorized integration.
+
+
+### Opt-in source and knowledge co-design
+
+```bash
+sensemaking-skills semantic patch-rehearsal --repo . --ref BASE \
+  --patch-file proposed.patch \
+  --knowledge-proposal .sensemaking/knowledge/new-capability.json --json
+```
+
+Without the option, the existing modification-only contract remains unchanged.
+The option requires exactly one newly added direct knowledge pack at the named
+path, no other changed knowledge packs, and admits new non-executable regular
+files in existing contained directories. The same eight-path and 256 KiB patch
+bounds apply. Delete/rename/copy/mode changes, binary changes, links, Git control
+files, filter assignments and ambiguous paths are refused. Git applies into
+an isolated worktree and its disposable index. New candidate blobs may remain
+in the shared Git object store; no active checkout/index or branch is changed.
+The temporary checkout is not a security sandbox.
+
+The BASE product and architecture review continues to use only committed
+knowledge; the candidate source remains an overlay. Each added file has
+`before_sha256: null`; added Python definitions are compared to an empty
+module because the file was absent. The separately named candidate pack is
+checked with the existing single-pack steward against the candidate's
+index-tracked working evidence and other committed BASE packs. It returns
+`candidate_knowledge` with proposal SHA-256, `MECHANICALLY_VALID` and the
+preflight result, or `NOT_VALIDATED` with a reason (including unavailable
+validation). `REHEARSED` describes application and review, not pack validity.
+Neither status accepts/promotes the pack, establishes semantic truth, validates
+a whole prospective snapshot, executes code/tests, or authorizes integration.
+Use ordinary source review and exact committed build before accepting knowledge.

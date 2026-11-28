@@ -1,0 +1,270 @@
+{
+  "schema_version": 2,
+  "claims": [
+    {
+      "id": "poss:prospective-source-knowledge-codesign",
+      "kind": "opportunity",
+      "statement": "An agent develops and examines a concrete prospective software increment and its proposed knowledge together without promoting candidate evidence or source to reviewed product truth.",
+      "authority_kind": "hypothesis",
+      "authority_ref": "artifacts/history/2026-11-27-generative-architectural-synthesis.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-generative-architectural-synthesis.md",
+        "file:artifacts/history/2026-11-27-comparative-prospective-construction.md",
+        "file:artifacts/history/2026-11-27-generative-strategic-intelligence.md",
+        "file:src/sensemaking_skills/patch_rehearsal.py",
+        "file:src/sensemaking_skills/semantic_architecture/stewardship_validation.py",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ],
+      "epistemic_status": "hypothetical",
+      "attributes": {
+        "concept": "ProductPossibility",
+        "title": "Prospective source and knowledge co-design",
+        "origin": {
+          "ref": "artifacts/history/2026-11-27-generative-architectural-synthesis.md",
+          "date": "2026-11-27",
+          "author": "active ChatGPT coding agent"
+        },
+        "dimensions": {
+          "alignment": {
+            "value": "ALIGNED",
+            "basis": "Reciprocal product and knowledge development under ADR 0038 with agent-owned authority."
+          },
+          "ambition": {
+            "value": "SUBSTANTIAL",
+            "basis": "A distinct constructive activity joins actual prospective code/evidence changes with mechanically checked candidate knowledge."
+          },
+          "horizon": {
+            "value": "FORESEEABLE",
+            "basis": "Recombines existing disposable rehearsal, definition comparison and single-pack stewardship."
+          },
+          "realization": {
+            "value": "PARTIALLY_IMPLEMENTED",
+            "establishment": "observed",
+            "basis": "At feature a175b9d9, actual run 46094915471 rehearsed all six paths of the complete #1011 candidate from c1f95ed5 to 44d2d695 with exact before/after digests, two additions and four modifications. Its new pack passed the single-pack preflight (2 claims, 3 relations, 3 existing endpoints), including the new supporting history file. The actual pack-only slice had the same proposal digest but returned NOT_VALIDATED because that evidence path was absent. The BASE review excluded the proposed capability, and default structural and reverse deletion patches were refused. Active checkout HEAD and cleanliness were preserved.",
+            "observation_ref": "artifacts/history/2026-11-27-generative-architectural-synthesis.md",
+            "history": [
+              {
+                "value": "HYPOTHETICAL",
+                "establishment": "inferred",
+                "basis": "Existing rehearsal refused additions and separate preflight required tracked candidate evidence. See preconstruction report at 7a12ff69.",
+                "assessed_ref": "ddccfe08d9c4b7fca64730cae9821772cd9eeed9"
+              }
+            ]
+          }
+        },
+        "disposition_history": [
+          {
+            "value": "SELECTED",
+            "date": "2026-11-27",
+            "authority": "agent construction selection within delegated self-development",
+            "source": "artifacts/history/2026-11-27-generative-architectural-synthesis.md",
+            "rationale": "Select opt-in single-pack co-design rather than arbitrary structural patch support or another symbol trigger evaluator; preserve manual fallback."
+          }
+        ],
+        "assessed_ref": "a175b9d925ae724030146e7dfc1061cc4da94ee7",
+        "synthesis_basis": "Recombine disposable exact-source patch rehearsal, definition-level source comparison and single-pack semantic stewardship. A separate disposable index contains the explicit candidate's new evidence; BASE knowledge remains committed-only and the proposed pack is checked separately, never promoted.",
+        "value_hypothesis": "A coding agent can rehearse the source change and proposed accompanying knowledge as one concrete intervention, mechanically checking the new pack against its actual candidate evidence while keeping the reviewed baseline separate.",
+        "revisit_when": "A real candidate requires more than one pack or a structural change outside the admitted scope, or file:src/sensemaking_skills/patch_rehearsal.py changes, or later actual use makes the workflow redundant.",
+        "counterevidence": "Manual isolated composition remains viable. One historical complete candidate and its pack-only slice do not establish comparative efficiency, independent selection or runtime behavior. Shared Git objects may remain; the worktree is not a security sandbox.",
+        "claim_ceiling": "Observed bounded candidate co-design and evidence-dependent preflight; independent benefit, general structural support, semantic correctness and runtime effects remain unestablished.",
+        "agent_owned": true
+      }
+    },
+    {
+      "id": "conseq:prospective-source-knowledge-codesign-value",
+      "kind": "hypothesis",
+      "statement": "A coding agent can rehearse the source change and proposed accompanying knowledge as one concrete intervention, mechanically checking the new pack against its actual candidate evidence while keeping the reviewed baseline separate.",
+      "authority_kind": "hypothesis",
+      "authority_ref": "artifacts/history/2026-11-27-generative-architectural-synthesis.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-generative-architectural-synthesis.md",
+        "file:artifacts/history/2026-11-27-comparative-prospective-construction.md"
+      ],
+      "epistemic_status": "hypothetical",
+      "attributes": {
+        "concept": "ConsequenceHypothesis",
+        "source_possibility": "poss:prospective-source-knowledge-codesign",
+        "category": "benefit",
+        "analysis_ref": "artifacts/history/2026-11-27-generative-architectural-synthesis.md",
+        "source_revision": "ddccfe08d9c4b7fca64730cae9821772cd9eeed9",
+        "origin": {
+          "ref": "artifacts/history/2026-11-27-generative-architectural-synthesis.md",
+          "date": "2026-11-27",
+          "author": "active ChatGPT coding agent"
+        },
+        "value_frame": {
+          "beneficiary": "An agent deciding whether a concrete product increment and its proposed knowledge representation are ready for ordinary source review.",
+          "criterion": "Allow the real selected code-plus-knowledge construction to be examined together before active-checkout integration, preserving BASE authority and exact proposal evidence.",
+          "comparison_baseline": "Existing structural refusal and manual disposable checkout plus single-pack preflight.",
+          "expected_observation": "Without opt-in the real #1011 full patch remains refused; with explicit one-new-pack opt-in, the real full patch from c1f95ed5 to 44d2d695 rehearses all six changed paths (four modifications, two additions), matches source digests, and the existing preflight checks the new pack against its actual candidate evidence including the new history file. An actual pack-only slice lacks that evidence and cannot receive a successful preflight.",
+          "would_change_decision_if": "Scope/authority fails, the preflight conflates proposed and reviewed truth, or actual beneficiaries find the composition redundant.",
+          "cost_and_downside": "New code, processing and temporary Git objects are costs; manual composition remains viable. Same eight-file and 256 KiB budget; single new pack and contained regular-file additions only."
+        },
+        "assumptions": [
+          "con:agent-owns-semantic-control"
+        ],
+        "mechanism": "Recombine disposable exact-source patch rehearsal, definition-level source comparison and single-pack semantic stewardship. A separate disposable index contains the explicit candidate's new evidence; BASE knowledge remains committed-only and the proposed pack is checked separately, never promoted.",
+        "counterevidence": "Manual isolated composition remains viable. One historical complete candidate and its pack-only slice do not establish comparative efficiency, independent selection or runtime behavior. Shared Git objects may remain; the worktree is not a security sandbox.",
+        "would_change_decision_if": "Scope/authority fails, the preflight conflates proposed and reviewed truth, or actual beneficiaries find the composition redundant.",
+        "claim_ceiling": "The prospective criterion is normalized after execution from the report committed before implementation at 7a12ff69; no independent or general outcome inferred."
+      }
+    },
+    {
+      "id": "cap:prospective-source-knowledge-codesign",
+      "kind": "capability",
+      "statement": "An explicit bounded source-and-knowledge patch adding one new direct knowledge pack can be mechanically applied in a disposable exact-BASE checkout/index, with original BASE review and separate single-pack preflight over actual candidate index-tracked evidence.",
+      "authority_kind": "code",
+      "authority_ref": "src/sensemaking_skills/patch_rehearsal.py",
+      "epistemic_status": "observed",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-generative-architectural-synthesis.md",
+        "file:artifacts/history/2026-11-27-comparative-prospective-construction.md",
+        "file:artifacts/history/2026-11-27-generative-strategic-intelligence.md",
+        "file:src/sensemaking_skills/patch_rehearsal.py",
+        "file:src/sensemaking_skills/semantic_architecture/stewardship_validation.py",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md"
+      ],
+      "attributes": {
+        "scope": "Opt-in one new pack, at most eight paths and 256 KiB, new non-executable regular files in existing contained directories; candidate preflight distinct from BASE review.",
+        "claim_ceiling": "Actual source-pinned co-design on #1011 complete patch and its pack-only slice; no whole-snapshot build, semantic acceptance, runtime behavior, general security isolation or independent comparative benefit."
+      }
+    },
+    {
+      "id": "observation:prospective-source-knowledge-codesign-20261127",
+      "kind": "observation",
+      "statement": "Scoped assessment (PARTIALLY_OBSERVED): At feature a175b9d9, actual run 46094915471 rehearsed all six paths of the complete #1011 candidate from c1f95ed5 to 44d2d695 with exact before/after digests, two additions and four modifications. Its new pack passed the single-pack preflight (2 claims, 3 relations, 3 existing endpoints), including the new supporting history file. The actual pack-only slice had the same proposal digest but returned NOT_VALIDATED because that evidence path was absent. The BASE review excluded the proposed capability, and default structural and reverse deletion patches were refused. Active checkout HEAD and cleanliness were preserved.",
+      "authority_kind": "document",
+      "authority_ref": "artifacts/history/2026-11-27-generative-architectural-synthesis.md",
+      "epistemic_status": "observed",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-generative-architectural-synthesis.md",
+        "file:src/sensemaking_skills/patch_rehearsal.py",
+        "file:artifacts/history/2026-11-27-comparative-prospective-construction.md"
+      ],
+      "attributes": {
+        "consequence_ref": "conseq:prospective-source-knowledge-codesign-value",
+        "assessment_status": "PARTIALLY_OBSERVED",
+        "observed_effect": "At feature a175b9d9, actual run 46094915471 rehearsed all six paths of the complete #1011 candidate from c1f95ed5 to 44d2d695 with exact before/after digests, two additions and four modifications. Its new pack passed the single-pack preflight (2 claims, 3 relations, 3 existing endpoints), including the new supporting history file. The actual pack-only slice had the same proposal digest but returned NOT_VALIDATED because that evidence path was absent. The BASE review excluded the proposed capability, and default structural and reverse deletion patches were refused. Active checkout HEAD and cleanliness were preserved.",
+        "assessed_at_revision": "a175b9d925ae724030146e7dfc1061cc4da94ee7",
+        "scope": "One actual historical six-path #1011 candidate, its pack-only slice, default refusal and reverse deletion refusal at exact source in hosted execution.",
+        "counterevidence": "Manual isolated composition remains viable. One historical complete candidate and its pack-only slice do not establish comparative efficiency, independent selection or runtime behavior. Shared Git objects may remain; the worktree is not a security sandbox. BASE review was truncated at limit 80 despite selecting all six paths; no broader semantic coverage claim.",
+        "claim_ceiling": "Observed mechanical application and evidence-dependent separate preflight, not general benefit, runtime correctness or improved strategic judgment."
+      }
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel:source-knowledge-codesign-goal-1",
+      "subject": "poss:prospective-source-knowledge-codesign",
+      "predicate": "candidate_opportunity_for",
+      "object": "goal:domain-general-cognitive-development",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-generative-architectural-synthesis.md"
+      ]
+    },
+    {
+      "id": "rel:source-knowledge-codesign-goal-2",
+      "subject": "poss:prospective-source-knowledge-codesign",
+      "predicate": "candidate_opportunity_for",
+      "object": "goal:compounding-product-knowledge",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-generative-architectural-synthesis.md"
+      ]
+    },
+    {
+      "id": "rel:source-knowledge-codesign-combines-intervention",
+      "subject": "poss:prospective-source-knowledge-codesign",
+      "predicate": "derived_from",
+      "object": "poss:prospective-intervention-rehearsal",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-generative-architectural-synthesis.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "combines",
+        "establishment": "authored"
+      }
+    },
+    {
+      "id": "rel:source-knowledge-codesign-combines-stewardship",
+      "subject": "poss:prospective-source-knowledge-codesign",
+      "predicate": "derived_from",
+      "object": "poss:detached-possibility-stewardship",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-generative-architectural-synthesis.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "combines",
+        "establishment": "authored"
+      }
+    },
+    {
+      "id": "rel:source-knowledge-codesign-requires-comparison",
+      "subject": "poss:prospective-source-knowledge-codesign",
+      "predicate": "requires_capability",
+      "object": "cap:prospective-definition-comparison",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-generative-architectural-synthesis.md"
+      ]
+    },
+    {
+      "id": "rel:source-knowledge-codesign-requires-rehearsal",
+      "subject": "poss:prospective-source-knowledge-codesign",
+      "predicate": "requires_capability",
+      "object": "cap:prospective-intervention-rehearsal",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-generative-architectural-synthesis.md"
+      ]
+    },
+    {
+      "id": "rel:source-knowledge-codesign-prediction",
+      "subject": "conseq:prospective-source-knowledge-codesign-value",
+      "predicate": "references",
+      "object": "poss:prospective-source-knowledge-codesign",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-generative-architectural-synthesis.md"
+      ]
+    },
+    {
+      "id": "rel:source-knowledge-codesign-realized",
+      "subject": "poss:prospective-source-knowledge-codesign",
+      "predicate": "implemented_by",
+      "object": "cap:prospective-source-knowledge-codesign",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-generative-architectural-synthesis.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "realizedBy",
+        "establishment": "inferred",
+        "scope": "Bounded implementation; intended beneficiary improvement remains partial."
+      }
+    },
+    {
+      "id": "rel:source-knowledge-codesign-serves",
+      "subject": "cap:prospective-source-knowledge-codesign",
+      "predicate": "serves_goal",
+      "object": "goal:domain-general-cognitive-development",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-generative-architectural-synthesis.md"
+      ]
+    },
+    {
+      "id": "rel:source-knowledge-codesign-observation",
+      "subject": "observation:prospective-source-knowledge-codesign-20261127",
+      "predicate": "references",
+      "object": "conseq:prospective-source-knowledge-codesign-value",
+      "epistemic_status": "observed",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-generative-architectural-synthesis.md"
+      ]
+    }
+  ]
+}
