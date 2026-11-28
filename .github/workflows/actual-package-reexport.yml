@@ -1,16 +1,18 @@
-name: Actual package-interface evidence inquiry (execution branch only)
+name: Actual package-interface source evidence (execution branch only)
 on:
   push:
     branches: [claude/package-reexport-evidence-execution-20261128]
 permissions:
   contents: read
 jobs:
-  inquiry:
+  actual-package-interface:
     if: github.ref == 'refs/heads/claude/package-reexport-evidence-execution-20261128'
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     env:
       BASE: "e9b710f65aba957287d37d78928458dbf0330079"
+      CANDIDATE: "d0ddf702ecb4d821a003ed90be026fd6d8b94420"
+      PACK: ".sensemaking/knowledge/package-interface-source-understanding.json"
     steps:
       - uses: actions/checkout@v4
         with:
@@ -20,45 +22,143 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Inspect actual public-package consumers of implementation symbols
+      - name: Rehearse actual contribution and recover old source context on fixed target
         shell: bash
         run: |
           set -euo pipefail
           python -m pip install -e .
-          for pair in "probes:probe_python_imports" "map:build_repository_semantic_map"; do
-            module="${pair%%:*}"
-            symbol="${pair#*:}"
-            path="src/sensemaking_skills/semantic_architecture/$module.py"
-            sensemaking-skills semantic workspace-query --repo . --ref "$BASE" --operation context-for --subject "$path" --include-source-relationships --symbol "$symbol" --limit 80 --json > "$RUNNER_TEMP/$module-context.json"
-            sensemaking-skills semantic verification-plan --repo . --ref "$BASE" --path "$path" --symbol "$symbol" --limit 80 --json > "$RUNNER_TEMP/$module-plan.json"
-          done
+          git worktree add --detach "$RUNNER_TEMP/target" "$BASE"
+          TARGET="$RUNNER_TEMP/target"
+          git diff --no-ext-diff --no-textconv --no-renames "$BASE" "$CANDIDATE" -- > "$RUNNER_TEMP/actual.patch"
+          sensemaking-skills semantic patch-rehearsal --repo "$TARGET" --ref "$BASE" --patch-file "$RUNNER_TEMP/actual.patch" --knowledge-proposal "$PACK" --possibility poss:verification-plan-from-direct-references --limit 80 --json > "$RUNNER_TEMP/rehearsal.json"
           python - <<'PY'
-          import ast,json,os
+          import os,json,hashlib,subprocess
+          from pathlib import Path
+          q=json.loads((Path(os.environ["RUNNER_TEMP"])/"rehearsal.json").read_text())
+          assert q["status"]=="REHEARSED" and q["base_ref"]==os.environ["BASE"] and len(q["files"])==6
+          k=q["candidate_knowledge"]
+          assert k["status"]=="MECHANICALLY_VALID" and not k["accepted"] and not k["action_authorized"]
+          for f in q["files"]:
+              raw=subprocess.check_output(["git","show",os.environ["CANDIDATE"]+":"+f["path"]])
+              assert hashlib.sha256(raw).hexdigest()==f["after_sha256"]
+              if f["change_kind"]=="MODIFIED":
+                  raw=subprocess.check_output(["git","show",os.environ["BASE"]+":"+f["path"]])
+                  assert hashlib.sha256(raw).hexdigest()==f["before_sha256"]
+              else: assert f["before_sha256"] is None
+              if f["path"].endswith(".py"): assert f["python_syntax"]=="PASS"
+          print("ACTUAL_PATCH="+json.dumps({"paths":len(q["files"]),"patch_sha256":q["patch_sha256"],"proposal_sha256":k["proposal_sha256"],"claims":k["validation"]["claims_checked"],"relations":k["validation"]["relations_checked"],"review_truncated":q["review"]["truncated"],"focus_truncated":q["possibility_context"]["truncated"]}))
+          PY
+          for pair in "probes:probe_python_imports" "map:build_repository_semantic_map" "source_access:committed_regular_file_status"; do
+            module="${pair%%:*}"; symbol="${pair#*:}"
+            path="src/sensemaking_skills/semantic_architecture/$module.py"
+            sensemaking-skills semantic workspace-query --repo "$TARGET" --ref "$BASE" --operation context-for --subject "$path" --include-source-relationships --symbol "$symbol" --limit 80 --json > "$RUNNER_TEMP/old-$module-context.json"
+          done
+          # Use the identical already-returned context to compose the old plan.
+          python - <<'PY'
+          import os,json
+          from pathlib import Path
+          from sensemaking_skills.semantic_architecture.verification_plan import build_verification_plan
+          p=Path(os.environ["RUNNER_TEMP"])
+          for module,symbol in (("probes","probe_python_imports"),("map","build_repository_semantic_map"),("source_access","committed_regular_file_status")):
+              x=json.loads((p/("old-"+module+"-context.json")).read_text())
+              plan=build_verification_plan(x["context"],x["source_relationships"],symbol=symbol,limit=80)
+              (p/("old-"+module+"-plan.json")).write_text(json.dumps(plan))
+          PY
+      - name: Compare actual new source context and verification composition
+        shell: bash
+        run: |
+          set -euo pipefail
+          git checkout --detach "$CANDIDATE"
+          TARGET="$RUNNER_TEMP/target"
+          for pair in "probes:probe_python_imports" "map:build_repository_semantic_map" "source_access:committed_regular_file_status"; do
+            module="${pair%%:*}"; symbol="${pair#*:}"
+            path="src/sensemaking_skills/semantic_architecture/$module.py"
+            sensemaking-skills semantic workspace-query --repo "$TARGET" --ref "$BASE" --operation context-for --subject "$path" --include-source-relationships --symbol "$symbol" --limit 80 --json > "$RUNNER_TEMP/new-$module-context.json"
+          done
+          sensemaking-skills semantic workspace-query --repo "$TARGET" --ref "$BASE" --operation context-for --subject src/sensemaking_skills/semantic_architecture/probes.py --include-source-relationships --symbol probe_python_imports --limit 1 --json > "$RUNNER_TEMP/limited-context.json"
+          python - <<'PY'
+          import json,os,hashlib,ast
+          from pathlib import Path
+          from sensemaking_skills.semantic_architecture.verification_plan import build_verification_plan
+          p=Path(os.environ["RUNNER_TEMP"])
+          root=p/"target"
+          package="src/sensemaking_skills/semantic_architecture/__init__.py"
+          cli="src/sensemaking_skills/semantic_cli.py"
+          tests="tests/test_semantic_substrate.py"
+          def read(n): return json.loads((p/(n+".json")).read_text())
+          for module,symbol,package_line,cli_line,test_lines in (
+              ("probes","probe_python_imports",25,979,{21,34}),
+              ("map","build_repository_semantic_map",9,1029,{65,83}),
+              ("source_access","committed_regular_file_status",None,None,set()),
+          ):
+              old,new=read("old-"+module+"-context"),read("new-"+module+"-context")
+              a,b=old["source_relationships"],new["source_relationships"]
+              for key in a:
+                  if key not in ("limits","symbol_context","truncated"):
+                      assert a[key]==b[key], (module,key)
+              oa,nb=a["symbol_context"],b["symbol_context"]
+              for key in oa:
+                  if key not in ("limits","truncated"):
+                      assert oa[key]==nb[key], (module,key)
+              assert old["context"]==new["context"]
+              assert old["target_ref"]==new["target_ref"]==os.environ["BASE"]
+              assert old["workspace_context"]==new["workspace_context"]
+              re=nb["package_reexport_context"]
+              plan=build_verification_plan(new["context"],b,symbol=symbol,limit=80)
+              (p/("new-"+module+"-plan.json")).write_text(json.dumps(plan))
+              prior=read("old-"+module+"-plan")
+              targets={x["pytest_target"]:x for x in plan["pytest_candidates"]}
+              for item in prior["pytest_candidates"]:
+                  now=targets[item["pytest_target"]]
+                  assert all(src in now["sources"] for src in item["sources"])
+                  assert all(ref in now["evidence_refs"] for ref in item["evidence_refs"])
+              assert not plan["tests_executed"] and not plan["coverage_established"] and not plan["action_authorized"]
+              assert all(x["execution_status"]=="NOT_RUN" for x in targets.values())
+              assert len(targets)==len(plan["pytest_candidates"])
+              if package_line is None:
+                  assert re["route_total"]==0 and re["test_candidate_total"]==0 and re["consumer_reference_total"]==0
+                  assert prior["pytest_candidates"]==plan["pytest_candidates"]
+                  print("ACTUAL_NO_ROUTE="+json.dumps({"symbol":symbol,"route_total":re["route_total"],"old_candidates_equal":True}))
+                  continue
+              route=next(x for x in re["routes"] if x["package_path"]==package and x["exported_name"]==symbol)
+              assert route["line"]==package_line and route["in_module_all"] and route["imported_name"]==symbol
+              assert route["source_sha256"]==hashlib.sha256((root/package).read_bytes()).hexdigest()
+              assert route["evidence_ref"]==f"file:{package}:line:{package_line}"
+              consumers=[x for x in re["consumer_references"] if x["path"]==cli and x["line"]==cli_line]
+              assert consumers and any(13 in x["consumer_import_lines"] and x["package_reexport"]==route for x in consumers)
+              hits=[x for x in re["test_candidates"] if x["path"]==tests and x["package_reexport"]==route]
+              assert {line for x in hits for line in x["reference_lines"]}==test_lines
+              assert all(7 in x["consumer_import_lines"] for x in hits)
+              for x in hits:
+                  target=targets[tests+"::"+x["test_name"]]
+                  assert any(y["kind"]=="PACKAGE_REEXPORT_TEST_FUNCTION" and y["package_reexport"]==route for y in target["sources"])
+                  assert route["evidence_ref"] in target["evidence_refs"]
+              assert not any(x["path"]==cli for x in oa["direct_references"])
+              assert not any(x["path"]==tests for x in oa["test_candidates"])
+              assert not re["truncated"]
+              print("ACTUAL_PACKAGE_INTERFACE="+json.dumps({"symbol":symbol,"route":route,"cli_reference_lines":[x["line"] for x in consumers],"actual_test_candidates":[{"name":x["test_name"],"lines":x["reference_lines"]} for x in hits],"new_targets":[tests+"::"+x["test_name"] for x in hits],"prior_targets_preserved":True,"direct_context_preserved":True,"test_execution":False,"truncated":re["truncated"]}))
+          low=read("limited-context")["source_relationships"]["symbol_context"]["package_reexport_context"]
+          assert low["truncated"] and low["status"]=="PARTIAL" and low["test_candidate_omitted"]>0 and len(low["test_candidates"])==1
+          print("ACTUAL_LIMIT="+json.dumps({"route_total":low["route_total"],"test_total":low["test_candidate_total"],"test_omitted":low["test_candidate_omitted"],"consumer_omitted":low["consumer_reference_omitted"],"truncated":low["truncated"]}))
+          PY
+          # Exercise existing public verification-plan CLI on the same actual symbol.
+          sensemaking-skills semantic verification-plan --repo "$TARGET" --ref "$BASE" --path src/sensemaking_skills/semantic_architecture/probes.py --symbol probe_python_imports --limit 80 --json > "$RUNNER_TEMP/public-plan.json"
+          python - <<'PY'
+          import json,os
           from pathlib import Path
           p=Path(os.environ["RUNNER_TEMP"])
-          package=Path("src/sensemaking_skills/semantic_architecture/__init__.py")
-          cli=Path("src/sensemaking_skills/semantic_cli.py")
-          tests=Path("tests/test_semantic_substrate.py")
-          for module,symbol in (("probes","probe_python_imports"),("map","build_repository_semantic_map")):
-              s=json.loads((p/(module+"-context.json")).read_text())["source_relationships"]["symbol_context"]
-              plan=json.loads((p/(module+"-plan.json")).read_text())
-              imp=next(n for n in ast.parse(package.read_text()).body if isinstance(n,ast.ImportFrom) and n.level==1 and n.module==module and any(a.name==symbol for a in n.names))
-              use={}
-              for path in (cli,tests):
-                  t=ast.parse(path.read_text())
-                  bindings=[n.lineno for n in ast.walk(t) if isinstance(n,ast.ImportFrom) and (n.module or "").endswith("semantic_architecture") and any(a.name==symbol for a in n.names)]
-                  references=[n.lineno for n in ast.walk(t) if isinstance(n,ast.Name) and n.id==symbol and isinstance(n.ctx,ast.Load)]
-                  assert bindings and references
-                  use[str(path)]={"package_import_lines":bindings,"symbol_reference_lines":references}
-              reported=[r for r in s["direct_references"] if r["path"]==str(cli)]
-              test_hits=[r for r in s["test_candidates"] if r["path"]==str(tests)]
-              assert not reported and not test_hits
-              print("ACTUAL_INTERFACE_GAP="+json.dumps({"symbol":symbol,"definition":s["definitions"][0]["line"],"package_reexport_line":imp.lineno,"consumers":use,"direct_cli_refs":len(reported),"direct_substrate_tests":len(test_hits),"plan_targets":[x["pytest_target"] for x in plan["pytest_candidates"] if str(tests) in x["pytest_target"]],"truncated":s["truncated"],"tests_executed":plan["tests_executed"]}))
+          a=json.loads((p/"new-probes-plan.json").read_text())
+          b=json.loads((p/"public-plan.json").read_text())
+          assert all(b[k]==v for k,v in a.items())
+          print("ACTUAL_PUBLIC_PLAN=equal")
           PY
+          test -z "$(git -C "$TARGET" status --porcelain)"
           test -z "$(git status --porcelain)"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: actual-package-interface-gap
-          path: ${{ runner.temp }}/*.json
+          name: actual-package-interface-evidence
+          path: |
+            ${{ runner.temp }}/*.json
+            ${{ runner.temp }}/*.patch
           retention-days: 14
