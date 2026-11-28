@@ -39,7 +39,7 @@ _LIMITS = (
     "The top-level-symbol leading_underscore and in_module_all markers are syntax "
     "and name conventions only; they are not export or stable-API claims.",
     "Test references are file-level and do not show which symbol or behavior is exercised.",
-    "Re-exports through a package __init__ are not resolved to the defining module.",
+    "Direct relationships do not resolve re-exports. A selected symbol may have separate one-hop package import-syntax candidates, not resolved bindings.",
     "An importer line is the first matching import; evidence_refs lists the matching lines.",
 )
 
@@ -218,8 +218,12 @@ def _direct_imports(
 
 def _import_bindings(
     path: str, tree: ast.AST, target_module: str, symbol: str,
+    *, binding_lines: set[int] | None = None,
 ) -> tuple[set[str], set[str], bool]:
-    """Return local symbol aliases, local module aliases and star-import status."""
+    """Return local symbol aliases, module aliases and star-import status.
+
+    Optionally retain the syntactic import lines for matching named bindings.
+    """
 
     symbol_aliases: set[str] = set()
     module_aliases: set[str] = set()
@@ -229,10 +233,10 @@ def _import_bindings(
             for alias in node.names:
                 if alias.name != target_module:
                     continue
-                if alias.asname:
-                    module_aliases.add(alias.asname)
-                elif "." not in alias.name:
-                    module_aliases.add(alias.name)
+                if alias.asname or "." not in alias.name:
+                    module_aliases.add(alias.asname or alias.name)
+                    if binding_lines is not None:
+                        binding_lines.add(node.lineno)
         elif isinstance(node, ast.ImportFrom):
             base = _import_from_base(path, node)
             if base is None:
@@ -243,6 +247,8 @@ def _import_bindings(
                         star_import = True
                     elif alias.name == symbol:
                         symbol_aliases.add(alias.asname or alias.name)
+                        if binding_lines is not None:
+                            binding_lines.add(node.lineno)
             else:
                 for alias in node.names:
                     if alias.name == "*":
@@ -250,6 +256,8 @@ def _import_bindings(
                     candidate = f"{base}.{alias.name}" if base else alias.name
                     if candidate == target_module:
                         module_aliases.add(alias.asname or alias.name)
+                        if binding_lines is not None:
+                            binding_lines.add(node.lineno)
     return symbol_aliases, module_aliases, star_import
 
 
@@ -380,6 +388,158 @@ def _behavior_surface(
     }
 
 
+def _test_reference_candidates(
+    path: str, tree: ast.AST, references: list[tuple[int, int, str]],
+) -> list[dict[str, Any]]:
+    """Group syntactic references by their existing pytest function/method scope."""
+    scopes = _test_scopes(tree)
+    by_scope: dict[str, dict[str, Any]] = {}
+    for line, column, kind in references:
+        containing = [scope for scope in scopes if scope[2] <= line <= scope[3]]
+        if not containing:
+            continue
+        scope = min(containing, key=lambda item: item[3] - item[2])
+        key = scope[1]
+        item = by_scope.setdefault(key, {
+            "path": path,
+            "test_name": scope[1],
+            "test_kind": scope[0],
+            "line": scope[2],
+            "reference_lines": [],
+            "kinds": [],
+            "evidence_refs": [],
+        })
+        if line not in item["reference_lines"]:
+            item["reference_lines"].append(line)
+        if kind not in item["kinds"]:
+            item["kinds"].append(kind)
+        item["evidence_refs"].append(f"file:{path}:line:{line}")
+    return list(by_scope.values())
+
+
+def _package_reexport_routes(
+    target_path: str, target_module: str, symbol: str, definitions_total: int,
+    tracked: set[str], checkout: Path, limit: int,
+) -> dict[str, Any]:
+    """Read one explicit top-level package ImportFrom, never resolve runtime binding."""
+    by_module: dict[str, list[str]] = {}
+    for path in sorted(tracked):
+        if path.endswith(".py"):
+            by_module.setdefault(_module_for_path(path), []).append(path)
+    routes: list[dict[str, Any]] = []
+    skipped: list[str] = []
+    total = 0
+    route_limit = min(limit, 20)
+    eligible = bool(
+        definitions_total == 1 and target_module
+        and by_module.get(target_module) == [target_path]
+    )
+    if eligible:
+        for path in sorted(tracked):
+            if path == target_path or not path.endswith("/__init__.py"):
+                continue
+            module = _module_for_path(path)
+            if not module or by_module.get(module) != [path]:
+                skipped.append(path)
+                continue
+            tree, _, raw, error = _parse(checkout, tracked, path)
+            if error or tree is None or raw is None:
+                skipped.append(path)
+                continue
+            exported = _module_all(tree)
+            for node in tree.body:
+                if not isinstance(node, ast.ImportFrom):
+                    continue
+                if _import_from_base(path, node) != target_module:
+                    continue
+                for alias in node.names:
+                    if alias.name != symbol:
+                        continue
+                    total += 1
+                    if len(routes) < route_limit:
+                        name = alias.asname or alias.name
+                        routes.append({
+                            "package_path": path,
+                            "package_module": module,
+                            "line": node.lineno,
+                            "imported_name": symbol,
+                            "exported_name": name,
+                            "in_module_all": name in exported if exported is not None else None,
+                            "source_sha256": hashlib.sha256(raw).hexdigest(),
+                            "evidence_ref": f"file:{path}:line:{node.lineno}",
+                        })
+    return {
+        "status": (
+            "NOT_ASSESSED" if not eligible else
+            "PARTIAL" if skipped or total > len(routes) else "OBSERVED_SYNTAX"
+        ),
+        "routes": routes,
+        "route_total": total,
+        "route_omitted": total - len(routes),
+        "skipped_package_paths": skipped[:limit],
+        "skipped_package_total": len(skipped),
+        "route_limit": route_limit,
+        "consumer_references": [],
+        "test_candidates": [],
+        "consumer_reference_total": 0,
+        "test_candidate_total": 0,
+        "truncated": bool(total > len(routes) or len(skipped) > limit),
+        "limits": [
+            "Only one explicit top-level ImportFrom in a uniquely mapped tracked package initializer, from a uniquely mapped module and one selected top-level definition.",
+            "Exported name means the syntactic local import name; __all__ membership is literal syntax, not proof of public API or runtime binding.",
+            "Consumer aliases and reference nodes are syntactic file-wide candidates; rebinding, scope, star imports, dynamic exports, multi-hop re-exports, and runtime use are NOT ASSESSED.",
+            "A test candidate is a syntactic reference inside a test scope, not coverage or a test result.",
+        ],
+    }
+
+
+def _collect_package_reexport_uses(
+    context: dict[str, Any], path: str, tree: ast.AST, limit: int,
+) -> None:
+    """Collect bounded consumer candidates, retaining the distinct import route."""
+    for route in context["routes"]:
+        if path == route["package_path"]:
+            continue
+        lines: set[int] = set()
+        names, modules, _ = _import_bindings(
+            path, tree, route["package_module"], route["exported_name"],
+            binding_lines=lines,
+        )
+        if not names and not modules:
+            continue
+        references = _reference_nodes(tree, route["exported_name"], names, modules)
+        if not references:
+            continue
+        binding = sorted(lines)
+        provenance = [route["evidence_ref"], *(
+            f"file:{path}:line:{line}" for line in binding[:limit]
+        )]
+        extra = {
+            "package_reexport": route,
+            "consumer_import_lines": binding[:limit],
+            "consumer_import_line_total": len(binding),
+        }
+        if len(binding) > limit:
+            context["truncated"] = True
+        if path.startswith("tests/"):
+            for item in _test_reference_candidates(path, tree, references):
+                context["test_candidate_total"] += 1
+                if len(context["test_candidates"]) < limit:
+                    item["evidence_refs"] = list(dict.fromkeys(
+                        [*item["evidence_refs"], *provenance]
+                    ))
+                    context["test_candidates"].append({**item, **extra})
+        else:
+            for line, column, kind in references:
+                context["consumer_reference_total"] += 1
+                if len(context["consumer_references"]) < limit:
+                    context["consumer_references"].append({
+                        "path": path, "line": line, "column": column, "kind": kind,
+                        "evidence_refs": [f"file:{path}:line:{line}", *provenance],
+                        **extra,
+                    })
+
+
 def _symbol_context(
     target_path: str, target_tree: ast.AST, target_source: str, target_module: str,
     target_exported: set[str] | None, tracked: set[str], checkout: Path,
@@ -411,6 +571,9 @@ def _symbol_context(
     star_import = False
     parse_failures: list[str] = []
 
+    package_reexports = _package_reexport_routes(
+        target_path, target_module, symbol, definitions_total, tracked, checkout, limit,
+    )
     target_refs = _reference_nodes(target_tree, symbol, {symbol}, set())
     for line, column, kind in target_refs:
         direct_total += 1
@@ -431,6 +594,7 @@ def _symbol_context(
         if error or tree is None:
             parse_failures.append(error or f"{candidate}: source could not be parsed")
             continue
+        _collect_package_reexport_uses(package_reexports, candidate, tree, limit)
         symbol_aliases, module_aliases, candidate_star = _import_bindings(
             candidate, tree, target_module, symbol,
         )
@@ -439,31 +603,7 @@ def _symbol_context(
         if not references:
             continue
         if candidate.startswith("tests/"):
-            scopes = _test_scopes(tree)
-            by_scope: dict[str, dict[str, Any]] = {}
-            for line, column, kind in references:
-                containing = [
-                    scope for scope in scopes if scope[2] <= line <= scope[3]
-                ]
-                if not containing:
-                    continue
-                scope = min(containing, key=lambda item: item[3] - item[2])
-                key = scope[1]
-                item = by_scope.setdefault(key, {
-                    "path": candidate,
-                    "test_name": scope[1],
-                    "test_kind": scope[0],
-                    "line": scope[2],
-                    "reference_lines": [],
-                    "kinds": [],
-                    "evidence_refs": [],
-                })
-                if line not in item["reference_lines"]:
-                    item["reference_lines"].append(line)
-                if kind not in item["kinds"]:
-                    item["kinds"].append(kind)
-                item["evidence_refs"].append(f"file:{candidate}:line:{line}")
-            for item in by_scope.values():
+            for item in _test_reference_candidates(candidate, tree, references):
                 test_total += 1
                 if len(test_candidates) < limit:
                     test_candidates.append(item)
@@ -480,6 +620,22 @@ def _symbol_context(
                         "evidence_ref": f"file:{candidate}:line:{line}",
                     })
 
+    package_reexports["consumer_reference_omitted"] = (
+        package_reexports["consumer_reference_total"] - len(package_reexports["consumer_references"])
+    )
+    package_reexports["test_candidate_omitted"] = (
+        package_reexports["test_candidate_total"] - len(package_reexports["test_candidates"])
+    )
+    package_reexports["consumer_parse_failures"] = len(parse_failures)
+    package_reexports["truncated"] = bool(
+        package_reexports["truncated"] or package_reexports["consumer_reference_omitted"]
+        or package_reexports["test_candidate_omitted"]
+    )
+    if package_reexports["status"] == "OBSERVED_SYNTAX" and (
+        package_reexports["truncated"] or parse_failures
+    ):
+        package_reexports["status"] = "PARTIAL"
+
     behavior_truncated = any(
         item["behavior"].get("truncated") for item in definitions
     )
@@ -492,6 +648,7 @@ def _symbol_context(
         or test_total > len(test_candidates)
         or behavior_truncated
         or scenario_context["truncated"]
+        or package_reexports["truncated"]
     )
     return {
         "symbol": symbol,
@@ -499,6 +656,7 @@ def _symbol_context(
         "definitions": definitions,
         "direct_references": direct_references,
         "test_candidates": test_candidates,
+        "package_reexport_context": package_reexports,
         "counts": {
             "definitions": definitions_total,
             "direct_references": direct_total,
@@ -517,7 +675,7 @@ def _symbol_context(
             "Test candidates are test functions/methods that directly mention the symbol in their own body; fixture, helper and indirect coverage is NOT ASSESSED.",
             "Aliases are collected across each file; lexical scope and rebinding are NOT ASSESSED.",
             "A reference is not proof of execution, and a test candidate is not proof that the test covers the symbol.",
-            "No transitive closure or impact verdict is produced.",
+            "One-hop package re-export syntax candidates are separate from direct references; no transitive closure or impact verdict is produced.",
         ],
     }
 

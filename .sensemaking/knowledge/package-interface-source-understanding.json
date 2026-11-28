@@ -1,0 +1,212 @@
+{
+  "schema_version": 2,
+  "claims": [
+    {
+      "id": "poss:package-interface-source-understanding",
+      "kind": "opportunity",
+      "statement": "A coding agent changing a concrete Python implementation symbol can recover otherwise missed syntactic consumers through a one-hop explicit package re-export and inspect the corresponding existing verification candidates, without treating those references as runtime binding or test coverage.",
+      "epistemic_status": "hypothetical",
+      "authority_kind": "hypothesis",
+      "authority_ref": "artifacts/history/2026-11-28-package-interface-source-understanding.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-package-interface-source-understanding.md",
+        "file:src/sensemaking_skills/semantic_architecture/source_relationships.py",
+        "file:src/sensemaking_skills/semantic_architecture/verification_plan.py",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:src/sensemaking_skills/semantic_architecture/__init__.py",
+        "file:src/sensemaking_skills/semantic_architecture/probes.py",
+        "file:src/sensemaking_skills/semantic_architecture/map.py",
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:tests/test_semantic_substrate.py"
+      ],
+      "attributes": {
+        "concept": "ProductPossibility",
+        "title": "Package-interface source understanding",
+        "origin": {
+          "ref": "artifacts/history/2026-11-28-package-interface-source-understanding.md",
+          "date": "2026-11-28",
+          "author": "active ChatGPT coding agent"
+        },
+        "dimensions": {
+          "alignment": {
+            "value": "ALIGNED",
+            "basis": "Improve the actual software-engineering beneficiary outcome under ADR 0038."
+          },
+          "ambition": {
+            "value": "INCREMENTAL",
+            "basis": "Extend bounded AST source inquiry and verification candidate composition."
+          },
+          "horizon": {
+            "value": "FORESEEABLE",
+            "basis": "Actual package re-export and downstream consumers in current source."
+          },
+          "realization": {
+            "value": "HYPOTHETICAL",
+            "establishment": "inferred",
+            "basis": "Candidate implementation; actual construction evidence pending."
+          }
+        },
+        "disposition_history": [
+          {
+            "value": "SELECTED",
+            "date": "2026-11-28",
+            "authority": "delegated agent construction selection",
+            "source": "artifacts/history/2026-11-28-package-interface-source-understanding.md",
+            "rationale": "Actual package re-export use and absent direct references/test candidates; bounded one-hop syntax over generalized runtime resolution."
+          }
+        ],
+        "assessed_ref": "e9b710f65aba957287d37d78928458dbf0330079",
+        "synthesis_basis": "Read top-level explicit ImportFrom syntax in uniquely mapped package initializers, preserve source digest and import/consumer reference evidence in a distinct bounded channel, and merge candidate test identities into the existing plan.",
+        "value_hypothesis": "A coding agent changing a concrete Python implementation symbol can recover otherwise missed syntactic consumers through a one-hop explicit package re-export and inspect the corresponding existing verification candidates, without treating those references as runtime binding or test coverage.",
+        "revisit_when": "Reconsider if actual package candidate syntax is misattributed, direct results or test identity semantics change, limits conceal omissions, or a real consumer requires a different resolution scope.",
+        "counterevidence": "Manual inspection and grep remain viable; dynamic exports, multi-hop routes, lexical binding, runtime use and indirect coverage not assessed. No measured comparative benefit or independent cognitive improvement.",
+        "claim_ceiling": "Source-reviewed candidate; actual candidate observations pending. No runtime or coverage claim, measured productivity or independent cognition.",
+        "agent_owned": true
+      }
+    },
+    {
+      "id": "conseq:package-interface-source-understanding-value",
+      "kind": "hypothesis",
+      "statement": "A coding agent changing a concrete Python implementation symbol can recover otherwise missed syntactic consumers through a one-hop explicit package re-export and inspect the corresponding existing verification candidates, without treating those references as runtime binding or test coverage.",
+      "epistemic_status": "hypothetical",
+      "authority_kind": "hypothesis",
+      "authority_ref": "artifacts/history/2026-11-28-package-interface-source-understanding.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-package-interface-source-understanding.md",
+        "file:src/sensemaking_skills/semantic_architecture/source_relationships.py",
+        "file:src/sensemaking_skills/semantic_architecture/verification_plan.py",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:src/sensemaking_skills/semantic_architecture/__init__.py",
+        "file:src/sensemaking_skills/semantic_architecture/probes.py",
+        "file:src/sensemaking_skills/semantic_architecture/map.py",
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:tests/test_semantic_substrate.py"
+      ],
+      "attributes": {
+        "concept": "ConsequenceHypothesis",
+        "source_possibility": "poss:package-interface-source-understanding",
+        "category": "benefit",
+        "analysis_ref": "artifacts/history/2026-11-28-package-interface-source-understanding.md",
+        "source_revision": "e9b710f65aba957287d37d78928458dbf0330079",
+        "origin": {
+          "ref": "artifacts/history/2026-11-28-package-interface-source-understanding.md",
+          "date": "2026-11-28",
+          "author": "active ChatGPT coding agent"
+        },
+        "value_frame": {
+          "beneficiary": "Coding agent changing a real Python implementation behind a package interface.",
+          "criterion": "Actual probes and map symbol queries recover CLI and test candidate lines through explicit package initializer; preserve direct source results, deduplicate verification targets and retain NOT_RUN; limit and no-route cases honest.",
+          "comparison_baseline": "Current direct-import symbol inspection, plus manual package source/grep.",
+          "expected_observation": "Actual package re-export line and source digest, original consumer import and reference lines, actual test names and separate verification provenance, no runtime/coverage claims.",
+          "would_change_decision_if": "Reconsider if actual package candidate syntax is misattributed, direct results or test identity semantics change, limits conceal omissions, or a real consumer requires a different resolution scope.",
+          "cost_and_downside": "Additional bounded syntax scan and composition; no general call graph or runtime analysis."
+        },
+        "assumptions": [
+          "con:agent-owns-semantic-control"
+        ],
+        "mechanism": "Read top-level explicit ImportFrom syntax in uniquely mapped package initializers, preserve source digest and import/consumer reference evidence in a distinct bounded channel, and merge candidate test identities into the existing plan.",
+        "counterevidence": "Manual inspection and grep remain viable; dynamic exports, multi-hop routes, lexical binding, runtime use and indirect coverage not assessed. No measured comparative benefit or independent cognitive improvement.",
+        "would_change_decision_if": "Reconsider if actual package candidate syntax is misattributed, direct results or test identity semantics change, limits conceal omissions, or a real consumer requires a different resolution scope.",
+        "claim_ceiling": "Conditional criterion recorded at bb6cd23e before implementation."
+      }
+    },
+    {
+      "id": "cap:package-interface-source-understanding",
+      "kind": "capability",
+      "statement": "Selected Python symbol source context supplies separate bounded explicit one-hop package import-syntax candidates, and existing verification plan composes their test targets with distinct provenance.",
+      "epistemic_status": "declared",
+      "authority_kind": "code",
+      "authority_ref": "src/sensemaking_skills/semantic_architecture/source_relationships.py",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-package-interface-source-understanding.md",
+        "file:src/sensemaking_skills/semantic_architecture/source_relationships.py",
+        "file:src/sensemaking_skills/semantic_architecture/verification_plan.py",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:src/sensemaking_skills/semantic_architecture/__init__.py",
+        "file:src/sensemaking_skills/semantic_architecture/probes.py",
+        "file:src/sensemaking_skills/semantic_architecture/map.py",
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:tests/test_semantic_substrate.py"
+      ],
+      "attributes": {
+        "scope": "Unique top-level definition and module, tracked package initializer explicit ImportFrom, syntactic named consumer references and test scopes; no runtime resolution.",
+        "claim_ceiling": "Source-reviewed candidate; actual candidate observations pending. No runtime or coverage claim, measured productivity or independent cognition."
+      }
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel:package-interface-source-understanding-goal",
+      "subject": "poss:package-interface-source-understanding",
+      "predicate": "candidate_opportunity_for",
+      "object": "goal:compounding-product-knowledge",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-package-interface-source-understanding.md"
+      ]
+    },
+    {
+      "id": "rel:package-interface-source-understanding-lineage",
+      "subject": "poss:package-interface-source-understanding",
+      "predicate": "derived_from",
+      "object": "poss:architectural-source-route",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-package-interface-source-understanding.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "combines",
+        "establishment": "authored"
+      }
+    },
+    {
+      "id": "rel:package-interface-source-understanding-verification-lineage",
+      "subject": "poss:package-interface-source-understanding",
+      "predicate": "derived_from",
+      "object": "poss:verification-plan-from-direct-references",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-package-interface-source-understanding.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "combines",
+        "establishment": "authored"
+      }
+    },
+    {
+      "id": "rel:package-interface-source-understanding-prediction",
+      "subject": "conseq:package-interface-source-understanding-value",
+      "predicate": "references",
+      "object": "poss:package-interface-source-understanding",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-package-interface-source-understanding.md"
+      ]
+    },
+    {
+      "id": "rel:package-interface-source-understanding-realization",
+      "subject": "poss:package-interface-source-understanding",
+      "predicate": "implemented_by",
+      "object": "cap:package-interface-source-understanding",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-package-interface-source-understanding.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "realizedBy",
+        "establishment": "inferred",
+        "scope": "Candidate pending actual use."
+      }
+    },
+    {
+      "id": "rel:package-interface-source-understanding-serves",
+      "subject": "cap:package-interface-source-understanding",
+      "predicate": "serves_goal",
+      "object": "goal:compounding-product-knowledge",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-package-interface-source-understanding.md"
+      ]
+    }
+  ]
+}
