@@ -916,6 +916,34 @@ every cited claim at the exact source revision and creates:
 - optional `requires_capability`, `assumes` (`references`) and `contradicts`
   links.
 
+For consequential synthesis, an optional `value_prediction` object can
+preserve an explicit evaluative frame with the same `value_hypothesis`
+statement. It requires exactly these six nonempty text fields:
+
+- `beneficiary`: the agent/person whose outcome matters;
+- `criterion`: what would count as valuable in this frame;
+- `comparison_baseline`: the credible existing or alternative approach;
+- `expected_observation`: an observable effect that would bear on the value claim;
+- `would_change_decision_if`: conditions or counterevidence that would prompt revision;
+- `cost_and_downside`: relevant costs, risks and tradeoffs.
+
+The producer adds a hypothetical `conseq:<possibility_id>-value` claim
+and its explicit `references` relation to the new opportunity in the
+same exclusive draft. The prediction's statement is the existing authored
+value hypothesis (not generated text); its attributes retain the frame,
+assumptions, counterevidence, author, origin and inspected source revision.
+The existing [value-feedback view](#product-possibility-value-feedback)
+can recover it after ordinary review; absent assessment is NO_ASSESSMENT.
+The caller may omit the object; ordinary synthesis output is unchanged.
+Detached output is supported by the same `--draft-only` contract.
+
+A frame is a conditional documentary judgment, not a numerical score or
+authority. An episode's inspected source revision and origin date do not
+prove its authoring time. To make a prospective commitment attributable,
+retain the original episode before the relevant outcome, and cite the actual
+Git evidence when assessing it later. Neither generating the proposal nor
+retrieving it establishes a beneficiary effect or comparative benefit.
+
 A new synthesis must remain `HYPOTHETICAL` or `NOT_ASSESSED`; claiming
 implementation requires ordinary reconciliation. The producer does not generate
 a candidate, rank possibilities, choose a goal, claim value or authorize work.

@@ -28,8 +28,16 @@ record, existing consequence assessments, and an optional separate decision
 review. This connects the prospective value claim to subsequent experience
 without treating the possibility as an ArchitectureOption or conflating
 realization with benefit. Preserve the original prediction and its source;
-later normalization is not evidence of prospective commitment. See the
-[CLI contract](persistent-knowledge-cli.md#product-possibility-value-feedback).
+later normalization is not evidence of prospective commitment. An optional
+authored value frame can identify beneficiary, criterion, comparison baseline,
+expected observation, reversal condition and cost/downside when the
+possibility is first formed. These are contextual assessment grounds, not
+a universally adopted value scale. A later assessment may retain or revise
+the frame with attributable grounds and preserve its predecessor using the
+existing [AssessmentRevisionAccount](possibility-assessment-ontology.md).
+No automatic value learning, preference or authority follows. See the
+[CLI contract](persistent-knowledge-cli.md#product-possibility-value-feedback)
+and [possibility producer](persistent-knowledge-cli.md#possibility-synthesis-producer).
 
 
 ```text

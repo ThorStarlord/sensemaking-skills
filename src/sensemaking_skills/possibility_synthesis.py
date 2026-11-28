@@ -31,6 +31,10 @@ _CONTRADICTION_KINDS = frozenset(
 )
 _MAX_TEXT = 2400
 _MAX_REFS = 8
+_VALUE_PREDICTION_FIELDS = (
+    "beneficiary", "criterion", "comparison_baseline", "expected_observation",
+    "would_change_decision_if", "cost_and_downside",
+)
 
 
 def _string(
@@ -209,6 +213,7 @@ def record_possibility_synthesis(
         "dimensions",
         "synthesis_basis",
         "value_hypothesis",
+        "value_prediction",
         "revisit_when",
         "counterevidence",
         "claim_ceiling",
@@ -242,6 +247,15 @@ def record_possibility_synthesis(
     statement = _string(data, "statement")
     synthesis_basis = _string(data, "synthesis_basis")
     value_hypothesis = _string(data, "value_hypothesis")
+    value_frame: dict[str, str] | None = None
+    if "value_prediction" in data:
+        prediction = data["value_prediction"]
+        if not isinstance(prediction, dict) or set(prediction) != set(_VALUE_PREDICTION_FIELDS):
+            raise ValueError(
+                "episode.value_prediction must contain exactly "
+                + ", ".join(_VALUE_PREDICTION_FIELDS)
+            )
+        value_frame = {key: _string(prediction, key) for key in _VALUE_PREDICTION_FIELDS}
     revisit_when = _string(data, "revisit_when")
     counterevidence = _string(data, "counterevidence")
     ceiling = _string(data, "claim_ceiling")
@@ -316,6 +330,9 @@ def record_possibility_synthesis(
     known_ids = _known_claim_ids(root, tracked)
     if possibility_id in claims or possibility_id in known_ids:
         raise ValueError("possibility identifier already exists in reviewed knowledge")
+    prediction_id = "conseq:" + slug + "-value"
+    if value_frame is not None and (prediction_id in claims or prediction_id in known_ids):
+        raise ValueError("value prediction identifier already exists in reviewed knowledge")
 
     source_paths = set(
         filter(
@@ -439,15 +456,51 @@ def record_possibility_synthesis(
             }
         )
 
-    read_authored_claim(
-        claim, source_ref="file:" + output_relative, schema_version=2
-    )
+    proposed_claims = [claim]
+    if value_frame is not None:
+        # Preserve the agent's actual hypothesis and criterion; never generate an
+        # assessment or infer that the episode was written before an outcome.
+        proposed_claims.append({
+            "id": prediction_id,
+            "kind": "hypothesis",
+            "statement": value_hypothesis,
+            "authority_kind": "hypothesis",
+            "authority_ref": episode_relative,
+            "evidence_refs": references,
+            "epistemic_status": "hypothetical",
+            "attributes": {
+                "concept": "ConsequenceHypothesis",
+                "source_possibility": possibility_id,
+                "category": "benefit",
+                "analysis_ref": episode_relative,
+                "source_revision": source_revision,
+                "origin": {"ref": episode_relative, "date": origin_date, "author": actor},
+                "value_frame": value_frame,
+                "assumptions": assumption_refs,
+                "mechanism": synthesis_basis,
+                "counterevidence": counterevidence,
+                "would_change_decision_if": value_frame["would_change_decision_if"],
+                "claim_ceiling": ceiling,
+            },
+        })
+        relations.append({
+            "id": f"rel:possibility-{slug}-value-prediction",
+            "subject": prediction_id,
+            "predicate": "references",
+            "object": possibility_id,
+            "evidence_refs": references,
+            "epistemic_status": "hypothetical",
+        })
+    for proposed in proposed_claims:
+        read_authored_claim(
+            proposed, source_ref="file:" + output_relative, schema_version=2
+        )
     for relation in relations:
         read_authored_relation(
             relation, source_ref="file:" + output_relative, schema_version=2
         )
 
-    proposal = {"schema_version": 2, "claims": [claim], "relations": relations}
+    proposal = {"schema_version": 2, "claims": proposed_claims, "relations": relations}
     output_file.parent.mkdir(parents=True, exist_ok=True)
     with output_file.open("x", encoding="utf-8", newline="\n") as stream:
         json.dump(proposal, stream, indent=2, ensure_ascii=False)
@@ -464,7 +517,8 @@ def record_possibility_synthesis(
         "capability_refs": capability_refs,
         "assumption_refs": assumption_refs,
         "contradicts_refs": contradiction_refs,
-        "proposed_claim_ids": [possibility_id],
+        "proposed_claim_ids": [item["id"] for item in proposed_claims],
+        **({"value_prediction_id": prediction_id} if value_frame is not None else {}),
         "proposed_relation_ids": [item["id"] for item in relations],
         "evidence_paths_not_in_source_revision": missing_at_source,
         "review_state": "UNREVIEWED_DRAFT",
