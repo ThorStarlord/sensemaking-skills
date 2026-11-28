@@ -1387,8 +1387,15 @@ sensemaking-skills semantic verification-plan --repo . --ref HEAD \
 - `scenario_candidates` carries direct guard-derived conditions with
   `pytest_target: null`, `test_mapping: NOT_ASSESSED` and
   `execution_status: NOT_RUN`. No test is generated or mapped to a scenario.
+- `workflow_candidates` groups explicit authored `.github/workflows/*.yml`
+  or `.yaml` file references by path, retaining their source verification
+  records and matching evidence pointers. These are manual inspection
+  candidates only: no workflow or job is resolved, dispatched or executed.
+  They do not enter pytest targets or establish workflow applicability.
 - `unmapped_authored_verification` lists verification records whose references
-  did not identify a `tests/*.py` file.
+  did not identify a `tests/*.py` file, including workflow-only records.
+  This field remains pytest-specific; a workflow-only record can also
+  appear in `workflow_candidates`.
 - `gaps` states file-level-only records, unmapped records, absent direct test
   functions, scenarios without executable tests, truncation, `NOT_RUN`
   execution and `NOT_ASSESSED` coverage explicitly.
