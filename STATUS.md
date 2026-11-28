@@ -549,6 +549,9 @@ no unit or synthetic evidence tests were run.
 
 ## Current next step
 
+**2026-11-27 — Experience-informed strategic selection:** [actual selection and returning-engagement improvement](artifacts/history/2026-11-27-experience-informed-strategic-selection.md) uses #1007/#1008 value feedback and original prospective criteria on a genuine product choice. The real handoff omitted the relevant November 27 receipt from its first-forty inventory of 148 paths. The existing bounded receipt list now returns both filename-order ends, with 108 middle paths disclosed as omitted, no extra path budget or automatic selection. Exact run 46092095344 confirmed visibility and continued explicit validation. Retain the scoped outcome assessment and actual prior-frame reuse separately from independent benefit. Do not expand the locator or valuation infrastructure without a distinct beneficiary need; pursue useful product capabilities across the current landscape. ADR 0038 and current Level-3 direction reaffirmed.
+
+
 **2026-11-27 — Adaptive strategic value formation:** [prospective value commitment](artifacts/history/2026-11-27-adaptive-strategic-value-formation.md) continues #1007 using its actual partial-outcome feedback and the existing purpose-relative assessment ontology. The optional synthesis `value_prediction` frame now materializes a separately assessable, explicitly linked hypothetical value hypothesis in the same proposal. The actual preconstruction episode at 8dc72540 and exact producer run 46091042854 establish the producer/preflight mechanism, not later decision benefit. Preserve the original value frame and compare it with genuine subsequent observations and credible alternatives; no automated value scale, universal criterion, bulk conversion or governing policy change. The current realization is partial; later criterion revision remains an agent-owned assessment responsibility. Local unit/synthetic tests NOT_RUN.
 
 
