@@ -493,7 +493,12 @@
       "authority_ref": "docs/strategic-candidate-directions.md",
       "evidence_refs": [
         "file:docs/strategic-candidate-directions.md:line:563",
-        "file:docs/research/capability-learning-loop-v0.md"
+        "file:docs/research/capability-learning-loop-v0.md",
+        "file:artifacts/history/2026-11-28-premise-sensitive-developmental-reconsideration.md",
+        "file:artifacts/history/2026-11-28-fixed-target-comparison-method-episode.json",
+        "file:docs/adr/0035-sensemaking-continuous-learning.md",
+        "file:src/sensemaking_skills/method_adaptation.py",
+        "file:skills/workflow-planner/references/skill-registry.yaml"
       ],
       "attributes": {
         "concept": "ProductPossibility",
@@ -519,8 +524,16 @@
           },
           "realization": {
             "value": "NOT_IMPLEMENTED",
-            "establishment": "inferred",
-            "basis": "As a packaged or registered Skill: no skills/capability-learning-analysis/ directory and no skill-registry.yaml entry at d0af33b."
+            "establishment": "observed",
+            "basis": "At 86868576 the specialized Skill directory and registry entry are absent. The underlying cross-episode method synthesis is exercised through existing SCL, a distinct implementation route; no specialized Skill necessity established.",
+            "history": [
+              {
+                "value": "NOT_IMPLEMENTED",
+                "establishment": "inferred",
+                "basis": "As a packaged or registered Skill: no skills/capability-learning-analysis/ directory and no skill-registry.yaml entry at d0af33b.",
+                "assessed_ref": "d0af33beb52e94b375d6a471e9990df11c8c424d"
+              }
+            ]
           }
         },
         "disposition_history": [
@@ -531,10 +544,20 @@
             "source": "docs/strategic-candidate-directions.md",
             "rationale": "CANDIDATE_ONLY and evidence-gated; existing reconciliation already produces episode learning.",
             "reason": "opportunity_value"
+          },
+          {
+            "value": "DEFERRED",
+            "date": "2026-11-28",
+            "authority": "active agent scoped reconsideration under delegated repository development",
+            "source": "artifacts/history/2026-11-28-premise-sensitive-developmental-reconsideration.md",
+            "rationale": "A real procedural correction and repeated same-agent reuse support a bounded cross-episode synthesis responsibility. Existing method record/context and Steward suffice for this case. Separate specialized packaging is not yet warranted by a recurring consumer failure; retain the conditional lesson and reconsider only if the existing activity proves inadequate.",
+            "reason": "opportunity_value"
           }
         ],
-        "assessed_ref": "d0af33beb52e94b375d6a471e9990df11c8c424d",
-        "revisit_when": "Repeated normal use establishes a stable cross-episode synthesis responsibility with recurring comparison structure and material failure modes."
+        "assessed_ref": "868685766197e400ca1901a3863d22a6f3a4a54f",
+        "revisit_when": "Repeated authentic cross-episode synthesis identifies a recurring consequential consumer failure or stable distinct responsibility that existing SCL, method record/context and Steward cannot adequately serve. Same-agent use supports bounded synthesis, not specialized packaging, independent generalization or automatic policy promotion.",
+        "counterevidence": "ADR 0035 now ratifies continuous learning as a product capability; current method materialization and retrieval support the actual fixed-target comparison synthesis. The specialized Skill still lacks a demonstrated distinct packaging requirement. Other target/actor contexts and controlled cognitive benefit not established.",
+        "claim_ceiling": "Current source-reviewed reconsideration of the specialized Skill, not rejection of the underlying learning activity or independent capability qualification."
       }
     },
     {
@@ -2269,6 +2292,20 @@
       ],
       "attributes": {
         "establishment": "hypothesized"
+      }
+    },
+    {
+      "id": "rel:capability-learning-reconsideration-fixed-target-method",
+      "subject": "poss:capability-learning-analysis",
+      "predicate": "references",
+      "object": "lesson:conditional-method-2026-11-28-fixed-target-comparison",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-premise-sensitive-developmental-reconsideration.md",
+        "file:artifacts/history/2026-11-28-fixed-target-comparison-method-episode.json"
+      ],
+      "attributes": {
+        "scope": "Supporting evidence for underlying cross-episode synthesis, not necessary or sufficient evidence for specialized packaging."
       }
     }
   ]

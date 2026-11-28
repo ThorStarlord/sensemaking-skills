@@ -1,0 +1,95 @@
+{
+  "schema_version": 2,
+  "claims": [
+    {
+      "id": "observation:method-episode-2026-11-28-fixed-target-comparison",
+      "kind": "observation",
+      "statement": "Agent-authored method episode: Initial actual run 46099812162 exposed a workspace-context-bearing mismatch; corrected execution-only run 46099891371 used a separate clean BASE target and compared five actual existing operation payloads, excluding only the distinct context cache paths. The #1015 history explicitly records reuse of the correction in three old/new operations at 46102664225. #1017 run 46103244326 and #1019 run 46103684893 used fixed target checkouts and preserved old/default outputs after disposable-path normalization. These are source-attributed repeated same-agent engineering episodes and a concrete procedural correction, not a controlled estimate of cognitive benefit or universal method superiority.",
+      "authority_kind": "document",
+      "authority_ref": "artifacts/history/2026-11-28-fixed-target-comparison-method-episode.json",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-fixed-target-comparison-method-episode.json",
+        "file:artifacts/history/2026-11-27-architectural-transformation-reasoning.md",
+        "file:artifacts/history/2026-11-28-architectural-evolution-reasoning.md",
+        "file:artifacts/history/2026-11-28-capability-directed-architectural-evolution.md",
+        "file:artifacts/history/2026-11-28-alternative-intervention-construction.md",
+        "file:docs/research/capability-learning-loop-v0.md",
+        "file:docs/adr/0035-sensemaking-continuous-learning.md",
+        "file:docs/normal-use/2026-11-19-method-adaptation-claim-correction.md",
+        "file:artifacts/history/2026-11-28-premise-sensitive-developmental-reconsideration.md"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "actor": "active ChatGPT coding agent (source-attributed same-agent historical synthesis)",
+        "source_revision": "868685766197e400ca1901a3863d22a6f3a4a54f",
+        "evidence_paths_not_in_source_revision": [
+          "artifacts/history/2026-11-28-fixed-target-comparison-method-episode.json",
+          "artifacts/history/2026-11-28-premise-sensitive-developmental-reconsideration.md"
+        ],
+        "decision": "Retain a conditional comparison procedure after the #1014 workspace-context confound and three later recorded uses; use existing SCL materialization, not a new specialized Skill or shared doctrine promotion.",
+        "method_disposition": "develop",
+        "procedure_before": "The recorded initial #1014 execution switched the implementation checkout between BASE and CANDIDATE while querying that same checkout at the original requested revision. It held the requested source ref fixed but not the actual target workspace context. The route and rename outputs agreed; the workspace-context-bearing comparison did not. This describes recorded operations, not unrecorded reasoning.",
+        "procedure_after": "For a consequential old/new implementation comparison of a repository-aware operation, first distinguish implementation source from the actual target checkout, requested target revision, workspace overlay and derived cache. If the comparison asks what changed in the implementation while the target is held constant, use a separate fixed target checkout for both implementations, with identical requested refs, relevant inputs, bounds and execution environment. Inspect mismatches before interpreting them; exclude only specifically identified nondiscriminating transient metadata, never working-overlay evidence merely to force equality. If the question instead concerns target evolution, vary the intended target operand explicitly and preserve the resulting context differences. Record the comparison scope and counterevidence before making a compatibility or consequence claim.",
+        "scope": "Repository-aware compatibility or intervention comparisons in which the implementation revision is intended to vary independently of the actual target repository/worktree. Applicable beyond a single CLI function only if its observable context and relevant controls are established. Same repository, same-agent evidence; not general cross-product transfer.",
+        "counterevidence": "A pure exact-object reader may not depend on active workspace context; a comparison of actual target revisions, dirty overlays, OS behavior or host integration intentionally varies those conditions. Separate checkouts cannot by themselves isolate every environmental variable or prove semantic/runtime equivalence. Prior PR merge-base scope and provenance/content/meaning lessons already address adjacent identity and interpretation concerns; this candidate specializes implementation-versus-target separation rather than replacing them. Hosted execution substitution is a different method selection question.",
+        "claim_ceiling": "Attributable historical change in comparative evidence-gathering procedure and repeated same-agent source-pinned use in this repository. A local conditional method candidate, not independent learned competence, controlled productivity improvement, general transfer or automatic doctrine.",
+        "prior_lesson_id": "NONE",
+        "decision_ref": "NONE"
+      }
+    },
+    {
+      "id": "lesson:conditional-method-2026-11-28-fixed-target-comparison",
+      "kind": "lesson",
+      "statement": "Conditional method candidate from episode 2026-11-28-fixed-target-comparison: For a consequential old/new implementation comparison of a repository-aware operation, first distinguish implementation source from the actual target checkout, requested target revision, workspace overlay and derived cache. If the comparison asks what changed in the implementation while the target is held constant, use a separate fixed target checkout for both implementations, with identical requested refs, relevant inputs, bounds and execution environment. Inspect mismatches before interpreting them; exclude only specifically identified nondiscriminating transient metadata, never working-overlay evidence merely to force equality. If the question instead concerns target evolution, vary the intended target operand explicitly and preserve the resulting context differences. Record the comparison scope and counterevidence before making a compatibility or consequence claim.",
+      "authority_kind": "document",
+      "authority_ref": "artifacts/history/2026-11-28-fixed-target-comparison-method-episode.json",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-fixed-target-comparison-method-episode.json",
+        "file:artifacts/history/2026-11-27-architectural-transformation-reasoning.md",
+        "file:artifacts/history/2026-11-28-architectural-evolution-reasoning.md",
+        "file:artifacts/history/2026-11-28-capability-directed-architectural-evolution.md",
+        "file:artifacts/history/2026-11-28-alternative-intervention-construction.md",
+        "file:docs/research/capability-learning-loop-v0.md",
+        "file:docs/adr/0035-sensemaking-continuous-learning.md",
+        "file:docs/normal-use/2026-11-19-method-adaptation-claim-correction.md",
+        "file:artifacts/history/2026-11-28-premise-sensitive-developmental-reconsideration.md"
+      ],
+      "epistemic_status": "declared",
+      "attributes": {
+        "method": "For a consequential old/new implementation comparison of a repository-aware operation, first distinguish implementation source from the actual target checkout, requested target revision, workspace overlay and derived cache. If the comparison asks what changed in the implementation while the target is held constant, use a separate fixed target checkout for both implementations, with identical requested refs, relevant inputs, bounds and execution environment. Inspect mismatches before interpreting them; exclude only specifically identified nondiscriminating transient metadata, never working-overlay evidence merely to force equality. If the question instead concerns target evolution, vary the intended target operand explicitly and preserve the resulting context differences. Record the comparison scope and counterevidence before making a compatibility or consequence claim.",
+        "method_before": "The recorded initial #1014 execution switched the implementation checkout between BASE and CANDIDATE while querying that same checkout at the original requested revision. It held the requested source ref fixed but not the actual target workspace context. The route and rename outputs agreed; the workspace-context-bearing comparison did not. This describes recorded operations, not unrecorded reasoning.",
+        "actor": "active ChatGPT coding agent (source-attributed same-agent historical synthesis)",
+        "source_revision": "868685766197e400ca1901a3863d22a6f3a4a54f",
+        "scope": "Repository-aware compatibility or intervention comparisons in which the implementation revision is intended to vary independently of the actual target repository/worktree. Applicable beyond a single CLI function only if its observable context and relevant controls are established. Same repository, same-agent evidence; not general cross-product transfer.",
+        "conditions": "Use when the comparison verdict can affect a consequential change and output depends on target/workspace identity or other input context. Check whether the tool reads active HEAD, dirty paths, requested commit, index/cache, path normalization or environment; keep decision-relevant operands fixed or explicitly varied according to the question. Preserve legitimate differences. A fixed target is a comparison design choice, not a universal tool precondition.",
+        "counterevidence": "A pure exact-object reader may not depend on active workspace context; a comparison of actual target revisions, dirty overlays, OS behavior or host integration intentionally varies those conditions. Separate checkouts cannot by themselves isolate every environmental variable or prove semantic/runtime equivalence. Prior PR merge-base scope and provenance/content/meaning lessons already address adjacent identity and interpretation concerns; this candidate specializes implementation-versus-target separation rather than replacing them. Hosted execution substitution is a different method selection question.",
+        "revisit_when": "A later real old/new implementation comparison encounters target-context confounding, uses a pure object reader, deliberately varies the workspace, or finds a new uncontrolled operand. Record whether the condition actually applies, retain negative results, narrow or reject the procedure if it creates unnecessary overhead or hides a material difference. Independent broader qualification is required before shared guidance promotion.",
+        "original_outcome": "Initial actual run 46099812162 exposed a workspace-context-bearing mismatch; corrected execution-only run 46099891371 used a separate clean BASE target and compared five actual existing operation payloads, excluding only the distinct context cache paths. The #1015 history explicitly records reuse of the correction in three old/new operations at 46102664225. #1017 run 46103244326 and #1019 run 46103684893 used fixed target checkouts and preserved old/default outputs after disposable-path normalization. These are source-attributed repeated same-agent engineering episodes and a concrete procedural correction, not a controlled estimate of cognitive benefit or universal method superiority.",
+        "claim_ceiling": "Attributable historical change in comparative evidence-gathering procedure and repeated same-agent source-pinned use in this repository. A local conditional method candidate, not independent learned competence, controlled productivity improvement, general transfer or automatic doctrine.",
+        "method_disposition": "develop",
+        "prior_lesson_id": "NONE",
+        "decision_ref": "NONE"
+      }
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel:method-episode-2026-11-28-fixed-target-comparison-learned-from",
+      "subject": "lesson:conditional-method-2026-11-28-fixed-target-comparison",
+      "predicate": "learned_from",
+      "object": "observation:method-episode-2026-11-28-fixed-target-comparison",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-fixed-target-comparison-method-episode.json",
+        "file:artifacts/history/2026-11-27-architectural-transformation-reasoning.md",
+        "file:artifacts/history/2026-11-28-architectural-evolution-reasoning.md",
+        "file:artifacts/history/2026-11-28-capability-directed-architectural-evolution.md",
+        "file:artifacts/history/2026-11-28-alternative-intervention-construction.md",
+        "file:docs/research/capability-learning-loop-v0.md",
+        "file:docs/adr/0035-sensemaking-continuous-learning.md",
+        "file:docs/normal-use/2026-11-19-method-adaptation-claim-correction.md",
+        "file:artifacts/history/2026-11-28-premise-sensitive-developmental-reconsideration.md"
+      ],
+      "epistemic_status": "declared"
+    }
+  ]
+}
