@@ -5,135 +5,92 @@ on:
 permissions:
   contents: read
 jobs:
-  compare:
+  reviewed-feedback:
     if: github.ref == 'refs/heads/claude/focused-possibility-evolution-execution-20261128'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
+      SOURCE: "2f04a8c39b9dcc693e012713d390ceff14d34de7"
+      TESTED: "efbf05ecfbb9eb9e7d6152cf7dcdd6da3a821385"
       BASE: "75247e50e343f77b1e1cff2f124421bfa83c6852"
-      CANDIDATE: "efbf05ecfbb9eb9e7d6152cf7dcdd6da3a821385"
-      PREV: "868685766197e400ca1901a3863d22a6f3a4a54f"
-      EARLIER: "bfa213c6617000df84f09a3a81486408e0000a3c"
       PACK: ".sensemaking/knowledge/focused-possibility-evolution.json"
-      FOCUS: "poss:capability-learning-analysis"
-      INTRODUCED: "poss:existing-pack-source-knowledge-codesign"
+      METHOD: ".sensemaking/knowledge/fixed-target-comparison-method-application.json"
+      EPISODE: "artifacts/history/2026-11-28-fixed-target-comparison-method-application.json"
+      DRAFT: "artifacts/history/actual-fixed-target-application-detached.json"
       LESSON: "lesson:conditional-method-2026-11-28-fixed-target-comparison"
+      OBSERVATION: "observation:method-episode-2026-11-28-fixed-target-comparison-application"
+      FOCUS: "poss:focused-possibility-evolution"
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ env.BASE }}
+          ref: ${{ env.SOURCE }}
           fetch-depth: 0
           persist-credentials: false
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Recover retained method and compare actual canonical historical operands
+      - name: Verify exact source, actual method materialization and retained feedback
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$BASE"
+          test "$(git rev-parse HEAD)" = "$SOURCE"
           python -m pip install -e .
-          git worktree add --detach "$RUNNER_TEMP/target" "$BASE"
-          TARGET="$RUNNER_TEMP/target"
-          sensemaking-skills semantic method context --repo "$TARGET" --ref "$BASE" --question "How should I compare old and new implementations when the target checkout and workspace context must remain fixed?" --limit 25 --json > "$RUNNER_TEMP/method.json"
-          git diff --no-ext-diff --no-textconv --no-renames "$BASE" "$CANDIDATE" -- > "$RUNNER_TEMP/actual.patch"
-          sensemaking-skills semantic patch-rehearsal --repo "$TARGET" --ref "$BASE" --patch-file "$RUNNER_TEMP/actual.patch" --knowledge-proposal "$PACK" --possibility poss:possibility-reconsideration-from-change --limit 80 --json > "$RUNNER_TEMP/rehearsal.json"
-          run() { sensemaking-skills semantic workspace-changes --repo "$TARGET" --index-dir "$RUNNER_TEMP/compare-cache" --base-ref "$PREV" --ref "$BASE" --limit 1 --json "$@"; }
-          run > "$RUNNER_TEMP/warm.json"
-          run > "$RUNNER_TEMP/old-default.json"
-          run --include-possibility-evolution > "$RUNNER_TEMP/old-evolution.json"
+          for path in src/sensemaking_skills/semantic_architecture/knowledge_retrieval.py src/sensemaking_skills/semantic_architecture/knowledge_store.py src/sensemaking_skills/workspace_knowledge.py src/sensemaking_skills/semantic_cli.py; do
+            test "$(git rev-parse "$SOURCE:$path")" = "$(git rev-parse "$TESTED:$path")"
+          done
+          sensemaking-skills semantic knowledge-proposal-check --repo . --proposal "$PACK" --json > "$RUNNER_TEMP/pack.json"
+          sensemaking-skills semantic knowledge-proposal-check --repo . --proposal "$METHOD" --json > "$RUNNER_TEMP/method-pack.json"
+          # Reproduce the observation from the actual episode in a disposable checkout
+          # of the reviewed candidate without the existing output pack. The producer
+          # rejects duplicate identifiers, including in other tracked packs.
+          git worktree add --detach "$RUNNER_TEMP/method-replay" "$SOURCE"
+          git -C "$RUNNER_TEMP/method-replay" rm -- "$METHOD"
+          sensemaking-skills semantic method record --repo "$RUNNER_TEMP/method-replay" --episode "$EPISODE" --draft-only --output "$DRAFT" --json > "$RUNNER_TEMP/materialization.json"
+          cmp "$RUNNER_TEMP/method-replay/$DRAFT" "$METHOD"
+          git worktree remove --force "$RUNNER_TEMP/method-replay"
+          sensemaking-skills semantic workspace-query --repo . --ref "$SOURCE" --operation possibility-ecology --subject "$FOCUS" --limit 80 --json > "$RUNNER_TEMP/feedback.json"
+          sensemaking-skills semantic method context --repo . --ref "$SOURCE" --question "How should I compare old and new implementations when the target checkout and workspace context must remain fixed?" --limit 25 --json > "$RUNNER_TEMP/method.json"
           python - <<'PY'
-          import os,json,hashlib,subprocess
-          from pathlib import Path
-          p=Path(os.environ["RUNNER_TEMP"])
-          m=json.loads((p/"method.json").read_text())
-          c=next(c for c in m["method_candidates"] if c["id"]==os.environ["LESSON"])
-          assert c["applicability_to_present_task"]=="NOT_ESTABLISHED"
-          print("METHOD_RECALL="+json.dumps({"id":c["id"],"source_records":len(c["source_records"]),"conditions":c["recall_conditions"]["conditions"],"counterevidence":c["recall_conditions"]["counterevidence"]}))
-          q=json.loads((p/"rehearsal.json").read_text())
-          assert q["status"]=="REHEARSED" and q["base_ref"]==os.environ["BASE"] and len(q["files"])==8
-          k=q["candidate_knowledge"]
-          assert k["status"]=="MECHANICALLY_VALID" and not k["accepted"] and not k["action_authorized"]
-          for f in q["files"]:
-              raw=subprocess.check_output(["git","show",os.environ["CANDIDATE"]+":"+f["path"]])
-              assert hashlib.sha256(raw).hexdigest()==f["after_sha256"]
-              if f["change_kind"]=="MODIFIED":
-                  raw=subprocess.check_output(["git","show",os.environ["BASE"]+":"+f["path"]])
-                  assert hashlib.sha256(raw).hexdigest()==f["before_sha256"]
-              else: assert f["before_sha256"] is None
-              if f["path"].endswith(".py"): assert f["python_syntax"]=="PASS"
-          print("ACTUAL_PATCH="+json.dumps({"paths":len(q["files"]),"patch_sha256":q["patch_sha256"],"proposal_sha256":k["proposal_sha256"],"claims":k["validation"]["claims_checked"],"relations":k["validation"]["relations_checked"],"review_truncated":q["review"]["truncated"],"focus_truncated":q["possibility_context"]["truncated"]}))
-          PY
-      - name: Exercise actual historical focus and preserve previous output on fixed target
-        shell: bash
-        run: |
-          set -euo pipefail
-          git checkout --detach "$CANDIDATE"
-          TARGET="$RUNNER_TEMP/target"
-          run() { sensemaking-skills semantic workspace-changes --repo "$TARGET" --index-dir "$RUNNER_TEMP/compare-cache" --json "$@"; }
-          run --base-ref "$PREV" --ref "$BASE" --limit 1 > "$RUNNER_TEMP/new-default.json"
-          run --base-ref "$PREV" --ref "$BASE" --limit 1 --include-possibility-evolution > "$RUNNER_TEMP/new-evolution.json"
-          run --base-ref "$PREV" --ref "$BASE" --limit 1 --include-possibility-evolution --possibility "$FOCUS" > "$RUNNER_TEMP/focus-small.json"
-          run --base-ref "$PREV" --ref "$BASE" --limit 80 --include-possibility-evolution --possibility "$FOCUS" > "$RUNNER_TEMP/focus.json"
-          run --base-ref "$BASE" --ref "$PREV" --limit 80 --include-possibility-evolution --possibility "$FOCUS" > "$RUNNER_TEMP/reverse.json"
-          run --base-ref "$BASE" --ref "$BASE" --limit 1 --include-possibility-evolution --possibility "$FOCUS" > "$RUNNER_TEMP/same.json"
-          run --base-ref "$EARLIER" --ref "$PREV" --limit 80 --include-possibility-evolution --possibility "$INTRODUCED" > "$RUNNER_TEMP/added.json"
-          run --base-ref "$PREV" --ref "$EARLIER" --limit 80 --include-possibility-evolution --possibility "$INTRODUCED" > "$RUNNER_TEMP/removed.json"
-          if run --base-ref "$PREV" --ref "$BASE" --include-possibility-evolution --possibility goal:compounding-product-knowledge > /dev/null 2>"$RUNNER_TEMP/goal.err"; then exit 1; fi
-          if run --base-ref "$PREV" --ref "$BASE" --include-possibility-evolution --possibility poss:focused-possibility-evolution > /dev/null 2>"$RUNNER_TEMP/missing.err"; then exit 1; fi
-          if run --base-ref "$PREV" --ref "$BASE" --possibility "$FOCUS" > /dev/null 2>"$RUNNER_TEMP/flag.err"; then exit 1; fi
-          python - <<'PY'
-          import json,os
+          import json,os,subprocess
           from pathlib import Path
           p=Path(os.environ["RUNNER_TEMP"])
           def read(n): return json.loads((p/(n+".json")).read_text())
-          for kind in ("default","evolution"):
-              old,new=read("old-"+kind),read("new-"+kind)
-              assert old==new, (kind,[k for k in old if old[k]!=new.get(k)])
-              assert old["workspace_context"]==new["workspace_context"]
-          def evo(n): return read(n)["possibility_evolution"]
-          f=evo("focus")
-          small=evo("focus-small")
-          rev=evo("reverse")
-          same=evo("same")
-          add=evo("added")
-          rem=evo("removed")
-          assert f["focus"]["id"]==os.environ["FOCUS"]
-          assert f["focus"]["opportunity_presence"]=="BOTH" and f["focus"]["classification"]["authored_fields_changed"]
-          assert f["focus"]["before"]["source_ref"] and f["focus"]["after"]["source_ref"]
-          before=f["focus"]["before"]["attributes"]["disposition_history"]
-          after=f["focus"]["after"]["attributes"]["disposition_history"]
-          assert before==after[:-1] and before[-1]["value"]==after[-1]["value"]=="DEFERRED"
-          assert small["focus"]==f["focus"]
-          assert f["opportunity_count_before"]==f["opportunity_count_after"]==1
-          assert any(x["id"]==os.environ["LESSON"] for x in f["directly_linked_authored_claims"]["added"])
-          assert any(x["id"]=="rel:capability-learning-reconsideration-fixed-target-method" for x in f["direct_authored_relations"]["added"])
-          assert rev["focus"]["before"]==f["focus"]["after"] and rev["focus"]["after"]==f["focus"]["before"]
-          assert any(x["id"]==os.environ["LESSON"] for x in rev["directly_linked_authored_claims"]["removed"])
-          assert same["focus"]["before"]==same["focus"]["after"] and same["focus"]["classification"] is None
-          assert same["opportunities"]["counts"]["unchanged"]==1
-          assert add["focus"]["opportunity_presence"]=="TARGET_ONLY" and add["focus"]["before"] is None
-          assert rem["focus"]["opportunity_presence"]=="BASE_ONLY" and rem["focus"]["after"] is None
-          linked=add["directly_linked_authored_claims"]
-          earlier=next(x for group in ("added","changed") for x in linked[group] if x["id"]=="poss:prospective-source-knowledge-codesign")
-          assert earlier["after"]["kind"]=="opportunity" and earlier["in_scope_after"] and not earlier["in_scope_before"]
-          for name in ("goal","missing"):
-              assert "authored opportunity at BASE or TARGET" in (p/(name+".err")).read_text()
-          assert "--possibility requires --include-possibility-evolution" in (p/"flag.err").read_text()
-          for key in ("claim_delta","relation_delta","delta_total_counts","change_classification","workspace_context"):
-              assert read("focus-small")[key]==read("new-evolution")[key]
-          print("FOCUSED_EVOLUTION="+json.dumps({"old_default_equal":True,"old_evolution_equal":True,"workspace_context_preserved":True,"historical_focus":f["focus"]["id"],"before_dispositions":len(before),"after_dispositions":len(after),"new_lesson":os.environ["LESSON"],"added_relation":True,"same_ref_equal":True,"reverse_direction":True,"added_presence":add["focus"]["opportunity_presence"],"removed_presence":rem["focus"]["opportunity_presence"],"linked_opportunity":earlier["id"],"scope_counts":f["directly_linked_authored_claims"]["counts"],"small_scope_truncated":small["truncated"],"small_generic_truncated":read("focus-small")["truncated"],"full_scope_truncated":f["truncated"],"invalid_focus_refused":True,"generic_delta_preserved":True}))
+          a,b=read("pack"),read("method-pack")
+          assert a["valid"] and b["valid"] and not a["action_authorized"] and not b["action_authorized"]
+          assert a["claims_checked"]==4 and a["relations_checked"]==6
+          assert b["claims_checked"]==1 and b["relations_checked"]==1
+          prior=json.loads(subprocess.check_output(["git","show",os.environ["TESTED"]+":"+os.environ["PACK"]]))
+          new=json.loads(Path(os.environ["PACK"]).read_text())
+          pid="conseq:focused-possibility-evolution-value"
+          pred=next(x for x in prior["claims"] if x["id"]==pid)
+          assert pred==next(x for x in new["claims"] if x["id"]==pid)
+          assert prior["relations"]==new["relations"][:len(prior["relations"])]
+          q=read("feedback")
+          eco=q["possibility_ecology"]
+          assert q["target_ref"]==os.environ["SOURCE"] and not q["action_authorized"]
+          assert eco["focus"]["realization"]["value"]=="PARTIALLY_IMPLEMENTED"
+          e=next(x for x in eco["value_feedback"]["entries"] if x["possibility_id"]==os.environ["FOCUS"])
+          f=next(x for x in e["predictions"] if x["prediction"]["id"]==pid)
+          assert f["standing"]=="PARTIALLY_OBSERVED" and f["assessment_total"]==1
+          assert f["prediction"]["attributes"]["value_frame"]==pred["attributes"]["value_frame"]
+          replay=read("materialization")
+          assert replay["created"] and replay["disposition"]=="apply" and replay["detached_draft"]
+          assert not replay["method_learning_demonstrated"] and replay["proposed_claim_ids"]==[os.environ["OBSERVATION"]]
+          m=read("method")
+          c=next(x for x in m["method_candidates"] if x["id"]==os.environ["LESSON"])
+          obs=next(x for x in c["later_related_records"] if x["id"]==os.environ["OBSERVATION"])
+          attrs=obs["record"]["attributes"]
+          assert obs["source_read_status"]=="INDEXED_RECORD" and attrs["method_disposition"]=="apply"
+          assert attrs["procedure_before"]==attrs["procedure_after"]==c["procedure"]
+          assert attrs["prior_lesson_id"]==os.environ["LESSON"]
+          assert c["applicability_to_present_task"]=="NOT_ESTABLISHED"
+          print("REVIEWED_EVOLUTION_AND_METHOD="+json.dumps({"standing":f["standing"],"assessments":f["assessment_total"],"original_prediction_preserved":True,"original_relations_preserved":True,"exact_tested_source":True,"capability_claims":a["claims_checked"],"capability_relations":a["relations_checked"],"method_claims":b["claims_checked"],"method_relations":b["relations_checked"],"materialized_application_bytes_equal":True,"later_observation":obs["id"],"method_disposition":attrs["method_disposition"],"unchanged_procedure":True,"applicability":c["applicability_to_present_task"]}))
           PY
-          test "$(git -C "$TARGET" rev-parse HEAD)" = "$BASE"
-          test -z "$(git -C "$TARGET" status --porcelain)"
           test -z "$(git status --porcelain)"
-      - name: Retain actual evidence
+      - name: Retain actual feedback
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: actual-focused-possibility-evolution
-          path: |
-            ${{ runner.temp }}/*.json
-            ${{ runner.temp }}/*.err
-            ${{ runner.temp }}/*.patch
+          name: actual-focused-evolution-feedback
+          path: ${{ runner.temp }}/*.json
           retention-days: 14
