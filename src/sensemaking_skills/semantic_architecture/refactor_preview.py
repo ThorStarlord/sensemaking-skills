@@ -18,7 +18,7 @@ import subprocess
 from pathlib import Path
 from typing import Any, Iterable
 
-from .knowledge_sources import _source, temporary_commit_checkout, verified_tracked_sources
+from .source_access import _source, temporary_commit_checkout, verified_tracked_sources
 from .source_relationships import (
     _import_bindings,
     _import_from_base,

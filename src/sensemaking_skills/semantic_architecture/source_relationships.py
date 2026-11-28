@@ -21,7 +21,7 @@ from collections import deque
 from pathlib import Path, PurePosixPath
 from typing import Any, Callable, Iterable, Mapping
 
-from .knowledge_sources import _git, _source, temporary_commit_checkout, verified_tracked_sources
+from .source_access import _git, _source, temporary_commit_checkout, verified_tracked_sources
 from .verification_scenarios import build_guard_scenarios
 
 _MAX_LIMIT = 250

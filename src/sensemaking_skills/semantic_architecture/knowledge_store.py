@@ -712,7 +712,7 @@ def audit_knowledge_sources(
     A changed byte means evidence should be re-examined; unchanged bytes do
     NOT establish that the asserted policy or architecture remains applicable.
     """
-    from .knowledge_sources import _source, verified_tracked_sources
+    from .source_access import _source, verified_tracked_sources
 
     if not 1 <= limit <= 500:
         raise ValueError("audit limit must be between 1 and 500")
