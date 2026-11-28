@@ -1,0 +1,71 @@
+name: Actual bounded reentry discovery (execution branch only)
+on:
+  push:
+    branches: [claude/bounded-reentry-discovery-execution-20261127]
+permissions:
+  contents: read
+jobs:
+  actual-use:
+    if: github.ref == 'refs/heads/claude/bounded-reentry-discovery-execution-20261127'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      SOURCE: "0d6671cce1d0083dd6411c15e1be4efb568bdce9"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.SOURCE }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install exact source
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE"
+          python -m pip install -e .
+          test -z "$(git status --porcelain)"
+      - name: Exercise actual returning engagement without preselected path
+        run: |
+          set -euo pipefail
+          RECEIPT=".sensemaking/receipts/2026-11-27-integrated-self-development.session.yaml"
+          sensemaking-skills semantic knowledge-proposal-check --repo . --proposal .sensemaking/knowledge/bounded-reentry-discovery.json --json > "$RUNNER_TEMP/preflight.json"
+          sensemaking-skills handoff --repo . --output "$RUNNER_TEMP/unselected" --skill-path skills/using-sensemaking --expected-source-ref "$SOURCE" --question "Continue Sensemaking self-development using recent value and synthesis evidence." --json > "$RUNNER_TEMP/unselected.json"
+          sensemaking-skills handoff --repo . --output "$RUNNER_TEMP/selected" --skill-path skills/using-sensemaking --expected-source-ref "$SOURCE" --resume-from "$RECEIPT" --question "Continue Sensemaking self-development using recent value and synthesis evidence." --json > "$RUNNER_TEMP/selected.json"
+          python - <<'PY'
+          import os,json
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])
+          u=json.loads((p/"unselected.json").read_text())
+          s=json.loads((p/"selected.json").read_text())
+          paths=sorted(x.as_posix() for x in Path(".sensemaking/receipts").iterdir() if x.is_file() and not x.is_symlink() and x.name.endswith((".session.yaml",".query.yaml")))
+          receipt=".sensemaking/receipts/2026-11-27-integrated-self-development.session.yaml"
+          assert u["target"]["git"]["head"]==os.environ["SOURCE"]
+          ci=u["continuity"]["inventory"]["receipt_files"]
+          assert len(paths)==ci["total"]==148
+          assert ci["path_selection"]=="LEXICOGRAPHIC_ENDS" and ci["omitted_count"]==108 and ci["truncated"]
+          assert receipt not in paths[:40]
+          assert ci["paths"]==paths[:20]+paths[-20:] and len(set(ci["paths"]))==40 and receipt in ci["paths"]
+          assert u["continuity"]["selected_receipts"]==[]
+          assert s["continuity"]["inventory"]["receipt_files"]==ci
+          assert [x["path"] for x in s["continuity"]["selected_receipts"]]==[receipt]
+          assert s["continuity"]["selected_receipts"][0]["validation"]=="VALID"
+          assert u["action_authorized"] is False and s["action_authorized"] is False
+          assert "middle paths are omitted" in u["prompt"]
+          assert "108 middle paths omitted" in (p/"unselected"/"handoff.md").read_text()
+          check=json.loads((p/"preflight.json").read_text())
+          assert check["valid"] is True and check["action_authorized"] is False
+          print("ACTUAL_HANDOFF="+json.dumps({"total":ci["total"],"visible":len(ci["paths"]),"omitted":ci["omitted_count"],"previous_first_40_end":paths[39],"prefix_end":ci["paths"][19],"tail_start":ci["paths"][20],"tail_end":ci["paths"][-1],"relevant_path_visible":receipt in ci["paths"],"unselected_receipts":len(u["continuity"]["selected_receipts"]),"explicit_validation":s["continuity"]["selected_receipts"][0]["validation"],"action_authorized":u["action_authorized"]}))
+          print("PREFLIGHT="+json.dumps({k:check[k] for k in ("claims_checked","relations_checked","existing_endpoints_checked")}))
+          print("ACTUAL_BOUNDED_DISCOVERY=PASS")
+          PY
+          python -m compileall -q src/sensemaking_skills/reentry_context.py src/sensemaking_skills/first_use.py
+          test -z "$(git status --porcelain)"
+      - name: Retain actual outputs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: actual-bounded-reentry-discovery
+          path: ${{ runner.temp }}/*.json
+          retention-days: 14
