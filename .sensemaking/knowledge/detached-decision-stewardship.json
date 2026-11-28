@@ -1,0 +1,206 @@
+{
+  "schema_version": 2,
+  "claims": [
+    {
+      "id": "poss:detached-decision-stewardship",
+      "kind": "opportunity",
+      "statement": "A returning development agent can preserve a consequential source-attributed decision review outside active knowledge, mechanically check the exact candidate at a named unoccupied destination, and recover it after authorized reviewed integration without changing its original option or possibility.",
+      "epistemic_status": "hypothetical",
+      "authority_kind": "hypothesis",
+      "authority_ref": "artifacts/history/2026-11-28-evidence-grounded-strategic-judgment.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-evidence-grounded-strategic-judgment.md",
+        "file:artifacts/history/2026-11-28-focused-evolution-decision-review.json",
+        "file:src/sensemaking_skills/decision_review.py",
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:docs/cli-reference.md",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:.sensemaking/knowledge/detached-stewardship-value-review.json"
+      ],
+      "attributes": {
+        "concept": "ProductPossibility",
+        "title": "Detached decision stewardship",
+        "origin": {
+          "ref": "artifacts/history/2026-11-28-evidence-grounded-strategic-judgment.md",
+          "date": "2026-11-28",
+          "author": "active ChatGPT coding agent"
+        },
+        "dimensions": {
+          "alignment": {
+            "value": "ALIGNED",
+            "basis": "Reciprocal development and reviewed knowledge under ADR 0038."
+          },
+          "ambition": {
+            "value": "INCREMENTAL",
+            "basis": "Extend an existing guarded producer lifecycle."
+          },
+          "horizon": {
+            "value": "FORESEEABLE",
+            "basis": "Existing detached preflight and method/possibility analogues."
+          },
+          "realization": {
+            "value": "HYPOTHETICAL",
+            "establishment": "inferred",
+            "basis": "Candidate implementation pending actual use."
+          }
+        },
+        "disposition_history": [
+          {
+            "value": "SELECTED",
+            "date": "2026-11-28",
+            "authority": "delegated agent construction selection",
+            "source": "artifacts/history/2026-11-28-evidence-grounded-strategic-judgment.md",
+            "rationale": "Actual partially observed detached stewardship value and current review-producer asymmetry, contrasted against further historical comparison and multi-pack rehearsal."
+          }
+        ],
+        "assessed_ref": "051b872e5ebdd9b119469275d9bd81dbb496decc",
+        "synthesis_basis": "Extend the existing exclusive decision-review producer with the detached output scope already used for methods/possibilities; reuse existing preflight and exact bytes.",
+        "value_hypothesis": "A returning development agent can preserve a consequential source-attributed decision review outside active knowledge, mechanically check the exact candidate at a named unoccupied destination, and recover it after authorized reviewed integration without changing its original option or possibility.",
+        "revisit_when": "Reconsider if actual decision draft bytes differ from ordinary generation, active knowledge changes prematurely, validation is weakened, or a real user cannot recover or safely preflight the review.",
+        "counterevidence": "A disposable ordinary review or manual detached authoring remains viable. No measured effort savings, independent use, source-currentness audit, or proof of prevention of every accidental inclusion.",
+        "claim_ceiling": "Source-reviewed candidate; actual detached review and subsequent retrieval pending. No independent cognitive benefit or automatic authority.",
+        "agent_owned": true
+      }
+    },
+    {
+      "id": "conseq:detached-decision-stewardship-value",
+      "kind": "hypothesis",
+      "statement": "A returning development agent can preserve a consequential source-attributed decision review outside active knowledge, mechanically check the exact candidate at a named unoccupied destination, and recover it after authorized reviewed integration without changing its original option or possibility.",
+      "epistemic_status": "hypothetical",
+      "authority_kind": "hypothesis",
+      "authority_ref": "artifacts/history/2026-11-28-evidence-grounded-strategic-judgment.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-evidence-grounded-strategic-judgment.md",
+        "file:artifacts/history/2026-11-28-focused-evolution-decision-review.json",
+        "file:src/sensemaking_skills/decision_review.py",
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:docs/cli-reference.md",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:.sensemaking/knowledge/detached-stewardship-value-review.json"
+      ],
+      "attributes": {
+        "concept": "ConsequenceHypothesis",
+        "source_possibility": "poss:detached-decision-stewardship",
+        "category": "benefit",
+        "analysis_ref": "artifacts/history/2026-11-28-evidence-grounded-strategic-judgment.md",
+        "source_revision": "051b872e5ebdd9b119469275d9bd81dbb496decc",
+        "origin": {
+          "ref": "artifacts/history/2026-11-28-evidence-grounded-strategic-judgment.md",
+          "date": "2026-11-28",
+          "author": "active ChatGPT coding agent"
+        },
+        "value_frame": {
+          "beneficiary": "Development agent preserving a consequential decision before activation.",
+          "criterion": "Actual focused-evolution review generated as detached and ordinary identical bytes; detached preflight destination absent, safe-path refusal, reviewed final preflight and indexed review without rewriting original possibility.",
+          "comparison_baseline": "Ordinary producer in disposable target or manual detached preparation.",
+          "expected_observation": "Same actual decision and relation bytes from old ordinary and new detached modes; no activation before authorized copy; recovered reviewed decision with prior assessment and method links.",
+          "would_change_decision_if": "Reconsider if actual decision draft bytes differ from ordinary generation, active knowledge changes prematurely, validation is weakened, or a real user cannot recover or safely preflight the review.",
+          "cost_and_downside": "Small optional output mode; separate review and preflight still necessary."
+        },
+        "assumptions": [
+          "con:agent-owns-semantic-control"
+        ],
+        "mechanism": "Extend the existing exclusive decision-review producer with the detached output scope already used for methods/possibilities; reuse existing preflight and exact bytes.",
+        "counterevidence": "A disposable ordinary review or manual detached authoring remains viable. No measured effort savings, independent use, source-currentness audit, or proof of prevention of every accidental inclusion.",
+        "would_change_decision_if": "Reconsider if actual decision draft bytes differ from ordinary generation, active knowledge changes prematurely, validation is weakened, or a real user cannot recover or safely preflight the review.",
+        "claim_ceiling": "Conditional prediction recorded in preconstruction record e667b2cc."
+      }
+    },
+    {
+      "id": "cap:detached-decision-stewardship",
+      "kind": "capability",
+      "statement": "Explicit decision record --draft-only supports exclusive detached review generation using the existing validation and reviewed destination preflight lifecycle.",
+      "epistemic_status": "declared",
+      "authority_kind": "code",
+      "authority_ref": "src/sensemaking_skills/decision_review.py",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-evidence-grounded-strategic-judgment.md",
+        "file:artifacts/history/2026-11-28-focused-evolution-decision-review.json",
+        "file:src/sensemaking_skills/decision_review.py",
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:docs/cli-reference.md",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:.sensemaking/knowledge/detached-stewardship-value-review.json"
+      ],
+      "attributes": {
+        "scope": "One actual source-attributed architecture-option or product-possibility review; new direct detached file, no active knowledge write.",
+        "claim_ceiling": "Source-reviewed candidate; actual detached review and subsequent retrieval pending. No independent cognitive benefit or automatic authority."
+      }
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel:detached-decision-stewardship-goal",
+      "subject": "poss:detached-decision-stewardship",
+      "predicate": "candidate_opportunity_for",
+      "object": "goal:compounding-product-knowledge",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-evidence-grounded-strategic-judgment.md"
+      ]
+    },
+    {
+      "id": "rel:detached-decision-stewardship-lineage",
+      "subject": "poss:detached-decision-stewardship",
+      "predicate": "derived_from",
+      "object": "poss:detached-possibility-stewardship",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-evidence-grounded-strategic-judgment.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "combines",
+        "establishment": "authored"
+      }
+    },
+    {
+      "id": "rel:detached-decision-stewardship-feedback",
+      "subject": "poss:detached-decision-stewardship",
+      "predicate": "derived_from",
+      "object": "poss:experience-grounded-possibility-evaluation",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-evidence-grounded-strategic-judgment.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "combines",
+        "establishment": "authored"
+      }
+    },
+    {
+      "id": "rel:detached-decision-stewardship-prediction",
+      "subject": "conseq:detached-decision-stewardship-value",
+      "predicate": "references",
+      "object": "poss:detached-decision-stewardship",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-evidence-grounded-strategic-judgment.md"
+      ]
+    },
+    {
+      "id": "rel:detached-decision-stewardship-realization",
+      "subject": "poss:detached-decision-stewardship",
+      "predicate": "implemented_by",
+      "object": "cap:detached-decision-stewardship",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-evidence-grounded-strategic-judgment.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "realizedBy",
+        "establishment": "inferred",
+        "scope": "Candidate pending actual use."
+      }
+    },
+    {
+      "id": "rel:detached-decision-stewardship-serves",
+      "subject": "cap:detached-decision-stewardship",
+      "predicate": "serves_goal",
+      "object": "goal:compounding-product-knowledge",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-evidence-grounded-strategic-judgment.md"
+      ]
+    }
+  ]
+}
