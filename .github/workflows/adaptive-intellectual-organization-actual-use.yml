@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 12
     env:
-      SOURCE: "ab180ba627e1a0f95406b74eb432268a7f13875f"
+      SOURCE: "331cbdbf1e01cf9066c82d8d51265bcbe3fa2010"
     steps:
       - uses: actions/checkout@v4
         with:
@@ -26,30 +26,33 @@ jobs:
           test "$(git rev-parse HEAD)" = "$SOURCE"
           python -m pip install -e .
           test -z "$(git status --porcelain)"
-      - name: Inspect the actual file-level evidence omitted from the verification plan
+      - name: Preflight reviewed verification route and consume real CLI verification plan
         run: |
           set -euo pipefail
-          sensemaking-skills semantic workspace-query --repo . --ref "$SOURCE" \
-            --operation context-for src/sensemaking_skills/semantic_cli.py \
-            --include-source-relationships --symbol register_semantic_commands --limit 60 --json > "$RUNNER_TEMP/actual-cli-context.json"
+          sensemaking-skills semantic knowledge-proposal-check --repo . \
+            --proposal .sensemaking/knowledge/integrated-context-verification.json --json > "$RUNNER_TEMP/actual-verification-knowledge-preflight.json"
           sensemaking-skills semantic verification-plan --repo . --ref "$SOURCE" \
             --path src/sensemaking_skills/semantic_cli.py --symbol register_semantic_commands \
-            --limit 60 --json > "$RUNNER_TEMP/actual-verification-plan.json"
+            --limit 60 --json > "$RUNNER_TEMP/actual-workflow-verification-plan.json"
           python - <<'PY'
           import json,os
           from pathlib import Path
           root=Path(os.environ["RUNNER_TEMP"])
-          a=json.loads((root/"actual-cli-context.json").read_text())
-          b=json.loads((root/"actual-verification-plan.json").read_text())
-          assert a["target_ref"] == b["target_ref"] == os.environ["SOURCE"]
-          rel=a["source_relationships"]
-          print("FILE_TEST_REFERENCES="+json.dumps(rel["test_references"]))
-          print("FILE_TEST_COUNTS="+json.dumps(rel["counts"]))
-          existing={c["pytest_target"].split("::",1)[0] for c in b["pytest_candidates"]}
-          print("PLAN_TEST_FILES="+json.dumps(sorted(existing)))
-          print("ADDITIONAL_FILE_REFERENCES="+json.dumps([c for c in rel["test_references"] if c["path"] not in existing]))
-          print("TRUNCATED="+json.dumps({"context":a["truncated"],"relationships":rel["truncated"],"plan":b["truncated"]}))
+          p=json.loads((root/"actual-workflow-verification-plan.json").read_text())
+          assert p["target_ref"] == os.environ["SOURCE"]
+          workflow=next(c for c in p["workflow_candidates"] if c["path"]==".github/workflows/semantic-context-reentry.yml")
+          assert workflow["inspection_status"] == "NOT_ASSESSED"
+          assert workflow["execution_status"] == "NOT_RUN"
+          assert {s["claim_id"] for s in workflow["sources"]} == {"verification:integrated-developmental-context-hosted-reentry"}
+          assert p["suggested_pytest"]["argv"] == ["python","-m","pytest","tests/test_console_output_ascii_only.py","tests/test_semantic_knowledge_self_repo.py"]
+          assert all(not p[k] for k in ("tests_executed","test_analysis_established","test_results_established","coverage_established","semantic_truth_established","action_authorized"))
+          print("PREFLIGHT="+(root/"actual-verification-knowledge-preflight.json").read_text()[:2500])
+          print("WORKFLOW_CANDIDATE="+json.dumps(workflow))
+          print("PLAN_COUNTS="+json.dumps(p["counts"]))
+          print("PYTEST_TARGETS="+json.dumps(p["suggested_pytest"]["argv"]))
+          print("ACTUAL_WORKFLOW_EVIDENCE_REENTRY=PASS")
           PY
+          python -m compileall -q src/sensemaking_skills/semantic_architecture/verification_plan.py
           test -z "$(git status --porcelain)"
       - name: Retain actual query output
         if: always()
