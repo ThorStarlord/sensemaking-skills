@@ -549,6 +549,9 @@ no unit or synthetic evidence tests were run.
 
 ## Current next step
 
+**2026-11-28 — Architectural evolution reasoning (construction candidate):** [paired committed source-route evidence](artifacts/history/2026-11-28-architectural-evolution-reasoning.md) extends the actual #1014 transformation with opt-in `source-route --base-ref`, retaining both exact bounded results and explicit absent/nonregular endpoint classification. The separated source-access boundary owns the reused tree-entry classifier. Prior canonical Product Validation and Distribution passed. Candidate source/diff review and execution outcomes are distinct; no runtime dependency, global architectural equivalence, cost reduction or independent cognitive benefit claimed. Strategy unchanged. Local unit/synthetic tests NOT_RUN.
+
+
 **2026-11-27 — Architectural transformation reasoning:** [committed source-access separation](artifacts/history/2026-11-27-architectural-transformation-reasoning.md) uses source-route and co-design to transform a real mixed responsibility. Baseline 46099682031 found four source-only consumers coupled to knowledge_sources; corrected run 46099891371 at exact candidate extracted six unchanged definitions to source_access.py with legacy alias identity, redirected four consumers, reduced direct builder importers 8 -> 4, observed bounded no-witness former routes and one-hop new routes, and compared five equivalent real operations on a fixed original target checkout (325 claims, 446 relations, identical snapshot digest; all 771 audited records unchanged). Actual eight-path co-design passed, BASE review truncated; scoped PARTIALLY_OBSERVED outcome, not runtime independence or independent cognitive benefit. No new public command/schema or strategy change. Local unit/synthetic tests NOT_RUN.
 
 

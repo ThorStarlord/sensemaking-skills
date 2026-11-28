@@ -1,0 +1,199 @@
+{
+  "schema_version": 2,
+  "claims": [
+    {
+      "id": "poss:paired-architectural-source-routes",
+      "kind": "opportunity",
+      "statement": "Pair source-qualified import-candidate routes on two exact revisions to examine actual architectural evolution, including newly introduced endpoints and bounded search limitations.",
+      "epistemic_status": "hypothetical",
+      "authority_kind": "hypothesis",
+      "authority_ref": "artifacts/history/2026-11-28-architectural-evolution-reasoning.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-architectural-evolution-reasoning.md",
+        "file:src/sensemaking_skills/semantic_architecture/source_relationships.py",
+        "file:src/sensemaking_skills/semantic_architecture/source_access.py",
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:artifacts/history/2026-11-27-architectural-transformation-reasoning.md"
+      ],
+      "attributes": {
+        "concept": "ProductPossibility",
+        "title": "Paired committed architectural source routes",
+        "origin": {
+          "ref": "artifacts/history/2026-11-28-architectural-evolution-reasoning.md",
+          "date": "2026-11-28",
+          "author": "active ChatGPT coding agent"
+        },
+        "dimensions": {
+          "alignment": {
+            "value": "ALIGNED",
+            "basis": "Supports compounding product knowledge and actual architectural interventions under ADR 0038."
+          },
+          "ambition": {
+            "value": "INCREMENTAL",
+            "basis": "Extends a proven bounded source inquiry rather than building a global dependency graph."
+          },
+          "horizon": {
+            "value": "FORESEEABLE",
+            "basis": "Existing source-route and source-review tree classification supply direct implementation primitives."
+          },
+          "realization": {
+            "value": "HYPOTHETICAL",
+            "establishment": "inferred",
+            "basis": "Candidate code composed; actual historical-route comparison not yet observed."
+          }
+        },
+        "disposition_history": [
+          {
+            "value": "SELECTED",
+            "date": "2026-11-28",
+            "authority": "agent construction selection within delegated self-development",
+            "source": "artifacts/history/2026-11-28-architectural-evolution-reasoning.md",
+            "rationale": "Select paired bounded evidence over manual-only reconciliation or global dependency inference."
+          }
+        ],
+        "assessed_ref": "7eae25dbf5f29280b1c1473d0c41c43839f7b034",
+        "synthesis_basis": "Compose the existing bounded source-route builder with an exact committed regular-file classifier in the separated source_access boundary, preserving separate full results and identical per-revision bounds.",
+        "value_hypothesis": "A development agent can compare the same directed architectural question across actual committed transitions without manually joining separately resolved source-route results or mistaking a missing endpoint for a negative search.",
+        "revisit_when": "An actual historical source inquiry needs renamed endpoint matching, non-Python resolution or materially different bounds, or file:src/sensemaking_skills/semantic_architecture/source_relationships.py changes.",
+        "counterevidence": "Separate source-route calls and manual inspection remain viable. The former mixed module could have implemented comparison too. A separated source boundary is a supporting design condition, not a necessary causal prerequisite; static witnesses are bounded, not runtime dependency or impact.",
+        "claim_ceiling": "Source-authored candidate; live observation and comparative cost or cognitive benefit not established.",
+        "agent_owned": true
+      }
+    },
+    {
+      "id": "conseq:paired-architectural-source-routes-value",
+      "kind": "hypothesis",
+      "statement": "A development agent can compare the same directed architectural question across actual committed transitions without manually joining separately resolved source-route results or mistaking a missing endpoint for a negative search.",
+      "epistemic_status": "hypothetical",
+      "authority_kind": "hypothesis",
+      "authority_ref": "artifacts/history/2026-11-28-architectural-evolution-reasoning.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-architectural-evolution-reasoning.md",
+        "file:src/sensemaking_skills/semantic_architecture/source_relationships.py",
+        "file:src/sensemaking_skills/semantic_architecture/source_access.py",
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:artifacts/history/2026-11-27-architectural-transformation-reasoning.md"
+      ],
+      "attributes": {
+        "concept": "ConsequenceHypothesis",
+        "source_possibility": "poss:paired-architectural-source-routes",
+        "category": "benefit",
+        "analysis_ref": "artifacts/history/2026-11-28-architectural-evolution-reasoning.md",
+        "source_revision": "7eae25dbf5f29280b1c1473d0c41c43839f7b034",
+        "origin": {
+          "ref": "artifacts/history/2026-11-28-architectural-evolution-reasoning.md",
+          "date": "2026-11-28",
+          "author": "active ChatGPT coding agent"
+        },
+        "value_frame": {
+          "beneficiary": "Development agent investigating actual architectural transitions.",
+          "criterion": "One paired inquiry on the actual PR #1014 before/after commits retains exact standalone route payloads, discloses introduced endpoint absence and incomplete searches, and keeps the single-ref contract.",
+          "comparison_baseline": "Separate exact-ref source-route calls and manual joining, with no paired endpoint status.",
+          "expected_observation": "Former direct source_relationships to knowledge_sources witness at BASE and bounded no-witness at TARGET; source_access absent at BASE and witnessed at TARGET, NOT_COMPARABLE; one-file budget produces incomplete negative, and same-ref pair retains identical witnesses.",
+          "would_change_decision_if": "An endpoint is mistaken for a completed negative, source evidence is lost, same-revision results disagree, or actual agents find manual pairing preferable.",
+          "cost_and_downside": "One opt-in flag, shared low-level classifier, two bounded disposable queries at most; no new semantic ontology, no snapshot construction by comparison builder."
+        },
+        "assumptions": [
+          "con:agent-owns-semantic-control"
+        ],
+        "mechanism": "Compose the existing bounded source-route builder with an exact committed regular-file classifier in the separated source_access boundary, preserving separate full results and identical per-revision bounds.",
+        "counterevidence": "Separate source-route calls and manual inspection remain viable. The former mixed module could have implemented comparison too. A separated source boundary is a supporting design condition, not a necessary causal prerequisite; static witnesses are bounded, not runtime dependency or impact.",
+        "would_change_decision_if": "An endpoint is mistaken for a completed negative, source evidence is lost, same-revision results disagree, or actual agents find manual pairing preferable.",
+        "claim_ceiling": "Prospective commitment recorded before construction at c4d7271c; actual outcome pending."
+      }
+    },
+    {
+      "id": "cap:paired-architectural-source-routes",
+      "kind": "capability",
+      "statement": "The optional source-route --base-ref mode pairs exact committed import-candidate witness observations with endpoint classification, per-revision bounds and explicit noncomparability.",
+      "epistemic_status": "declared",
+      "authority_kind": "code",
+      "authority_ref": "src/sensemaking_skills/semantic_architecture/source_relationships.py",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-architectural-evolution-reasoning.md",
+        "file:src/sensemaking_skills/semantic_architecture/source_relationships.py",
+        "file:src/sensemaking_skills/semantic_architecture/source_access.py",
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:artifacts/history/2026-11-27-architectural-transformation-reasoning.md"
+      ],
+      "attributes": {
+        "scope": "Two explicit exact Python path endpoints and two commits, existing per-side bounds; full available route results preserved.",
+        "claim_ceiling": "Source-authored candidate; live observation and comparative cost or cognitive benefit not established."
+      }
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel:paired-architectural-source-routes-goal",
+      "subject": "poss:paired-architectural-source-routes",
+      "predicate": "candidate_opportunity_for",
+      "object": "goal:compounding-product-knowledge",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-architectural-evolution-reasoning.md"
+      ]
+    },
+    {
+      "id": "rel:paired-architectural-source-routes-route-lineage",
+      "subject": "poss:paired-architectural-source-routes",
+      "predicate": "derived_from",
+      "object": "poss:architectural-source-route",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-architectural-evolution-reasoning.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "combines",
+        "establishment": "authored"
+      }
+    },
+    {
+      "id": "rel:paired-architectural-source-routes-source-boundary",
+      "subject": "poss:paired-architectural-source-routes",
+      "predicate": "references",
+      "object": "poss:committed-source-access-separation",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-architectural-evolution-reasoning.md"
+      ]
+    },
+    {
+      "id": "rel:paired-architectural-source-routes-prediction",
+      "subject": "conseq:paired-architectural-source-routes-value",
+      "predicate": "references",
+      "object": "poss:paired-architectural-source-routes",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-architectural-evolution-reasoning.md"
+      ]
+    },
+    {
+      "id": "rel:paired-architectural-source-routes-realization",
+      "subject": "poss:paired-architectural-source-routes",
+      "predicate": "implemented_by",
+      "object": "cap:paired-architectural-source-routes",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-architectural-evolution-reasoning.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "realizedBy",
+        "establishment": "inferred",
+        "scope": "Candidate paired source-route implementation; live observation pending."
+      }
+    },
+    {
+      "id": "rel:paired-architectural-source-routes-serves",
+      "subject": "cap:paired-architectural-source-routes",
+      "predicate": "serves_goal",
+      "object": "goal:compounding-product-knowledge",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-architectural-evolution-reasoning.md"
+      ]
+    }
+  ]
+}
