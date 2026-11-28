@@ -39,9 +39,18 @@
             "basis": "Reuses existing ecology, exact source access and disposable patch rehearsal."
           },
           "realization": {
-            "value": "HYPOTHETICAL",
-            "establishment": "inferred",
-            "basis": "Candidate source authored; live use pending."
+            "value": "PARTIALLY_IMPLEMENTED",
+            "establishment": "observed",
+            "basis": "At exact candidate 64e432eb, actual hosted run 46103244326 rehearsed all seven contribution paths, matched before/after bytes, parsed both changed Python files, and separately preflighted the proposed knowledge pack (3 claims, 7 relations). The new opt-in rehearsal of this actual patch at BASE recovered poss:prospective-source-knowledge-codesign from the same reused disposable review index, with ecology equal to standalone BASE query and all seven patch paths represented. Two distinct required capabilities, cap:prospective-definition-comparison and cap:prospective-intervention-rehearsal, matched the actual patch_rehearsal.py citations; both newly introduced paths were ABSENT_FROM_TREE and NOT_ASSESSED. A real #1014 historical patch slice of knowledge_architecture.py with poss:architectural-source-route retained explicit semantic-knowledge-plane COMPONENT_OWNED_PATH separately from capability, component and relation evidence. Default pre/post rehearsal payloads and opt-in payload with added context removed compared equal after disposable-path normalization. The goal focus and a candidate-only opportunity were refused. Selected possibility context was not truncated; generic BASE review was truncated. Active target and implementation checkouts remained clean.",
+            "observation_ref": "artifacts/history/2026-11-28-capability-directed-architectural-evolution.md",
+            "history": [
+              {
+                "value": "HYPOTHETICAL",
+                "establishment": "inferred",
+                "basis": "Candidate source authored; live use pending.",
+                "assessed_ref": "3bccadb5c31b59ebe7d5d7f461bd673e3d6bd48c"
+              }
+            ]
           }
         },
         "disposition_history": [
@@ -53,12 +62,12 @@
             "rationale": "Select possibility-directed real intervention context over manual joining or automated readiness/synthesis."
           }
         ],
-        "assessed_ref": "3bccadb5c31b59ebe7d5d7f461bd673e3d6bd48c",
+        "assessed_ref": "64e432ebb2a8a375892d4a5a07a7874d1a6d86c4",
         "synthesis_basis": "Compose an explicit selected BASE opportunity's existing possibility ecology and required-capability routes with actual patch path names, exact committed tree status and the existing disposable patch review; use the same BASE index and separate candidate preflight.",
         "value_hypothesis": "A development agent can relate a concrete proposed intervention to a selected future and its authored prerequisite context without manually joining separate queries or treating candidate evidence as BASE intent.",
         "revisit_when": "Actual interventions need more than direct prerequisite routes or file:src/sensemaking_skills/patch_rehearsal.py changes.",
         "counterevidence": "Manual queries and source review remain viable. Authored prerequisites and citations need not be necessary or sufficient; ownership is a declared relationship. The dedicated source-access module supports coherent reuse but is not a necessary causal prerequisite.",
-        "claim_ceiling": "Source-authored candidate; actual use, comparative cost and independent cognitive benefit not established.",
+        "claim_ceiling": "Observed bounded same-agent use on the actual source/knowledge contribution and one historical slice, with exact BASE query equality and preservation of prior scoped results. No proof of necessary architecture, runtime correctness, inferred dependencies, causal savings, independent cognitive benefit or cross-domain transfer.",
         "agent_owned": true
       }
     },
@@ -110,7 +119,7 @@
       "id": "cap:possibility-directed-intervention-rehearsal",
       "kind": "capability",
       "statement": "The optional patch-rehearsal --possibility mode joins one selected committed opportunity, bounded explicit prerequisite routes and literal authored path matches to verified actual patch paths, preserving BASE and candidate separation.",
-      "epistemic_status": "declared",
+      "epistemic_status": "observed",
       "authority_kind": "code",
       "authority_ref": "src/sensemaking_skills/patch_rehearsal.py",
       "evidence_refs": [
@@ -124,7 +133,33 @@
       ],
       "attributes": {
         "scope": "One existing opportunity, existing bounded ecology, at most eight actual patch paths, same disposable BASE index.",
-        "claim_ceiling": "Source-authored candidate; actual use, comparative cost and independent cognitive benefit not established."
+        "claim_ceiling": "Observed bounded same-agent use on the actual source/knowledge contribution and one historical slice, with exact BASE query equality and preservation of prior scoped results. No proof of necessary architecture, runtime correctness, inferred dependencies, causal savings, independent cognitive benefit or cross-domain transfer."
+      }
+    },
+    {
+      "id": "observation:possibility-directed-intervention-rehearsal-20261128",
+      "kind": "observation",
+      "statement": "Scoped assessment (PARTIALLY_OBSERVED): At exact candidate 64e432eb, actual hosted run 46103244326 rehearsed all seven contribution paths, matched before/after bytes, parsed both changed Python files, and separately preflighted the proposed knowledge pack (3 claims, 7 relations). The new opt-in rehearsal of this actual patch at BASE recovered poss:prospective-source-knowledge-codesign from the same reused disposable review index, with ecology equal to standalone BASE query and all seven patch paths represented. Two distinct required capabilities, cap:prospective-definition-comparison and cap:prospective-intervention-rehearsal, matched the actual patch_rehearsal.py citations; both newly introduced paths were ABSENT_FROM_TREE and NOT_ASSESSED. A real #1014 historical patch slice of knowledge_architecture.py with poss:architectural-source-route retained explicit semantic-knowledge-plane COMPONENT_OWNED_PATH separately from capability, component and relation evidence. Default pre/post rehearsal payloads and opt-in payload with added context removed compared equal after disposable-path normalization. The goal focus and a candidate-only opportunity were refused. Selected possibility context was not truncated; generic BASE review was truncated. Active target and implementation checkouts remained clean.",
+      "epistemic_status": "observed",
+      "authority_kind": "document",
+      "authority_ref": "artifacts/history/2026-11-28-capability-directed-architectural-evolution.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-capability-directed-architectural-evolution.md",
+        "file:src/sensemaking_skills/patch_rehearsal.py",
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:src/sensemaking_skills/semantic_architecture/source_access.py",
+        "file:artifacts/history/2026-11-27-generative-architectural-synthesis.md",
+        "file:artifacts/history/2026-11-28-architectural-evolution-reasoning.md"
+      ],
+      "attributes": {
+        "consequence_ref": "conseq:possibility-directed-intervention-rehearsal-value",
+        "assessment_status": "PARTIALLY_OBSERVED",
+        "observed_effect": "At exact candidate 64e432eb, actual hosted run 46103244326 rehearsed all seven contribution paths, matched before/after bytes, parsed both changed Python files, and separately preflighted the proposed knowledge pack (3 claims, 7 relations). The new opt-in rehearsal of this actual patch at BASE recovered poss:prospective-source-knowledge-codesign from the same reused disposable review index, with ecology equal to standalone BASE query and all seven patch paths represented. Two distinct required capabilities, cap:prospective-definition-comparison and cap:prospective-intervention-rehearsal, matched the actual patch_rehearsal.py citations; both newly introduced paths were ABSENT_FROM_TREE and NOT_ASSESSED. A real #1014 historical patch slice of knowledge_architecture.py with poss:architectural-source-route retained explicit semantic-knowledge-plane COMPONENT_OWNED_PATH separately from capability, component and relation evidence. Default pre/post rehearsal payloads and opt-in payload with added context removed compared equal after disposable-path normalization. The goal focus and a candidate-only opportunity were refused. Selected possibility context was not truncated; generic BASE review was truncated. Active target and implementation checkouts remained clean.",
+        "assessed_at_revision": "64e432ebb2a8a375892d4a5a07a7874d1a6d86c4",
+        "scope": "Exact candidate execution with fixed committed target, actual seven-path source-and-knowledge contribution and real historical #1014 path slice; same agent, no target execution by inquiry.",
+        "counterevidence": "Manual composition remains viable. The actual historical slice rather than a second full candidate rehearsal supplies component-ownership evidence. Generic BASE review is truncated; direct authored prerequisite paths do not establish necessary or sufficient architecture. No independent comparative cognition or measured cost result.",
+        "claim_ceiling": "Observed bounded same-agent use on the actual source/knowledge contribution and one historical slice, with exact BASE query equality and preservation of prior scoped results. No proof of necessary architecture, runtime correctness, inferred dependencies, causal savings, independent cognitive benefit or cross-domain transfer."
       }
     }
   ],
@@ -204,6 +239,16 @@
       "predicate": "serves_goal",
       "object": "goal:compounding-product-knowledge",
       "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-capability-directed-architectural-evolution.md"
+      ]
+    },
+    {
+      "id": "rel:possibility-directed-intervention-rehearsal-observation",
+      "subject": "observation:possibility-directed-intervention-rehearsal-20261128",
+      "predicate": "references",
+      "object": "conseq:possibility-directed-intervention-rehearsal-value",
+      "epistemic_status": "observed",
       "evidence_refs": [
         "file:artifacts/history/2026-11-28-capability-directed-architectural-evolution.md"
       ]
