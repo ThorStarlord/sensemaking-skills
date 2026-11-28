@@ -1,0 +1,118 @@
+name: Actual cross-episode method synthesis (execution branch only)
+on:
+  push:
+    branches: [claude/premise-sensitive-method-execution-20261128]
+permissions:
+  contents: read
+jobs:
+  method:
+    if: github.ref == 'refs/heads/claude/premise-sensitive-method-execution-20261128'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      BASE: "868685766197e400ca1901a3863d22a6f3a4a54f"
+      EPISODE_SOURCE: "d66a3e2be3f65998fad46009fd009e6de900c081"
+      CANDIDATE: "5b367d30d074571f745326d4afcd2fce33a6abad"
+      EPISODE: "artifacts/history/2026-11-28-fixed-target-comparison-method-episode.json"
+      DRAFT: "artifacts/history/actual-fixed-target-method-detached.json"
+      PACK: ".sensemaking/knowledge/fixed-target-comparison-method.json"
+      POSS: ".sensemaking/knowledge/possibilities.json"
+      LESSON: "lesson:conditional-method-2026-11-28-fixed-target-comparison"
+      QUESTION: "How should I compare old and new implementations when the target checkout and workspace context must remain fixed?"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.EPISODE_SOURCE }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Materialize actual historical method episode without activating destination
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EPISODE_SOURCE"
+          test ! -e "$PACK"
+          python -m pip install -e .
+          sensemaking-skills semantic method context --repo . --ref "$BASE" --question "$QUESTION" --limit 25 --json > "$RUNNER_TEMP/before.json"
+          sensemaking-skills semantic method record --repo . --episode "$EPISODE" --draft-only --output "$DRAFT" --json > "$RUNNER_TEMP/draft.json"
+          test ! -e "$PACK"
+          sensemaking-skills semantic knowledge-proposal-check --repo . --proposal "$DRAFT" --destination "$PACK" --json > "$RUNNER_TEMP/detached.json"
+          git show "$CANDIDATE:$PACK" > "$RUNNER_TEMP/expected.json"
+          cmp "$DRAFT" "$RUNNER_TEMP/expected.json"
+          python - <<'PY'
+          import json,os,hashlib
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])
+          q=json.loads((p/"draft.json").read_text())
+          d=json.loads((p/"detached.json").read_text())
+          assert q["created"] and q["disposition"]=="develop" and q["detached_draft"]
+          assert not q["inside_active_knowledge"] and not q["method_learning_demonstrated"] and not q["action_authorized"]
+          assert d["valid"] and d["detached_draft"] and d["destination_state"]=="ABSENT_AT_INSPECTION"
+          assert d["proposal_sha256"]==hashlib.sha256(Path(os.environ["DRAFT"]).read_bytes()).hexdigest()
+          assert d["claims_checked"]==2 and d["relations_checked"]==1
+          print("DETACHED_METHOD="+json.dumps({"exact_produced_bytes":True,"sha256":d["proposal_sha256"],"claims":d["claims_checked"],"relations":d["relations_checked"],"destination_absent":True,"source_revision":q["source_revision"],"evidence_paths_not_in_source_revision":q["evidence_paths_not_in_source_revision"]}))
+          PY
+          cp "$DRAFT" "$RUNNER_TEMP/materialized.json"
+          rm "$DRAFT"
+          test -z "$(git status --porcelain)"
+      - name: Validate reviewed packs and recover conditional lesson at exact candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git checkout --detach "$CANDIDATE"
+          cmp "$PACK" "$RUNNER_TEMP/materialized.json"
+          sensemaking-skills semantic knowledge-proposal-check --repo . --proposal "$PACK" --json > "$RUNNER_TEMP/final-method.json"
+          sensemaking-skills semantic knowledge-proposal-check --repo . --proposal "$POSS" --json > "$RUNNER_TEMP/final-possibilities.json"
+          sensemaking-skills semantic method context --repo . --ref "$CANDIDATE" --question "$QUESTION" --limit 25 --json > "$RUNNER_TEMP/after.json"
+          sensemaking-skills semantic workspace-query --repo . --ref "$CANDIDATE" --operation possibility-ecology --subject poss:capability-learning-analysis --method-question "$QUESTION" --method-limit 25 --limit 80 --json > "$RUNNER_TEMP/integrated.json"
+          python - <<'PY'
+          import json,os,subprocess
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])
+          def load(name): return json.loads((p/(name+".json")).read_text())
+          a,b=load("final-method"),load("final-possibilities")
+          assert a["valid"] and b["valid"] and not a["action_authorized"] and not b["action_authorized"]
+          assert a["claims_checked"]==2 and a["relations_checked"]==1
+          assert a["affected_incoming_relations_checked"]==1
+          base=json.loads(subprocess.check_output(["git","show",os.environ["BASE"]+":"+os.environ["POSS"]]))
+          new=json.loads(Path(os.environ["POSS"]).read_text())
+          ident="poss:capability-learning-analysis"
+          old=next(c for c in base["claims"] if c["id"]==ident)
+          revised=next(c for c in new["claims"] if c["id"]==ident)
+          assert [c for c in base["claims"] if c["id"]!=ident]==[c for c in new["claims"] if c["id"]!=ident]
+          assert base["relations"]==new["relations"][:len(base["relations"])]
+          assert old["attributes"]["disposition_history"]==revised["attributes"]["disposition_history"][:-1]
+          assert revised["attributes"]["disposition_history"][-1]["value"]=="DEFERRED"
+          q=load("after")
+          assert q["target_ref"]==os.environ["CANDIDATE"] and not q["action_authorized"]
+          lesson=os.environ["LESSON"]
+          prior=load("before")
+          assert not any(c["id"]==lesson for c in prior["method_candidates"])
+          c=next(c for c in q["method_candidates"] if c["id"]==lesson)
+          ep=json.loads(Path(os.environ["EPISODE"]).read_text())
+          assert c["procedure"]==ep["procedure_after"] and c["procedure_change"]["method_before"]==ep["procedure_before"]
+          assert c["procedure_change"]["method_disposition"]=="develop"
+          assert c["applicability_to_present_task"]=="NOT_ESTABLISHED" and c["present_method_decision"]=="AGENT_OWNED"
+          assert c["matched_tokens"] and c["source_records"]
+          obs=next(x for x in c["source_records"] if x["id"]=="observation:method-episode-"+ep["episode_id"])
+          assert obs["source_read_status"]=="INDEXED_RECORD"
+          assert obs["record"]["attributes"]["procedure_before"]==ep["procedure_before"]
+          assert obs["record"]["attributes"]["procedure_after"]==ep["procedure_after"]
+          assert ep["counterevidence"] in c["recall_conditions"].values() and ep["conditions"] in c["recall_conditions"].values()
+          integ=load("integrated")
+          assert integ["target_ref"]==os.environ["CANDIDATE"] and not integ["action_authorized"]
+          assert integ["possibility_ecology"]["focus"]["claim_id"]==ident
+          ic=next(x for x in integ["method_precedents"]["method_candidates"] if x["id"]==lesson)
+          assert ic["procedure"]==c["procedure"] and ic["source_records"]==c["source_records"]
+          print("METHOD_REENTRY="+json.dumps({"lesson":lesson,"old_matches":prior["method_candidate_matches"],"new_matches":q["method_candidate_matches"],"matched_tokens":c["matched_tokens"],"method_position":next(i+1 for i,x in enumerate(q["method_candidates"]) if x["id"]==lesson),"source_records":len(c["source_records"]),"related_records_complete":c["related_records_complete"],"lesson_corpus_truncated":q["lesson_corpus_truncated"],"applicability":c["applicability_to_present_task"],"integrated_same_source":True,"specialized_skill_disposition":"DEFERRED","original_other_claims_preserved":True,"method_preflight_claims":a["claims_checked"],"method_preflight_relations":a["relations_checked"],"possibility_preflight_claims":b["claims_checked"],"possibility_preflight_relations":b["relations_checked"],"affected_incoming_relations":a["affected_incoming_relations_checked"]}))
+          PY
+          test -z "$(git status --porcelain)"
+      - name: Retain actual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: actual-cross-episode-method-synthesis
+          path: ${{ runner.temp }}/*.json
+          retention-days: 14
