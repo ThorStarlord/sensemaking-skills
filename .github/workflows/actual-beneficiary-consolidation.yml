@@ -1,132 +1,66 @@
-name: Actual target-rooted preflight repair (execution branch only)
+name: Actual target preflight feedback (execution branch only)
 on:
   push:
     branches: [claude/beneficiary-consolidation-execution-20261128]
 permissions:
   contents: read
 jobs:
-  actual-preflight:
+  reviewed-feedback:
     if: github.ref == 'refs/heads/claude/beneficiary-consolidation-execution-20261128'
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     env:
+      SOURCE: "f350aee6c42b4b0b9ed96c830b6505bc66e81728"
+      TESTED: "ab056850f053c2165613a1bc6ee1ec8abb2d391d"
       BASE: "aec0ff2eaed29c79d65ac2867aeb59fd58cd7495"
-      CANDIDATE: "ab056850f053c2165613a1bc6ee1ec8abb2d391d"
-      TARGET_REF: "af034081e02c47802517d601cc963216f20dafd9"
       PACK: ".sensemaking/knowledge/target-rooted-proposal-preflight.json"
-      EPISODE: "artifacts/history/2026-11-28-focused-evolution-decision-review.json"
-      DRAFT: "artifacts/history/actual-focused-evolution-review-DRAFT.json"
-      DEST: ".sensemaking/knowledge/focused-evolution-value-review.json"
-      ORDINARY: ".sensemaking/knowledge/detached-decision-stewardship.json"
-      DRAFT_SHA: "0448550b5f4d94bd93a62b9617ac697766ad064a878e6528e6652f5c2a82a7a3"
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ env.BASE }}
+          ref: ${{ env.SOURCE }}
           fetch-depth: 0
           persist-credentials: false
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Reproduce actual friction and correct old invocation
+      - name: Validate retained actual feedback and exact-source re-entry
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$BASE"
+          test "$(git rev-parse HEAD)" = "$SOURCE"
           python -m pip install -e .
-          git worktree add --detach "$RUNNER_TEMP/base-target" "$BASE"
-          git worktree add --detach "$RUNNER_TEMP/target" "$TARGET_REF"
-          TARGET="$RUNNER_TEMP/target"
+          test "$(git rev-parse "$SOURCE:src/sensemaking_skills/semantic_cli.py")" = "$(git rev-parse "$TESTED:src/sensemaking_skills/semantic_cli.py")"
+          test "$(git rev-parse "$SOURCE:src/sensemaking_skills/semantic_architecture/stewardship_validation.py")" = "$(git rev-parse "$BASE:src/sensemaking_skills/semantic_architecture/stewardship_validation.py")"
+          ROOT="$PWD"
           mkdir "$RUNNER_TEMP/unrelated"
-          git diff --no-ext-diff --no-textconv --no-renames "$BASE" "$CANDIDATE" -- > "$RUNNER_TEMP/actual.patch"
-          sensemaking-skills semantic patch-rehearsal --repo "$RUNNER_TEMP/base-target" --ref "$BASE" --patch-file "$RUNNER_TEMP/actual.patch" --knowledge-proposal "$PACK" --possibility poss:detached-decision-stewardship --limit 80 --json > "$RUNNER_TEMP/rehearsal.json"
+          (cd "$RUNNER_TEMP/unrelated" && sensemaking-skills semantic knowledge-proposal-check --repo "$ROOT" --proposal "$PACK" --json) > "$RUNNER_TEMP/preflight.json"
+          sensemaking-skills semantic workspace-query --repo . --ref "$SOURCE" --operation possibility-ecology --subject poss:target-rooted-proposal-preflight --limit 80 --json > "$RUNNER_TEMP/context.json"
           python - <<'PY'
-          import os,json,hashlib,subprocess
-          from pathlib import Path
-          q=json.loads((Path(os.environ["RUNNER_TEMP"])/"rehearsal.json").read_text())
-          assert q["status"]=="REHEARSED" and q["base_ref"]==os.environ["BASE"] and len(q["files"])==6
-          k=q["candidate_knowledge"]
-          assert k["status"]=="MECHANICALLY_VALID" and not k["accepted"] and not k["action_authorized"]
-          for f in q["files"]:
-              raw=subprocess.check_output(["git","show",os.environ["CANDIDATE"]+":"+f["path"]])
-              assert hashlib.sha256(raw).hexdigest()==f["after_sha256"]
-              if f["change_kind"]=="MODIFIED":
-                  raw=subprocess.check_output(["git","show",os.environ["BASE"]+":"+f["path"]])
-                  assert hashlib.sha256(raw).hexdigest()==f["before_sha256"]
-              else: assert f["before_sha256"] is None
-              if f["path"].endswith(".py"): assert f["python_syntax"]=="PASS"
-          print("ACTUAL_PATCH="+json.dumps({"paths":len(q["files"]),"patch_sha256":q["patch_sha256"],"proposal_sha256":k["proposal_sha256"],"claims":k["validation"]["claims_checked"],"relations":k["validation"]["relations_checked"],"review_truncated":q["review"]["truncated"],"focus_truncated":q["possibility_context"]["truncated"]}))
-          PY
-          sensemaking-skills semantic decision record --repo "$TARGET" --episode "$EPISODE" --draft-only --output "$DRAFT" --json > "$RUNNER_TEMP/producer.json"
-          test "$(sha256sum "$TARGET/$DRAFT" | cut -d' ' -f1)" = "$DRAFT_SHA"
-          test ! -e "$TARGET/$DEST"
-          test ! -e "$DRAFT"
-          check() { sensemaking-skills semantic knowledge-proposal-check --repo "$TARGET" "$@" --json; }
-          if check --proposal "$DRAFT" --destination "$DEST" > /dev/null 2>"$RUNNER_TEMP/old-relative.err"; then exit 1; fi
-          grep -F "does not exist" "$RUNNER_TEMP/old-relative.err"
-          check --proposal "$TARGET/$DRAFT" --destination "$TARGET/$DEST" > "$RUNNER_TEMP/old-absolute.json"
-          (cd "$TARGET" && check --proposal "$DRAFT" --destination "$DEST") > "$RUNNER_TEMP/old-root.json"
-          cmp "$RUNNER_TEMP/old-absolute.json" "$RUNNER_TEMP/old-root.json"
-          check --proposal "$TARGET/$ORDINARY" > "$RUNNER_TEMP/old-ordinary-absolute.json"
-          (cd "$TARGET" && check --proposal "$ORDINARY") > "$RUNNER_TEMP/old-ordinary-root.json"
-          cmp "$RUNNER_TEMP/old-ordinary-absolute.json" "$RUNNER_TEMP/old-ordinary-root.json"
-          if (cd "$RUNNER_TEMP/unrelated" && check --proposal "$ORDINARY") > /dev/null 2>"$RUNNER_TEMP/old-ordinary-relative.err"; then exit 1; fi
-          git -C "$TARGET" status --porcelain > "$RUNNER_TEMP/target-status-before"
-      - name: Compare same actual target under corrected CLI and varied caller directories
-        shell: bash
-        run: |
-          set -euo pipefail
-          git checkout --detach "$CANDIDATE"
-          TARGET="$RUNNER_TEMP/target"
-          check() { sensemaking-skills semantic knowledge-proposal-check --repo "$TARGET" "$@" --json; }
-          check --proposal "$DRAFT" --destination "$DEST" > "$RUNNER_TEMP/new-caller.json"
-          (cd "$TARGET" && check --proposal "$DRAFT" --destination "$DEST") > "$RUNNER_TEMP/new-root.json"
-          (cd "$RUNNER_TEMP/unrelated" && check --proposal "$DRAFT" --destination "$DEST") > "$RUNNER_TEMP/new-unrelated.json"
-          check --proposal "$TARGET/$DRAFT" --destination "$TARGET/$DEST" > "$RUNNER_TEMP/new-absolute.json"
-          for mode in caller root unrelated absolute; do
-            cmp "$RUNNER_TEMP/old-root.json" "$RUNNER_TEMP/new-$mode.json"
-          done
-          (cd "$RUNNER_TEMP/unrelated" && check --proposal "$ORDINARY") > "$RUNNER_TEMP/new-ordinary-relative.json"
-          check --proposal "$TARGET/$ORDINARY" > "$RUNNER_TEMP/new-ordinary-absolute.json"
-          cmp "$RUNNER_TEMP/old-ordinary-root.json" "$RUNNER_TEMP/new-ordinary-relative.json"
-          cmp "$RUNNER_TEMP/old-ordinary-root.json" "$RUNNER_TEMP/new-ordinary-absolute.json"
-          # Existing actual reviewed path in the caller is absent in this
-          # pre-activation target. It must never become the proposal source.
-          test -f "$DEST"
-          if check --proposal "$DEST" > /dev/null 2>"$RUNNER_TEMP/missing.err"; then exit 1; fi
-          if check --proposal "$PWD/$DEST" > /dev/null 2>"$RUNNER_TEMP/external.err"; then exit 1; fi
-          if check --proposal "$DRAFT" --destination "$ORDINARY" > /dev/null 2>"$RUNNER_TEMP/occupied.err"; then exit 1; fi
-          if check --proposal "artifacts/history/../history/actual-focused-evolution-review-DRAFT.json" --destination "$DEST" > /dev/null 2>"$RUNNER_TEMP/traversal.err"; then exit 1; fi
-          ln -s "$(basename "$DRAFT")" "$TARGET/artifacts/history/actual-review-link.json"
-          if check --proposal "artifacts/history/actual-review-link.json" --destination "$DEST" > /dev/null 2>"$RUNNER_TEMP/symlink.err"; then exit 1; fi
-          rm "$TARGET/artifacts/history/actual-review-link.json"
-          test ! -e "$TARGET/$DEST"
-          test "$(sha256sum "$TARGET/$DRAFT" | cut -d' ' -f1)" = "$DRAFT_SHA"
-          git -C "$TARGET" status --porcelain > "$RUNNER_TEMP/target-status-after"
-          cmp "$RUNNER_TEMP/target-status-before" "$RUNNER_TEMP/target-status-after"
-          test "$(git -C "$TARGET" rev-parse HEAD)" = "$TARGET_REF"
-          test -z "$(git status --porcelain)"
-          python - <<'PY'
-          import json,os
+          import json,os,subprocess
           from pathlib import Path
           p=Path(os.environ["RUNNER_TEMP"])
-          d=json.loads((p/"new-caller.json").read_text())
-          a=json.loads((p/"new-ordinary-relative.json").read_text())
-          assert d["valid"] and a["valid"] and not d["action_authorized"] and not a["action_authorized"]
-          assert d["detached_draft"] and d["destination_state"]=="ABSENT_AT_INSPECTION"
-          assert d["proposal_sha256"]==os.environ["DRAFT_SHA"]
-          assert d["claims_checked"]==1 and d["relations_checked"]==4
-          assert "proposal missing" in (p/"missing.err").read_text()
-          assert "unoccupied" in (p/"occupied.err").read_text()
-          assert "symlink proposal refused" in (p/"symlink.err").read_text()
-          print("ACTUAL_TARGET_PREFLIGHT="+json.dumps({"old_relative_failure_reproduced":True,"detached_full_payloads_equal":True,"ordinary_full_payloads_equal":True,"target_ref":os.environ["TARGET_REF"],"draft_sha256":d["proposal_sha256"],"detached_claims":d["claims_checked"],"detached_relations":d["relations_checked"],"ordinary_claims":a["claims_checked"],"ordinary_relations":a["relations_checked"],"missing_caller_present_refused":True,"external_traversal_symlink_occupied_refused":True,"target_status_preserved":True,"destination_absent":True}))
+          a=json.loads((p/"preflight.json").read_text())
+          assert a["valid"] and not a["action_authorized"]
+          assert a["claims_checked"]==4 and a["relations_checked"]==6
+          old=json.loads(subprocess.check_output(["git","show",os.environ["TESTED"]+":"+os.environ["PACK"]]))
+          new=json.loads(Path(os.environ["PACK"]).read_text())
+          pred=next(c for c in old["claims"] if c["kind"]=="hypothesis")
+          assert pred==next(c for c in new["claims"] if c["id"]==pred["id"])
+          assert old["relations"]==new["relations"][:len(old["relations"])]
+          q=json.loads((p/"context.json").read_text())
+          eco=q["possibility_ecology"]
+          assert q["target_ref"]==os.environ["SOURCE"] and not q["action_authorized"]
+          assert eco["focus"]["realization"]["value"]=="PARTIALLY_IMPLEMENTED"
+          entry=next(x for x in eco["value_feedback"]["entries"] if x["possibility_id"]=="poss:target-rooted-proposal-preflight")
+          c=next(x for x in entry["predictions"] if x["prediction"]["id"]==pred["id"])
+          assert c["standing"]=="PARTIALLY_OBSERVED" and c["assessment_total"]==1
+          assert c["prediction"]["attributes"]["value_frame"]==pred["attributes"]["value_frame"]
+          print("REVIEWED_TARGET_FEEDBACK="+json.dumps({"claims":a["claims_checked"],"relations":a["relations_checked"],"original_prediction_preserved":True,"original_relations_preserved":True,"tested_cli_unchanged":True,"inspector_unchanged":True,"relative_preflight_from_unrelated_directory":True,"standing":c["standing"],"assessments":c["assessment_total"]}))
           PY
+          test -z "$(git status --porcelain)"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: actual-target-rooted-preflight
-          path: |
-            ${{ runner.temp }}/*.json
-            ${{ runner.temp }}/*.patch
-            ${{ runner.temp }}/*.err
+          name: actual-reviewed-target-preflight-feedback
+          path: ${{ runner.temp }}/*.json
           retention-days: 14
