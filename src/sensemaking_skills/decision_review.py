@@ -1,8 +1,8 @@
-"""Optional consequence-informed decision review over authored architecture options.
+"""Optional consequence-informed decision review over architecture options or product possibilities.
 
 A review is a later `decision` claim that references the option, the predictions
 and assessments it reconsidered, and optionally the method precedent that guided
-the review. It never rewrites the option or its authored preference, never changes
+the review. It never rewrites the source option or possibility, its preference or disposition, never changes
 standing automatically, and never promotes the option. The active agent authors
 the judgment; this module only validates and materializes its source-attributed
 record as a Git-reviewable proposal.
@@ -113,7 +113,7 @@ def record_decision_review(repo: Path, episode_path: str, output_path: str) -> d
     if not isinstance(data, dict):
         raise ValueError("episode input must be a JSON object")
     accepted = {
-        "review_id", "actor", "source_revision", "source_option", "disposition",
+        "review_id", "actor", "source_revision", "source_option", "source_possibility", "disposition",
         "basis", "conditions", "counterevidence", "claim_ceiling",
         "evidence_refs", "consequence_refs", "assessment_refs", "method_ref",
     }
@@ -131,8 +131,15 @@ def record_decision_review(repo: Path, episode_path: str, output_path: str) -> d
     if _git(root, "rev-parse", "--verify", "--quiet", f"{source_revision}^{{commit}}") != source_revision:
         raise ValueError("the source_revision is not available as an exact local Git commit")
 
-    source_option = _string(data, "source_option", maximum=160)
-    if not source_option.startswith("arch:"):
+    if ("source_option" in data) == ("source_possibility" in data):
+        raise ValueError("provide exactly one source_option or source_possibility")
+    possibility_review = "source_possibility" in data
+    source_key = "source_possibility" if possibility_review else "source_option"
+    source_option = _string(data, source_key, maximum=160)
+    if possibility_review:
+        if not source_option.startswith("poss:"):
+            raise ValueError("source_possibility must name an authored poss: opportunity")
+    elif not source_option.startswith("arch:"):
         raise ValueError("source_option must name an authored arch: architecture option")
     disposition = _string(data, "disposition", maximum=32)
     if disposition not in _DISPOSITIONS:
@@ -174,18 +181,30 @@ def record_decision_review(repo: Path, episode_path: str, output_path: str) -> d
 
     claims, relations = _knowledge_at_revision(root, source_revision)
     option = claims.get(source_option)
-    if not option or option.get("kind") != "alternative":
-        raise ValueError("source_option must be an authored alternative at source_revision")
-    preference = (option.get("attributes") or {}).get("preference")
-    if not isinstance(preference, Mapping) or not isinstance(preference.get("status"), str):
-        raise ValueError("source_option needs an authored preference status")
+    if possibility_review:
+        if not option or option.get("kind") != "opportunity":
+            raise ValueError("source_possibility must be an authored opportunity at source_revision")
+    else:
+        if not option or option.get("kind") != "alternative":
+            raise ValueError("source_option must be an authored alternative at source_revision")
+        preference = (option.get("attributes") or {}).get("preference")
+        if not isinstance(preference, Mapping) or not isinstance(preference.get("status"), str):
+            raise ValueError("source_option needs an authored preference status")
 
     for consequence in consequence_refs:
         record = claims.get(consequence)
         if not record or record.get("kind") != "hypothesis":
             raise ValueError(f"consequence_ref is not an authored hypothesis: {consequence}")
-        if (record.get("attributes") or {}).get("source_option") != source_option:
+        attributes = record.get("attributes") or {}
+        if attributes.get(source_key) != source_option:
             raise ValueError(f"consequence does not belong to {source_option}: {consequence}")
+        if possibility_review and (
+            "source_option" in attributes or not any(
+                edge.get("subject") == consequence and edge.get("predicate") == "references"
+                and edge.get("object") == source_option for edge in relations
+            )
+        ):
+            raise ValueError(f"consequence lacks an unambiguous authored possibility link: {consequence}")
 
     superseded_by, cyclic = assessment_supersession(claims, relations)
     for assessment in assessment_refs:
@@ -255,7 +274,8 @@ def record_decision_review(repo: Path, episode_path: str, output_path: str) -> d
         },
     }
     relations = [{
-        "id": "rel:decision-review-" + review_id + "-references-option",
+        "id": ("rel:decision-review-" + review_id
+               + ("-references-possibility" if possibility_review else "-references-option")),
         "subject": decision_id,
         "predicate": "references",
         "object": source_option,
@@ -305,7 +325,7 @@ def record_decision_review(repo: Path, episode_path: str, output_path: str) -> d
         "created": True,
         "path": output_relative,
         "review_id": review_id,
-        "source_option": source_option,
+        source_key: source_option,
         "disposition": disposition,
         "proposed_claim_ids": [decision_id],
         "proposed_relation_ids": [item["id"] for item in relations],
@@ -316,6 +336,9 @@ def record_decision_review(repo: Path, episode_path: str, output_path: str) -> d
         "decision_influence_established": False,
         "action_authorized": False,
         "next": (
+            "Run knowledge-proposal-check, review the original possibility and cited evidence, "
+            "then use normal Git review; the review does not change realization or disposition."
+            if possibility_review else
             "Run knowledge-proposal-check, review the original option and cited evidence, "
             "then use normal Git review; the review does not change the option or its preference."
         ),

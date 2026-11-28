@@ -10,7 +10,7 @@ from __future__ import annotations
 import re
 from typing import Any, Iterable, Mapping
 
-from .consequence_standing import assessment_supersession
+from .consequence_standing import assessment_supersession, possibility_value_feedback
 from .knowledge import CONSEQUENCE_ASSESSMENT_KEYS, _valid_repo_path, is_path_scope
 from .knowledge_sources import _local_evidence_path
 
@@ -967,6 +967,12 @@ def possibility_ecology(
             selected_relations.append(entry["candidate_edge"]["id"])
     descendant_visible = descendant_candidates[:limit]
     descendant_omitted = max(0, descendant_total - len(descendant_visible))
+    value_feedback, feedback_claims, feedback_relations = possibility_value_feedback(
+        claims, edges,
+        possibility_ids=(item["claim_id"] for item in [*candidates, *descendant_visible]),
+    )
+    selected_claims.extend(feedback_claims)
+    selected_relations.extend(feedback_relations)
 
     shared: dict[str, dict] = {}
     for item in [*candidates, *descendant_visible]:
@@ -1119,10 +1125,11 @@ def possibility_ecology(
         "shared_link_omitted": max(0, shared_total - len(shared_visible)),
         "relationship_total": relationship_total,
         "relationship_omitted": relationship_omitted,
+        "value_feedback": value_feedback,
         "coverage_complete": False,
         "truncated": bool(candidate_omitted or descendant_omitted or relationship_omitted
                           or shared_total > len(shared_visible)
-                          or required_capability_omitted
+                          or required_capability_omitted or value_feedback["truncated"]
                           or any(route["implementation_component_omitted"]
                                  for route in required_capability_routes)),
         "explicit_limits": [

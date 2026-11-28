@@ -270,6 +270,18 @@ def validate_snapshot(snapshot: KnowledgeSnapshot, *, existence_only_ids: frozen
         if claim.kind == "architecture_rule" and claim.id not in existence_only_ids and not claim.attributes.get("applies_to") and claim.id not in scoped_rules:
             raise ValueError(f"architecture_rule has no path or graph scope: {claim.id}")
         validate_consequence_assessment(claim, kinds=kinds, relations=snapshot.relations)
+        if "source_possibility" in claim.attributes:
+            source = claim.attributes["source_possibility"]
+            if (claim.kind != "hypothesis" or not claim.id.startswith("conseq:")
+                    or "source_option" in claim.attributes
+                    or not isinstance(source, str) or not source.startswith("poss:")
+                    or kinds.get(source) != "opportunity"):
+                raise ValueError(f"source_possibility needs a conseq: hypothesis and a poss: opportunity: {claim.id}")
+            if not any(
+                rel.subject == claim.id and rel.predicate == "references"
+                and rel.object == source for rel in snapshot.relations
+            ):
+                raise ValueError(f"source_possibility needs an explicit references relation: {claim.id}")
 
 
 def is_path_scope(reference: str) -> bool:

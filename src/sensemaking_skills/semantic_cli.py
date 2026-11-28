@@ -1263,7 +1263,7 @@ def register_semantic_commands(root_cli: click.Group) -> None:
 
     @semantic_group.group(name="decision")
     def semantic_decision() -> None:
-        """Optional consequence-informed decision reviews over architecture options."""
+        """Optional consequence-informed reviews over architecture options or product possibilities."""
 
     @semantic_decision.command(name="record")
     @click.option("--repo", "repo_dir", default=Path("."),
@@ -1278,8 +1278,8 @@ def register_semantic_commands(root_cli: click.Group) -> None:
     ) -> None:
         """Materialize an agent-authored decision review as an attributed decision.
 
-        Does not choose a disposition, infer benefit, change the option or its
-        preference, commit, or grant permissions. The review remains evidence.
+        Does not choose a disposition, infer benefit, change the source option
+        or possibility, commit, or grant permissions. The review remains evidence.
         """
         from .decision_review import record_decision_review
 

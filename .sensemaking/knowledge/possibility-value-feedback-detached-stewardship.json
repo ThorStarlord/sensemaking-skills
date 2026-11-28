@@ -1,0 +1,74 @@
+{
+  "schema_version": 2,
+  "claims": [
+    {
+      "id": "conseq:detached-stewardship-value",
+      "kind": "hypothesis",
+      "statement": "A later agent could recover and mechanically check speculative material without risking accidental inclusion in reviewed queries or requiring a preparatory copy to the active namespace. Current source/evidence and review still matter.",
+      "epistemic_status": "hypothetical",
+      "authority_kind": "hypothesis",
+      "authority_ref": "artifacts/history/2026-11-27-detached-possibility-stewardship-synthesis.json",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-detached-possibility-stewardship-synthesis.json",
+        "file:artifacts/history/2026-11-27-developmental-synthesis-detached-stewardship.md"
+      ],
+      "attributes": {
+        "concept": "ConsequenceHypothesis",
+        "source_possibility": "poss:detached-possibility-stewardship",
+        "category": "benefit",
+        "analysis_ref": "artifacts/history/2026-11-27-detached-possibility-stewardship-synthesis.json",
+        "origin_revision": "acc912a7fdde760884adf589a48510759036f1ef",
+        "normalization_note": "Retrospective normalization of the verbatim original value_hypothesis, which was committed before actual preflight run 46009940905. Not a new precommitted trial.",
+        "mechanism": "Keep unreviewed source bytes outside the active namespace; allow explicit logical-destination preflight and later authorized review.",
+        "would_change_decision_if": "Actual consumers cannot locate or check a retained draft without active-namespace materialization, or the separate lifecycle creates unjustified overhead.",
+        "decision_changing": true,
+        "claim_ceiling": "Original conditional value hypothesis, not evidence of measured benefit or independence."
+      }
+    },
+    {
+      "id": "observation:detached-stewardship-value-20261127",
+      "kind": "observation",
+      "statement": "Retrospective scoped assessment (PARTIALLY_OBSERVED): The actual retained DTR draft passed detached preflight at 6acfc86a with its named destination absent; the separately authorized final-path check and later reviewed integration used identical bytes. A subsequent handoff did not initially list the detached historical JSON.",
+      "epistemic_status": "observed",
+      "authority_kind": "document",
+      "authority_ref": "artifacts/history/2026-11-27-dtr-actual-consumption-and-promotion.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-dtr-actual-consumption-and-promotion.md",
+        "file:artifacts/history/2026-11-27-cumulative-strategic-creativity.md",
+        "file:artifacts/history/2026-11-27-detached-possibility-stewardship-synthesis.json"
+      ],
+      "attributes": {
+        "consequence_ref": "conseq:detached-stewardship-value",
+        "assessment_status": "PARTIALLY_OBSERVED",
+        "observed_effect": "The actual retained DTR draft passed detached preflight at 6acfc86a with its named destination absent; the separately authorized final-path check and later reviewed integration used identical bytes. A subsequent handoff did not initially list the detached historical JSON.",
+        "assessed_at_revision": "9885b7efa62260908ca21be92ed0e9e681852d41",
+        "counterevidence": "The authorized isolated-checkout ordinary preflight is a viable alternative. Prior episode knew the exact draft path. Discovery gap required a separate handoff improvement. No accidental-promotion incidence, time saving, independent agent or comparative outcome measured.",
+        "scope": "Actual same-agent DTR draft handling, scoped source-equivalent hosted preflight and subsequent re-entry.",
+        "claim_ceiling": "Observed detached no-copy check and later explicit authorized materialization; does not establish safer behavior, comparative efficiency or cognitive benefit."
+      }
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel:detached-stewardship-value-prediction",
+      "subject": "conseq:detached-stewardship-value",
+      "predicate": "references",
+      "object": "poss:detached-possibility-stewardship",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-detached-possibility-stewardship-synthesis.json"
+      ]
+    },
+    {
+      "id": "rel:detached-stewardship-value-assessment",
+      "subject": "observation:detached-stewardship-value-20261127",
+      "predicate": "references",
+      "object": "conseq:detached-stewardship-value",
+      "epistemic_status": "observed",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-dtr-actual-consumption-and-promotion.md",
+        "file:artifacts/history/2026-11-27-cumulative-strategic-creativity.md"
+      ]
+    }
+  ]
+}
