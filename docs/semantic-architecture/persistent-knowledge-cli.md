@@ -2046,8 +2046,8 @@ separately authorized integration.
 ### Opt-in source and knowledge co-design
 
 ```bash
-sensemaking-skills semantic patch-rehearsal --repo . --ref BASE \\
-  --patch-file proposed.patch \\
+sensemaking-skills semantic patch-rehearsal --repo . --ref BASE \
+  --patch-file proposed.patch \
   --knowledge-proposal .sensemaking/knowledge/new-capability.json --json
 ```
 

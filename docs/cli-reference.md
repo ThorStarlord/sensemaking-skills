@@ -156,10 +156,11 @@ actual changed paths, before/after file digests and Python syntax results, not a
 runtime or semantic verdict. For modified Python files, it also compares uniquely named top-level definitions
 using exact source and normalized AST digests, with separate module-level source
 and AST indicators; these are syntactic review signals, not runtime equivalence.
-Version 1 accepts at most eight existing tracked
+By default it accepts at most eight existing tracked
 regular-file modifications and 256 KiB UTF-8 patch text; structural changes,
 links, binary changes and Git control files are refused. No target code/test
-execution, active-checkout application or automatic acceptance. Opt in with `--knowledge-proposal .sensemaking/knowledge/NAME.json`
+execution, active-checkout application or automatic acceptance.
+Opt in with `--knowledge-proposal .sensemaking/knowledge/NAME.json`
 to rehearse a patch adding one new pack and its contained regular-file evidence,
 using a disposable index and the existing single-pack preflight. BASE review
 remains committed-only; the separate candidate validation is not acceptance.

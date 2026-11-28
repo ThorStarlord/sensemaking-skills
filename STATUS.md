@@ -549,6 +549,9 @@ no unit or synthetic evidence tests were run.
 
 ## Current next step
 
+**2026-11-27 — Generative architectural synthesis:** [prospective source and knowledge co-design](artifacts/history/2026-11-27-generative-architectural-synthesis.md) recombines concrete intervention rehearsal, definition comparison and single-pack stewardship. Actual run 46094915471 rehearsed the full six-path #1011 change, including two additions and four modifications. The proposed knowledge mechanically validated with its newly added supporting evidence; identical pack-only bytes failed for missing evidence. Original BASE review remains separate and truncated, no automatic acceptance, no active checkout change. Retain the scoped possibility, lineage, capability and partial observation. Default existing-file-only behavior remains; opt-in one-pack co-design admits new non-executable files within the same limits. No independent cognitive benefit claim; manual fallback available. ADR 0038 and current Level-3 direction reaffirmed.
+
+
 **2026-11-27 — Comparative prospective construction:** [actual alternative rehearsal](artifacts/history/2026-11-27-comparative-prospective-construction.md) used the merged patch-rehearsal product to compare two concrete definition-comparison implementations from the same canonical BASE, then exercised both on the real containment and receipt-inventory engineering changes. Run 46094250281 passed: both found the same five changed definitions; B additionally classified AST changes and module-level structure while preserving source hashes. Retain B as the bounded definition-level rehearsal increment, A as an alternative commit, and the scoped subsequent observation. No generic comparison subsystem, new strategy or independent cognitive benefit claim. Continue concrete value-generating construction; use direct review for unsupported cases. Local unit/synthetic tests NOT_RUN.
 
 
