@@ -38,9 +38,18 @@
             "basis": "Actual #1023 failure and viable target-rooted inspector."
           },
           "realization": {
-            "value": "HYPOTHETICAL",
-            "establishment": "inferred",
-            "basis": "Candidate implementation; actual repair verification pending."
+            "value": "PARTIALLY_IMPLEMENTED",
+            "establishment": "observed",
+            "basis": "Actual hosted run 46108602938 at exact candidate ab056850 reproduced the prior #1023 failure using the genuine focused-evolution review, original digest and fixed pre-activation target af034081. Old target-relative invocation from the implementation checkout refused the existing target draft; old contained absolute and target-CWD relative calls agreed. Corrected detached preflight from implementation, target and unrelated directories, and contained absolute paths, returned the exact old correct complete payload, including one claim/four relations and absent destination. Actual ordinary pack relative/absolute preflight matched old correct payload (three claims/six relations); old unrelated-CWD relative invocation refused. Target-missing caller-present file, external absolute path, traversal, symlink and occupied destination refused. Target status, HEAD, actual draft digest and absent destination preserved. Six-path canonical co-design passed exact bytes, one Python parse and separate valid three-claim/five-relation pack.",
+            "observation_ref": "artifacts/history/2026-11-28-beneficiary-consolidation-target-preflight.md",
+            "history": [
+              {
+                "value": "HYPOTHETICAL",
+                "establishment": "inferred",
+                "basis": "Candidate implementation; actual repair verification pending.",
+                "assessed_ref": "aec0ff2eaed29c79d65ac2867aeb59fd58cd7495"
+              }
+            ]
           }
         },
         "disposition_history": [
@@ -52,12 +61,12 @@
             "rationale": "Actual detached review validation failed because CLI inspected caller directory; existing search recovered selected re-entry context, so choose concrete execution repair over further inventory expansion."
           }
         ],
-        "assessed_ref": "aec0ff2eaed29c79d65ac2867aeb59fd58cd7495",
+        "assessed_ref": "ab056850f053c2165613a1bc6ee1ec8abb2d391d",
         "synthesis_basis": "Pass raw path arguments to the existing target-rooted contained proposal inspector, instead of prematurely validating existence or file type in invocation directory.",
         "value_hypothesis": "A development agent can mechanically preflight actual target-relative proposal and logical-destination paths against an explicitly chosen repository from a separate implementation checkout or other working directory, without redundant directory-dependent failures.",
         "revisit_when": "Reconsider if actual target-relative validation differs by invocation directory, target-missing or unsafe files are accepted, or absolute/root-invoked preflight behavior changes.",
         "counterevidence": "Absolute paths or changing directory already provide a viable workaround. Only proposal-check argument validation is addressed; no cross-repository promotion, complete security guarantee, measured time saving or independent learning.",
-        "claim_ceiling": "Source-reviewed candidate; actual repair verification pending. No changed validator semantics or authority, measured productivity or independent cognitive benefit.",
+        "claim_ceiling": "Actual repair of target-relative CLI path handling for one real detached review and one ordinary reviewed pack, on a fixed target with varied caller directories. No changed inspector semantics, measured time saving, complete security guarantee, independent cognition or new method adaptation.",
         "agent_owned": true
       }
     },
@@ -108,7 +117,7 @@
       "id": "cap:target-rooted-proposal-preflight",
       "kind": "capability",
       "statement": "Knowledge proposal preflight resolves both proposal and optional logical destination through the existing target-rooted inspector independently of invocation directory.",
-      "epistemic_status": "declared",
+      "epistemic_status": "observed",
       "authority_kind": "code",
       "authority_ref": "src/sensemaking_skills/semantic_cli.py",
       "evidence_refs": [
@@ -121,7 +130,32 @@
       ],
       "attributes": {
         "scope": "Existing ordinary or detached single-pack validation at explicit target root, contained relative or absolute paths, all existing inspector guards.",
-        "claim_ceiling": "Source-reviewed candidate; actual repair verification pending. No changed validator semantics or authority, measured productivity or independent cognitive benefit."
+        "claim_ceiling": "Actual repair of target-relative CLI path handling for one real detached review and one ordinary reviewed pack, on a fixed target with varied caller directories. No changed inspector semantics, measured time saving, complete security guarantee, independent cognition or new method adaptation."
+      }
+    },
+    {
+      "id": "observation:target-rooted-proposal-preflight-20261128",
+      "kind": "observation",
+      "statement": "Scoped assessment (PARTIALLY_OBSERVED): Actual hosted run 46108602938 at exact candidate ab056850 reproduced the prior #1023 failure using the genuine focused-evolution review, original digest and fixed pre-activation target af034081. Old target-relative invocation from the implementation checkout refused the existing target draft; old contained absolute and target-CWD relative calls agreed. Corrected detached preflight from implementation, target and unrelated directories, and contained absolute paths, returned the exact old correct complete payload, including one claim/four relations and absent destination. Actual ordinary pack relative/absolute preflight matched old correct payload (three claims/six relations); old unrelated-CWD relative invocation refused. Target-missing caller-present file, external absolute path, traversal, symlink and occupied destination refused. Target status, HEAD, actual draft digest and absent destination preserved. Six-path canonical co-design passed exact bytes, one Python parse and separate valid three-claim/five-relation pack.",
+      "epistemic_status": "observed",
+      "authority_kind": "document",
+      "authority_ref": "artifacts/history/2026-11-28-beneficiary-consolidation-target-preflight.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-beneficiary-consolidation-target-preflight.md",
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:docs/cli-reference.md",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:src/sensemaking_skills/semantic_architecture/stewardship_validation.py",
+        "file:artifacts/history/2026-11-28-evidence-grounded-strategic-judgment.md"
+      ],
+      "attributes": {
+        "consequence_ref": "conseq:target-rooted-proposal-preflight-value",
+        "assessment_status": "PARTIALLY_OBSERVED",
+        "observed_effect": "Actual hosted run 46108602938 at exact candidate ab056850 reproduced the prior #1023 failure using the genuine focused-evolution review, original digest and fixed pre-activation target af034081. Old target-relative invocation from the implementation checkout refused the existing target draft; old contained absolute and target-CWD relative calls agreed. Corrected detached preflight from implementation, target and unrelated directories, and contained absolute paths, returned the exact old correct complete payload, including one claim/four relations and absent destination. Actual ordinary pack relative/absolute preflight matched old correct payload (three claims/six relations); old unrelated-CWD relative invocation refused. Target-missing caller-present file, external absolute path, traversal, symlink and occupied destination refused. Target status, HEAD, actual draft digest and absent destination preserved. Six-path canonical co-design passed exact bytes, one Python parse and separate valid three-claim/five-relation pack.",
+        "assessed_at_revision": "ab056850f053c2165613a1bc6ee1ec8abb2d391d",
+        "scope": "Exact candidate on actual pre-activation #1023 target with genuine detached review and ordinary pack; fixed target across old/new, caller directory intentionally varied; canonical candidate rehearsal.",
+        "counterevidence": "Absolute paths and cd already worked. Generic BASE review truncated, focused review not. Only one hosted Linux target and selected paths observed; no independent users, cross-OS behavior or measured efficiency, and no changes to inspector validation or broader path surfaces.",
+        "claim_ceiling": "Actual repair of target-relative CLI path handling for one real detached review and one ordinary reviewed pack, on a fixed target with varied caller directories. No changed inspector semantics, measured time saving, complete security guarantee, independent cognition or new method adaptation."
       }
     }
   ],
@@ -181,6 +215,16 @@
       "predicate": "serves_goal",
       "object": "goal:compounding-product-knowledge",
       "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-beneficiary-consolidation-target-preflight.md"
+      ]
+    },
+    {
+      "id": "rel:target-rooted-proposal-preflight-observation",
+      "subject": "observation:target-rooted-proposal-preflight-20261128",
+      "predicate": "references",
+      "object": "conseq:target-rooted-proposal-preflight-value",
+      "epistemic_status": "observed",
       "evidence_refs": [
         "file:artifacts/history/2026-11-28-beneficiary-consolidation-target-preflight.md"
       ]
