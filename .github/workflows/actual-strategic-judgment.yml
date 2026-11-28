@@ -1,0 +1,51 @@
+name: Actual strategic judgment context (execution branch only)
+on:
+  push:
+    branches: [claude/strategic-judgment-execution-20261128]
+permissions:
+  contents: read
+jobs:
+  context:
+    if: github.ref == 'refs/heads/claude/strategic-judgment-execution-20261128'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      BASE: "051b872e5ebdd9b119469275d9bd81dbb496decc"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BASE }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Recover current real candidate context
+        run: |
+          set -euo pipefail
+          python -m pip install -e .
+          Q="Should I retain a useful bounded construction capability or wait for independent qualification evidence?"
+          for id in detached-possibility-stewardship focused-possibility-evolution existing-pack-source-knowledge-codesign goal-family-construction-bridge; do
+            sensemaking-skills semantic workspace-query --repo . --ref "$BASE" --operation possibility-ecology --subject "poss:$id" --method-question "$Q" --method-limit 25 --limit 80 --json > "$RUNNER_TEMP/$id.json"
+          done
+          sensemaking-skills semantic workspace-changes --repo . --base-ref 75247e50e343f77b1e1cff2f124421bfa83c6852 --ref "$BASE" --include-possibility-evolution --possibility poss:focused-possibility-evolution --limit 80 --json > "$RUNNER_TEMP/evolution.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])
+          for id in ("detached-possibility-stewardship","focused-possibility-evolution","existing-pack-source-knowledge-codesign","goal-family-construction-bridge"):
+              q=json.loads((p/(id+".json")).read_text())
+              assert q["target_ref"]==os.environ["BASE"]
+              e=q["possibility_ecology"]
+              focus=e["focus"]
+              v=next((x for x in e["value_feedback"]["entries"] if x["possibility_id"]==focus["claim_id"]),{})
+              print("ACTUAL_CHOICE_CONTEXT="+json.dumps({"id":focus["claim_id"],"realization":focus["realization"]["value"],"predictions":[{"id":x["prediction"]["id"],"standing":x["standing"],"assessment_total":x["assessment_total"]} for x in v.get("predictions",[])],"reviews":[x.get("id") or x.get("review_id") or x.get("record",{}).get("id") for x in v.get("decision_reviews",v.get("reviews",[]))],"truncated":e["truncated"],"methods":[x["id"] for x in q["method_precedents"]["method_candidates"]]}))
+          e=json.loads((p/"evolution.json").read_text())["possibility_evolution"]
+          print("ACTUAL_EVOLUTION="+json.dumps({"presence":e["focus"]["opportunity_presence"],"scope_truncated":e["truncated"]}))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: actual-strategic-choice-context
+          path: ${{ runner.temp }}/*.json
+          retention-days: 14
