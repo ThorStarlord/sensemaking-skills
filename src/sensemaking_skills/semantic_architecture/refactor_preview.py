@@ -18,7 +18,7 @@ import subprocess
 from pathlib import Path
 from typing import Any, Iterable
 
-from .knowledge_sources import temporary_commit_checkout, verified_tracked_sources
+from .knowledge_sources import _source, temporary_commit_checkout, verified_tracked_sources
 from .source_relationships import (
     _import_bindings,
     _import_from_base,
@@ -36,7 +36,7 @@ _LIMITS = (
     "Only direct syntactic name, attribute and import references are rewritten. getattr strings, dynamic imports, generated code, inheritance, re-exports and runtime dispatch are NOT ASSESSED.",
     "Exact string constants equal to the symbol in related Python files block the patch because they may be dynamic references.",
     "Attribute access with the same name on non-module objects is listed but not rewritten; it may belong to a different symbol.",
-    "Non-Python files are not modified and their mentions are listed separately.",
+    "Non-Python files are not modified; mentions are sampled from contained readable text files only. Symlinks, unreadable, binary and oversized files are not assessed.",
     "A READY patch is not proof of runtime correctness, test coverage, API compatibility or complete repository-wide renaming.",
 )
 _IGNORED_AST_FIELDS = {
@@ -518,11 +518,14 @@ def _non_python_mentions(
         if relative.endswith(".py") or relative in rewritten:
             continue
         try:
-            candidate = checkout / relative
-            if not candidate.is_file() or candidate.stat().st_size > 200_000:
+            # Use the same tracked, contained, non-symlink source boundary as
+            # Python parsing. Non-Python mention disclosure must not follow a
+            # repository link into unrelated files in the agent's environment.
+            candidate = _source(checkout, tracked, relative)
+            if candidate.stat().st_size > 200_000:
                 continue
             raw = candidate.read_bytes()
-        except OSError:
+        except (OSError, ValueError, RuntimeError):
             continue
         if b"\0" in raw:
             continue

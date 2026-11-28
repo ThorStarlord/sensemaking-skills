@@ -148,6 +148,17 @@ sites. A `READY` result is not runtime correctness, test coverage, API
 compatibility or complete repository-wide renaming; star imports, rebinding,
 dynamic strings/calls and name collisions block the patch.
 
+For an explicit proposed text patch that has not been applied to the active checkout,
+`sensemaking-skills semantic patch-rehearsal --repo . --ref BASE --patch-file FILE --json`
+applies it in a disposable exact-commit worktree and composes the existing
+BASE-only worktree review with candidate reconsideration. It reports patch digest,
+actual changed paths, before/after file digests and Python syntax results, not a
+runtime or semantic verdict. Version 1 accepts at most eight existing tracked
+regular-file modifications and 256 KiB UTF-8 patch text; structural changes,
+links, binary changes and Git control files are refused. No target code/test
+execution, active-checkout application or automatic acceptance. See the
+[patch rehearsal contract](semantic-architecture/persistent-knowledge-cli.md#prospective-patch-rehearsal).
+
 For changes **still being edited** in the checkout, add `--include-worktree`
 with `--ref HEAD` (or an exact revision equal to the checkout's HEAD).
 For example:
