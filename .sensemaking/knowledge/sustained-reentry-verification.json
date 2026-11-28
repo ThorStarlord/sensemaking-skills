@@ -1,0 +1,37 @@
+{
+  "schema_version": 2,
+  "claims": [
+    {
+      "id": "verification:sustained-reentry-hosted-context",
+      "kind": "verification",
+      "statement": "The Semantic Context Re-entry workflow exercises handoff against an explicitly selected real historical receipt and checks source identity, validated selected-receipt projection, authored responsibility fields, omitted item counts and non-authority flags. This is a source-observed verification route for the returning-engagement consumer, not a claim of current execution, complete coverage or cognitive benefit.",
+      "authority_kind": "test",
+      "authority_ref": ".github/workflows/semantic-context-reentry.yml",
+      "evidence_refs": [
+        "file:.github/workflows/semantic-context-reentry.yml",
+        "file:src/sensemaking_skills/reentry_context.py",
+        "file:src/sensemaking_skills/first_use.py"
+      ],
+      "epistemic_status": "observed",
+      "attributes": {
+        "scope": "The committed workflow's selected actual prior receipt handoff checks; not every receipt field or all handoff behavior.",
+        "claim_ceiling": "Authored verification procedure only; check exact run, selected receipt, relevant assertions and current source before judging applicability or completion."
+      }
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel:sustained-reentry-tested-by-hosted-context",
+      "subject": "cap:source-qualified-sustained-reentry",
+      "predicate": "tested_by",
+      "object": "verification:sustained-reentry-hosted-context",
+      "evidence_refs": [
+        "file:.github/workflows/semantic-context-reentry.yml"
+      ],
+      "epistemic_status": "observed",
+      "attributes": {
+        "scope": "Existing source-backed selected-receipt handoff checks; not independent agent use."
+      }
+    }
+  ]
+}

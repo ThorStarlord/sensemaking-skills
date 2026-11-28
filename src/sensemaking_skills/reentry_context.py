@@ -148,6 +148,15 @@ def _project(data: dict[str, Any]) -> dict[str, Any]:
             _scalar(ref) for ref in refs[:_MAX_ITEMS]
         ]
         projection["responsibilities"][index]["artifact_refs_omitted"] = max(0, len(refs) - _MAX_ITEMS)
+        # These are authored historical results, not checks performed by handoff.
+        validation = responsibility.get("validation") or []
+        projection["responsibilities"][index]["validation"] = [
+            {field: _scalar(entry.get(field)) for field in ("command", "result")}
+            for entry in validation[:_MAX_ITEMS]
+        ]
+        projection["responsibilities"][index]["validation_omitted"] = max(
+            0, len(validation) - _MAX_ITEMS,
+        )
     for index, finding in enumerate((data.get("findings") or [])[:_MAX_ITEMS]):
         refs = finding.get("evidence_refs") or []
         projection["findings"][index]["evidence_refs"] = [_scalar(ref) for ref in refs[:_MAX_ITEMS]]
