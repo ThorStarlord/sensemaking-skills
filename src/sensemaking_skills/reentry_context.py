@@ -42,7 +42,10 @@ def _contained(target: Path, path: Path) -> bool:
         return False
 
 
-def _paths(target: Path, directory: str, suffixes: tuple[str, ...]) -> dict[str, Any]:
+def _paths(
+    target: Path, directory: str, suffixes: tuple[str, ...], *,
+    include_tail: bool = False,
+) -> dict[str, Any]:
     folder = target / directory
     if not _contained(target, folder) or not folder.is_dir():
         return {"paths": [], "total": 0, "truncated": False,
@@ -56,8 +59,23 @@ def _paths(target: Path, directory: str, suffixes: tuple[str, ...]) -> dict[str,
     except OSError:
         return {"paths": [], "total": 0, "truncated": False,
                 "directory_status": "NOT_INSPECTABLE"}
-    return {"paths": paths[:_MAX_PATHS], "total": len(paths),
-            "truncated": len(paths) > _MAX_PATHS, "directory_status": "OBSERVED"}
+    truncated = len(paths) > _MAX_PATHS
+    visible = paths[:_MAX_PATHS]
+    if include_tail and truncated:
+        # Date-prefixed receipt names otherwise hide later-named records once
+        # the prefix fills. Keep both ends within the original path budget.
+        # Filename order is neither update chronology nor semantic relevance.
+        prefix_count = _MAX_PATHS // 2
+        suffix_count = _MAX_PATHS - prefix_count
+        visible = paths[:prefix_count] + paths[-suffix_count:]
+    return {
+        "paths": visible, "total": len(paths),
+        "truncated": truncated, "directory_status": "OBSERVED",
+        **({
+            "path_selection": "LEXICOGRAPHIC_ENDS" if truncated else "ALL",
+            "omitted_count": len(paths) - len(visible),
+        } if include_tail else {}),
+    }
 
 
 def continuity_inventory(target: Path) -> dict[str, Any]:
@@ -67,7 +85,9 @@ def continuity_inventory(target: Path) -> dict[str, Any]:
         "detached_proposal_files": _paths(target, ".sensemaking/proposals", (".json",)),
         "historical_json_records": _paths(target, "artifacts/history", (".json",)),
         "speculative_record_review_state": "NOT_ASSESSED",
-        "receipt_files": _paths(target, _RECEIPT_DIR, (".session.yaml", ".query.yaml")),
+        "receipt_files": _paths(
+            target, _RECEIPT_DIR, (".session.yaml", ".query.yaml"), include_tail=True,
+        ),
         "strategic_history": _paths(target, "artifacts/history", (".md",)),
         "governing_paths": [
             name for name in _GOVERNING

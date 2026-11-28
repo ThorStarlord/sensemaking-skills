@@ -1,0 +1,112 @@
+{
+  "schema_version": 2,
+  "claims": [
+    {
+      "id": "conseq:bounded-reentry-receipt-discovery",
+      "kind": "hypothesis",
+      "statement": "A returning agent on the current mature repository can discover the previously omitted November 27 receipt through the ordinary unselected handoff at the existing forty-path budget, without implicit receipt reading or predecessor selection.",
+      "epistemic_status": "hypothetical",
+      "authority_kind": "hypothesis",
+      "authority_ref": "artifacts/history/2026-11-27-experience-informed-strategic-selection.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-experience-informed-strategic-selection.md",
+        "file:src/sensemaking_skills/reentry_context.py",
+        "file:artifacts/history/2026-11-27-adaptive-strategic-value-formation.md"
+      ],
+      "attributes": {
+        "concept": "ConsequenceHypothesis",
+        "source_possibility": "poss:verified-first-use-handoff",
+        "category": "benefit",
+        "analysis_ref": "artifacts/history/2026-11-27-experience-informed-strategic-selection.md",
+        "source_revision": "d6758a2816c6269d7ad0b7b9e77e4cf51f029418",
+        "value_frame": {
+          "beneficiary": "Returning coding agent on a mature target repository.",
+          "criterion": "Remove the observed receipt-path discovery blind spot at the existing forty-path budget without implicit content reading or semantic predecessor selection.",
+          "comparison_baseline": "Current first-forty alphabetical path inventory, with manual Git or directory enumeration as an available fallback.",
+          "expected_observation": "An actual no-resume handoff includes the previously omitted November 27 receipt, retains the first twenty paths, returns forty distinct paths, discloses omitted count and selects zero receipts; explicit selection still validates.",
+          "would_change_decision_if": "A decisive middle-range path is hidden, the new ordering implies priority/currentness, or manual enumeration is more appropriate.",
+          "cost_and_downside": "Trade twenty prefix hints for twenty tail hints, within the existing limit; middle remains omitted."
+        },
+        "would_change_decision_if": "A decisive middle-range path is hidden, or the selection suggests recency, authority or relevance beyond filename ordering.",
+        "mechanism": "Use both lexicographic ends of the existing receipt path list rather than only its prefix.",
+        "claim_ceiling": "Prospective conditional value hypothesis for the exact observed path gap. No established benefit or independent use."
+      }
+    },
+    {
+      "id": "observation:bounded-reentry-receipt-discovery-20261127",
+      "kind": "observation",
+      "statement": "Scoped outcome assessment (OBSERVED_CONSISTENT): At exact feature revision 0d6671cc the actual unselected returning handoff listed 40 of 148 receipt paths, including the formerly omitted November 27 integrated-self-development receipt, while keeping the first twenty original paths and explicitly omitting 108 middle paths. It selected zero receipts; explicit selection of the same receipt remained VALID.",
+      "epistemic_status": "observed",
+      "authority_kind": "document",
+      "authority_ref": "artifacts/history/2026-11-27-experience-informed-strategic-selection.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-experience-informed-strategic-selection.md",
+        "file:src/sensemaking_skills/reentry_context.py",
+        "file:src/sensemaking_skills/first_use.py"
+      ],
+      "attributes": {
+        "consequence_ref": "conseq:bounded-reentry-receipt-discovery",
+        "assessment_status": "OBSERVED_CONSISTENT",
+        "observed_effect": "At exact feature revision 0d6671cc the actual unselected returning handoff listed 40 of 148 receipt paths, including the formerly omitted November 27 integrated-self-development receipt, while keeping the first twenty original paths and explicitly omitting 108 middle paths. It selected zero receipts; explicit selection of the same receipt remained VALID.",
+        "assessed_at_revision": "0d6671cce1d0083dd6411c15e1be4efb568bdce9",
+        "counterevidence": "The previous prefix remains preferable for some middle-range paths, and manual directory enumeration is available. The current agent already knew the relevant receipt path; independent discovery, time saving, better strategic judgment and generalized relevance were not observed.",
+        "scope": "Actual source-pinned handoff inventory at the mature Sensemaking target and explicit selection of one existing valid receipt.",
+        "claim_ceiling": "Observed path visibility within the unchanged forty-path budget, no automatic receipt selection, and explicit validation. Not evidence of independent agent discovery or comparative beneficiary benefit."
+      }
+    },
+    {
+      "id": "observation:prospective-value-commitment-reuse-20261127",
+      "kind": "observation",
+      "statement": "Scoped outcome assessment (PARTIALLY_OBSERVED): At canonical d6758a28, actual subsequent integrated query 46091943452 recovered the original prospective value statement and all six value-frame fields without retrospective conversion, and the active agent used the stated criterion and baseline when selecting the bounded receipt-path improvement.",
+      "epistemic_status": "observed",
+      "authority_kind": "document",
+      "authority_ref": "artifacts/history/2026-11-27-experience-informed-strategic-selection.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-experience-informed-strategic-selection.md",
+        "file:artifacts/history/2026-11-27-adaptive-strategic-value-formation.md",
+        "file:artifacts/history/2026-11-27-prospective-value-commitment-synthesis.json"
+      ],
+      "attributes": {
+        "consequence_ref": "conseq:prospective-value-commitment-value",
+        "assessment_status": "PARTIALLY_OBSERVED",
+        "observed_effect": "At canonical d6758a28, actual subsequent integrated query 46091943452 recovered the original prospective value statement and all six value-frame fields without retrospective conversion, and the active agent used the stated criterion and baseline when selecting the bounded receipt-path improvement.",
+        "assessed_at_revision": "d6758a2816c6269d7ad0b7b9e77e4cf51f029418",
+        "counterevidence": "The same agent was already familiar with the original frame and sources. Direct source reading remains a viable approach. No measured time saving, independent decision change, or revision of a general value criterion was demonstrated.",
+        "scope": "One subsequent same-agent product-development choice using the prior prospective frame at exact canonical source.",
+        "claim_ceiling": "Actual recovery and attributed decision-time consideration; not independent cognitive adaptation, causal decision improvement or comparative efficiency."
+      }
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel:bounded-reentry-receipt-discovery-prediction",
+      "subject": "conseq:bounded-reentry-receipt-discovery",
+      "predicate": "references",
+      "object": "poss:verified-first-use-handoff",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-experience-informed-strategic-selection.md"
+      ]
+    },
+    {
+      "id": "rel:bounded-reentry-discovery-observed",
+      "subject": "observation:bounded-reentry-receipt-discovery-20261127",
+      "predicate": "references",
+      "object": "conseq:bounded-reentry-receipt-discovery",
+      "epistemic_status": "observed",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-experience-informed-strategic-selection.md"
+      ]
+    },
+    {
+      "id": "rel:prospective-value-commitment-actual-reuse",
+      "subject": "observation:prospective-value-commitment-reuse-20261127",
+      "predicate": "references",
+      "object": "conseq:prospective-value-commitment-value",
+      "epistemic_status": "observed",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-27-experience-informed-strategic-selection.md"
+      ]
+    }
+  ]
+}

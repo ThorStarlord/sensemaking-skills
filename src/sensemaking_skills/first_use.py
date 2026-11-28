@@ -364,6 +364,14 @@ def _prompt(
             "the current question (source-pinned lexical candidates, not relevance proof),",
             "and product-outline or method context only when decision-relevant.",
         ])
+    if ci["receipt_files"].get("path_selection") == "LEXICOGRAPHIC_ENDS":
+        lines.extend([
+            "",
+            "Receipt path hints show both filename-order ends within the path budget;",
+            "middle paths are omitted. Filename order is not chronology of updates,",
+            "relevance, strategic precedence or authority. Enumerate the directory",
+            "directly if the relevant path is missing; select receipts explicitly.",
+        ])
     if has_speculative_paths:
         lines.extend([
             "",
@@ -485,6 +493,12 @@ def _render_markdown(payload: dict[str, Any]) -> str:
         "See handoff.json for bounded path lists and omissions.",
         "Explicit selected-receipt validation describes the current target, not historical truth.",
     ])
+    if ci["receipt_files"].get("path_selection") == "LEXICOGRAPHIC_ENDS":
+        lines.append(
+            "- Receipt path hints: first and last 20 in filename order; "
+            f"{ci['receipt_files']['omitted_count']} middle paths omitted. "
+            "No relevance or chronology judgment."
+        )
     for receipt in continuity["selected_receipts"]:
         lines.append(f"- Selected receipt: `{receipt['path']}` ({receipt['validation']})")
     lines.extend([
