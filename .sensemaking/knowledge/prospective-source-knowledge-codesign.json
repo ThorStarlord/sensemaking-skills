@@ -150,6 +150,132 @@
         "counterevidence": "Manual isolated composition remains viable. One historical complete candidate and its pack-only slice do not establish comparative efficiency, independent selection or runtime behavior. Shared Git objects may remain; the worktree is not a security sandbox. BASE review was truncated at limit 80 despite selecting all six paths; no broader semantic coverage claim.",
         "claim_ceiling": "Observed mechanical application and evidence-dependent separate preflight, not general benefit, runtime correctness or improved strategic judgment."
       }
+    },
+    {
+      "id": "poss:existing-pack-source-knowledge-codesign",
+      "kind": "opportunity",
+      "statement": "An agent rehearses revision of one existing reviewed knowledge pack and its actual supporting evidence/source changes with BASE knowledge retained and a separate candidate preflight.",
+      "epistemic_status": "hypothetical",
+      "authority_kind": "hypothesis",
+      "authority_ref": "artifacts/history/2026-11-28-alternative-intervention-construction.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-alternative-intervention-construction.md",
+        "file:src/sensemaking_skills/patch_rehearsal.py",
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:src/sensemaking_skills/semantic_architecture/stewardship_validation.py",
+        "file:artifacts/history/2026-11-28-capability-directed-architectural-evolution.md",
+        "file:artifacts/history/2026-11-27-generative-architectural-synthesis.md"
+      ],
+      "attributes": {
+        "concept": "ProductPossibility",
+        "title": "Existing-pack source/knowledge co-design",
+        "origin": {
+          "ref": "artifacts/history/2026-11-28-alternative-intervention-construction.md",
+          "date": "2026-11-28",
+          "author": "active ChatGPT coding agent"
+        },
+        "dimensions": {
+          "alignment": {
+            "value": "ALIGNED",
+            "basis": "Supports durable correction and enrichment of product knowledge under ADR 0038."
+          },
+          "ambition": {
+            "value": "INCREMENTAL",
+            "basis": "Extends existing co-design to the revision lifecycle."
+          },
+          "horizon": {
+            "value": "FORESEEABLE",
+            "basis": "Existing single-pack steward supports revision and incoming relations."
+          },
+          "realization": {
+            "value": "HYPOTHETICAL",
+            "establishment": "inferred",
+            "basis": "Two actual intervention alternatives authored; scoped comparison pending."
+          }
+        },
+        "disposition_history": [
+          {
+            "value": "EXPLORATORY",
+            "date": "2026-11-28",
+            "authority": "agent exploration within delegated construction",
+            "source": "artifacts/history/2026-11-28-alternative-intervention-construction.md",
+            "rationale": "Compare staged reuse and unstaged modification-only before selection."
+          }
+        ],
+        "assessed_ref": "bfa213c6617000df84f09a3a81486408e0000a3c",
+        "synthesis_basis": "Reuse the existing verified disposable staged overlay and single-pack steward for an explicit existing-pack revision; compare a narrower unstaged modification-only alternative on authentic patches.",
+        "value_hypothesis": "A development agent can rehearse revision of an existing knowledge pack and new supporting source/evidence in one concrete intervention while preserving the BASE possibility and mechanically preflighting the candidate separately.",
+        "revisit_when": "A real candidate requires multiple packs or file:src/sensemaking_skills/patch_rehearsal.py changes.",
+        "counterevidence": "An unstaged modification-only overlay and manual isolated steward are viable when all evidence is already tracked. Added supporting evidence needs the guarded staged overlay; shared candidate Git objects may remain. No full-snapshot acceptance.",
+        "claim_ceiling": "Source-authored candidate, comparison pending; no semantic correctness, runtime behavior, comparative cost or independent cognitive benefit.",
+        "agent_owned": true
+      }
+    },
+    {
+      "id": "conseq:existing-pack-source-knowledge-codesign-value",
+      "kind": "hypothesis",
+      "statement": "A development agent can rehearse revision of an existing knowledge pack and new supporting source/evidence in one concrete intervention while preserving the BASE possibility and mechanically preflighting the candidate separately.",
+      "epistemic_status": "hypothetical",
+      "authority_kind": "hypothesis",
+      "authority_ref": "artifacts/history/2026-11-28-alternative-intervention-construction.md",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-alternative-intervention-construction.md",
+        "file:src/sensemaking_skills/patch_rehearsal.py",
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:src/sensemaking_skills/semantic_architecture/stewardship_validation.py",
+        "file:artifacts/history/2026-11-28-capability-directed-architectural-evolution.md",
+        "file:artifacts/history/2026-11-27-generative-architectural-synthesis.md"
+      ],
+      "attributes": {
+        "concept": "ConsequenceHypothesis",
+        "source_possibility": "poss:existing-pack-source-knowledge-codesign",
+        "category": "benefit",
+        "analysis_ref": "artifacts/history/2026-11-28-alternative-intervention-construction.md",
+        "source_revision": "bfa213c6617000df84f09a3a81486408e0000a3c",
+        "origin": {
+          "ref": "artifacts/history/2026-11-28-alternative-intervention-construction.md",
+          "date": "2026-11-28",
+          "author": "active ChatGPT coding agent"
+        },
+        "value_frame": {
+          "beneficiary": "Development agent revising existing knowledge in real sustained software construction.",
+          "criterion": "Both concrete alternatives rehearse actual #1018 revision; compare additional evidence paths on current full contribution and pack-only slice; preserve prior behavior and BASE context.",
+          "comparison_baseline": "Manual disposable checkout plus single-pack steward; existing new-pack co-design refuses an existing selected pack.",
+          "expected_observation": "Staged and unstaged routes validate actual #1018; staged route alone admits real current added evidence and validates revised pack; pack-only slice lacks that evidence.",
+          "would_change_decision_if": "Reconsider if staged scope or incoming-reference validation fails, candidate knowledge appears in BASE, default/new-pack behavior changes, or later work needs multiple packs.",
+          "cost_and_downside": "Staging may retain candidate objects; narrow unstaged approach avoids this at expense of new evidence support."
+        },
+        "assumptions": [
+          "con:agent-owns-semantic-control"
+        ],
+        "mechanism": "Reuse the existing verified disposable staged overlay and single-pack steward for an explicit existing-pack revision; compare a narrower unstaged modification-only alternative on authentic patches.",
+        "counterevidence": "An unstaged modification-only overlay and manual isolated steward are viable when all evidence is already tracked. Added supporting evidence needs the guarded staged overlay; shared candidate Git objects may remain. No full-snapshot acceptance.",
+        "would_change_decision_if": "Reconsider if staged scope or incoming-reference validation fails, candidate knowledge appears in BASE, default/new-pack behavior changes, or later work needs multiple packs.",
+        "claim_ceiling": "Prospective discriminator committed before candidate implementation at 544db4b9."
+      }
+    },
+    {
+      "id": "cap:existing-pack-source-knowledge-codesign",
+      "kind": "capability",
+      "statement": "The staged alternative adds explicit --knowledge-update to bounded co-design, reusing the verified disposable index for one existing pack and contained new supporting files, separate BASE review and single-pack revision preflight.",
+      "epistemic_status": "declared",
+      "authority_kind": "code",
+      "authority_ref": "src/sensemaking_skills/patch_rehearsal.py",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-alternative-intervention-construction.md",
+        "file:src/sensemaking_skills/patch_rehearsal.py",
+        "file:src/sensemaking_skills/semantic_cli.py",
+        "file:docs/semantic-architecture/persistent-knowledge-cli.md",
+        "file:src/sensemaking_skills/semantic_architecture/stewardship_validation.py",
+        "file:artifacts/history/2026-11-28-capability-directed-architectural-evolution.md",
+        "file:artifacts/history/2026-11-27-generative-architectural-synthesis.md"
+      ],
+      "attributes": {
+        "scope": "One direct existing pack, current patch bounds and staged scope; alternative candidate, comparison pending.",
+        "claim_ceiling": "Source-authored candidate, comparison pending; no semantic correctness, runtime behavior, comparative cost or independent cognitive benefit."
+      }
     }
   ],
   "relations": [
@@ -264,6 +390,85 @@
       "epistemic_status": "observed",
       "evidence_refs": [
         "file:artifacts/history/2026-11-27-generative-architectural-synthesis.md"
+      ]
+    },
+    {
+      "id": "rel:existing-pack-codesign-goal",
+      "subject": "poss:existing-pack-source-knowledge-codesign",
+      "predicate": "candidate_opportunity_for",
+      "object": "goal:compounding-product-knowledge",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-alternative-intervention-construction.md"
+      ]
+    },
+    {
+      "id": "rel:existing-pack-codesign-lineage",
+      "subject": "poss:existing-pack-source-knowledge-codesign",
+      "predicate": "derived_from",
+      "object": "poss:prospective-source-knowledge-codesign",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-alternative-intervention-construction.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "combines",
+        "establishment": "authored"
+      }
+    },
+    {
+      "id": "rel:existing-pack-codesign-requires",
+      "subject": "poss:existing-pack-source-knowledge-codesign",
+      "predicate": "requires_capability",
+      "object": "cap:prospective-source-knowledge-codesign",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-alternative-intervention-construction.md"
+      ]
+    },
+    {
+      "id": "rel:existing-pack-codesign-directed-context",
+      "subject": "poss:existing-pack-source-knowledge-codesign",
+      "predicate": "references",
+      "object": "poss:possibility-directed-intervention-rehearsal",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-alternative-intervention-construction.md"
+      ]
+    },
+    {
+      "id": "rel:existing-pack-codesign-prediction",
+      "subject": "conseq:existing-pack-source-knowledge-codesign-value",
+      "predicate": "references",
+      "object": "poss:existing-pack-source-knowledge-codesign",
+      "epistemic_status": "hypothetical",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-alternative-intervention-construction.md"
+      ]
+    },
+    {
+      "id": "rel:existing-pack-codesign-realization",
+      "subject": "poss:existing-pack-source-knowledge-codesign",
+      "predicate": "implemented_by",
+      "object": "cap:existing-pack-source-knowledge-codesign",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-alternative-intervention-construction.md"
+      ],
+      "attributes": {
+        "conceptual_relation": "realizedBy",
+        "establishment": "inferred",
+        "scope": "Staged candidate implementation pending comparison."
+      }
+    },
+    {
+      "id": "rel:existing-pack-codesign-serves",
+      "subject": "cap:existing-pack-source-knowledge-codesign",
+      "predicate": "serves_goal",
+      "object": "goal:compounding-product-knowledge",
+      "epistemic_status": "declared",
+      "evidence_refs": [
+        "file:artifacts/history/2026-11-28-alternative-intervention-construction.md"
       ]
     }
   ]
