@@ -66,32 +66,36 @@ jobs:
         run: |
           set -euo pipefail
           DIR=src/sensemaking_skills/semantic_architecture
+          TARGET="$RUNNER_TEMP/comparison-target"
+          git worktree add --detach "$TARGET" "$BASE"
+          trap 'git worktree remove --force "$TARGET"' EXIT
           for phase in before after; do
             if [ "$phase" = after ]; then
               git checkout --detach "$CANDIDATE"
             fi
-            sensemaking-skills semantic source-route --repo . --ref "$BASE" --from-path "$DIR/refactor_preview.py" --to-path "$DIR/knowledge_sources.py" --json > "$RUNNER_TEMP/route-$phase.json"
-            sensemaking-skills semantic refactor-rename --repo . --ref "$BASE" --path "$DIR/source_relationships.py" --symbol _import_from_base --to _resolve_import_from_base --json > "$RUNNER_TEMP/rename-$phase.json"
-            sensemaking-skills semantic workspace-query --repo . --ref "$BASE" --operation context-for "$DIR/knowledge_sources.py" --include-source-relationships --symbol build_knowledge_snapshot --index-dir "$RUNNER_TEMP/index-$phase" --limit 80 --json > "$RUNNER_TEMP/context-$phase.json"
-            sensemaking-skills semantic knowledge-build --repo . --repository sensemaking-transformation --target-ref "$BASE" --db "$RUNNER_TEMP/knowledge-$phase.sqlite" --temporary-checkout --json > "$RUNNER_TEMP/build-$phase.json"
-            sensemaking-skills semantic knowledge-audit --repo . --repository sensemaking-transformation --indexed-ref "$BASE" --current-ref "$BASE" --db "$RUNNER_TEMP/knowledge-$phase.sqlite" --temporary-checkout --limit 100 --json > "$RUNNER_TEMP/audit-$phase.json"
+            sensemaking-skills semantic source-route --repo "$TARGET" --ref "$BASE" --from-path "$DIR/refactor_preview.py" --to-path "$DIR/knowledge_sources.py" --json > "$RUNNER_TEMP/route-$phase.json"
+            sensemaking-skills semantic refactor-rename --repo "$TARGET" --ref "$BASE" --path "$DIR/source_relationships.py" --symbol _import_from_base --to _resolve_import_from_base --json > "$RUNNER_TEMP/rename-$phase.json"
+            sensemaking-skills semantic workspace-query --repo "$TARGET" --ref "$BASE" --operation context-for "$DIR/knowledge_sources.py" --include-source-relationships --symbol build_knowledge_snapshot --index-dir "$RUNNER_TEMP/index-$phase" --limit 80 --json > "$RUNNER_TEMP/context-$phase.json"
+            sensemaking-skills semantic knowledge-build --repo "$TARGET" --repository sensemaking-transformation --target-ref "$BASE" --db "$RUNNER_TEMP/knowledge-$phase.sqlite" --temporary-checkout --json > "$RUNNER_TEMP/build-$phase.json"
+            sensemaking-skills semantic knowledge-audit --repo "$TARGET" --repository sensemaking-transformation --indexed-ref "$BASE" --current-ref "$BASE" --db "$RUNNER_TEMP/knowledge-$phase.sqlite" --temporary-checkout --limit 100 --json > "$RUNNER_TEMP/audit-$phase.json"
             test -z "$(git status --porcelain)"
+            test -z "$(git -C "$TARGET" status --porcelain)"
+            test "$(git -C "$TARGET" rev-parse HEAD)" = "$BASE"
           done
           python - <<'PY'
           import ast,hashlib,json,os,subprocess
           from pathlib import Path
           p=Path(os.environ["RUNNER_TEMP"])
           def read(name,phase): return json.loads((p/(name+"-"+phase+".json")).read_text())
-          for name in ("route","rename","context","audit"):
+          for name in ("route","rename","context","build","audit"):
               a,b=read(name,"before"),read(name,"after")
               for q in (a,b):
                   if name=="context":
-                      q.pop("workspace_context",None)
-                      q.pop("workspace_index",None)
-                  if name=="audit":
-                      q.pop("active_checkout",None)
+                      q["workspace_index"].pop("index_path",None)
+              if a!=b:
+                  print("DIFFERING_KEYS="+json.dumps({"operation":name,"keys":[key for key in sorted(set(a)|set(b)) if a.get(key)!=b.get(key)]}))
               assert a==b, name+" result changed on same BASE"
-              print("COMPATIBILITY="+json.dumps({"operation":name,"equal_payload":True,"status":a.get("status"),"counts":a.get("counts"),"record_count":a.get("record_count"),"source_status_counts":a.get("source_status_counts")}))
+              print("COMPATIBILITY="+json.dumps({"operation":name,"equal_payload":True,"status":a.get("status"),"counts":a.get("counts"),"record_count":a.get("record_count"),"digest":a.get("digest"),"claim_count":a.get("claim_count"),"relation_count":a.get("relation_count"),"source_status_counts":a.get("source_status_counts")}))
           directory=Path("src/sensemaking_skills/semantic_architecture")
           old=subprocess.check_output(["git","show",os.environ["BASE"]+":"+(directory/"knowledge_sources.py").as_posix()]).decode()
           new=(directory/"source_access.py").read_text()
@@ -104,6 +108,8 @@ jobs:
               assert getattr(knowledge_sources,name) is getattr(source_access,name)
           print("MOVED_DEFINITIONS="+json.dumps({"count":len(defs),"unchanged_ast":True,"legacy_alias_identity":True}))
           PY
+          git worktree remove --force "$TARGET"
+          trap - EXIT
       - name: Inspect the transformed architecture with actual source route
         run: |
           set -euo pipefail
